@@ -5,8 +5,8 @@
     <div ng-show="backgroundLayers.length > 1">
         <h4>Background Layers</h4>
         <div ng-repeat="layer in backgroundLayers">
-             <!-- double $parent cause ng-if and ng-repeat create own closed scopes -->
-            <input type="radio" ng-model="$parent.$parent.backgroundLayer" ng-value="layer">
+             <!-- used $parent to get out of ng-repeat scope -->
+            <input type="radio" ng-model="$parent.backgroundLayer" ng-value="layer">
             {{ layer.get('title') }}
         </div>
     </div>
