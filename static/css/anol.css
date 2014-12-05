@@ -1,0 +1,33 @@
+/**
+ * anol-layerswitcher
+ */
+.ol-unselectable .anol-layerswitcher {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 0px 25px 5px 5px;
+  border-radius: 5px 0px 0px 5px;
+  font-size: 14px;
+  top: 5px;
+  right: 0px;
+  position: absolute;
+  z-index: 1000;
+  width: 265px;
+}
+
+.ol-unselectable .anol-layerswitcher-toggle {
+  width: 20px;
+  top: 7px;
+  right: 0px;
+  border-radius: 5px 0px 0px 5px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  position: absolute;
+  text-align: center;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.ol-unselectable .anol-layerswitcher hr {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-right: -20px;
+}
