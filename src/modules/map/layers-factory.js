@@ -113,7 +113,7 @@ angular.module('anol.map')
 
         var tileURL = function(tileCoord, pixelRatio, projection) {
             var url = '';
-            if (tileCoord[1] > 0 && tileCoord[2] > 0) {
+            if (tileCoord[1] >= 0 && tileCoord[2] >= 0) {
                 url += options.baseURL + '/';
                 url += options.layer + '/';
                 url += tileCoord[0].toString() + '/';
