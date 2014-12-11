@@ -7,15 +7,10 @@ angular.module('anol.map')
  * @requires anol.DefaultMapName
  * @requires anol.map.MapService
  *
- * @param {string=} autoResize Autoresize map when width, height or both of browser window changes
- *
  * @description
  * The anol-map directive adds the map defined in MapService to the dom.
  *
  * It also add the DefaultMapName as id and class to the map element.
- *
- * If it's autoResize property is defined, the map will be resized when browser window dimensions
- * changes. Atm only 'height' is supported
  */
 .directive('anolMap', ['DefaultMapName', 'MapService', function(DefaultMapName, MapService) {
     return {
