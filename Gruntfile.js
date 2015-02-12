@@ -19,7 +19,7 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          'build/<%= pkg.name %>.ugly.js': ['build/<%= pkg.name %>.ngmin.js']
+          'build/<%= pkg.name %>.ugly.js': ['build/<%= pkg.name %>.ngmin.js', 'build/templates.js']
         }
       }
     },
@@ -72,7 +72,8 @@ module.exports = function(grunt) {
       postbuild: {
         src: [
           'build/<%= pkg.name %>.ngmin.js',
-          'build/<%= pkg.name %>.ugly.js'
+          'build/<%= pkg.name %>.ugly.js',
+          'build/templates.js',
         ]
       },
       docs: {
