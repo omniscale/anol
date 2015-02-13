@@ -2,6 +2,13 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    revision: {
+      options: {
+        property: 'meta.revision',
+        ref: 'HEAD',
+        short: true
+      }
+    },
     meta: {
       banner: '/**\n' +
         ' * @name <%= pkg.name %>\n' +
@@ -148,7 +155,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
+  grunt.loadNpmTasks('grunt-git-revision');
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-ngdocs');
@@ -156,7 +163,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('test', ['karma:unit']);
-  grunt.registerTask('build', ['clean:prebuild', 'jshint', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
+  grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
   grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'ngtemplates', 'concat:dev']);
   grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'ngtemplates', 'ngmin:dist', 'uglify', 'concat:dist', 'clean:postbuild', 'copy:full']);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
