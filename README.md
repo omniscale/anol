@@ -24,6 +24,12 @@ Get Started
 
     - Copy files from `build` directory in your project and include them in your `index.html`
 
+**(5)** Start dev server
+
+	- grunt dev
+
+A dev server on port 7000 startet. Now you can open the examples on http://localhost:7000/examples/.
+
 Build notes
 ------------
 
