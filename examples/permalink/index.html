@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Permalink Example</title>
+
+    <!-- Core CSS -->
+    <link href="../../libs/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="../../libs/ol3/ol3.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body ng-app="example">
+    <!-- map -->
+    <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
+    </div>
+
+    <!-- Remove libs when build dist -->
+    <script type="text/javascript" src="../../libs/jquery/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="../../libs/angular/angular-debug.js"></script>
+    <script type="text/javascript" src="../../libs/ol3/ol3-debug.js"></script>
+    <script type="text/javascript" src="../../build/anol.js"></script>
+
+    <script type="text/javascript">
+      angular.module('example', ['anol', 'anol.map', 'anol.permalink'])
+      .config(['MapServiceProvider', 'LayersFactoryProvider', 'LayersServiceProvider', 'PermalinkServiceProvider',
+        function(MapServiceProvider, LayersFactoryProvider, LayersServiceProvider) {
+          MapServiceProvider.addView(new ol.View({
+            center: [914764, 7011016],
+            zoom: 18
+          }));
+
+          var wms = LayersFactoryProvider.newSingleTileWMS({
+            url: 'http://maps.omniscale.net/wms/demo/default/service?',
+            params: {
+              'LAYERS': 'osm',
+              'SRS': 'EPSG:3857'
+            }
+          });
+          LayersServiceProvider.setLayers([wms]);
+      }])
+      // need to start PermalinkService, can be removed if app using PermalinkDirective (when exist)
+      .run(['PermalinkService', function(PermalinkService) {}]);
+    </script>
+  </body>
+</html>
