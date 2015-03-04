@@ -62,7 +62,6 @@ angular.module('anol.permalink')
          */
         var Permalink = function(urlCrs, precision) {
             var self = this;
-            self.urlCrs = urlCrs;
             self.precision = precision;
             self.zoom = undefined;
             self.lon = undefined;
@@ -71,6 +70,11 @@ angular.module('anol.permalink')
             self.map = MapService.getMap();
             self.view = self.map.getView();
 
+            self.urlCrs = urlCrs;
+            if (self.urlCrs === undefined) {
+                var projection = self.view.getProjection();
+                self.urlCrs = projection.code_;
+            }
             self.map.on('moveend', self.moveendHandler, self);
 
             $rootScope.$watchCollection(
