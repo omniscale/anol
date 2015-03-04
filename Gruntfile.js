@@ -123,7 +123,7 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['src/modules/**/*.js'],
-        tasks: ['build-dev'],
+        tasks: ['concat:dev'],
         options: {
           spawn: false,
         },
