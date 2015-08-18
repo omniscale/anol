@@ -76,6 +76,7 @@ angular.module('anol.map')
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **isBackground** - {boolean} - Layer is a background layer
      * - **layer** - {string} - Layer name
+     * - **getFeatureInfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Tile with ol.source.TileImage
      *
@@ -119,7 +120,11 @@ angular.module('anol.map')
             source: new ol.source.TileImage(sourceOptions)
         });
 
-        return applyLayerProperties(layer, options);
+        layer = applyLayerProperties(layer, options);
+        if(options.getFeatureInfo !== undefined) {
+            layer.set('getFeatureInfo', options.getFeatureInfo);
+        }
+        return layer;
     };
 
     /**
@@ -243,6 +248,7 @@ angular.module('anol.map')
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **layer** - {string} - Layer name
+     * - **getFeatureInfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Image with ol.source.ImageWMS
      *
@@ -258,7 +264,11 @@ angular.module('anol.map')
         }
 
         var layer = new ol.layer.Image({source: new ol.source.ImageWMS(sourceOptions)});
-        return applyLayerProperties(layer, options);
+        layer = applyLayerProperties(layer, options);
+        if(options.getFeatureInfo !== undefined) {
+            layer.set('getFeatureInfo', options.getFeatureInfo);
+        }
+        return layer;
     };
 
     /**
