@@ -16,9 +16,6 @@ angular.module('anol.map')
     // prepares ol.source with common source opitons
     var createBasicSourceOptions = function(options) {
         var sourceOptions = {};
-        if(options.projection !== undefined) {
-            sourceOptions.projection = options.projection;
-        }
         if(options.attributions !== undefined) {
             if(!(options.attributions instanceof Array)) {
                 options.attributions = [options.attributions];
@@ -133,6 +130,9 @@ angular.module('anol.map')
 
         var sourceOptions = createBasicSourceOptions(options);
         sourceOptions.tileUrlFunction = tileURL;
+        if(options.projection !== undefined) {
+            sourceOptions.projection = options.projection;
+        }
 
         if(tileGrid) {
             sourceOptions.tileGrid = tileGrid;
@@ -219,7 +219,11 @@ angular.module('anol.map')
                 for(var i = 0; i < sourceFeatures.length; i++) {
                     source.removeFeature(sourceFeatures[i]);
                 }
-                source.addFeatures(source.readFeatures(response));
+                var format = new ol.format.GeoJSON();
+                var features = format.readFeatures(response, {
+                    featureProjection: options.projection
+                });
+                source.addFeatures(features);
                 // we have to dispatch own event couse change-event triggered
                 // for each feature remove and for feature added
                 // remove when ol3 provide something like source.update
@@ -232,7 +236,7 @@ angular.module('anol.map')
         sourceOptions.strategy = ol.loadingstrategy.bbox;
         sourceOptions.loader = loader;
 
-        source = new ol.source.ServerVector(sourceOptions);
+        source = new ol.source.Vector(sourceOptions);
 
         var layer = new ol.layer.Vector({
             source: source
@@ -247,7 +251,6 @@ angular.module('anol.map')
      * @methodOf anol.map.LayersFactoryProvider
      * @param {Object} options
      * - **url** - {string} - url of geojson file
-     * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **shortcut** - {string} - Layer shortcut
@@ -266,7 +269,6 @@ angular.module('anol.map')
      * @methodOf anol.map.LayersFactory
      * @param {Object} options
      * - **url** - {string} - url of geojson file
-     * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **shortcut** - {string} - Layer shortcut
@@ -282,7 +284,8 @@ angular.module('anol.map')
     this.newGeoJSON = function(options) {
         var sourceOptions = createBasicSourceOptions(options);
         sourceOptions.url = options.url;
-        var source = new ol.source.GeoJSON(sourceOptions);
+        sourceOptions.format = new ol.format.GeoJSON();
+        var source = new ol.source.Vector(sourceOptions);
         var layer = new ol.layer.Vector({
             source: source
         });
@@ -332,6 +335,9 @@ angular.module('anol.map')
         var sourceOptions = createBasicSourceOptions(options);
         sourceOptions.url = options.url;
         sourceOptions.params = options.params;
+        if(options.projection !== undefined) {
+            sourceOptions.projection = options.projection;
+        }
 
         var layer = new ol.layer.Image({source: new ol.source.ImageWMS(sourceOptions)});
         return applyLayerProperties(layer, options);
@@ -342,7 +348,6 @@ angular.module('anol.map')
      * @name newFeatureLayer
      * @methodOf anol.map.LayersFactoryProvider
      * @param {Object} options
-     * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **shortcut** - {string} - Layer shortcut
@@ -361,7 +366,6 @@ angular.module('anol.map')
      * @name newFeatureLayer
      * @methodOf anol.map.LayersFactory
      * @param {Object} options
-     * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **shortcut** - {string} - Layer shortcut
