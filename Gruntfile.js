@@ -122,8 +122,8 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['src/modules/**/*.js'],
-        tasks: ['concat:dev'],
+        files: ['src/modules/**/*.js', 'src/modules/**/*.html'],
+        tasks: ['ngtemplates', 'concat:dev'],
         options: {
           spawn: false,
         },
