@@ -31,3 +31,7 @@
   margin-bottom: 0px;
   margin-right: -20px;
 }
+
+.ol-unselectable .anol-layerswitcher .group-layers-container {
+  padding-left: 18px;
+}
