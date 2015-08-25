@@ -67,6 +67,23 @@ angular.module('anol.map')
                 } else {
                     self.overlayLayers.push(layer);
                 }
+                if(layer instanceof ol.layer.Group) {
+                    var visible = false;
+                    angular.forEach(layer.getLayersArray(), function(groupLayer) {
+                        if(groupLayer.getVisible() === true) {
+                            visible = true;
+                        }
+                        groupLayer.set('syncGroupVisibleChangeKey', groupLayer.on('change:visible', function(evt) {
+                            self.groupedLayerVisibleChangeHandler(evt, layer);
+                        }));
+                        groupLayer.on('change:visible', listener);
+                    });
+                    layer.set('syncGroupVisibleChangeKey', layer.on('change:visible', function(evt) {
+                        self.groupLayerVisibleChangeHandler(evt);
+                    }));
+                    layer.setVisible(visible);
+
+                }
                 layer.on('change:visible', listener);
                 // while map is undefined, don't add layers to it
                 // when map is created, all this.layers are added to map
@@ -96,6 +113,49 @@ angular.module('anol.map')
             } else if(!visible && shortcutIdx != -1) {
                 this.visibleLayerShortcuts.splice(shortcutIdx, 1);
             }
+        };
+        /**
+         * private function
+         *
+         * updates child layers visible
+         */
+        Layers.prototype.groupLayerVisibleChangeHandler = function(evt)  {
+            var self = this;
+            var group = evt.target;
+            angular.forEach(group.getLayersArray(), function(layer) {
+                layer.unByKey(layer.get('syncGroupVisibleChangeKey'));
+                layer.setVisible(group.getVisible());
+                layer.set('syncGroupVisibleChangeKey', layer.on('change:visible', function(evt) {
+                    self.groupedLayerVisibleChangeHandler(evt, group);
+                }));
+            });
+        };
+        /**
+         * private function
+         *
+         * updates parent layer visible
+         */
+        Layers.prototype.groupedLayerVisibleChangeHandler = function(evt, group)  {
+            var self = this;
+            var layer = evt.target;
+            var visible = layer.getVisible();
+            var groupVisible = group.getVisible();
+
+            if(visible && !groupVisible) {
+                groupVisible = true;
+            } else if(!visible && groupVisible) {
+                groupVisible = false;
+                angular.forEach(group.getLayersArray(), function(groupLayer) {
+                    if(groupLayer.getVisible()) {
+                        groupVisible = true;
+                    }
+                });
+            }
+            group.unByKey(group.get('syncGroupVisibleChangeKey'));
+            group.setVisible(groupVisible);
+            group.set('syncGroupVisibleChangeKey', group.on('change:visible', function(evt) {
+                self.groupLayerVisibleChangeHandler(evt);
+            }));
         };
         /**
          * @ngdoc method
