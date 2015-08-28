@@ -54,44 +54,54 @@ angular.module('anol.featureinfo')
                     popupContent.empty();
 
                     angular.forEach(LayersService.layers, function(layer) {
-                        var featureInfo = layer.get('getFeatureInfo');
-                        if(angular.isUndefined(featureInfo)) {
-                            return;
+                        var layers = [layer];
+                        if(layer instanceof ol.layer.Group) {
+                            layers = layer.getLayersArray();
                         }
-                        var url = layer.getSource().getGetFeatureInfoUrl(
-                            coordinate, viewResolution, view.getProjection(),
-                            {'INFO_FORMAT': 'text/html'}
-                        );
-                        if(angular.isDefined(url)) {
-                            $http.get(url).success(function(response) {
-                                if(angular.isString(response) && response !== '') {
-                                    var iframe;
-                                    if(featureInfo.target !== '_blank') {
-                                        iframe = $('<iframe seamless src="' + url + '"></iframe>');
+                        angular.forEach(layers, function(layer) {
+                            if(!layer.getVisible()) {
+                                return;
+                            }
+                            var featureInfo = layer.get('featureinfo');
+                            if(angular.isUndefined(featureInfo)) {
+                                return;
+                            }
+
+                            var url = layer.getSource().getGetFeatureInfoUrl(
+                                coordinate, viewResolution, view.getProjection(),
+                                {'INFO_FORMAT': 'text/html'}
+                            );
+                            if(angular.isDefined(url)) {
+                                $http.get(url).success(function(response) {
+                                    if(angular.isString(response) && response !== '') {
+                                        var iframe;
+                                        if(featureInfo.target !== '_blank') {
+                                            iframe = $('<iframe seamless src="' + url + '"></iframe>');
+                                        }
+                                        switch(featureInfo.target) {
+                                            case '_blank':
+                                                $window.open(url, '_blank');
+                                            break;
+                                            case '_popup':
+                                                popupContent.append(iframe);
+                                                if(element.css('display') === 'none') {
+                                                    element.css('display', '');
+                                                    popupOverlay.setPosition(coordinate);
+                                                }
+                                            break;
+                                            default:
+                                                var target = $(featureInfo.target);
+                                                if(divTargetCleared === false) {
+                                                    target.empty();
+                                                    divTargetCleared = true;
+                                                }
+                                                target.append(iframe);
+                                            break;
+                                        }
                                     }
-                                    switch(featureInfo.target) {
-                                        case '_blank':
-                                            $window.open(url, '_blank');
-                                        break;
-                                        case '_popup':
-                                            popupContent.append(iframe);
-                                            if(element.css('display') === 'none') {
-                                                element.css('display', '');
-                                                popupOverlay.setPosition(coordinate);
-                                            }
-                                        break;
-                                        default:
-                                            var target = $(featureInfo.target);
-                                            if(divTargetCleared === false) {
-                                                target.empty();
-                                                divTargetCleared = true;
-                                            }
-                                            target.append(iframe);
-                                        break;
-                                    }
-                                }
-                            });
-                        }
+                                });
+                            }
+                        });
                     });
                 };
             },
