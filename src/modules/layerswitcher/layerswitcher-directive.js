@@ -56,8 +56,12 @@ angular.module('anol.layerswitcher')
                     }
                 });
                 scope.$watch('backgroundLayer', function(newVal, oldVal) {
-                    oldVal.setVisible(false);
-                    newVal.setVisible(true);
+                    if(angular.isDefined(oldVal)) {
+                        oldVal.setVisible(false);
+                    }
+                    if(angular.isDefined(newVal)) {
+                        newVal.setVisible(true);
+                    }
                 });
             }
         },
