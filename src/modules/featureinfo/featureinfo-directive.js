@@ -73,7 +73,7 @@ angular.module('anol.featureinfo')
                             );
                             if(angular.isDefined(url)) {
                                 $http.get(url).success(function(response) {
-                                    if(angular.isString(response) && response !== '') {
+                                    if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
                                         var iframe;
                                         if(featureInfo.target !== '_blank') {
                                             iframe = $('<iframe seamless src="' + url + '"></iframe>');
