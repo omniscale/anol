@@ -31,12 +31,13 @@ angular.module('anol.featurepopup')
 
                 scope.handleClick = function(evt) {
                     var visible = false;
-                    var feature = scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                        if(layer.get('layer') === scope.featureLayer) {
-                            return feature;
+                    var features = [];
+                    scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                        if(angular.isUndefined(scope.featureLayer) || layer.get('layer') === scope.featureLayer) {
+                            features.push(feature);
                         }
                     });
-                    if(feature) {
+                    if(features.length > 0) {
                         scope.popup.setPosition(evt.coordinate);
                         visible = true;
                         $timeout(function() {
@@ -46,7 +47,7 @@ angular.module('anol.featurepopup')
                     }
 
                     scope.$apply(function() {
-                        scope.feature = feature;
+                        scope.features = features;
                         scope.popupVisible = visible;
                     });
                 };

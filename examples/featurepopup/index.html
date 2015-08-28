@@ -34,7 +34,7 @@
 
     <script type="text/ng-template" id="anol/modules/featurepopup/templates/popup.html">
       <div ng-show="popupVisible">
-        <div class="label label-info">{{ feature.get('name') }}</div>
+        <div ng-repeat="feature in features" class="label label-info">{{ feature.get('name') }}</div>
       </div>
     </script>
 
