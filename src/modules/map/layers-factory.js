@@ -253,7 +253,7 @@ angular.module('anol.map')
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **layer** - {string} - Layer name
-     * - **getFeatureInfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
+     * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Image with ol.source.ImageWMS
      *
@@ -270,8 +270,8 @@ angular.module('anol.map')
 
         var layer = new ol.layer.Image({source: new ol.source.ImageWMS(sourceOptions)});
         layer = applyLayerProperties(layer, options);
-        if(options.getFeatureInfo !== undefined) {
-            layer.set('getFeatureInfo', options.getFeatureInfo);
+        if(options.featureinfo !== undefined) {
+            layer.set('featureinfo', options.featureinfo);
         }
         return layer;
     };
