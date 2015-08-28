@@ -35,3 +35,62 @@
 .ol-unselectable .anol-layerswitcher .group-layers-container {
   padding-left: 18px;
 }
+
+/**
+ * anol-featureinfo
+ */
+.anol-popup {
+  position: absolute;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+}
+
+.anol-popup:after, .anol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.anol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.anol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+
+.anol-popup .close-button {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  cursor: pointer;
+  color: #cccccc;
+  font-weight: bold;
+}
+
+.anol-popup .close-button:before {
+  content: "x";
+}
+
+.anol-popup #popup-content {
+  font-size: 13px;
+  line-height: 18px;
+  width: 200px;
+  height: 200px;
+}
+.anol-popup #popup-content iframe {
+  width: 200px;
+  height: 200px;
+}
