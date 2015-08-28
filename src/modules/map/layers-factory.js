@@ -133,7 +133,8 @@ angular.module('anol.map')
      * @methodOf anol.map.LayersFactory
      * @param {Object} options
      * - **url** - {string} - source url
-     * - **additionalParameters** - {Function} - function must return a list of parameters to add to the source url for each request
+     * - **additionalParameters** - {Function|Object} - Function must return a list of parameters to add to the source url for each request.
+     *                                                  Object key-value will converted into parameter
      * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
@@ -159,6 +160,10 @@ angular.module('anol.map')
             ];
             if(angular.isFunction(options.additionalParameters)) {
                 params.push(options.additionalParameters());
+            } else if(angular.isObject(options.additionalParameters)) {
+                angular.forEach(options.additionalParameters, function(value, key) {
+                    params.push(key + '=' + value);
+                });
             }
 
             var url = options.url + params.join('&');
