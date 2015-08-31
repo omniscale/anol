@@ -10,7 +10,11 @@ angular.module('anol.featurepopup')
  * @param {string} featureLayer Layer to bind popup to
  *
  * @description
- * Shows a popup on feature click
+ * Shows feature properties for given 'featureLayer' or all 'ol.layer.Vector' layers if no 'featureLayer' is defined.
+ * Layer must have a 'featureinfo' property.
+ *
+ * Layer property **featureinfo** - {Object} - Contains properties:
+ * - **properties** {Array.<String>} - Property names to display
  */
 .directive('anolFeaturePopup', ['$timeout', 'MapService', function($timeout, MapService) {
     return {
@@ -36,7 +40,8 @@ angular.module('anol.featurepopup')
                         if(!layer instanceof ol.layer.Vector) {
                             return;
                         }
-                        if(angular.isUndefined(scope.featureLayer) || layer.get('layer') === scope.featureLayer) {
+                        if((angular.isUndefined(scope.featureLayer) || layer.get('layer') === scope.featureLayer) && angular.isDefined(layer.get('featureinfo'))) {
+                            feature.set('displayProperties', layer.get('featureinfo').properties);
                             features.push(feature);
                         }
                     });
