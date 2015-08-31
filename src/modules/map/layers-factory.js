@@ -56,6 +56,9 @@ angular.module('anol.map')
         if(options.style !== undefined) {
             layer.setStyle(options.style);
         }
+        if(options.featureinfo !== undefined) {
+            layer.set('featureinfo', options.featureinfo);
+        }
         return layer;
     };
 
@@ -76,7 +79,7 @@ angular.module('anol.map')
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **isBackground** - {boolean} - Layer is a background layer
      * - **layer** - {string} - Layer name
-     * - **getFeatureInfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
+     * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Tile with ol.source.TileImage
      *
@@ -121,9 +124,6 @@ angular.module('anol.map')
         });
 
         layer = applyLayerProperties(layer, options);
-        if(options.getFeatureInfo !== undefined) {
-            layer.set('getFeatureInfo', options.getFeatureInfo);
-        }
         return layer;
     };
 
@@ -142,6 +142,7 @@ angular.module('anol.map')
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **layer** - {string} - Layer name
+     * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.ServerVector
      *
@@ -222,6 +223,7 @@ angular.module('anol.map')
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **layer** - {string} - Layer name
+     * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.GeoJSON
      *
@@ -270,9 +272,6 @@ angular.module('anol.map')
 
         var layer = new ol.layer.Image({source: new ol.source.ImageWMS(sourceOptions)});
         layer = applyLayerProperties(layer, options);
-        if(options.featureinfo !== undefined) {
-            layer.set('featureinfo', options.featureinfo);
-        }
         return layer;
     };
 
@@ -287,6 +286,7 @@ angular.module('anol.map')
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **layer** - {string} - Layer name
+     * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.Vector
      *
