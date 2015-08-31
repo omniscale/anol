@@ -7,7 +7,8 @@ angular.module('anol.featurepopup')
  * @requires $timeout
  * @requires anol.map.MapService
  *
- * @param {string} featureLayer Layer to bind popup to
+ * @param {String} featureLayer Layer to bind popup to
+ * @param {Float} extentWidth Width of square bounding box around clicked point
  *
  * @description
  * Shows feature properties for given 'featureLayer' or all 'ol.layer.Vector' layers if no 'featureLayer' is defined.
@@ -20,7 +21,8 @@ angular.module('anol.featurepopup')
     return {
         restrict: 'A',
         scope: {
-            'featureLayer': '@featureLayer'
+            'featureLayer': '@featureLayer',
+            'extentWidth': '='
         },
         replace: true,
         templateUrl: 'src/modules/featurepopup/templates/popup.html',
@@ -33,18 +35,59 @@ angular.module('anol.featurepopup')
                     element: element[0]
                 };
 
-                scope.handleClick = function(evt) {
-                    var visible = false;
+                var isRequestLayer = function(layer) {
+                    if(!layer instanceof ol.layer.Vector) {
+                        return false;
+                    }
+                    if(angular.isDefined(scope.featureLayer) && layer.get('layer') !== scope.featureLayer) {
+                        return false;
+                    }
+                    if(angular.isUndefined(layer.get('featureinfo'))) {
+                        return false;
+                    }
+                    return true;
+                };
+
+                var calculateExtent = function(center) {
+                    var resolution = scope.map.getView().getResolution();
+                    var width = resolution * scope.extentWidth;
+                    return [center[0] - width, center[1] - width, center[0] + width, center[1] + width];
+                };
+
+                var featuresByExtent = function(evt) {
+                    var extent = calculateExtent(evt.coordinate);
+                    var features = [];
+                    angular.forEach(scope.map.getLayers().getArray(), function(layer) {
+                        if(isRequestLayer(layer)) {
+                            angular.forEach(layer.getSource().getFeaturesInExtent(extent), function(feature) {
+                                feature.set('displayProperties', layer.get('featureinfo').properties);
+                                features.push(feature);
+                            });
+                        }
+                    });
+                    return features;
+                };
+
+                var featuresAtPixel = function(evt) {
                     var features = [];
                     scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                         if(!layer instanceof ol.layer.Vector) {
                             return;
                         }
-                        if((angular.isUndefined(scope.featureLayer) || layer.get('layer') === scope.featureLayer) && angular.isDefined(layer.get('featureinfo'))) {
+                        if(isRequestLayer(layer)) {
                             feature.set('displayProperties', layer.get('featureinfo').properties);
                             features.push(feature);
                         }
                     });
+                    return features;
+                };
+
+                var getFeatures = angular.isDefined(scope.extentWidth) ? featuresByExtent : featuresAtPixel;
+
+                scope.handleClick = function(evt) {
+                    var visible = false;
+                    var features = getFeatures(evt);
+
                     if(features.length > 0) {
                         scope.popup.setPosition(evt.coordinate);
                         visible = true;
