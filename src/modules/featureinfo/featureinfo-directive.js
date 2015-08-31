@@ -11,11 +11,11 @@ angular.module('anol.featureinfo')
  * @requires anol.map.LayersService
  *
  * @description
- * Makes GetFeatureInfo request on all layers with 'getFeatureInfo' property
- * and show result depending on 'target' specified in 'getFeatureInfo'
+ * Makes GetFeatureInfo request on all layers with 'featureinfo' property
+ * and show result depending on 'target' specified in 'featureinfo'
  *
- * Layer property **getFeatureInfo** - {Object} - Contains properties:
- * - **target** - {string} - Target for getFeatureInfo result. ('_blank', '_popup', [element-id])
+ * Layer property **featureinfo** - {Object} - Contains properties:
+ * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
 .directive('anolFeatureInfo', ['$compile', '$http', '$window', 'MapService', 'LayersService', function($compile, $http, $window, MapService, LayersService) {
     return {
