@@ -62,6 +62,9 @@ angular.module('anol.featureinfo')
                             if(!layer.getVisible()) {
                                 return;
                             }
+                            if(layer instanceof ol.layer.Vector) {
+                                return;
+                            }
                             var featureInfo = layer.get('featureinfo');
                             if(angular.isUndefined(featureInfo)) {
                                 return;
