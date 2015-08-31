@@ -129,6 +129,46 @@ angular.module('anol.map')
 
     /**
      * @ngdoc method
+     * @name newWMTS
+     * @methodOf anol.map.LayersFactory
+     * @param {Object} options
+     * - **capabilitiesUrl** - {string} - Url of wmts capabilities document
+     * - **projection** - {ol.proj.Projection} - Layer projection
+     * - **layer** - {string} - Layer name
+     *
+     * @returns {Object} ol.layer.Tile with ol.source.WMTS
+     *
+     * @description
+     * Creates a WMTS layer from WMTSCapabilities
+     */
+    this.newWMTS = function(options) {
+        var sourceOptions = createBasicSourceOptions(options);
+
+        var parser = new ol.format.WMTSCapabilities();
+        $.ajax({
+            type: 'GET',
+            url: options.capabilitiesUrl,
+            async: false,
+            success: function(data) {
+                var result = parser.read(data);
+                var wmtsOptions = ol.source.WMTS.optionsFromCapabilities(
+                    result,
+                    {
+                        layer: options.layer,
+                        matrixSet: options.projection.getCode()
+                    }
+                );
+                $.extend(sourceOptions, wmtsOptions);
+            }
+        });
+        var layer = new ol.layer.Tile({
+            source: new ol.source.WMTS(sourceOptions)
+        });
+        layer = applyLayerProperties(layer, options);
+        return layer;
+    };
+    /**
+     * @ngdoc method
      * @name newDynamicGeoJSON
      * @methodOf anol.map.LayersFactory
      * @param {Object} options
