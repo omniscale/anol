@@ -33,6 +33,9 @@ angular.module('anol.featurepopup')
                     var visible = false;
                     var features = [];
                     scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                        if(!layer instanceof ol.layer.Vector) {
+                            return;
+                        }
                         if(angular.isUndefined(scope.featureLayer) || layer.get('layer') === scope.featureLayer) {
                             features.push(feature);
                         }
