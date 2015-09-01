@@ -43,7 +43,7 @@
 
           var wmsColor = LayersFactoryProvider.newSingleTileWMS({
             url: 'http://maps.omniscale.net/wms/demo/default/service?',
-            layer: 'osm',
+            name: 'osm',
             title: 'OSM Omniscale',
             params: {
               'LAYERS': 'osm',
@@ -53,7 +53,7 @@
           });
           var wmsGray = LayersFactoryProvider.newSingleTileWMS({
             url: 'http://maps.omniscale.net/wms/demo/grayscale/service?',
-            layer: 'osm_gray',
+            name: 'osm_gray',
             title: 'OSM Omniscale Grayscale',
             params: {
               'LAYERS': 'osm',

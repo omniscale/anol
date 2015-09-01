@@ -32,6 +32,9 @@ angular.module('anol.map')
 
     // adds common properties to ol.layer
     var applyLayerProperties = function(layer, options) {
+        if(options.name !== undefined) {
+            layer.set('name', options.name);
+        }
         if(options.title !== undefined) {
             layer.set('title', options.title);
         }
@@ -49,9 +52,6 @@ angular.module('anol.map')
         }
         if(options.isBackground !== undefined) {
             layer.set('isBackground', options.isBackground);
-        }
-        if(options.layer !== undefined) {
-            layer.set('layer', options.layer);
         }
         if(options.style !== undefined) {
             layer.setStyle(options.style);
@@ -74,11 +74,11 @@ angular.module('anol.map')
      * - **projection** - {Object} - Layer projection (ol.proj.Projection)
      * - **attributions** - {Array.<string>|string} - Layer attributions
      * - **title** - {string} - Layer title
+     * - **name** - {string} - Unique layer name
      * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **isBackground** - {boolean} - Layer is a background layer
-     * - **layer** - {string} - Layer name
      * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Tile with ol.source.TileImage
@@ -134,7 +134,7 @@ angular.module('anol.map')
      * @param {Object} options
      * - **capabilitiesUrl** - {string} - Url of wmts capabilities document
      * - **projection** - {ol.proj.Projection} - Layer projection
-     * - **layer** - {string} - Layer name
+     * - **name** - {string} - Unique layer name
      *
      * @returns {Object} ol.layer.Tile with ol.source.WMTS
      *
@@ -178,10 +178,10 @@ angular.module('anol.map')
      * - **projection** - {Object} - Layer projection
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
+     * - **name** - {string} - Unique layer name
      * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
-     * - **layer** - {string} - Layer name
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.ServerVector
@@ -259,10 +259,10 @@ angular.module('anol.map')
      * - **url** - {string} - url of geojson file
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
+     * - **name** - {string} - Unique layer name
      * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
-     * - **layer** - {string} - Layer name
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.GeoJSON
@@ -291,10 +291,10 @@ angular.module('anol.map')
      * - **params** - {Object} - wms parameter
      * - **projection** - {Object} - Layer projection
      * - **title** - {string} - Layer title
+     * - **name** - {string} - Unique layer name
      * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
-     * - **layer** - {string} - Layer name
      * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Image with ol.source.ImageWMS
@@ -322,10 +322,10 @@ angular.module('anol.map')
      * @param {Object} options
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
+     * - **name** - {string} - Unique layer name
      * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
-     * - **layer** - {string} - Layer name
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
      *
      * @returns {Object} ol.layer.Vector with ol.source.Vector
