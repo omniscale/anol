@@ -7,15 +7,18 @@ angular.module('anol.permalink')
 .provider('PermalinkService', [function() {
     var _urlCrs;
     var _precision = 100000;
-    var extractMapParams = function(path) {
-        var permalinkRegEx = /.*map=(\d+)\/(\d+\.?\d+?)\/(\d+\.?\d+?)\/(EPSG:\d+)\/?([A-Z]+)?$/g;
-        var mapParams = permalinkRegEx.exec(path);
-        if(mapParams !== null && mapParams.length == 6) {
+    var extractMapParams = function(params) {
+        if(angular.isUndefined(params.map)) {
+            return false;
+        }
+        var layers = angular.isUndefined(params.layers) ? false : params.layers.split(',');
+        var mapParams = params.map.split(',');
+        if(mapParams !== null && mapParams.length == 4) {
             return {
-                'zoom': parseInt(mapParams[1]),
-                'center': [parseFloat(mapParams[2]), parseFloat(mapParams[3])],
-                'crs': mapParams[4],
-                'shortcuts': mapParams[5]
+                'zoom': parseInt(mapParams[0]),
+                'center': [parseFloat(mapParams[1]), parseFloat(mapParams[2])],
+                'crs': mapParams[3],
+                'layers': layers
             };
         }
         return false;
@@ -66,37 +69,74 @@ angular.module('anol.permalink')
             self.zoom = undefined;
             self.lon = undefined;
             self.lat = undefined;
-            self.layersShortcuts = undefined;
             self.map = MapService.getMap();
             self.view = self.map.getView();
+            self.visibleLayerNames = [];
 
             self.urlCrs = urlCrs;
             if (self.urlCrs === undefined) {
                 var projection = self.view.getProjection();
-                self.urlCrs = projection.code_;
+                self.urlCrs = projection.getCode();
             }
             self.map.on('moveend', self.moveendHandler, self);
 
-            $rootScope.$watchCollection(
-                function() {
-                    return LayersService.visibleLayerShortcuts;
-                }, function(newVal, oldVal) {
-                    if(newVal !== undefined) {
-                        self.layersShortcuts = newVal.join('');
-                        self.generatePermalink();
-                    }
+            $rootScope.$watchCollection(function() {
+                return LayersService.layers;
+            }, function(newVal) {
+                if(angular.isDefined(newVal)) {
+                    angular.forEach(newVal, function(layer) {
+                        if(layer instanceof ol.layer.Group) {
+                            angular.forEach(layer.getLayersArray(), function(groupLayer) {
+                                groupLayer.on('change:visible', function(evt) {
+                                    self.handleVisibleChange(evt);
+                                });
+                            });
+                        } else {
+                            layer.on('change:visible', function(evt) {
+                                self.handleVisibleChange(evt);
+                            });
+                        }
+                    });
                 }
-            );
+            });
 
-            var mapParams = extractMapParams($location.path());
+            var params = $location.search();
+            var mapParams = extractMapParams(params);
+
             if(mapParams !== false) {
                 var center = ol.proj.transform(mapParams.center, mapParams.crs, self.view.getProjection());
                 self.view.setCenter(center);
                 self.view.setZoom(mapParams.zoom);
-                if(mapParams.shortcuts !== undefined) {
-                    LayersService.setVisibleByShortcuts(mapParams.shortcuts);
+                if(mapParams.layers !== false) {
+                    self.visibleLayerNames = mapParams.layers;
+                    angular.forEach(LayersService.layers, function(layer) {
+                        if(layer instanceof ol.layer.Group) {
+                            angular.forEach(layer.getLayersArray(), function(groupLayer) {
+                                groupLayer.setVisible(mapParams.layers.indexOf(groupLayer.get('name')) !== -1);
+                            });
+                        } else {
+                            layer.setVisible(mapParams.layers.indexOf(layer.get('name')) !== -1);
+                        }
+                    });
                 }
             }
+        };
+        /**
+         * @private
+         */
+        Permalink.prototype.handleVisibleChange = function(evt) {
+            var self = this;
+            var layer = evt.target;
+            var layerName = layer.get('name');
+            if(angular.isDefined(layerName) && layer.getVisible()) {
+                self.visibleLayerNames.push(layerName);
+            } else {
+                var layerNameIdx = $.inArray(layerName, self.visibleLayerNames);
+                if(layerNameIdx > -1) {
+                    self.visibleLayerNames.splice(layerNameIdx, 1);
+                }
+            }
+            self.generatePermalink();
         };
         /**
          * @private
@@ -130,9 +170,8 @@ angular.module('anol.permalink')
             if(self.zoom === undefined || self.lon === undefined || self.lat === undefined) {
                 return;
             }
-            var urlAddon = 'map=' + [self.zoom, self.lon, self.lat, self.urlCrs, self.layersShortcuts].join('/');
-            $location.path(urlAddon);
-            self.permalink = $location.absUrl();
+            $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
+            $location.search('layers', self.visibleLayerNames.join(','));
         };
         return new Permalink(_urlCrs, _precision);
     }];

@@ -38,9 +38,6 @@ angular.module('anol.map')
         if(options.title !== undefined) {
             layer.set('title', options.title);
         }
-        if(options.shortcut !== undefined) {
-            layer.set('shortcut', options.shortcut);
-        }
         if(options.visible !== undefined) {
             layer.setVisible(options.visible);
         }
@@ -179,7 +176,6 @@ angular.module('anol.map')
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **name** - {string} - Unique layer name
-     * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
@@ -260,7 +256,6 @@ angular.module('anol.map')
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **name** - {string} - Unique layer name
-     * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}
@@ -292,7 +287,6 @@ angular.module('anol.map')
      * - **projection** - {Object} - Layer projection
      * - **title** - {string} - Layer title
      * - **name** - {string} - Unique layer name
-     * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
@@ -323,7 +317,6 @@ angular.module('anol.map')
      * - **style** - {Object} - Layer style
      * - **title** - {string} - Layer title
      * - **name** - {string} - Unique layer name
-     * - **shortcut** - {string} - Layer shortcut
      * - **visible** - {boolean} - Initial layer visibility
      * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
      * - **featureinfo** - {Object} - Options for {@link anol.featurepopup.directive:anolFeaturePopup anolFeaturePopup}

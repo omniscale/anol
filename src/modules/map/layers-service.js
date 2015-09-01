@@ -30,8 +30,6 @@ angular.module('anol.map')
             this.layers = [];
             this.backgroundLayers = [];
             this.overlayLayers = [];
-            this.visibleLayerShortcuts = [];
-            this.shortcutMapping = {};
             this.addLayers(layers);
         };
         /**
@@ -48,20 +46,12 @@ angular.module('anol.map')
         /**
          * private function
          *
-         * prepares short cut mapping,
          * stores layer into background- or overlaylayers list
          * adds event handler to change:visible event
          */
-        Layers.prototype.prepareLayers = function(layers, listener) {
+        Layers.prototype.prepareLayers = function(layers) {
             var self = this;
             angular.forEach(layers, function(layer) {
-                var shortcut = layer.get('shortcut');
-                if(shortcut !== undefined) {
-                    self.shortcutMapping[shortcut] = layer;
-                    if(layer.getVisible()) {
-                        self.visibleLayerShortcuts.push(shortcut);
-                    }
-                }
                 if(layer.get('isBackground')) {
                     self.backgroundLayers.push(layer);
                 } else {
@@ -76,15 +66,12 @@ angular.module('anol.map')
                         groupLayer.set('syncGroupVisibleChangeKey', groupLayer.on('change:visible', function(evt) {
                             self.groupedLayerVisibleChangeHandler(evt, layer);
                         }));
-                        groupLayer.on('change:visible', listener);
                     });
+                    layer.setVisible(visible);
                     layer.set('syncGroupVisibleChangeKey', layer.on('change:visible', function(evt) {
                         self.groupLayerVisibleChangeHandler(evt);
                     }));
-                    layer.setVisible(visible);
-
                 }
-                layer.on('change:visible', listener);
                 // while map is undefined, don't add layers to it
                 // when map is created, all this.layers are added to map
                 // after that, this.map is registered
@@ -94,25 +81,6 @@ angular.module('anol.map')
                     self.map.addLayer(layer);
                 }
             });
-        };
-        /**
-         * private function
-         *
-         * updates shortcut list on change:visible event
-         */
-        Layers.prototype.visibleChangedHandler = function(evt) {
-            var layer = evt.target;
-            var shortcut = layer.get('shortcut');
-            if(shortcut === undefined) {
-                return;
-            }
-            var shortcutIdx = $.inArray(shortcut, this.visibleLayerShortcuts);
-            var visible = layer.getVisible();
-            if(visible && shortcutIdx == -1) {
-                this.visibleLayerShortcuts.push(shortcut);
-            } else if(!visible && shortcutIdx != -1) {
-                this.visibleLayerShortcuts.splice(shortcutIdx, 1);
-            }
         };
         /**
          * private function
@@ -167,11 +135,9 @@ angular.module('anol.map')
          */
         Layers.prototype.addLayer = function(layer) {
             var self = this;
-            this.prepareLayers([layer], function(evt) {
-                self.visibleChangedHandler(evt);
-            });
+            self.prepareLayers([layer]);
 
-            this.layers.push(layer);
+            self.layers.push(layer);
         };
         /**
          * @ngdoc method
@@ -183,36 +149,9 @@ angular.module('anol.map')
          */
         Layers.prototype.addLayers = function(layers) {
             var self = this;
-            this.prepareLayers(layers, function(evt) {
-                self.visibleChangedHandler(evt);
-            });
+            self.prepareLayers(layers);
 
-            this.layers = this.layers.concat(layers);
-        };
-        /**
-         * @ngdoc method
-         * @name setVisibleByShortcuts
-         * @methodOf anol.map.LayersService
-         * @param {string} visibleShortcuts shortcuts of layer which should be visible
-         * @description
-         * Make all layer related to given shortcuts visible
-         */
-        Layers.prototype.setVisibleByShortcuts = function(visibleShortcuts) {
-            var self = this;
-            visibleShortcuts = visibleShortcuts.split('');
-            angular.forEach(visibleShortcuts, function(shortcut) {
-                if(self.shortcutMapping[shortcut] !== undefined) {
-                    self.shortcutMapping[shortcut].setVisible(true);
-                }
-            });
-            var nonVisibleShortcuts = $.grep(self.visibleLayerShortcuts, function(el) {
-                return $.inArray( el, visibleShortcuts ) == -1;
-            });
-            angular.forEach(nonVisibleShortcuts, function(shortcut) {
-                if(self.shortcutMapping[shortcut] !== undefined) {
-                    self.shortcutMapping[shortcut].setVisible(false);
-                }
-            });
+            self.layers = self.layers.concat(layers);
         };
         /**
          * @ngdoc method
