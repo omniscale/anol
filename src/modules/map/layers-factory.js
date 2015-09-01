@@ -131,7 +131,13 @@ angular.module('anol.map')
      * @param {Object} options
      * - **capabilitiesUrl** - {string} - Url of wmts capabilities document
      * - **projection** - {ol.proj.Projection} - Layer projection
+     * - **attributions** - {Array.<string>|string} - Layer attributions
+     * - **title** - {string} - Layer title
      * - **name** - {string} - Unique layer name
+     * - **visible** - {boolean} - Initial layer visibility
+     * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
+     * - **isBackground** - {boolean} - Layer is a background layer
+     * - **featureinfo** - {Object} - Options for {@link anol.featureinfo.directive:anolFeatureInfo anolFeatureInfo}
      *
      * @returns {Object} ol.layer.Tile with ol.source.WMTS
      *
