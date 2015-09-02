@@ -43,6 +43,8 @@ module.exports = function(grunt) {
     ngmin: {
       dist: {
         src: [
+          'src/anol/anol.js',
+          'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
           'src/modules/**/*.js'
@@ -56,6 +58,8 @@ module.exports = function(grunt) {
       },
       dev: {
         src: [
+          'src/anol/anol.js',
+          'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
           'src/modules/**/*.js'
@@ -122,7 +126,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['src/modules/**/*.js', 'src/modules/**/*.html'],
+        files: ['src/anol/**/*.js', 'src/modules/**/*.js', 'src/modules/**/*.html'],
         tasks: ['ngtemplates', 'concat:dev'],
         options: {
           spawn: false,
