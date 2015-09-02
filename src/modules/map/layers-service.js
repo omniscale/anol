@@ -27,7 +27,7 @@ angular.module('anol.map')
          */
         var Layers = function(layers) {
             this.map = undefined;
-            this.layers = [];
+            this.olLayers = [];
             this.backgroundLayers = [];
             this.overlayLayers = [];
             this.addLayers(layers);
@@ -49,81 +49,31 @@ angular.module('anol.map')
          * stores layer into background- or overlaylayers list
          * adds event handler to change:visible event
          */
-        Layers.prototype.prepareLayers = function(layers) {
+        Layers.prototype.prepareLayer = function(layer) {
             var self = this;
-            angular.forEach(layers, function(layer) {
-                if(layer.get('isBackground')) {
-                    self.backgroundLayers.push(layer);
-                } else {
-                    self.overlayLayers.push(layer);
-                }
-                if(layer instanceof ol.layer.Group) {
-                    var visible = false;
-                    angular.forEach(layer.getLayersArray(), function(groupLayer) {
-                        if(groupLayer.getVisible() === true) {
-                            visible = true;
-                        }
-                        groupLayer.set('syncGroupVisibleChangeKey', groupLayer.on('change:visible', function(evt) {
-                            self.groupedLayerVisibleChangeHandler(evt, layer);
-                        }));
-                    });
-                    layer.setVisible(visible);
-                    layer.set('syncGroupVisibleChangeKey', layer.on('change:visible', function(evt) {
-                        self.groupLayerVisibleChangeHandler(evt);
-                    }));
-                }
-                // while map is undefined, don't add layers to it
-                // when map is created, all this.layers are added to map
-                // after that, this.map is registered
-                // so, when map is defined, added layers are not in map
-                // and must be added
-                if(self.map !== undefined) {
-                    self.map.addLayer(layer);
-                }
-            });
-        };
-        /**
-         * private function
-         *
-         * updates child layers visible
-         */
-        Layers.prototype.groupLayerVisibleChangeHandler = function(evt)  {
-            var self = this;
-            var group = evt.target;
-            angular.forEach(group.getLayersArray(), function(layer) {
-                layer.unByKey(layer.get('syncGroupVisibleChangeKey'));
-                layer.setVisible(group.getVisible());
-                layer.set('syncGroupVisibleChangeKey', layer.on('change:visible', function(evt) {
-                    self.groupedLayerVisibleChangeHandler(evt, group);
-                }));
-            });
-        };
-        /**
-         * private function
-         *
-         * updates parent layer visible
-         */
-        Layers.prototype.groupedLayerVisibleChangeHandler = function(evt, group)  {
-            var self = this;
-            var layer = evt.target;
-            var visible = layer.getVisible();
-            var groupVisible = group.getVisible();
 
-            if(visible && !groupVisible) {
-                groupVisible = true;
-            } else if(!visible && groupVisible) {
-                groupVisible = false;
-                angular.forEach(group.getLayersArray(), function(groupLayer) {
-                    if(groupLayer.getVisible()) {
-                        groupVisible = true;
-                    }
-                });
+            if(layer.isBackground) {
+                self.backgroundLayers.push(layer);
+            } else {
+                self.overlayLayers.push(layer);
             }
-            group.unByKey(group.get('syncGroupVisibleChangeKey'));
-            group.setVisible(groupVisible);
-            group.set('syncGroupVisibleChangeKey', group.on('change:visible', function(evt) {
-                self.groupLayerVisibleChangeHandler(evt);
-            }));
+
+            // while map is undefined, don't add layers to it
+            // when map is created, all this.layers are added to map
+            // after that, this.map is registered
+            // so, when map is defined, added layers are not in map
+            // and must be added
+            if(self.map !== undefined) {
+                var olLayers = [];
+                if(layer instanceof anol.layer.Group) {
+                    angular.forEach(layer.layers, function(_layer) {
+                        olLayers.push(_layer.olLayer);
+                    });
+                } else {
+                    olLayers.push(layer.olLayer);
+                }
+                self.map.addLayers(olLayers);
+            }
         };
         /**
          * @ngdoc method
@@ -133,11 +83,16 @@ angular.module('anol.map')
          * @description
          * Adds a single layer
          */
-        Layers.prototype.addLayer = function(layer) {
+        Layers.prototype.addLayer = function(_layer) {
             var self = this;
-            self.prepareLayers([layer]);
-
-            self.layers.push(layer);
+            var layers = [_layer];
+            self.prepareLayer(_layer);
+            if(_layer instanceof anol.layer.Group) {
+                layers = _layer.layers;
+            }
+            angular.forEach(layers, function(layer) {
+                self.olLayers.push(layer.olLayer);
+            });
         };
         /**
          * @ngdoc method
@@ -149,9 +104,9 @@ angular.module('anol.map')
          */
         Layers.prototype.addLayers = function(layers) {
             var self = this;
-            self.prepareLayers(layers);
-
-            self.layers = self.layers.concat(layers);
+            angular.forEach(layers, function(layer) {
+                self.addLayer(layer);
+            });
         };
         /**
          * @ngdoc method
@@ -169,26 +124,6 @@ angular.module('anol.map')
                 }
             });
             return backgroundLayer;
-        };
-        /**
-         * @ngdoc method
-         * @name layersByProperty
-         * @methodOf anol.map.LayersService
-         * @param {string} key property name
-         * @param {string} value property value
-         * @returns {Array.<Object>} all layer with key = value
-         * @description
-         * Returns all layers with key matching value
-         */
-        Layers.prototype.layersByProperty = function(key, value) {
-            var self = this;
-            var layers = [];
-            angular.forEach(self.layers, function(layer) {
-                if(layer.get(key) === value) {
-                    layers.push(layer);
-                }
-            });
-            return layers;
         };
         return new Layers(_layers);
     }];

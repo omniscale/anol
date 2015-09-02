@@ -334,6 +334,7 @@ angular.module('anol.map')
      * FeatureLayer is a ol3 vector layer with an ol3 vector source
      */
     this.newFeatureLayer = function(options) {
+        options = options || {};
         var sourceOptions = createBasicSourceOptions(options);
         var layer = new ol.layer.Vector({
             source: new ol.source.Vector(sourceOptions)

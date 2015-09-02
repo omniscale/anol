@@ -38,12 +38,14 @@
             zoom: 18
           }));
 
-          var wms = LayersFactoryProvider.newSingleTileWMS({
-            url: 'http://maps.omniscale.net/wms/demo/default/service?',
-            params: {
-              'LAYERS': 'osm',
-              'SRS': 'EPSG:3857'
-            }
+          var wms = new anol.layer.Layer({
+            olLayer: LayersFactoryProvider.newSingleTileWMS({
+              url: 'http://maps.omniscale.net/wms/demo/default/service?',
+              params: {
+                'LAYERS': 'osm',
+                'SRS': 'EPSG:3857'
+              }
+            })
           });
           LayersServiceProvider.setLayers([wms]);
       }]);

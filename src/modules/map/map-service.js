@@ -70,7 +70,7 @@ angular.module('anol.map')
         MapService.prototype.getMap = function() {
             if(angular.isUndefined(this.map)) {
                 this.map = buildMapConfig(
-                    LayersService.layers,
+                    LayersService.olLayers,
                     ControlsService.controls,
                     InteractionsService.interactions
                 );
