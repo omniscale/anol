@@ -78,27 +78,6 @@ angular.module('anol.permalink')
                 var projection = self.view.getProjection();
                 self.urlCrs = projection.getCode();
             }
-            self.map.on('moveend', self.moveendHandler, self);
-
-            $rootScope.$watchCollection(function() {
-                return LayersService.layers;
-            }, function(newVal) {
-                if(angular.isDefined(newVal)) {
-                    angular.forEach(newVal, function(layer) {
-                        if(layer instanceof ol.layer.Group) {
-                            angular.forEach(layer.getLayersArray(), function(groupLayer) {
-                                groupLayer.on('change:visible', function(evt) {
-                                    self.handleVisibleChange(evt);
-                                });
-                            });
-                        } else {
-                            layer.on('change:visible', function(evt) {
-                                self.handleVisibleChange(evt);
-                            });
-                        }
-                    });
-                }
-            });
 
             var params = $location.search();
             var mapParams = extractMapParams(params);
@@ -110,16 +89,50 @@ angular.module('anol.permalink')
                 if(mapParams.layers !== false) {
                     self.visibleLayerNames = mapParams.layers;
                     angular.forEach(LayersService.layers, function(layer) {
-                        if(layer instanceof ol.layer.Group) {
-                            angular.forEach(layer.getLayersArray(), function(groupLayer) {
-                                groupLayer.setVisible(mapParams.layers.indexOf(groupLayer.get('name')) !== -1);
+                        if(layer instanceof anol.layer.Group) {
+                            angular.forEach(layer.layers, function(groupLayer) {
+                                groupLayer.setVisible(mapParams.layers.indexOf(groupLayer.name) !== -1);
                             });
                         } else {
-                            layer.setVisible(mapParams.layers.indexOf(layer.get('name')) !== -1);
+                            layer.setVisible(mapParams.layers.indexOf(layer.name) !== -1);
                         }
                     });
                 }
+            } else {
+                angular.forEach(LayersService.layers, function(_layer) {
+                    var layers = [_layer];
+                    if(_layer instanceof anol.layer.Group) {
+                        layers = _layer.layers;
+                    }
+                    angular.forEach(layers, function(layer) {
+                        if(layer.getVisible()) {
+                            self.visibleLayerNames.push(layer.name);
+                        }
+                    });
+                });
             }
+
+            self.map.on('moveend', self.moveendHandler, self);
+
+            $rootScope.$watchCollection(function() {
+                return LayersService.layers;
+            }, function(newVal) {
+                if(angular.isDefined(newVal)) {
+                    angular.forEach(newVal, function(layer) {
+                        if(layer instanceof anol.layer.Group) {
+                            angular.forEach(layer.layers, function(groupLayer) {
+                                groupLayer.olLayer.on('change:visible', function(evt) {
+                                    self.handleVisibleChange(evt);
+                                });
+                            });
+                        } else {
+                            layer.olLayer.on('change:visible', function(evt) {
+                                self.handleVisibleChange(evt);
+                            });
+                        }
+                    });
+                }
+            });
         };
         /**
          * @private
@@ -127,7 +140,8 @@ angular.module('anol.permalink')
         Permalink.prototype.handleVisibleChange = function(evt) {
             var self = this;
             var layer = evt.target;
-            var layerName = layer.get('name');
+            var layerName = layer.get('anolLayer').name;
+            console.log('visiblity changed for', layerName, layer.getVisible())
             if(angular.isDefined(layerName) && layer.getVisible()) {
                 self.visibleLayerNames.push(layerName);
             } else {
