@@ -53,24 +53,23 @@ angular.module('anol.featureinfo')
                     element.css('display', 'none');
                     popupContent.empty();
 
-                    angular.forEach(LayersService.layers, function(layer) {
+                    angular.forEach(LayersService.getLayers(), function(layer) {
                         var layers = [layer];
-                        if(layer instanceof ol.layer.Group) {
-                            layers = layer.getLayersArray();
+                        if(layer instanceof anol.layer.Group) {
+                            layers = layer.layers;
                         }
                         angular.forEach(layers, function(layer) {
                             if(!layer.getVisible()) {
                                 return;
                             }
-                            if(layer instanceof ol.layer.Vector) {
+                            if(layer.olLayer instanceof ol.layer.Vector) {
                                 return;
                             }
-                            var featureInfo = layer.get('featureinfo');
-                            if(angular.isUndefined(featureInfo)) {
+                            if(!layer.featureinfo) {
                                 return;
                             }
 
-                            var url = layer.getSource().getGetFeatureInfoUrl(
+                            var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
                                 coordinate, viewResolution, view.getProjection(),
                                 {'INFO_FORMAT': 'text/html'}
                             );
@@ -78,10 +77,10 @@ angular.module('anol.featureinfo')
                                 $http.get(url).success(function(response) {
                                     if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
                                         var iframe;
-                                        if(featureInfo.target !== '_blank') {
+                                        if(layer.featureinfo.target !== '_blank') {
                                             iframe = $('<iframe seamless src="' + url + '"></iframe>');
                                         }
-                                        switch(featureInfo.target) {
+                                        switch(layer.featureinfo.target) {
                                             case '_blank':
                                                 $window.open(url, '_blank');
                                             break;
@@ -93,7 +92,7 @@ angular.module('anol.featureinfo')
                                                 }
                                             break;
                                             default:
-                                                var target = $(featureInfo.target);
+                                                var target = $(layer.featureinfo.target);
                                                 if(divTargetCleared === false) {
                                                     target.empty();
                                                     divTargetCleared = true;
