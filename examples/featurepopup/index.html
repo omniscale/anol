@@ -22,7 +22,7 @@
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <!-- popup -->
-      <div anol-feature-popup feature-layer="featureLayer"></div>
+      <div anol-feature-popup></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -46,13 +46,17 @@
           feature.set('name', 'Feature');
           feature.set('description', 'I am a feature');
 
-          var featureLayer = LayersFactoryProvider.newFeatureLayer({
-            layer: 'featureLayer',
+          var olFeatureLayer = LayersFactoryProvider.newFeatureLayer();
+          olFeatureLayer.getSource().addFeature(feature);
+
+          var featureLayer = new anol.layer.Layer({
+            name: 'featureLayer',
             featureinfo: {
               properties: ['name', 'description']
-            }
+            },
+            olLayer: olFeatureLayer
           });
-          featureLayer.getSource().addFeature(feature);
+
           LayersServiceProvider.setLayers([featureLayer]);
       }]);
     </script>

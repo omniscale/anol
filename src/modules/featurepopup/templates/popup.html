@@ -1,7 +1,7 @@
 <div ng-show="popupVisible">
     <div class="alert alert-info">
-        <div ng-repeat="feature in features">
-            <div ng-repeat="key in feature.get('displayProperties')">{{ key }}: {{ feature.get(key) }}</div>
+        <div ng-repeat="properties in propertiesCollection">
+            <div ng-repeat="(key, value) in properties">{{ key }}: {{ value }}</div>
         </div>
     </div>
 </div>

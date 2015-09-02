@@ -7,21 +7,18 @@ angular.module('anol.featurepopup')
  * @requires $timeout
  * @requires anol.map.MapService
  *
- * @param {String} featureLayer Layer to bind popup to
  * @param {Float} extentWidth Width of square bounding box around clicked point
  *
  * @description
- * Shows feature properties for given 'featureLayer' or all 'ol.layer.Vector' layers if no 'featureLayer' is defined.
- * Layer must have a 'featureinfo' property.
+ * Shows feature properties for layers with 'featureinfo' property.
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **properties** {Array.<String>} - Property names to display
  */
-.directive('anolFeaturePopup', ['$timeout', 'MapService', function($timeout, MapService) {
+.directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', function($timeout, MapService, LayersService) {
     return {
         restrict: 'A',
         scope: {
-            'featureLayer': '@featureLayer',
             'extentWidth': '='
         },
         replace: true,
@@ -29,23 +26,10 @@ angular.module('anol.featurepopup')
         link: {
             pre: function(scope, element, attrs) {
                 scope.map = MapService.getMap();
-                scope.feature = undefined;
+                scope.propertiesCollection = [];
                 scope.popupVisible = false;
                 scope.overlayOptions = {
                     element: element[0]
-                };
-
-                var isRequestLayer = function(layer) {
-                    if(!layer instanceof ol.layer.Vector) {
-                        return false;
-                    }
-                    if(angular.isDefined(scope.featureLayer) && layer.get('layer') !== scope.featureLayer) {
-                        return false;
-                    }
-                    if(angular.isUndefined(layer.get('featureinfo'))) {
-                        return false;
-                    }
-                    return true;
                 };
 
                 var calculateExtent = function(center) {
@@ -54,41 +38,74 @@ angular.module('anol.featurepopup')
                     return [center[0] - width, center[1] - width, center[0] + width, center[1] + width];
                 };
 
-                var featuresByExtent = function(evt) {
-                    var extent = calculateExtent(evt.coordinate);
-                    var features = [];
-                    angular.forEach(scope.map.getLayers().getArray(), function(layer) {
-                        if(isRequestLayer(layer)) {
-                            angular.forEach(layer.getSource().getFeaturesInExtent(extent), function(feature) {
-                                feature.set('displayProperties', layer.get('featureinfo').properties);
-                                features.push(feature);
-                            });
+                var extractProperties = function(features, displayProperties) {
+                    var propertiesCollection = [];
+                    angular.forEach(features, function(feature) {
+                        var properties = {};
+                        angular.forEach(feature.getProperties(), function(value, key) {
+
+                            if($.inArray(key, displayProperties) > -1) {
+                                properties[key] = value;
+                            }
+                        });
+                        if(!angular.equals(properties, {})) {
+                            propertiesCollection.push(properties);
                         }
                     });
-                    return features;
+                    return propertiesCollection;
                 };
 
-                var featuresAtPixel = function(evt) {
-                    var features = [];
+                var propertiesByExtent = function(evt) {
+                    var extent = calculateExtent(evt.coordinate);
+                    var propertiesCollection = [];
+                    angular.forEach(LayersService.getLayers(), function(layer) {
+                        var anolLayers = [layer];
+                        if(layer instanceof anol.layer.Group) {
+                            anolLayers = layer.layers;
+                        }
+                        angular.forEach(anolLayers, function(anolLayer) {
+                            if(!anolLayer.olLayer instanceof ol.layer.Vector) {
+                                return;
+                            }
+                            if(!anolLayer.featureinfo) {
+                                return;
+                            }
+                            propertiesCollection = propertiesCollection.concat(
+                                extractProperties(
+                                    anolLayer.olLayer.getSource().getFeaturesInExtent(extent),
+                                    anolLayer.featureinfo.properties
+                                )
+                            );
+                        });
+                    });
+                    return propertiesCollection;
+                };
+
+                var propertiesAtPixel = function(evt) {
+                    var propertiesCollection = [];
                     scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
                         if(!layer instanceof ol.layer.Vector) {
                             return;
                         }
-                        if(isRequestLayer(layer)) {
-                            feature.set('displayProperties', layer.get('featureinfo').properties);
-                            features.push(feature);
+                        if(!layer.get('anolLayer') || !layer.get('anolLayer').featureinfo) {
+                            return;
                         }
+                        propertiesCollection = propertiesCollection.concat(
+                            extractProperties(
+                                [feature],
+                                layer.get('anolLayer').featureinfo.properties
+                            )
+                        );
                     });
-                    return features;
+                    return propertiesCollection;
                 };
-
-                var getFeatures = angular.isDefined(scope.extentWidth) ? featuresByExtent : featuresAtPixel;
+                var getProperties = angular.isDefined(scope.extentWidth) ? propertiesByExtent : propertiesAtPixel;
 
                 scope.handleClick = function(evt) {
                     var visible = false;
-                    var features = getFeatures(evt);
+                    var propertiesCollection = getProperties(evt);
 
-                    if(features.length > 0) {
+                    if(propertiesCollection.length > 0) {
                         scope.popup.setPosition(evt.coordinate);
                         visible = true;
                         $timeout(function() {
@@ -98,7 +115,7 @@ angular.module('anol.featurepopup')
                     }
 
                     scope.$apply(function() {
-                        scope.features = features;
+                        scope.propertiesCollection = propertiesCollection;
                         scope.popupVisible = visible;
                     });
                 };
