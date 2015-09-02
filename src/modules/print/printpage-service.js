@@ -81,7 +81,7 @@ angular.module('anol.print')
         var _printLayer = LayersFactory.newFeatureLayer(layerOptions);
 
         var _printSource = _printLayer.getSource();
-        LayersService.addLayer(_printLayer);
+        LayersService.addLayer(new anol.layer.Layer(_printLayer));
         /**
          * @ngdoc service
          * @name anol.print.PrintPageService
