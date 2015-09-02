@@ -118,6 +118,9 @@ angular.module('anol.map')
      * @description
      * Creates a WMTS layer from WMTSCapabilities
      */
+     // TODO with local mapproxy a "extent tile range must not exceed tilegrid width and height" assertion failed
+     // see http://permalink.gmane.org/gmane.comp.gis.openlayers.devel.ol3/8376
+     // find out, if local mapproxy is misconfigured
     this.newWMTS = function(options) {
         var sourceOptions = createBasicSourceOptions(options);
 
@@ -257,6 +260,7 @@ angular.module('anol.map')
      * - **url** - {string} - source url
      * - **params** - {Object} - wms parameter
      * - **projection** - {Object} - Layer projection
+     * - **ratio** - {number} - Ratio
      * - **visible** - {boolean} - Initial layer visibility
      *
      * @returns {Object} ol.layer.Image with ol.source.ImageWMS
@@ -268,6 +272,7 @@ angular.module('anol.map')
         var sourceOptions = createBasicSourceOptions(options);
         sourceOptions.url = options.url;
         sourceOptions.params = options.params;
+        sourceOptions.ratio = options.ratio;
         if(options.projection !== undefined) {
             sourceOptions.projection = options.projection;
         }
