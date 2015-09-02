@@ -112,13 +112,14 @@ angular.module('anol.map')
          * @ngdoc method
          * @name backgroundLayer
          * @methodOf anol.map.LayersService
-         * @returns {Array.<Object>} backgroundLayers all background layers
+         * @returns {anol.layer.Layer} backgroundLayer visible background layer
          * @description
-         * Returns all background layers
+         * Returns the visible background layer
          */
         Layers.prototype.backgroundLayer = function() {
+            var self = this;
             var backgroundLayer;
-            angular.forEach(this.backgroundLayers, function(layer) {
+            angular.forEach(self.backgroundLayers, function(layer) {
                 if(layer.getVisible() === true) {
                     backgroundLayer = layer;
                 }
