@@ -7,7 +7,7 @@
         <div ng-repeat="layer in backgroundLayers">
              <!-- used $parent to get out of ng-repeat scope -->
             <input type="radio" ng-model="$parent.backgroundLayer" ng-value="layer">
-            {{ layer.get('title') }}
+            {{ layer.title }}
         </div>
     </div>
     <div ng-show="overlayLayers.length > 0">
@@ -17,14 +17,14 @@
             <div ng-if="isGroup(layer)">
                 <span class="glyphicon" ng-class="{'glyphicon-plus': layer.collapsed, 'glyphicon-minus': !layer.collapsed}" ng-click="layer.collapsed=!layer.collapsed"></span>
                 <span class="glyphicon" ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}" ng-click="layer.setVisible(!layer.getVisible())"></span>
-                {{ layer.get('title') }}
-                <div class="group-layers-container" ng-repeat="groupLayer in layer.getLayersArray()" ng-show="!layer.collapsed">
+                {{ layer.title }}
+                <div class="group-layers-container" ng-repeat="groupLayer in layer.layers" ng-show="!layer.collapsed">
                     <span class="glyphicon"
                           ng-class="{'glyphicon-eye-open': groupLayer.getVisible(), 'glyphicon-eye-close': !groupLayer.getVisible()}"
                           ng-click="groupLayer.setVisible(!groupLayer.getVisible())">
                     </span>
-                    {{ groupLayer.get('title') }}
-                    <span ng-if="groupLayer.get('isBackground') === true" class="glyphicon glyphicon-paperclip"></span>
+                    {{ groupLayer.title }}
+                    <span ng-if="groupLayer.isBackground === true" class="glyphicon glyphicon-paperclip"></span>
                 </div>
             </div>
             <div ng-if="!isGroup(layer)">
@@ -32,8 +32,8 @@
                       ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}"
                       ng-click="layer.setVisible(!layer.getVisible())">
                 </span>
-                {{ layer.get('title') }}
-                <span ng-if="layer.get('isBackground') === true" class="glyphicon glyphicon-paperclip"></span>
+                {{ layer.title }}
+                <span ng-if="layer.isBackground === true" class="glyphicon glyphicon-paperclip"></span>
             </div>
         </div>
     </div>

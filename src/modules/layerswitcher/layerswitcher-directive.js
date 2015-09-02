@@ -30,7 +30,7 @@ angular.module('anol.layerswitcher')
                 var overlayLayers = [];
 
                 angular.forEach(LayersService.overlayLayers, function(layer) {
-                    if(layer.get('displayInLayerswitcher') !== false) {
+                    if(layer.displayInLayerswitcher !== false) {
                         overlayLayers.push(layer);
                     }
                 });
@@ -67,7 +67,8 @@ angular.module('anol.layerswitcher')
         },
         controller: function($scope, $element, $attrs) {
             $scope.isGroup = function(toTest) {
-                return toTest instanceof ol.layer.Group;
+                var result = toTest instanceof anol.layer.Group;
+                return result;
             };
         }
     };
