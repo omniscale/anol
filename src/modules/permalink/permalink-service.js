@@ -141,7 +141,6 @@ angular.module('anol.permalink')
             var self = this;
             var layer = evt.target;
             var layerName = layer.get('anolLayer').name;
-            console.log('visiblity changed for', layerName, layer.getVisible())
             if(angular.isDefined(layerName) && layer.getVisible()) {
                 self.visibleLayerNames.push(layerName);
             } else {
