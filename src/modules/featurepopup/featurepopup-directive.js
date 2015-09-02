@@ -58,7 +58,7 @@ angular.module('anol.featurepopup')
                 var propertiesByExtent = function(evt) {
                     var extent = calculateExtent(evt.coordinate);
                     var propertiesCollection = [];
-                    angular.forEach(LayersService.getLayers(), function(layer) {
+                    angular.forEach(LayersService.layers, function(layer) {
                         var anolLayers = [layer];
                         if(layer instanceof anol.layer.Group) {
                             anolLayers = layer.layers;

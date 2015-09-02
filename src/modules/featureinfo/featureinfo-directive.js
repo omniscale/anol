@@ -53,7 +53,7 @@ angular.module('anol.featureinfo')
                     element.css('display', 'none');
                     popupContent.empty();
 
-                    angular.forEach(LayersService.getLayers(), function(layer) {
+                    angular.forEach(LayersService.layers, function(layer) {
                         var layers = [layer];
                         if(layer instanceof anol.layer.Group) {
                             layers = layer.layers;

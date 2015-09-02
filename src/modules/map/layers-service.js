@@ -27,6 +27,7 @@ angular.module('anol.map')
          */
         var Layers = function(layers) {
             this.map = undefined;
+            this.layers = [];
             this.olLayers = [];
             this.backgroundLayers = [];
             this.overlayLayers = [];
@@ -100,6 +101,7 @@ angular.module('anol.map')
             var self = this;
             var layers = [_layer];
             self.prepareLayer(_layer);
+            self.layers.push(_layer);
             if(_layer instanceof anol.layer.Group) {
                 layers = _layer.layers;
             }
@@ -138,18 +140,6 @@ angular.module('anol.map')
                 }
             });
             return backgroundLayer;
-        };
-        /**
-         * @ngdoc method
-         * @name getLayers
-         * @methodOf anol.map.LayersService
-         * @returns {Array.<anol.layer.Layers|anol.layer.Group>} layers
-         * @description
-         * Returns all layers
-         */
-        Layers.prototype.getLayers = function() {
-            var self = this;
-            return self.backgroundLayers.concat(self.overlayLayers);
         };
         return new Layers(_layers);
     }];
