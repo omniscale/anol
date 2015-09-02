@@ -47,14 +47,7 @@ angular.module('anol.layerswitcher')
                 }
             },
             post: function(scope, element, attrs) {
-                angular.forEach(scope.backgroundLayers, function(layer) {
-                    if(layer.getVisible() === true && scope.backgroundLayer === undefined) {
-                        scope.backgroundLayer = layer;
-                        scope.backgroundLayer.setVisible(false);
-                    } else {
-                        layer.setVisible(false);
-                    }
-                });
+                scope.backgroundLayer = LayersService.activeBackgroundLayer();
                 scope.$watch('backgroundLayer', function(newVal, oldVal) {
                     if(angular.isDefined(oldVal)) {
                         oldVal.setVisible(false);
