@@ -31,21 +31,27 @@
 
     <script type="text/javascript">
       angular.module('example', ['anol', 'anol.map'])
-      .config(['MapServiceProvider', 'LayersFactoryProvider', 'LayersServiceProvider',
-        function(MapServiceProvider, LayersFactoryProvider, LayersServiceProvider) {
+      .config(['MapServiceProvider', 'LayersServiceProvider',
+        function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [914764, 7011016],
             zoom: 18
           }));
 
-          var wms = new anol.layer.Layer({
-            olLayer: LayersFactoryProvider.newSingleTileWMS({
-              url: 'http://maps.omniscale.net/wms/demo/default/service?',
-              params: {
-                'LAYERS': 'osm',
-                'SRS': 'EPSG:3857'
+          var wms = new anol.layer.SingleTileWMS({
+            name: 'foo',
+            title: 'Bar',
+            olLayer: {
+              visible: false,
+              source: {
+                url: 'http://maps.omniscale.net/wms/demo/default/service?',
+                params: {
+                  'LAYERS': 'osm',
+                  'SRS': 'EPSG:3857'
+                },
+                attribution: 'Hallo Welt'
               }
-            })
+            }
           });
           LayersServiceProvider.setLayers([wms]);
       }]);

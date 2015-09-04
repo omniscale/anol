@@ -34,91 +34,99 @@
 
     <script type="text/javascript">
       angular.module('example', ['anol', 'anol.map', 'anol.layerswitcher'])
-      .config(['MapServiceProvider', 'LayersFactoryProvider', 'LayersServiceProvider',
-        function(MapServiceProvider, LayersFactoryProvider, LayersServiceProvider) {
+      .config(['MapServiceProvider', 'LayersServiceProvider',
+        function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [914764, 7011016],
             zoom: 18
           }));
 
-          var wmsColor = new anol.layer.Layer({
+          var wmsColor = new anol.layer.SingleTileWMS({
             name: 'osm',
             title: 'OSM Omniscale',
             isBackground: true,
-            olLayer: LayersFactoryProvider.newSingleTileWMS({
-              url: 'http://maps.omniscale.net/wms/demo/default/service?',
-              params: {
-                'LAYERS': 'osm',
-                'SRS': 'EPSG:3857'
+            olLayer: {
+              source: {
+                url: 'http://maps.omniscale.net/wms/demo/default/service?',
+                params: {
+                  'LAYERS': 'osm',
+                  'SRS': 'EPSG:3857'
+                }
               }
-            })
+            }
           });
 
-
-          var wmsGray = new anol.layer.Layer({
+          var wmsGray = new anol.layer.SingleTileWMS({
             name: 'osm_gray',
             title: 'OSM Omniscale Grayscale',
             isBackground: true,
-            olLayer: LayersFactoryProvider.newSingleTileWMS({
-              url: 'http://maps.omniscale.net/wms/demo/grayscale/service?',
-              params: {
-                'LAYERS': 'osm',
-                'SRS': 'EPSG:3857'
-              },
-            })
+            olLayer: {
+              source: {
+                url: 'http://maps.omniscale.net/wms/demo/grayscale/service?',
+                params: {
+                  'LAYERS': 'osm',
+                  'SRS': 'EPSG:3857'
+                }
+              }
+            }
           });
 
-          var point = new ol.Feature();
-          point.setGeometry(new ol.geom.Point(
-            [914764 + -10, 7011016 + -10]
-          ));
+          var point = new ol.Feature({
+            geometry: new ol.geom.Point(
+              [914764 + -10, 7011016 + -10]
+            )
+          });
 
-          var line = new ol.Feature();
-          line.setGeometry(new ol.geom.LineString([
-            [914764 + 0, 7011016 + 0],
-            [914764 + 50, 7011016 + 50]
-          ]));
+          var line = new ol.Feature({
+            geometry: new ol.geom.LineString([
+              [914764 + 0, 7011016 + 0],
+              [914764 + 50, 7011016 + 50]
+            ])
+          });
 
-          var polygon = new ol.Feature();
-          polygon.setGeometry(new ol.geom.Polygon([[
-            [914764 + 10, 7011016 + -20],
-            [914764 + 10, 7011016 + 0],
-            [914764 + 30, 7011016 + 0],
-            [914764 + 30, 7011016 + -20],
-            [914764 + 10, 7011016 + -20]
-          ]]));
-
-          var olPointLayer = LayersFactoryProvider.newFeatureLayer();
-          olPointLayer.getSource().addFeature(point);
-
-          var olLineLayer = LayersFactoryProvider.newFeatureLayer();
-          olLineLayer.getSource().addFeature(line);
-
-          var olPolygonLayer = LayersFactoryProvider.newFeatureLayer();
-          olPolygonLayer.getSource().addFeature(polygon);
+          var polygon = new ol.Feature({
+            geometry: new ol.geom.Polygon([[
+              [914764 + 10, 7011016 + -20],
+              [914764 + 10, 7011016 + 0],
+              [914764 + 30, 7011016 + 0],
+              [914764 + 30, 7011016 + -20],
+              [914764 + 10, 7011016 + -20]
+            ]])
+          });
 
           var group = new anol.layer.Group({
             name: 'features',
             title: 'Features',
             layers: [
-              new anol.layer.Layer({
+              new anol.layer.Feature({
                 name: 'pointLayer',
                 title: 'Point',
-                olLayer: olPointLayer
+                olLayer: {
+                  source: {
+                    features: [point]
+                  }
+                }
               }),
-              new anol.layer.Layer({
+              new anol.layer.Feature({
                 name: 'lineLayer',
                 title: 'Line',
-                olLayer: olLineLayer
+                olLayer: {
+                  source: {
+                    features: [line]
+                  }
+                }
               }),
-              new anol.layer.Layer({
+              new anol.layer.Feature({
                 name: 'polygonLayer',
                 title: 'Polygon',
-                olLayer: olPolygonLayer
+                olLayer: {
+                  source: {
+                    features: [polygon]
+                  }
+                }
               })
             ]
           });
-
 
           LayersServiceProvider.setLayers([wmsColor, wmsGray, group]);
       }]);

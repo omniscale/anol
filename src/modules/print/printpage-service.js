@@ -55,7 +55,7 @@ angular.module('anol.print')
         _style = style;
     };
 
-    this.$get = ['$rootScope', 'MapService', 'LayersService', 'LayersFactory', 'InteractionsService', function($rootScope, MapService, LayersService, LayersFactory, InteractionsService) {
+    this.$get = ['$rootScope', 'MapService', 'LayersService', 'InteractionsService', function($rootScope, MapService, LayersService, InteractionsService) {
         var _modify;
         var _printArea;
         var _dragFeatures = {
@@ -71,17 +71,20 @@ angular.module('anol.print')
         };
         var _modifyFeatures = new ol.Collection();
 
-        var layerOptions = {
-            'title': 'PrintLayer',
-            'displayInLayerswitcher': false
-        };
         if(_style) {
             layerOptions.style = _style;
         }
-        var _printLayer = LayersFactory.newFeatureLayer(layerOptions);
+        var _printSource = new ol.source.Vector();
+        var _printLayer = new ol.layer.Vector({
+            source: _printSource
+        });
 
-        var _printSource = _printLayer.getSource();
-        LayersService.addLayer(new anol.layer.Layer(_printLayer));
+        var layerOptions = {
+            title: 'PrintLayer',
+            displayInLayerswitcher: false,
+            olLayer: _printLayer
+        };
+        LayersService.addLayer(new anol.layer.Layer(layerOptions));
         /**
          * @ngdoc service
          * @name anol.print.PrintPageService
@@ -89,7 +92,6 @@ angular.module('anol.print')
          * @requires $rootScope
          * @requires MapService
          * @requires LayersService
-         * @requires LayersFactory
          * @requires InteractionsService
          *
          * @description

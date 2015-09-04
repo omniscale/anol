@@ -34,27 +34,29 @@
 
     <script type="text/javascript">
       angular.module('example', ['anol', 'anol.map', 'anol.featurepopup'])
-      .config(['MapServiceProvider', 'LayersFactoryProvider', 'LayersServiceProvider',
-        function(MapServiceProvider, LayersFactoryProvider, LayersServiceProvider) {
+      .config(['MapServiceProvider', 'LayersServiceProvider',
+        function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [0, 0],
             zoom: 6
           }));
 
-          var feature = new ol.Feature();
-          feature.setGeometry(new ol.geom.Point([0, 0]));
-          feature.set('name', 'Feature');
-          feature.set('description', 'I am a feature');
+          var feature = new ol.Feature({
+            geometry: new ol.geom.Point([0, 0]),
+            name: 'Feature',
+            description: 'I am a feature'
+          });
 
-          var olFeatureLayer = LayersFactoryProvider.newFeatureLayer();
-          olFeatureLayer.getSource().addFeature(feature);
-
-          var featureLayer = new anol.layer.Layer({
+          var featureLayer = new anol.layer.Feature({
             name: 'featureLayer',
             featureinfo: {
               properties: ['name', 'description']
             },
-            olLayer: olFeatureLayer
+            olLayer: {
+              source: {
+                features: [feature]
+              }
+            }
           });
 
           LayersServiceProvider.setLayers([featureLayer]);
