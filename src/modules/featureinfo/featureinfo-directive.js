@@ -11,8 +11,8 @@ angular.module('anol.featureinfo')
  * @requires anol.map.LayersService
  *
  * @description
- * Makes GetFeatureInfo request on all layers with 'featureinfo' property
- * and show result depending on 'target' specified in 'featureinfo'
+ * Makes GetFeatureInfo request on all non vector layers with 'featureinfo' property
+ * and show result if not empty depending on 'target' specified in 'featureinfo'
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])

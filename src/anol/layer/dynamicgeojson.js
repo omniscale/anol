@@ -1,4 +1,20 @@
-anol.layer.DynamicGeoJSON = function(_options) {
+/**
+ * @ngdoc object
+ * @name anol.layer.DynamicGeoJSON
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {Object} options.olLayer Options for ol.layer.Vector
+ * @param {Object} options.olLayer.source Options for ol.source.Vector
+ * @param {string} options.olLayer.source.url Url for requesting a GeoJSON
+ * @param {string} options.olLayer.source.featureProjection Projection of received GeoJSON
+ * @param {Object} options.olLayer.source.additionalParameters Additional parameters added to request
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ *
+ * Ask *url* with current projection and bbox.
+ */
+ anol.layer.DynamicGeoJSON = function(_options) {
     var defaults = {};
     var options = $.extend({},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,

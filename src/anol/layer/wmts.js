@@ -1,3 +1,17 @@
+/**
+ * @ngdoc object
+ * @name anol.layer.WMTS
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {Object} options.olLayer Options for ol.layer.Tile
+ * @param {Object} options.olLayer.source Options for ol.source.WMTS
+ * @param {string} options.olLayer.source.capabilitiesUrl Url to WMTS capabilities document
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ *
+ * Capabilities document is used to determine most source options.
+ */
 anol.layer.WMTS = function(_options) {
     var defaults = {};
     var options = $.extend({},

@@ -1,4 +1,15 @@
-anol.layer.SingleTileWMS = function(_options) {
+/**
+ * @ngdoc object
+ * @name anol.layer.SingleTileWMS
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {Object} options.olLayer Options for ol.layer.Image
+ * @param {Object} options.olLayer.source Options for ol.source.ImageWMS
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ */
+ anol.layer.SingleTileWMS = function(_options) {
     var defaults = {};
     var options = $.extend({},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,

@@ -142,12 +142,27 @@ module.exports = function(grunt) {
       options: {
         dest: 'docs',
         html5Mode: false,
-        startPage: '/',
-        title: 'AnOl Documentation'
+        startPage: '/api',
+        title: 'AnOl Documentation',
+        editLink: false,
+        editExample: false,
+        demoExample: false,
+        scripts: [
+          '../libs/ol3/ol3-debug.js',
+          '../libs/jquery/jquery-2.1.1.min.js',
+          '../libs/angular/angular.min.js',
+          '../libs/angular/angular-animate.min.js',
+          '../build/anol.js',
+          '../build/templates.js'
+        ]
       },
       api: {
         title: 'AnOl API',
         src: ['src/modules/**/*.js'],
+      },
+      wrappers: {
+        title: 'Ol3 Wrappers',
+        src: ['src/anol/**/*.js']
       }
     },
     ngtemplates:  {

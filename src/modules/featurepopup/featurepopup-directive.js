@@ -13,7 +13,7 @@ angular.module('anol.featurepopup')
  * Shows feature properties for layers with 'featureinfo' property.
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
- * - **properties** {Array.<String>} - Property names to display
+ * - **properties** {Array<String>} - Property names to display
  */
 .directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', function($timeout, MapService, LayersService) {
     return {

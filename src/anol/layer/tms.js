@@ -1,4 +1,19 @@
-anol.layer.TMS = function(_options) {
+/**
+ * @ngdoc object
+ * @name anol.layer.TMS
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {Object} options.olLayer Options for ol.layer.Tile
+ * @param {Object} options.olLayer.source Options for ol.source.TileImage
+ * @param {string} options.olLayer.source.baseUrl BaseUrl for TMS requests
+ * @param {string} options.olLayer.source.layer Requested layer
+ * @param {Array<number>} options.olLayer.source.resolutions List of resolutions
+ * @param {string} options.olLayer.source.format Image format
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ */
+ anol.layer.TMS = function(_options) {
     var defaults = {};
     var options = $.extend({},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,

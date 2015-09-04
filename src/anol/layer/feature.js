@@ -1,4 +1,19 @@
-anol.layer.Feature = function(_options) {
+/**
+ * @ngdoc object
+ * @name anol.layer.Feature
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {string} options.geometryType Geometry type of features for automatic legend generation. Supportet types are:
+ * - point
+ * - line
+ * - polygon
+ * @param {Object} options.olLayer Options for ol.layer.Vector
+ * @param {Object} options.olLayer.source Options for ol.source.Vector
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ */
+ anol.layer.Feature = function(_options) {
     var defaults = {};
     var options = $.extend({},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,

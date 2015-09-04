@@ -1,16 +1,34 @@
-/*
+/**
  * @ngdoc object
  * @name anol.layer.Layer
  *
- * @param name
- * @param title
- * @param displayInLayerswitcher
- * @param isBackgorund
- * @param featureinfo
- * @param geometryType
- * @param olLayer
+ * @param {Object} options AnOl Layer options
+ * @param {string} options.title Layer title
+ * @param {string} options.displayInLayerswitcher Show in layerswitcher
+ * @param {boolean} options.isBackgorund Define layer as background layer
+ * @param {Object} options.featureinfo Stores informations for feature info
+ * @param {Object} options.featureinfo.target Target of *GetFeatureInfo* request for {@link api/anol.featureinfo anol.featureinfo}. Supported values are:
+ * - *_popup* - Results displayed in a popup
+ * - *_blank* - Results displayed in a new window/tab
+ * - *[id]* - Id of html element to display results in
+ * @param {Array<string>} options.featureinfo.properties List of feature properties to show in {@link api/anol.featurepopup anol.featurepopup}.
+ * @param {Object} options.olLayer OpenLayers layer object
  *
- * @description Object for wrapping ol3 layers and add properties to them
+ * @description
+ * Object for wrapping ol3 layers and add properties to them
+ * You can create a normal ol3 layer and give it to a anol.layer.Layer
+ *
+ * @example
+ * ```js
+ *   // create ol layer
+ *   var olLayer = new ol.layer.Vector({
+ *     source: new ol.source.Vector()
+ *   });
+ *   var anolLayer = new anol.layer.Layer({
+ *     title: "Awesome layer",
+ *     olLayer: olLayer
+ *   });
+ * ```
  */
 anol.layer.Layer = function(options) {
     if(options === undefined) {

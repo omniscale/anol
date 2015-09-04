@@ -1,3 +1,15 @@
+/**
+ * @ngdoc object
+ * @name anol.layer.Group
+ *
+ * @param {Object} options AnOl group options
+ * @param {string} options.name Unique group name
+ * @param {string} options.title Title for group
+ * @param {Array<anol.layer.Layer>} options.layers AnOl layers to group
+ *
+ * @description
+ * Groups {@link anol.layer.Layer anol.layer.Layer}.
+ */
 anol.layer.Group = function(options) {
     this.name = options.name;
     this.title = options.title;

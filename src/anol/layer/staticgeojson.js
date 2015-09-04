@@ -1,3 +1,15 @@
+/**
+ * @ngdoc object
+ * @name anol.layer.StaticGeoJSON
+ *
+ * @param {Object} options AnOl Layer options
+ * @param {Object} options.olLayer Options for ol.layer.Vector
+ * @param {Object} options.olLayer.source Options for ol.source.Vector
+ * @param {Object} options.olLayer.source.url Url to GeoJSON
+ *
+ * @description
+ * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ */
 anol.layer.StaticGeoJSON = function(_options) {
     var defaults = {};
     var options = $.extend({},

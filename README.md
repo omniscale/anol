@@ -39,4 +39,5 @@ If you want to include the dependencies by your own, run `grunt build` instead.
 
 To create a debug version run `grunt build-debug`.
 
-To create AnOl API documentation run `grunt build-doc`. The API is created and can be found under `docs/`. You might need to run a webserver like `python -m SimpleHTTPServer` in `docs` folder to see the API documentation correct.
+To create AnOl API documentation run `grunt build-doc`. The API is created and can be found under `docs/`.
+You might need to run a webserver like `python -m SimpleHTTPServer` in root repo folder or `grunt dev` to see the API documentation correct.
