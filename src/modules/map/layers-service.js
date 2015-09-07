@@ -78,15 +78,13 @@ angular.module('anol.map')
             // so, when map is defined, added layers are not in map
             // and must be added
             if(self.map !== undefined) {
-                var olLayers = [];
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers, function(_layer) {
-                        olLayers.push(_layer.olLayer);
+                        self.map.addLayer(_layer.olLayer);
                     });
                 } else {
-                    olLayers.push(layer.olLayer);
+                    self.map.addLayer(layer.olLayer);
                 }
-                self.map.addLayers(olLayers);
             }
         };
         /**
