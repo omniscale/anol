@@ -1,5 +1,16 @@
 angular.module('anol.legend')
-
+/**
+ * @ngdoc directive
+ * @name anol.legend.directive:anolFeatureLegend
+ *
+ * @restrict A
+ * @requires anol.map.LayersService
+ *
+ * @param {string=} anolFeatureLegend If containing "open" feature legend initial state is expanded. Otherweise it is collapsed.
+ *
+ * @description
+ * Show vector symbols as legend for each vector layer with defined *geometryType*
+ */
 .directive('anolFeatureLegend', ['LayersService', function(LayersService) {
     return {
         restrict: 'A',
