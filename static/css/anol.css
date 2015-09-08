@@ -157,3 +157,25 @@
 [anol-mouse-position] {
   display: none;
 }
+
+/**
+ * anol-geolocation
+ */
+div.anol-geolocation-button {
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  color: white;
+  cursor: pointer;
+  opacity: 0.9;
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+div.anol-geolocation-button:before {
+  content: 'G'
+}
