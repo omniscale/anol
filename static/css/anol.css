@@ -150,3 +150,10 @@
   width: 200px;
   height: 200px;
 }
+
+/**
+ * anol-mouse-position
+ */
+[anol-mouse-position] {
+  display: none;
+}
