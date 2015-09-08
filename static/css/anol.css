@@ -37,6 +37,62 @@
 }
 
 /**
+ * anol-featurelegend
+ */
+.anol-featurelegend .legend-container {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 5px;
+  border-radius: 5px 0px 0px 5px;
+  font-size: 14px;
+  bottom: 40px;
+  right: 0px;
+  position: absolute;
+  z-index: 1000;
+  max-width: 40%;
+}
+
+.anol-featurelegend .legend-header {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.anol-featurelegend .legend-toggle {
+  width: 20px;
+  border-radius: 5px 0px 0px 5px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  text-align: center;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.anol-featurelegend .legend-toggle.legend-visible {
+  position: absolute;
+  right: 0;
+  top: 3px;
+}
+
+.anol-featurelegend .legend-toggle.legend-hidden {
+  bottom: 40px;
+  position: absolute;
+  right: 0;
+}
+
+.anol-featurelegend .legend-container .legend-items {
+  max-height: 170px;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+.anol-featurelegend .legend-container .legend-items div {
+  margin-right: 5px;
+}
+
+.anol-featurelegend .legend-container .legend-items div canvas {
+  vertical-align: text-bottom;
+}
+
+/**
  * anol-featureinfo
  */
 .anol-popup {
