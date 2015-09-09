@@ -179,3 +179,21 @@ div.anol-geolocation-button {
 div.anol-geolocation-button:before {
   content: 'G'
 }
+
+/**
+ * anol-searchbox
+ */
+.ol-unselectable .anol-searchbox {
+  width: 300px;
+  top: 10px;
+  right: 10px;
+  position: absolute;
+}
+
+.ol-unselectable .anol-searchbox ul {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.ol-unselectable .anol-searchbox ul li {
+  cursor: pointer;
+}

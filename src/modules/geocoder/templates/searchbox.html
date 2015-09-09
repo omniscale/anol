@@ -1,0 +1,6 @@
+<div class="anol-searchbox">
+    <input class="form-control" ng-model="searchString" ng-keypress="request($event)">
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="result in searchResults" ng-click="showResult(result)">{{ result.displayText }}</li>
+    </ul>
+</div>
