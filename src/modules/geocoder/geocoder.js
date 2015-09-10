@@ -16,8 +16,8 @@ angular.module('anol.geocoder')
  * @description
  * Search for a location string on given geocoder, display and select results
  */
-.directive('anolGeocoderSearchbox', ['$http', 'MapService', 'ControlsService',
-  function($http, MapService, ControlsService, LayersService) {
+.directive('anolGeocoderSearchbox', ['$http', '$timeout', 'MapService', 'ControlsService',
+  function($http, $timeout, MapService, ControlsService) {
     return {
       restrict: 'A',
       require: '?^anolMap',
@@ -41,17 +41,53 @@ angular.module('anol.geocoder')
             });
           });
           scope.searchResults = results;
+          element.find('.anol-searchbox').addClass('open');
         };
+
+        scope.searchResults = [];
         scope.coordinate = scope.coordinate_.split(',');
-        scope.request = function(event) {
-          if(event.which !== 13) {
-            return;
+
+        scope.handleInputKeypress = function(event) {
+          event.stopPropagation();
+          if(event.key === 'ArrowDown' && scope.searchResults.length > 0) {
+            // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
+            $timeout(function() {
+              element.find('.dropdown-menu li a:first').focus();
+            }, 0);
           }
-          $http.get(scope.searchUrl + scope.searchString)
-            .success(function(response) {
-              handleResponse(response);
-            });
+          if(event.key === 'Enter') {
+            $http.get(scope.searchUrl + scope.searchString)
+              .success(function(response) {
+                handleResponse(response);
+              });
+          }
+          return false;
         };
+
+        scope.handleDropdownKeypress = function(event) {
+          event.stopPropagation();
+          var targetParent = angular.element(event.currentTarget).parent();
+          if(event.key === 'ArrowDown') {
+            targetParent.next().find('a').focus();
+          }
+          if(event.key === 'ArrowUp') {
+            var target = targetParent.prev().find('a');
+            if(target.length === 0) {
+              element.find('.form-control').focus();
+            } else {
+              target.focus();
+            }
+          }
+          return false;
+        };
+
+        scope.handleMouseover = function(event) {
+          // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
+          $timeout(function() {
+            angular.element(event.currentTarget).focus();
+          }, 0);
+        };
+
         scope.showResult = function(result) {
           var view = MapService.getMap().getView();
           view.setCenter(
@@ -62,11 +98,13 @@ angular.module('anol.geocoder')
             )
           );
           scope.searchResults = [];
+          element.find('.anol-searchbox').removeClass('open');
         };
 
         if(angular.isDefined(AnolMapController)) {
           element.addClass('ol-unselectable');
         }
+
         ControlsService.addControl(new ol.control.Control({
           element: element.first().context
         }));
