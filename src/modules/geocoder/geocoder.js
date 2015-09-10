@@ -1,4 +1,21 @@
 angular.module('anol.geocoder')
+/**
+ * @ngdoc directive
+ * @name anol.geocoder.directive:anolGeocoderSearchbox
+ *
+ * @restrict A
+ * @requires $http
+ * @required $timeout
+ * @requires anol.map.MapService
+ * @requires anol.map.ControlsService
+ *
+ * @param {string} anolGeocoderSearchbox Url to geocoder service
+ * @param {string} display Result property to use for display results
+ * @param {string} coordinate Result properties for lon and lat values
+ *
+ * @description
+ * Search for a location string on given geocoder, display and select results
+ */
 .directive('anolGeocoderSearchbox', ['$http', 'MapService', 'ControlsService',
   function($http, MapService, ControlsService, LayersService) {
     return {
