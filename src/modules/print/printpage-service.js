@@ -8,6 +8,7 @@ angular.module('anol.print')
     // Better move directive configuration in directive so
     // direcitve can be replaced by custom one?
     var _pageSizes, _outputFormats, _defaultScale, _style;
+    var _allowPageResize = true;
 
     /**
      * @ngdoc method
@@ -54,6 +55,17 @@ angular.module('anol.print')
     this.setStyle = function(style) {
         _style = style;
     };
+    /**
+     * @ngdoc method
+     * @name setPageResize
+     * @methodOf anol.print.PrintPageServiceProvider
+     * @param{boolean} allowed Allow / disallow page resize in map
+     * @description
+     * Allow / disallow page resize in map
+     */
+     this.setPageResize = function(allowed) {
+        _allowPageResize = allowed;
+     };
 
     this.$get = ['$rootScope', 'MapService', 'LayersService', 'InteractionsService', function($rootScope, MapService, LayersService, InteractionsService) {
         var _modify;
@@ -191,10 +203,11 @@ angular.module('anol.print')
          * paper size for selected area is calculated.
          *
          */
-        var PrintPage = function(pageSizes, outputFormats, defaultScale) {
+        var PrintPage = function(pageSizes, outputFormats, defaultScale, allowPageResize) {
             this.pageSizes = pageSizes;
             this.outputFormats = outputFormats;
             this.defaultScale = defaultScale;
+            this.allowPageResize = allowPageResize;
             this.currentPageSize = undefined;
             this.currentScale = undefined;
         };
@@ -226,7 +239,9 @@ angular.module('anol.print')
             _printSource.clear();
             _printArea = undefined;
             this.updatePrintArea(left, top, right, bottom);
-            this.createDragFeatures(left, top, right, bottom, center);
+            if(this.allowPageResize) {
+                this.createDragFeatures(left, top, right, bottom, center);
+            }
             this.createInteractions();
         };
         /**
@@ -341,6 +356,10 @@ angular.module('anol.print')
          */
         PrintPage.prototype.updateDragFeatures = function(currentFeature) {
             var self = this;
+            // no need for update drag features if page cannot be resized in map
+            if(!self.allowPageResize) {
+                return;
+            }
             var edgePoints = _printArea.getGeometry().getCoordinates()[0];
             var left = edgePoints[0][0];
             var right = edgePoints[1][0];
@@ -540,8 +559,7 @@ angular.module('anol.print')
          */
         PrintPage.prototype.getBounds = function() {
             var bounds = [];
-            bounds = bounds.concat(_dragFeatures.leftbottom.getGeometry().getCoordinates());
-            bounds = bounds.concat(_dragFeatures.righttop.getGeometry().getCoordinates());
+            bounds = _printArea.getGeometry().getExtent();
             return bounds;
         };
         /**
@@ -558,6 +576,6 @@ angular.module('anol.print')
             _printLayer.setVisible(visibility);
         };
 
-        return new PrintPage(_pageSizes, _outputFormats, _defaultScale);
+        return new PrintPage(_pageSizes, _outputFormats, _defaultScale, _allowPageResize);
     }];
 }]);
