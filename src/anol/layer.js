@@ -37,7 +37,7 @@ anol.layer.Layer = function(options) {
 
     this.name = options.name;
     this.title = options.title;
-    this.displayInLayerswitcher = options.displayInLayerswitcher || true;
+    this.displayInLayerswitcher = options.displayInLayerswitcher === undefined ? true : options.displayInLayerswitcher;
     this.isBackground = options.isBackground || false;
     this.featureinfo = options.featureinfo || false;
 
