@@ -12,8 +12,7 @@
     </div>
     <div ng-show="overlayLayers.length > 0">
         <h4>Overlay Layers</h4>
-
-        <div ng-repeat="layer in overlayLayers">
+        <div ng-repeat="layer in overlayLayers" ng-if="layer.displayInLayerswitcher !== false">
             <div ng-if="isGroup(layer)">
                 <span class="glyphicon" ng-class="{'glyphicon-plus': layer.collapsed, 'glyphicon-minus': !layer.collapsed}" ng-click="layer.collapsed=!layer.collapsed"></span>
                 <span class="glyphicon" ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}" ng-click="layer.setVisible(!layer.getVisible())"></span>
