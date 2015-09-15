@@ -1,0 +1,38 @@
+<div class="anol-print">
+    <div class="form-group">
+      <label class="control-label" for="definedPageSizes">Page sizes</label>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default"
+                ng-repeat="definedPageSize in definedPageSizes"
+                ng-class="{'active': definedPageSize.id === printAttributes.pageSizeId}"
+                ng-click="setPageSize(definedPageSize.value, definedPageSize.id)">
+            {{ definedPageSize.label }}
+            <span ng-if="definedPageSize.icon" class="glyphicon" ng-class="definedPageSize.icon"></span>
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="scale">Scale</label>
+      <input class="form-control" id="scale" ng-model="printAttributes.scale" ng-change="updatePrintPage()" />
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="outputFormat">Output format</label>
+      <select class="form-control" ng-model="printAttributes.outputFormat" ng-options="format as format.label for format in outputFormats">
+    </select>
+    <br>
+    <button class="btn btn-default" ng-click="updatePrintPage()" ng-disabled="!havePageSize()">Show print area</button>
+    <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">Start print</button>
+    <br><br>
+    <div ng-show="prepareDownload" class="alert alert-info text-center" ng-cloak>
+      Output is prepared.<br>
+      This may take a moment.
+    </div>
+    <div ng-show="downloadReady" class="alert alert-success text-center" ng-cloak>
+      Output ready.<br>
+      <a class="btn btn-success download-link" href="" >Download it.</a>
+    </div>
+    <div ng-show="downloadError" class="alert alert-danger" ng-cloak>
+      Sorry! An error occured.<br>
+      Pleace try again later.
+    </div>
+</div>
