@@ -541,6 +541,9 @@ angular.module('anol.print')
          * Create or update print page geometry by given pageSize and scale
          */
         PrintPage.prototype.addFeatureFromPageSize = function(pageSize, scale) {
+            if(pageSize === undefined || pageSize.length === 0 || scale === undefined) {
+                return;
+            }
             if(_printArea === undefined) {
                 this.createPrintArea(pageSize, scale);
             } else {
