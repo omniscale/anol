@@ -115,7 +115,14 @@
                     features: [line]
                   }
                 }
-              }),
+              })
+            ]
+          });
+
+          var oneItemGroup = new anol.layer.Group({
+            name: 'oneItem',
+            title: 'One Item',
+            layers: [
               new anol.layer.Feature({
                 name: 'polygonLayer',
                 title: 'Polygon',
@@ -128,7 +135,12 @@
             ]
           });
 
-          LayersServiceProvider.setLayers([wmsColor, wmsGray, group]);
+          var emptyGroup = new anol.layer.Group({
+            name: 'empty',
+            title: 'Empty'
+          });
+
+          LayersServiceProvider.setLayers([wmsColor, wmsGray, group, oneItemGroup, emptyGroup]);
       }]);
     </script>
   </body>
