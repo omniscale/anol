@@ -11,7 +11,7 @@ angular.module('anol.map')
  * It will only create one instance of an ol map
  */
 .provider('MapService', [function() {
-    var _view;
+    var _view, _bbox;
 
     var buildMapConfig = function(layers, controls, interactions) {
         var map = new ol.Map(angular.extend({}, {
@@ -21,6 +21,11 @@ angular.module('anol.map')
             logo: false
         }));
         map.setView(_view);
+        if(angular.isDefined(_bbox)) {
+            map.once('change:target', function() {
+                map.getView().fit(_bbox, map.getSize());
+            });
+        }
         return map;
     };
 
@@ -29,13 +34,27 @@ angular.module('anol.map')
      * @name addView
      * @methodOf anol.map.MapServiceProvider
      *
-     * @param {Object} view ol3 view object
+     * @param {ol.View} view ol3 view object
      *
      * @description
      * Set the map view
      */
     this.addView = function(view) {
         _view = view;
+    };
+
+    /**
+     * @ngdoc method
+     * @name setInitialBBox
+     * @methodof anol.map.MapServiceProvider
+     *
+     * @param {ol.Extent} bbox Initial bbox
+     *
+     * @description
+     * Set initial bbox
+     */
+    this.setInitialBBox = function(bbox) {
+        _bbox = bbox;
     };
 
     this.$get = ['LayersService', 'ControlsService', 'InteractionsService', function(LayersService, ControlsService, InteractionsService) {
