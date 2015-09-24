@@ -50,6 +50,7 @@ angular.module('anol.geocoder')
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
           if(event.key === 'ArrowDown' && scope.searchResults.length > 0) {
+            event.preventDefault();
             // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
             $timeout(function() {
               element.find('.dropdown-menu li a:first').focus();
@@ -68,9 +69,11 @@ angular.module('anol.geocoder')
           event.stopPropagation();
           var targetParent = angular.element(event.currentTarget).parent();
           if(event.key === 'ArrowDown') {
+            event.preventDefault();
             targetParent.next().find('a').focus();
           }
           if(event.key === 'ArrowUp') {
+            event.preventDefault();
             var target = targetParent.prev().find('a');
             if(target.length === 0) {
               element.find('.form-control').focus();
