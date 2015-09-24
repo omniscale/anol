@@ -2,7 +2,7 @@
     <input class="form-control" ng-model="searchString" ng-keypress="handleInputKeypress($event)">
     <ul class="dropdown-menu dropdown-menu-right">
         <li ng-repeat="result in searchResults" ng-click="showResult(result)" >
-            <a href="#" ng-keypress="handleDropdownKeypress($event)" ng-mouseover="handleMouseover($event)">{{ result.displayText }}</a>
+            <a href="javascript:;" ng-keypress="handleDropdownKeypress($event)" ng-mouseover="handleMouseover($event)">{{ result.displayText }}</a>
         </li>
     </ul>
 </div>
