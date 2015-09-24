@@ -34,6 +34,20 @@ angular.module('anol.print')
             scope.downloadReady = false;
             scope.downloadError = false;
 
+            var prepareOverlays = function(layers) {
+              var _layers = [];
+              angular.forEach(layers, function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                  _layers = _layers.concat(prepareOverlays(layer.layers));
+                } else {
+                  if(layer.displayInLayerswitcher && layer.getVisible()) {
+                    _layers.push(layer.name);
+                  }
+                }
+              });
+              return _layers;
+            };
+
             scope.startPrint = function() {
               scope.downloadReady = false;
               scope.downloadError = false;
@@ -41,11 +55,9 @@ angular.module('anol.print')
               var bbox = PrintPageService.getBounds();
               var outputFormat = angular.copy(scope.printAttributes.outputFormat);
               var layers = [LayersService.activeBackgroundLayer().name];
-              angular.forEach(LayersService.overlayLayers, function(layer) {
-                if(layer.displayInLayerswitcher && layer.getVisible()) {
-                  layers.push(layer.name);
-                }
-              });
+
+              layers = layers.concat(prepareOverlays(LayersService.overlayLayers));
+
               $http.post(scope.anolPrint, {
                   bbox: bbox,
                   scale: scope.printAttributes.scale,
