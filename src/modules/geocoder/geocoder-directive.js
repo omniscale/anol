@@ -31,14 +31,14 @@ angular.module('anol.geocoder')
 
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
-          if(event.key === 'ArrowDown' && scope.searchResults.length > 0) {
+          if((event.key === 'ArrowDown' || event.keyCode === 40) && scope.searchResults.length > 0) {
             event.preventDefault();
             // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
             $timeout(function() {
               element.find('.dropdown-menu li a:first').focus();
             }, 0);
           }
-          if(event.key === 'Enter') {
+          if(event.key === 'Enter' || event.keyCode === 13) {
             geocoder.request(scope.searchString)
               .then(function(results) {
                 scope.$apply(function() {
@@ -53,11 +53,11 @@ angular.module('anol.geocoder')
         scope.handleDropdownKeypress = function(event) {
           event.stopPropagation();
           var targetParent = angular.element(event.currentTarget).parent();
-          if(event.key === 'ArrowDown') {
+          if(event.key === 'ArrowDown' || event.keyCode === 40) {
             event.preventDefault();
             targetParent.next().find('a').focus();
           }
-          if(event.key === 'ArrowUp') {
+          if(event.key === 'ArrowUp' || event.keyCode === 38) {
             event.preventDefault();
             var target = targetParent.prev().find('a');
             if(target.length === 0) {
