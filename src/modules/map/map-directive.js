@@ -4,6 +4,7 @@ angular.module('anol.map')
  * @ngdoc directive
  * @name anol.map.directive:anolMap
  *
+ * @requires $timeout
  * @requires anol.DefaultMapName
  * @requires anol.map.MapService
  *
@@ -12,7 +13,7 @@ angular.module('anol.map')
  *
  * It also add the DefaultMapName as id and class to the map element.
  */
-.directive('anolMap', ['DefaultMapName', 'MapService', function(DefaultMapName, MapService) {
+.directive('anolMap', ['$timeout', 'DefaultMapName', 'MapService', function($timeout, DefaultMapName, MapService) {
     return {
         scope: {},
         link: {
@@ -27,6 +28,9 @@ angular.module('anol.map')
 
                 scope.map.setTarget(scope.mapName);
 
+                $timeout(function() {
+                    scope.map.updateSize();
+                });
             }
         },
         controller: function($scope, $element, $attrs) {
