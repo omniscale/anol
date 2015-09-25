@@ -7,11 +7,20 @@
  * @param {string} options.displayInLayerswitcher Show in layerswitcher
  * @param {boolean} options.isBackgorund Define layer as background layer
  * @param {Object} options.featureinfo Stores informations for feature info
- * @param {Object} options.featureinfo.target Target of *GetFeatureInfo* request for {@link api/anol.featureinfo anol.featureinfo}. Supported values are:
+ * @param {string} options.featureinfo.target Target of *GetFeatureInfo* request for {@link api/anol.featureinfo anol.featureinfo}. Supported values are:
  * - *_popup* - Results displayed in a popup
  * - *_blank* - Results displayed in a new window/tab
  * - *[id]* - Id of html element to display results in
  * @param {Array<string>} options.featureinfo.properties List of feature properties to show in {@link api/anol.featurepopup anol.featurepopup}.
+ * @param {Object} options.legend Stores informations for legend
+ * @param {string} options.legend.type Type of legend entry. Supported values are:
+ * - *point* - Extracts point style of vector layer for legend
+ * - *line* - Extracts line style of vector layer for legend
+ * - *polygon* - Extracts polygon style of vector layer for legend
+ * - *GetLegendGraphic* - Use options.legend.url for legend
+ * @param {string} options.legend.url Url to image for display in legend
+ * @param {string} otpions.legend.target Id of html element to display legend image in. (Only for options.legend.type == 'GetLegendGraphic').
+ *                                       If empty, legend image is shown in legend control
  * @param {Object} options.olLayer OpenLayers layer object
  *
  * @description
@@ -40,6 +49,7 @@ anol.layer.Layer = function(options) {
     this.displayInLayerswitcher = options.displayInLayerswitcher === undefined ? true : options.displayInLayerswitcher;
     this.isBackground = options.isBackground || false;
     this.featureinfo = options.featureinfo || false;
+    this.legend = options.legend || false;
 
     this.olLayer = options.olLayer;
     if(!(this.olLayer instanceof ol.layer.Base)) {

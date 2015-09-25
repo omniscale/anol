@@ -23,7 +23,7 @@
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <!-- popup -->
-      <div anol-feature-legend></div>
+      <div anol-legend></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -80,7 +80,9 @@
           var pointLayer = new anol.layer.Feature({
             name: 'pointLayer',
             title: 'Point',
-            geometryType: 'point',
+            legend: {
+              type: 'point'
+            },
             olLayer: {
               style: new ol.style.Style({
                 image: new ol.style.Icon({
@@ -96,7 +98,9 @@
           var lineLayer = new anol.layer.Feature({
             name: 'lineLayer',
             title: 'Line',
-            geometryType: 'line',
+            legend: {
+              type: 'line'
+            },
             olLayer: {
               source: {
                 features: [line]
@@ -107,13 +111,16 @@
           var polygonLayer = new anol.layer.Feature({
             name: 'polygonLayer',
             title: 'Polygon',
-            geometryType: 'polygon',
+            legend: {
+              type: 'polygon'
+            },
             olLayer: {
               source: {
                 features: [polygon]
               }
             }
           });
+
           LayersServiceProvider.setLayers([wms, pointLayer, lineLayer, polygonLayer]);
       }]);
     </script>
