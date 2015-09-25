@@ -5,4 +5,5 @@
  * Wrapper namespace
  */
 var anol = anol || {};
+anol.geocoder = anol.geocoder || {};
 anol.layer = anol.layer || {};

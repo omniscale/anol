@@ -24,28 +24,13 @@ angular.module('anol.geocoder')
       transclude: true,
       templateUrl: 'src/modules/geocoder/templates/searchbox.html',
       scope: {
-        searchUrl: '@anolGeocoderSearchbox',
-        display: '@',
-        coordinate_: '@coordinate'
+        geocoder: '@anolGeocoderSearchbox',
+        zoomLevel: '@'
       },
       link: function(scope, element, attrs, AnolMapController) {
-        var handleResponse = function(response) {
-          var results = [];
-          angular.forEach(response, function(result) {
-            results.push({
-              displayText: result[scope.display],
-              coordinate: [
-                parseFloat(result[scope.coordinate[0]]),
-                parseFloat(result[scope.coordinate[1]])
-              ]
-            });
-          });
-          scope.searchResults = results;
-          element.find('.anol-searchbox').addClass('open');
-        };
+        var geocoder = new anol.geocoder[scope.geocoder]();
 
         scope.searchResults = [];
-        scope.coordinate = scope.coordinate_.split(',');
 
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
@@ -57,9 +42,12 @@ angular.module('anol.geocoder')
             }, 0);
           }
           if(event.key === 'Enter') {
-            $http.get(scope.searchUrl + scope.searchString)
-              .success(function(response) {
-                handleResponse(response);
+            geocoder.request(scope.searchString)
+              .then(function(results) {
+                scope.$apply(function() {
+                  scope.searchResults = results;
+                  element.find('.anol-searchbox').addClass('open');
+                });
               });
           }
           return false;
@@ -96,10 +84,13 @@ angular.module('anol.geocoder')
           view.setCenter(
             ol.proj.transform(
               result.coordinate,
-              'EPSG:4326',
+              result.projectionCode,
               view.getProjection()
             )
           );
+          if(angular.isDefined(scope.zoomLevel)) {
+            view.setZoom(parseInt(scope.zoomLevel));
+          }
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
         };
