@@ -20,7 +20,8 @@ angular.module('anol.legend')
         transclude: true,
         templateUrl: 'src/modules/legend/templates/legend.html',
         scope: {
-            anolLegend: '@'
+            anolLegend: '@',
+            customTargetFilled: '&'
         },
         link: {
             pre: function(scope, element, attrs, AnolMapController) {
@@ -136,6 +137,9 @@ angular.module('anol.legend')
                             showLegendButton.on('click', function() {
                                 target.empty();
                                 target.append(legendImage);
+                                if(angular.isFunction(scope.customTargetFilled)) {
+                                    scope.customTargetFilled()();
+                                }
                             });
                             container.append(showLegendButton);
                         // Display in legend control

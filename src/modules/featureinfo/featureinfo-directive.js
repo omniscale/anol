@@ -22,7 +22,9 @@ angular.module('anol.featureinfo')
         restrict: 'A',
         require: '?^anolMap',
         replace: true,
-        scope: {},
+        scope: {
+            customTargetFilled: '&'
+        },
         templateUrl: 'src/modules/featureinfo/templates/popup.html',
         link: {
             pre: function(scope, element) {
@@ -98,6 +100,9 @@ angular.module('anol.featureinfo')
                                                     divTargetCleared = true;
                                                 }
                                                 target.append(iframe);
+                                                if(angular.isFunction(scope.customTargetFilled)) {
+                                                    scope.customTargetFilled()();
+                                                }
                                             break;
                                         }
                                     }
