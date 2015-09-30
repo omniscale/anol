@@ -132,6 +132,14 @@ module.exports = function(grunt) {
           spawn: false,
         },
       },
+      sass: {
+        files: ['static/css/*.sass'],
+        tasks: ['sass'],
+        options: {
+          spawn: false,
+        },
+      },
+
     },
     karma: {
         unit: {
@@ -173,6 +181,24 @@ module.exports = function(grunt) {
         src: ['src/**/templates/*.html'],
         dest: 'build/templates.js'
       }
+    },
+    sass: {
+        options: {
+            sourceMap: true
+        },
+        dist: {
+            files: {
+                'build/css/anol.css': 'static/css/*.sass'
+            }
+        }
+    },
+    concurrent: {
+      options: {
+        logConcurrentOutput: true
+      },
+      dev: {
+        tasks: ['watch:scripts', 'watch:sass']
+      }
     }
   });
 
@@ -182,19 +208,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-git-revision');
   grunt.loadNpmTasks('grunt-angular-templates');
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-ngdocs');
+  grunt.loadNpmTasks('grunt-concurrent');
 
   grunt.loadNpmTasks('grunt-karma');
 
   grunt.registerTask('test', ['karma:unit']);
-  grunt.registerTask('dev', ['clean:prebuild', 'ngtemplates', 'concat:dev', 'connect:server', 'watch:scripts']);
+  grunt.registerTask('dev', ['clean:prebuild', 'sass:dist', 'ngtemplates', 'concat:dev', 'connect:server', 'concurrent:dev']);
 
-  grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
-  grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'ngtemplates', 'concat:dev']);
-  grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'ngtemplates', 'ngmin:dist', 'uglify', 'concat:dist', 'clean:postbuild', 'copy:full']);
+  grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
+  grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'concat:dev']);
+  grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'concat:dist', 'clean:postbuild', 'copy:full']);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
 };
