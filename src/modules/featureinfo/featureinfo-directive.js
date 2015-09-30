@@ -101,6 +101,7 @@ angular.module('anol.featureinfo')
                                                 }
                                                 target.append(iframe);
                                                 if(angular.isFunction(scope.customTargetFilled)) {
+                                                    // first function call get function, we want to call
                                                     scope.customTargetFilled()();
                                                 }
                                             break;
