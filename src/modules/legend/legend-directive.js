@@ -117,6 +117,26 @@ angular.module('anol.legend')
                 };
 
                 var RasterLegend = {
+                    createGetLegendGraphicUrl: function(source, params) {
+                        var urls = [];
+                        var baseParams = {
+                            'SERVICE': 'WMS',
+                            'VERSION': ol.DEFAULT_WMS_VERSION,
+                            'SLD_VERSION': '1.1.0',
+                            'REQUEST': 'GetLegendGraphic',
+                            'FORMAT': 'image/png',
+                            'LAYER': undefined
+                        };
+                        var url = source.getUrl();
+                        var layers = source.getParams().layers.split(',');
+
+                        angular.forEach(layers, function(layer) {
+                            urls.push(url + $.param($.extend({}, baseParams, params, {
+                                'LAYER': layer
+                            })));
+                        });
+                        return urls;
+                    },
                     createLegendEntry: function(layer) {
                         var container = angular.element('<div></div>');
                         var titleElement = angular.element('<div></div>');
@@ -124,9 +144,30 @@ angular.module('anol.legend')
                         titleElement.text(layer.title);
                         container.append(titleElement);
 
-                        var legendImage = angular.element('<img>');
-                        legendImage.addClass('legend-item-image');
-                        legendImage[0].src = layer.legend.url;
+                        var urls = [];
+
+                        if(layer.legend.type === 'GetLegendGraphic') {
+                            var params = {};
+                            if(layer.legend.verison !== undefined) {
+                                params.VERSION = layer.legend.version;
+                            }
+                            if(layer.legend.sldVersion !== undefined) {
+                                params.SLD_VERSION = layer.legend.sldVersion;
+                            }
+                            if(layer.legend.format !== undefined) {
+                                params.FORMAT = layer.legend.format;
+                            }
+                            urls = RasterLegend.createGetLegendGraphicUrl(layer.olLayer.getSource(), params);
+                        } else {
+                            urls = [layer.legend.url];
+                        }
+                        var legendImages = [];
+                        angular.forEach(urls, function(url) {
+                            var legendImage = angular.element('<img>');
+                            legendImage.addClass('legend-item-image');
+                            legendImage[0].src = url;
+                            legendImages.push(legendImage);
+                        });
 
                         // Display in element with given id
                         if (angular.isDefined(layer.legend.target)) {
@@ -136,7 +177,9 @@ angular.module('anol.legend')
                             showLegendButton.addClass('btn-sm');
                             showLegendButton.on('click', function() {
                                 target.empty();
-                                target.append(legendImage);
+                                angular.forEach(legendImages, function(legendImage) {
+                                    target.append(legendImage);
+                                });
                                 if(angular.isFunction(scope.customTargetFilled)) {
                                     scope.customTargetFilled()();
                                 }
@@ -144,7 +187,9 @@ angular.module('anol.legend')
                             container.append(showLegendButton);
                         // Display in legend control
                         } else {
-                            container.append(legendImage);
+                            angular.forEach(legendImages, function(legendImage) {
+                                container.append(legendImage);
+                            });
                         }
 
                         element.find('.legend-items').append(container);

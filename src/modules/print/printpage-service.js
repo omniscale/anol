@@ -59,7 +59,7 @@ angular.module('anol.print')
      * @ngdoc method
      * @name setPageResize
      * @methodOf anol.print.PrintPageServiceProvider
-     * @param{boolean} allowed Allow / disallow page resize in map
+     * @param {boolean} allowed Allow / disallow page resize in map
      * @description
      * Allow / disallow page resize in map
      */
