@@ -128,9 +128,10 @@ angular.module('anol.legend')
                             'LAYER': undefined
                         };
                         var url = source.getUrl();
-                        var layers = source.getParams().layers.split(',');
+                        var sourceParams = source.getParams();
+                        var layers = sourceParams.layers || sourceParams.LAYERS || '';
 
-                        angular.forEach(layers, function(layer) {
+                        angular.forEach(layers.split(','), function(layer) {
                             urls.push(url + $.param($.extend({}, baseParams, params, {
                                 'LAYER': layer
                             })));
