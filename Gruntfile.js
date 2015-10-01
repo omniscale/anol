@@ -188,7 +188,7 @@ module.exports = function(grunt) {
         },
         dist: {
             files: {
-                'build/css/anol.css': 'static/css/*.sass'
+                'build/anol.css': 'static/css/*.sass'
             }
         }
     },
