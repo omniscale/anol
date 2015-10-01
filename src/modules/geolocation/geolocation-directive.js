@@ -27,7 +27,7 @@ angular.module('anol.geolocation')
       link: function(scope, element) {
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
         if('true' !== scope.disableButton) {
-          var button = angular.element('<div ng-click="locate()"></div>');
+          var button = angular.element('<button ng-click="locate()"></button>');
           button.addClass('anol-geolocation-button');
           element.append($compile(button)(scope));
         }
