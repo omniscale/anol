@@ -30,8 +30,6 @@ angular.module('anol.legend')
                 if(angular.isDefined(AnolMapController)) {
                     scope.collapsed = scope.anolLegend !== 'open';
                     scope.showToggle = true;
-                    element.addClass('ol-unselectable');
-                    element.addClass('ol-control');
                     element.addClass('anol-legend');
                     AnolMapController.getMap().addControl(
                         new ol.control.Control({
@@ -44,7 +42,7 @@ angular.module('anol.legend')
                 var VectorLegend = {
                     createCanvas: function() {
                         var canvas = angular.element('<canvas></canvas>');
-                        canvas.addClass = 'legend-item-image';
+                        canvas.addClass = 'anol-legend-item-image';
                         canvas[0].width = 20;
                         canvas[0].height = 20;
                         return canvas;
@@ -98,7 +96,7 @@ angular.module('anol.legend')
                         }
                         var container = angular.element('<div></div>');
                         var titleElement = angular.element('<div></div>');
-                        titleElement.addClass('legend-item-title');
+                        titleElement.addClass('anol-legend-item-title');
                         titleElement.text(title);
                         container.append(titleElement);
                         switch(type) {
@@ -113,7 +111,7 @@ angular.module('anol.legend')
                             break;
                             default:
                         }
-                        element.find('.legend-items').append(container);
+                        element.find('.anol-legend-items').append(container);
                     }
                 };
 
@@ -142,7 +140,7 @@ angular.module('anol.legend')
                     createLegendEntry: function(layer) {
                         var container = angular.element('<div></div>');
                         var titleElement = angular.element('<div></div>');
-                        titleElement.addClass('legend-item-title');
+                        titleElement.addClass('anol-legend-item-title');
                         titleElement.text(layer.title);
                         container.append(titleElement);
 
@@ -166,7 +164,7 @@ angular.module('anol.legend')
                         var legendImages = [];
                         angular.forEach(urls, function(url) {
                             var legendImage = angular.element('<img>');
-                            legendImage.addClass('legend-item-image');
+                            legendImage.addClass('anol-legend-item-image');
                             legendImage[0].src = url;
                             legendImages.push(legendImage);
                         });
@@ -194,7 +192,7 @@ angular.module('anol.legend')
                             });
                         }
 
-                        element.find('.legend-items').append(container);
+                        element.find('.anol-legend-items').append(container);
                     }
                 };
 

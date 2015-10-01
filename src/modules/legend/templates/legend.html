@@ -1,10 +1,10 @@
-<div class="legend-toggle legend-hidden" ng-show="showToggle && collapsed">
-    <span class="glyphicon glyphicon-chevron-left cursor-pointer" ng-click="collapsed=!collapsed"></span>
+<div class="ol-unselectable ol-control anol-legend-hidden" ng-show="showToggle && collapsed">
+    <button class="glyphicon glyphicon-chevron-left cursor-pointer" ng-click="collapsed=!collapsed"></button>
 </div>
-<div ng-hide="collapsed" class="legend-container">
-    <div class="legend-header">Legend</div>
-    <div class="legend-toggle legend-visible">
-        <span class="glyphicon glyphicon-chevron-right" ng-click="collapsed=!collapsed"></span>
+<div ng-hide="collapsed" class="anol-legend-container">
+    <h2>Legend</h2>
+    <div class="ol-unselectable ol-control anol-legend-visible">
+        <button class="glyphicon glyphicon-chevron-right" ng-click="collapsed=!collapsed"></button>
     </div>
-    <div class="legend-items"></div>
+    <div class="anol-legend-items"></div>
 </div>
