@@ -1,7 +1,7 @@
 <div class="anol-layerswitcher ol-unselectable ol-control" ng-show="showToggle" ng-show="backgroundLayers.length > 1 || overlayLayers.length > 0">
     <button class="glyphicon" ng-class="{'glyphicon-chevron-left': collapsed, 'glyphicon-chevron-right': !collapsed}" ng-click="collapsed=!collapsed"></button>
 </div>
-<div class="anol-layerswitcher-content" ng-show="!collapsed">
+<div class="anol-layerswitcher-container" ng-show="!collapsed">
     <div ng-show="backgroundLayers.length > 1">
         <h4>Background Layers</h4>
         <div ng-repeat="layer in backgroundLayers">
