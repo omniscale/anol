@@ -21,6 +21,8 @@ angular.module('anol.scale')
 
                 var controlOptions = {};
                 if(angular.isUndefined(AnolMapController)) {
+                    element.addClass('ol-unselectable');
+                    element.addClass('ol-control');
                     controlOptions = {
                         target: element[0]
                     };

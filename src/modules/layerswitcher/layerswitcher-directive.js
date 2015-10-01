@@ -39,6 +39,7 @@ angular.module('anol.layerswitcher')
                     scope.collapsed = scope.anolLayerswitcher !== 'open';
                     scope.showToggle = true;
                     element.addClass('ol-unselectable');
+                    element.addClass('ol-control');
                     AnolMapController.getMap().addControl(
                         new ol.control.Control({
                             element: element.first().context

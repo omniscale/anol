@@ -94,6 +94,7 @@ angular.module('anol.geocoder')
 
         if(angular.isDefined(AnolMapController)) {
           element.addClass('ol-unselectable');
+          element.addClass('ol-control');
         }
 
         ControlsService.addControl(new ol.control.Control({

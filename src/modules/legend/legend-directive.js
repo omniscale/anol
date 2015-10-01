@@ -31,6 +31,7 @@ angular.module('anol.legend')
                     scope.collapsed = scope.anolLegend !== 'open';
                     scope.showToggle = true;
                     element.addClass('ol-unselectable');
+                    element.addClass('ol-control');
                     element.addClass('anol-legend');
                     AnolMapController.getMap().addControl(
                         new ol.control.Control({

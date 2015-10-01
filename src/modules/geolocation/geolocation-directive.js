@@ -51,6 +51,8 @@ angular.module('anol.geolocation')
           geolocation.setTracking(true);
         };
 
+        element.addClass('ol-control');
+
         ControlsService.addControl(new ol.control.Control({
           element: element.first().context
         }));
