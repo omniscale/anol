@@ -133,7 +133,7 @@ module.exports = function(grunt) {
         },
       },
       sass: {
-        files: ['static/css/*.sass'],
+        files: ['static/*.sass'],
         tasks: ['sass'],
         options: {
           spawn: false,
