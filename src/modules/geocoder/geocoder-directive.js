@@ -92,11 +92,6 @@ angular.module('anol.geocoder')
           element.find('.anol-searchbox').removeClass('open');
         };
 
-        if(angular.isDefined(AnolMapController)) {
-          element.addClass('ol-unselectable');
-          element.addClass('ol-control');
-        }
-
         ControlsService.addControl(new ol.control.Control({
           element: element.first().context
         }));
