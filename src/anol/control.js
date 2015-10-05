@@ -6,15 +6,21 @@ anol.control.Control = function(options) {
     this.active = options.active || false;
     this.exclusive = options.exclusive || false;
     this.element = options.element;
+    this.interaction = options.interaction;
 
     if(options.olControl === undefined) {
         var controlElement;
         if(this.element !== undefined) {
             controlElement = this.element[0];
         }
+        var target;
+        if(options.target !== undefined) {
+            target = options.target[0];
+        }
 
         this.olControl = new ol.control.Control({
-            element: controlElement
+            element: controlElement,
+            target: target
         });
     } else {
         this.olControl = options.olControl;
