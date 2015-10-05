@@ -24,6 +24,7 @@ angular.module('anol.draw')
             style: '=',
             drawSource: '='
         },
+        templateUrl: 'src/modules/draw/templates/draw.html',
         link: function(scope, element, attrs) {
             var drawPointControl, drawLineControl, drawPolygonControl;
 
@@ -67,6 +68,14 @@ angular.module('anol.draw')
                 return drawControl;
             };
 
+            var deactivate = function(targetControl, context) {
+                context.map.removeInteraction(targetControl.interaction);
+            };
+
+            var activate = function(targetControl, context) {
+                context.map.addInteraction(targetControl.interaction);
+            };
+
             scope.drawPoint = function() {
                 if(drawPointControl.active) {
                     drawPointControl.deactivate();
@@ -91,44 +100,34 @@ angular.module('anol.draw')
                 }
             };
 
-            var deactivate = function(targetControl, context) {
-                context.map.removeInteraction(targetControl.interaction);
-            };
-
-            var activate = function(targetControl, context) {
-                context.map.addInteraction(targetControl.interaction);
-            };
-
             scope.map = MapService.getMap();
 
             LayersService.addLayer(new anol.layer.Layer(layerOptions));
 
-            var drawPointInteraction = createDrawInteraction('Point');
-            var drawLineInteraction = createDrawInteraction('LineString');
-            var drawPolygonInteraction = createDrawInteraction('Polygon');
-
             element.addClass('ol-control');
             element.addClass('anol-draw');
-
-            // create button
-            var drawPointButton = angular.element('<button ng-click="drawPoint()"></button>');
-            drawPointButton.addClass('anol-draw-point');
-            drawPointControl = createDrawControl($compile(drawPointButton)(scope), element, drawPointInteraction);
-
-            // create button
-            var drawLineButton = angular.element('<button ng-click="drawLine()"></button>');
-            drawLineButton.addClass('anol-draw-line');
-            drawLineControl = createDrawControl($compile(drawLineButton)(scope), element, drawLineInteraction);
-
-            // create button
-            var drawPolygonButton = angular.element('<button ng-click="drawPolygon()"></button>');
-            drawPolygonButton.addClass('anol-draw-polygon');
-
-            drawPolygonControl = createDrawControl($compile(drawPolygonButton)(scope), element, drawPolygonInteraction);
 
             var drawControl = new anol.control.Control({
                 element: element
             });
+
+            drawPointControl = createDrawControl(
+                element.find('.anol-draw-point'),
+                element,
+                createDrawInteraction('Point')
+            );
+
+            drawLineControl = createDrawControl(
+                element.find('.anol-draw-line'),
+                element,
+                createDrawInteraction('LineString')
+            );
+
+            drawPolygonControl = createDrawControl(
+                element.find('.anol-draw-polygon'),
+                element,
+                createDrawInteraction('Polygon')
+            );
 
             ControlsService.addControls([drawControl, drawPointControl, drawLineControl, drawPolygonControl]);
         }
