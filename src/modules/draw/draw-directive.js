@@ -21,15 +21,18 @@ angular.module('anol.draw')
         restrict: 'A',
         require: '?^anolMap',
         scope: {
-            style: '='
+            style: '=',
+            drawSource: '='
         },
         link: function(scope, element, attrs) {
             var drawPointControl, drawLineControl, drawPolygonControl;
 
-            // create layer to draw in
-            scope._drawSource = new ol.source.Vector();
+            if(angular.isUndefined(scope.drawSource)) {
+                scope.drawSource = new ol.source.Vector();
+            }
+
             var _drawLayer = new ol.layer.Vector({
-                source: scope._drawSource
+                source: scope.drawSource
             });
 
             if(angular.isDefined(scope.style)) {
@@ -45,7 +48,7 @@ angular.module('anol.draw')
             var createDrawInteraction = function(drawType) {
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
-                    source: scope._drawSource,
+                    source: scope.drawSource,
                     type: drawType
                 });
 

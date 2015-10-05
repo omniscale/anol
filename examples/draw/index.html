@@ -19,10 +19,19 @@
     <![endif]-->
   </head>
 
-  <body ng-app="example">
-    <!-- map -->
-    <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
-      <div anol-draw></div>
+  <body ng-app="example" ng-controller="DrawExampleController">
+    <div class="container" style="width: 100%">
+      <div class="row">
+        <div class="col-md-4">
+      <!-- map -->
+          <div anol-map style="border: 1px solid black;">
+            <div anol-draw draw-source='drawSource'></div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <pre>{{ features | json }}</pre>
+        </div>
+      </div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -52,6 +61,16 @@
             }
           });
           LayersServiceProvider.setLayers([wms]);
+      }])
+      .controller('DrawExampleController', ['$scope', '$sce', function($scope, $sce) {
+        var geojsonFormat = new ol.format.GeoJSON();
+        $scope.drawSource = new ol.source.Vector();
+        $scope.drawSource.on('addfeature', function() {
+          $scope.$apply(function() {
+            $scope.features = geojsonFormat.writeFeaturesObject($scope.drawSource.getFeatures());
+            console.log(typeof($scope.features));
+          });
+        });
       }]);
     </script>
   </body>
