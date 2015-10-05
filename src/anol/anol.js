@@ -7,3 +7,4 @@
 var anol = anol || {};
 anol.geocoder = anol.geocoder || {};
 anol.layer = anol.layer || {};
+anol.control = anol.control || {};

@@ -30,7 +30,9 @@ angular.module('anol.measure')
             style: '='
         },
         link: function(scope, element, attrs) {
-            var measureOverlay, listener, control;
+            scope.measureOverlay = undefined;
+            scope.listener = undefined;
+            var control;
 
             // create a sphere whose radius is equal to the semi-major axis of the WGS84 ellipsoid
             var wgs84Sphere = new ol.Sphere(6378137);
@@ -63,9 +65,9 @@ angular.module('anol.measure')
             });
 
             // create layer to draw in
-            var _measureSource = new ol.source.Vector();
+            scope._measureSource = new ol.source.Vector();
             var _measureLayer = new ol.layer.Vector({
-                source: _measureSource,
+                source: scope._measureSource,
                 style: lineStyle
             });
 
@@ -81,7 +83,7 @@ angular.module('anol.measure')
               if (scope.geodesic) {
                 var coordinates = line.getCoordinates();
                 length = 0;
-                var sourceProj = map.getView().getProjection();
+                var sourceProj = scope.map.getView().getProjection();
                 for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
                   var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
                   var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
@@ -104,7 +106,7 @@ angular.module('anol.measure')
             var formatArea = function(polygon) {
                 var area;
                 if (scope.geodesic) {
-                    var sourceProj = map.getView().getProjection();
+                    var sourceProj = scope.map.getView().getProjection();
                     var geom = /** @type {ol.geom.Polygon} */(polygon.clone().transform(
                         sourceProj, 'EPSG:4326'));
                     var coordinates = geom.getLinearRing(0).getCoordinates();
@@ -139,7 +141,7 @@ angular.module('anol.measure')
                 var sketch;
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
-                    source: _measureSource,
+                    source: scope._measureSource,
                     type: scope.measureType === 'area' ? 'Polygon' : 'LineString',
                     style: drawStyle
                 });
@@ -149,34 +151,34 @@ angular.module('anol.measure')
                     function(evt) {
                         sketch = evt.feature;
                         var toRemove = [];
-                        _measureSource.forEachFeature(function(feature) {
+                        scope._measureSource.forEachFeature(function(feature) {
                             if(feature !== sketch) {
                                 toRemove.push(feature);
                             }
                         });
                         angular.forEach(toRemove, function(feature) {
-                            _measureSource.removeFeature(feature);
+                            scope._measureSource.removeFeature(feature);
                         });
 
-                        if(measureOverlay === undefined) {
-                            measureOverlay = createMeasureOverlay();
-                            map.addOverlay(measureOverlay);
+                        if(scope.measureOverlay === undefined) {
+                            scope.measureOverlay = createMeasureOverlay();
+                            scope.map.addOverlay(scope.measureOverlay);
                         } else {
-                            var measureOverlayElement = angular.element(measureOverlay.getElement());
+                            var measureOverlayElement = angular.element(scope.measureOverlay.getElement());
                             measureOverlayElement.removeClass('anol-measure-line-static-overlay');
                             measureOverlayElement.addClass('anol-measure-line-dynamic-overlay');
                         }
 
                         /** @type {ol.Coordinate|undefined} */
                         var coord = evt.coordinate;
-                        measureOverlay.setPosition(coord);
+                        scope.measureOverlay.setPosition(coord);
 
-                        listener = sketch.getGeometry().on('change', function(evt) {
+                        scope.listener = sketch.getGeometry().on('change', function(evt) {
                             var geom = evt.target;
                             var output = scope.measureType === 'area' ? formatArea(geom) : formatLength(geom);
                             coord = geom.getLastCoordinate();
-                            measureOverlay.getElement().innerHTML = output;
-                            measureOverlay.setPosition(coord);
+                            scope.measureOverlay.getElement().innerHTML = output;
+                            scope.measureOverlay.setPosition(coord);
                         });
                     }, this
                 );
@@ -185,12 +187,12 @@ angular.module('anol.measure')
                     function(evt) {
                         // unset sketch
                         sketch = null;
-                        var measureOverlayElement = angular.element(measureOverlay.getElement());
+                        var measureOverlayElement = angular.element(scope.measureOverlay.getElement());
                         measureOverlayElement.removeClass('anol-measure-line-dynamic-overlay');
                         measureOverlayElement.addClass('anol-measure-line-static-overlay');
 
                         // unset tooltip so that a new one can be created
-                        ol.Observable.unByKey(listener);
+                        ol.Observable.unByKey(scope.listener);
                     }, this
                 );
 
@@ -198,28 +200,28 @@ angular.module('anol.measure')
             };
 
             scope.measure = function() {
-                var active = control.get('active');
-                if(active) {
-                    deactivate();
+                if(control.active) {
+                    control.deactivate();
                 } else {
-                    map.addInteraction(draw);
-                    control.set('active', true);
+                    control.activate();
                 }
-
             };
 
-            var deactivate = function() {
-                map.removeInteraction(draw);
-                _measureSource.clear();
-                ol.Observable.unByKey(listener);
-                map.removeOverlay(measureOverlay);
-                measureOverlay = undefined;
-                control.set('active', false);
+            var deactivate = function(targetControl, context) {
+                context.map.removeInteraction(draw);
+                context._measureSource.clear();
+                ol.Observable.unByKey(context.listener);
+                context.map.removeOverlay(context.measureOverlay);
+                context.measureOverlay = undefined;
+            };
+
+            var activate = function(targetControl, context) {
+                context.map.addInteraction(draw);
             };
 
             scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
 
-            var map = MapService.getMap();
+            scope.map = MapService.getMap();
 
             LayersService.addLayer(new anol.layer.Layer(layerOptions));
 
@@ -232,12 +234,12 @@ angular.module('anol.measure')
             var button = angular.element('<button ng-click="measure()"></button>');
             element.append($compile(button)(scope));
 
-            control = new ol.control.Control({
-                element: element.first().context
+            control = new anol.control.Control({
+                element: element,
+                exclusive: true
             });
-            control.set('active', false);
-            control.set('discrete', true);
-            control.set('deactivate', deactivate);
+            control.onDeactivate(deactivate, scope);
+            control.onActivate(activate, scope);
             ControlsService.addControl(control);
         }
     };

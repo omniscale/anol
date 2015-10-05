@@ -5,6 +5,7 @@ angular.module('anol.legend')
  *
  * @restrict A
  * @requires anol.map.LayersService
+ * @requires anol.map.ControlsSerivce
  *
  * @param {string=} anolLegend If containing "open" legend initial state is expanded. Otherweise it is collapsed.
  *
@@ -13,7 +14,7 @@ angular.module('anol.legend')
  * Shows img with src=layer.legend.url for each raster layer. For raster layers layer.legend.target defines a external container
  * to show img in
  */
-.directive('anolLegend', ['LayersService', function(LayersService) {
+.directive('anolLegend', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -31,9 +32,9 @@ angular.module('anol.legend')
                     scope.collapsed = scope.anolLegend !== 'open';
                     scope.showToggle = true;
                     element.addClass('anol-legend');
-                    AnolMapController.getMap().addControl(
-                        new ol.control.Control({
-                            element: element.first().context
+                    ControlsService.addControl(
+                        new anol.control.Control({
+                            element: element
                         })
                     );
                 }

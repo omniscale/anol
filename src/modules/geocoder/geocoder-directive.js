@@ -92,8 +92,8 @@ angular.module('anol.geocoder')
           element.find('.anol-searchbox').removeClass('open');
         };
 
-        ControlsService.addControl(new ol.control.Control({
-          element: element.first().context
+        ControlsService.addControl(new anol.control.Control({
+          element: element
         }));
       }
     };

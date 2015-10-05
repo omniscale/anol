@@ -27,15 +27,10 @@ angular.module('anol.map')
          */
         var Controls = function(controls) {
             var self = this;
-            self.controls = controls || ol.control.defaults();
-            self.discreteControls = [];
-            angular.forEach(self.controls, function(control) {
-                if(control.get('discrete') === true) {
-                    control.on('propertychange', Controls.prototype.handleDiscreteControlActiveChange, this);
-                    self.discreteControls.push(control);
-                }
-            });
+            self.controls = [];
+            self.exclusiveControls = [];
             self.map = undefined;
+            self.addControls(controls);
         };
         /**
          * @ngdoc method
@@ -58,12 +53,12 @@ angular.module('anol.map')
          */
         Controls.prototype.addControl = function(control) {
             if(this.map !== undefined) {
-                this.map.addControl(control);
+                this.map.addControl(control.olControl);
             }
             this.controls.push(control);
-            if(control.get('discrete') === true) {
-                control.on('propertychange', Controls.prototype.handleDiscreteControlActiveChange, this);
-                this.discreteControls.push(control);
+            if(control.exclusive === true) {
+                control.onActivate(Controls.prototype.handleExclusiveControlActivate, this);
+                this.exclusiveControls.push(control);
             }
         };
         /**
@@ -87,19 +82,12 @@ angular.module('anol.map')
          *
          * disable other active discrete controls when discrete control is activeted
          */
-        Controls.prototype.handleDiscreteControlActiveChange = function(propertyChange) {
-            var self = this;
-            if(propertyChange.key !== 'active') {
-                return;
-            }
-            var targetControl = propertyChange.target;
-            if(targetControl.get('active') === false) {
-                return;
-            }
-            angular.forEach(self.discreteControls, function(control) {
-                if(control.get('active') === true) {
+        Controls.prototype.handleExclusiveControlActivate = function(targetControl, context) {
+            var self = context;
+            angular.forEach(self.exclusiveControls, function(control) {
+                if(control.active === true) {
                     if(control !== targetControl) {
-                        control.get('deactivate')();
+                        control.deactivate();
                     }
                 }
             });

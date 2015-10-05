@@ -53,8 +53,8 @@ angular.module('anol.geolocation')
 
         element.addClass('ol-control');
 
-        ControlsService.addControl(new ol.control.Control({
-          element: element.first().context
+        ControlsService.addControl(new anol.control.Control({
+          element: element
         }));
       }
     };

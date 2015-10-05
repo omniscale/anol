@@ -6,13 +6,14 @@ angular.module('anol.layerswitcher')
  *
  * @restrict A
  * @requires anol.map.LayersService
+ * @requires anol.map.ControlsService
  *
  * @param {string=} anolLayerswitcher If containing "open" layerswitcher initial state is expanded. Otherweise it is collapsed.
  *
  * @description
  * Shows/hides background- and overlaylayer
  */
-.directive('anolLayerswitcher', ['LayersService', function(LayersService) {
+.directive('anolLayerswitcher', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -38,9 +39,9 @@ angular.module('anol.layerswitcher')
                 if(angular.isDefined(AnolMapController)) {
                     scope.collapsed = scope.anolLayerswitcher !== 'open';
                     scope.showToggle = true;
-                    AnolMapController.getMap().addControl(
-                        new ol.control.Control({
-                            element: element.first().context
+                    ControlsService.addControl(
+                        new anol.control.Control({
+                            element: element
                         })
                     );
                 }
