@@ -7,14 +7,18 @@ anol.control.Control = function(options) {
     this.exclusive = options.exclusive || false;
     this.element = options.element;
 
-    var controlElement;
-    if(this.element !== undefined) {
-        controlElement = this.element[0];
-    }
+    if(options.olControl === undefined) {
+        var controlElement;
+        if(this.element !== undefined) {
+            controlElement = this.element[0];
+        }
 
-    this.olControl = new ol.control.Control({
-        element: controlElement
-    });
+        this.olControl = new ol.control.Control({
+            element: controlElement
+        });
+    } else {
+        this.olControl = options.olControl;
+    }
 };
 
 anol.control.Control.prototype = {

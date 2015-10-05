@@ -90,7 +90,7 @@ angular.module('anol.map')
             if(angular.isUndefined(this.map)) {
                 this.map = buildMapConfig(
                     LayersService.olLayers,
-                    ControlsService.controls,
+                    ControlsService.olControls,
                     InteractionsService.interactions
                 );
                 LayersService.registerMap(this.map);
