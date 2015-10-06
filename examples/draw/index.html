@@ -63,13 +63,12 @@
           });
           LayersServiceProvider.setLayers([wms]);
       }])
-      .controller('DrawExampleController', ['$scope', '$sce', function($scope, $sce) {
+      .controller('DrawExampleController', ['$scope', function($scope) {
         var geojsonFormat = new ol.format.GeoJSON();
         $scope.drawSource = new ol.source.Vector();
         $scope.drawSource.on('addfeature', function() {
           $scope.$apply(function() {
             $scope.features = geojsonFormat.writeFeaturesObject($scope.drawSource.getFeatures());
-            console.log(typeof($scope.features));
           });
         });
       }]);
