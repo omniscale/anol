@@ -40,6 +40,14 @@ angular.module('anol.featurestyleeditor')
 .controller('FeatureStyleEditorModalController', function($scope, $modalInstance, style, geometryType) {
     $scope.style = style;
     $scope.geometryType = geometryType;
+    $scope.strokeDashStyles = [
+        'solid',
+        'dot',
+        'dash',
+        'dashdot',
+        'longdash',
+        'longdashdot'
+    ];
 
     $scope.ok = function () {
         $modalInstance.close($scope.style);
