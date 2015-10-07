@@ -19,15 +19,15 @@ angular.module('anol.draw')
     function($compile, ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
-        require: '?^anolFeaturePropertiesEditor',
+        require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
             style: '=',
             drawLayer: '='
         },
         templateUrl: 'src/modules/draw/templates/draw.html',
-        link: function(scope, element, attrs, AnolFeaturePropertiesEditor) {
-            var drawPointControl, drawLineControl, drawPolygonControl;
-
+        link: function(scope, element, attrs, controllers) {
+            var AnolFeaturePropertiesEditor = controllers[0];
+            var AnolFeatureStyleEditor = controllers[1];
 
             var drawPointControl, drawLineControl, drawPolygonControl;
 
@@ -55,6 +55,11 @@ angular.module('anol.draw')
                     draw.on('drawend', function(evt) {
                         var feature = evt.feature;
                         AnolFeaturePropertiesEditor.editFeature(feature);
+                    });
+                } else if (angular.isDefined(AnolFeatureStyleEditor)) {
+                    draw.on('drawend', function(evt) {
+                        var feature = evt.feature;
+                        AnolFeatureStyleEditor.editFeature(feature);
                     });
                 }
 

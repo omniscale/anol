@@ -1,0 +1,76 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title">Edit feature style</h4>
+</div>
+<div class="modal-body" id="feature-properties-container">
+  <div class="form-horizontal">
+    <div ng-switch on="geometryType">
+      <div ng-switch-when="Point">
+        <div ng-include="'point-style-inputs.html'"></div>
+        <div ng-include="'stroke-style-inputs.html'"></div>
+        <div ng-include="'fill-style-inputs.html'"></div>
+      </div>
+      <div ng-switch-when="LineString">
+        <div ng-include="'stroke-style-inputs.html'"></div>
+      </div>
+      <div ng-switch-when="Polygon">
+        <div ng-include="'stroke-style-inputs.html'"></div>
+        <div ng-include="'fill-style-inputs.html'"></div>
+      </div>
+    </div>
+  </div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" ng-click="ok()">OK</button>
+  <button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>
+
+<script type="text/ng-template" id="point-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-3">Radius</label>
+    <div class="col-sm-9">
+      <input type="number" class="form-control" ng-model="style.radius" />
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="stroke-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-3">Line Color</label>
+    <div class="col-sm-9">
+      <input class="form-control" ng-model="style.strokeColor" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-3">Line Width</label>
+    <div class="col-sm-9">
+      <input type="number" class="form-control" ng-model="style.strokeWidth" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-3">Line Opacity</label>
+    <div class="col-sm-9">
+      <input type="number" class="form-control" ng-model="style.strokeOpacity" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-3">Line Dashstyle</label>
+    <div class="col-sm-9">
+      <input class="form-control" ng-model="style.strokeDashstyle" />
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="fill-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-3">Fill Color</label>
+    <div class="col-sm-9">
+      <input class="form-control" ng-model="style.fillColor" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-3">Fill Opacity</label>
+    <div class="col-sm-9">
+      <input type="number" class="form-control" ng-model="style.fillOpacity" />
+    </div>
+  </div>
+</script>
