@@ -40,6 +40,7 @@ angular.module('anol.featurepropertieseditor')
 
 .controller('FeaturePropertiesEditorModalController', function($scope, $modalInstance, properties) {
     delete properties.geometry;
+    delete properties.style;
     $scope.properties = properties;
 
     $scope.ok = function () {
