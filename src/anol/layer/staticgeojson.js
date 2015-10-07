@@ -54,13 +54,15 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         return srcOptions;
     },
     createStyle: function(feature, resolution) {
-        if(feature === undefined) {
-            return;
-        }
-        var geometryType = feature.getGeometry().getType();
-        var geojsonStyle = feature.get('style');
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
+
+        if(feature === undefined) {
+            return defaultStyle;
+        }
+
+        var geometryType = feature.getGeometry().getType();
+        var geojsonStyle = feature.get('style');
 
         if(geojsonStyle === undefined) {
             return defaultStyle;
