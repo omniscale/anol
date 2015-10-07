@@ -22,29 +22,26 @@ angular.module('anol.draw')
         require: '?^anolFeaturePropertiesEditor',
         scope: {
             style: '=',
-            drawSource: '='
+            drawLayer: '='
         },
         templateUrl: 'src/modules/draw/templates/draw.html',
         link: function(scope, element, attrs, AnolFeaturePropertiesEditor) {
             var drawPointControl, drawLineControl, drawPolygonControl;
 
-            if(angular.isUndefined(scope.drawSource)) {
-                scope.drawSource = new ol.source.Vector();
+
+
+            if(angular.isUndefined(scope.drawLayer)) {
+                scope.drawLayer = new anol.layer.Vector({
+                    name: 'draw_layer',
+                    title: 'Draw Layer'
+                });
+                if(angular.isDefined(scope.style)) {
+                    scope.drawLayer.olLayer.setStyle(scope.style);
+                }
+                LayersService.addLayer(scope.drawLayer);
             }
 
-            var _drawLayer = new ol.layer.Vector({
-                source: scope.drawSource
-            });
-
-            if(angular.isDefined(scope.style)) {
-                _drawLayer.setStyle(scope.style);
-            }
-
-            var layerOptions = {
-                title: 'Draw Layer',
-                name: 'drawLayer',
-                olLayer: _drawLayer
-            };
+            scope.drawSource = scope.drawLayer.olLayer.getSource();
 
             var createDrawInteraction = function(drawType) {
                 // create draw interaction
@@ -108,8 +105,6 @@ angular.module('anol.draw')
             };
 
             scope.map = MapService.getMap();
-
-            LayersService.addLayer(new anol.layer.Layer(layerOptions));
 
             element.addClass('ol-control');
             element.addClass('anol-draw');

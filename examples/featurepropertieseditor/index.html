@@ -26,7 +26,7 @@
           <!-- map -->
           <div anol-map style="border: 1px solid black;">
             <div anol-feature-properties-editor>
-              <div anol-draw draw-source='drawSource'></div>
+              <div anol-draw draw-layer='drawLayer'></div>
             </div>
           </div>
         </div>
@@ -66,11 +66,12 @@
           });
           LayersServiceProvider.setLayers([wms]);
       }])
-      .controller('DrawExampleController', ['$scope', function($scope) {
+      .controller('DrawExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
         var geojsonFormat = new ol.format.GeoJSON();
-        $scope.drawSource = new ol.source.Vector();
-        $scope.drawSource.on('change', function() {
-          $scope.features = geojsonFormat.writeFeaturesObject($scope.drawSource.getFeatures());
+        $scope.drawLayer = new anol.layer.Feature();
+        LayersService.addLayer($scope.drawLayer);
+        $scope.drawLayer.olLayer.getSource().on('change', function() {
+          $scope.features = geojsonFormat.writeFeaturesObject($scope.drawLayer.olLayer.getSource().getFeatures());
         });
       }]);
     </script>
