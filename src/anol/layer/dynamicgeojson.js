@@ -10,28 +10,16 @@
  * @param {Object} options.olLayer.source.additionalParameters Additional parameters added to request
  *
  * @description
- * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
+ * Inherits from {@link anol.layer.Layer anol.layer.StaticGeoJSON}.
  *
  * Ask *url* with current projection and bbox.
  */
  anol.layer.DynamicGeoJSON = function(_options) {
-    var defaults = {};
-    var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
+    anol.layer.StaticGeoJSON.call(this, _options);
 
-    options.olLayer.source = new ol.source.Vector(
-        this._createSourceOptions(options.olLayer.source)
-    );
-    this._source = options.olLayer.source;
-
-    options.olLayer = new ol.layer.Vector(options.olLayer);
-
-    anol.layer.Layer.call(this, options);
+    this._source = this.olLayer.getSource();
 };
-anol.layer.DynamicGeoJSON.prototype = new anol.layer.Layer();
+anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
 $.extend(anol.layer.DynamicGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.DynamicGeoJSON',
     /**
