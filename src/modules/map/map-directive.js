@@ -20,14 +20,13 @@ angular.module('anol.map')
             pre: function(scope, element, attrs) {
                 scope.mapName = DefaultMapName;
                 scope.map = MapService.getMap();
-            },
-            post: function (scope, element, attrs) {
                 element
                     .attr('id', scope.mapName)
                     .addClass(scope.mapName);
 
                 scope.map.setTarget(scope.mapName);
-
+            },
+            post: function (scope, element, attrs) {
                 $timeout(function() {
                     scope.map.updateSize();
                 });
