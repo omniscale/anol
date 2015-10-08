@@ -31,7 +31,10 @@ angular.module('anol.draw')
             polygonTooltipPlacement: '@',
 
         },
-        templateUrl: 'src/modules/draw/templates/draw.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/draw/templates/draw.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
                 return attr || _default;

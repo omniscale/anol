@@ -4,12 +4,16 @@ angular.module('anol.featurestyleeditor')
     return {
         restrict: 'A',
         scope: {},
-        templateUrl: 'src/modules/featurestyleeditor/templates/featurestyleeditor.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         transclude: true,
         link: function(scope, element, attrs) {
             scope.openEditor = function() {
+                var defaultModalUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor-modal.html';
                 var modalInstance = $modal.open({
-                    templateUrl: 'src/modules/featurestyleeditor/templates/featurestyleeditor-modal.html',
+                    templateUrl: scope.modalTemplateUrl || defaultModalUrl,
                     controller: 'FeatureStyleEditorModalController',
                     resolve: {
                         style: function () {

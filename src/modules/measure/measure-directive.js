@@ -31,7 +31,10 @@ angular.module('anol.measure')
             tooltipText: '@',
             tooltipPlacement: '@'
         },
-        templateUrl: 'src/modules/measure/templates/measure.html',
+        templateUrl: function(tElement, tAttrs) {
+          var defaultUrl = 'src/modules/measure/templates/measure.html';
+          return tAttrs.templateUrl || defaultUrl;
+        },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
                 return attr || _default;

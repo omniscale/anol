@@ -26,7 +26,10 @@ angular.module('anol.geolocation')
         tooltipText: '@',
         tooltipPlacement: '@'
       },
-      templateUrl: 'src/modules/geolocation/templates/geolocation.html',
+      templateUrl: function(tElement, tAttrs) {
+          var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
+          return tAttrs.templateUrl || defaultUrl;
+      },
       compile: function(tElement, tAttrs) {
         var prepareAttr = function(attr, _default) {
             return attr || _default;

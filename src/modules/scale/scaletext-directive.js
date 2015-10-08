@@ -36,7 +36,10 @@ angular.module('anol.scale')
     return {
         restrict: 'A',
         require: '?^anolMap',
-        templateUrl: 'src/modules/scale/templates/scaletext.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/scale/templates/scaletext.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         scope: {},
         link: {
             pre: function(scope, element, attrs, AnolMapController) {

@@ -19,7 +19,10 @@ angular.module('anol.legend')
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        templateUrl: 'src/modules/legend/templates/legend.html',
+        templateUrl: function(tElement, tAttrs) {
+          var defaultUrl = 'src/modules/legend/templates/legend.html';
+          return tAttrs.templateUrl || defaultUrl;
+        },
         scope: {
             anolLegend: '@',
             customTargetFilled: '&',

@@ -22,7 +22,10 @@ angular.module('anol.featurepopup')
             'extentWidth': '='
         },
         replace: true,
-        templateUrl: 'src/modules/featurepopup/templates/popup.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         link: {
             pre: function(scope, element, attrs) {
                 scope.map = MapService.getMap();

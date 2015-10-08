@@ -17,7 +17,10 @@ angular.module('anol.print')
   function($http, PrintPageService, MapService, LayersService) {
     return {
       restrict: 'A',
-      templateUrl: 'src/modules/print/templates/print.html',
+      templateUrl: function(tElement, tAttrs) {
+        var defaultUrl = 'src/modules/print/templates/print.html';
+        return tAttrs.templateUrl || defaultUrl;
+      },
       scope: {
         anolPrint: '@'
       },

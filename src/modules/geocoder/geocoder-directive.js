@@ -19,7 +19,10 @@ angular.module('anol.geocoder')
       restrict: 'A',
       require: '?^anolMap',
       transclude: true,
-      templateUrl: 'src/modules/geocoder/templates/searchbox.html',
+      templateUrl: function(tElement, tAttrs) {
+          var defaultUrl = 'src/modules/geocoder/templates/searchbox.html';
+          return tAttrs.templateUrl || defaultUrl;
+      },
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@'

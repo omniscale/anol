@@ -4,13 +4,17 @@ angular.module('anol.featurepropertieseditor')
     return {
         restrict: 'A',
         scope: {},
-        templateUrl: 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         transclude: true,
         link: {
             pre: function(scope, element, attrs) {
                 scope.openEditor = function() {
+                    var defaultModalUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor-modal.html';
                     var modalInstance = $modal.open({
-                        templateUrl: 'src/modules/featurepropertieseditor/templates/featurepropertieseditor-modal.html',
+                        templateUrl: scope.modalTemplateUrl || defaultModalUrl,
                         controller: 'FeaturePropertiesEditorModalController',
                         resolve: {
                             properties: function () {

@@ -18,7 +18,10 @@ angular.module('anol.layerswitcher')
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        templateUrl: 'src/modules/layerswitcher/templates/layerswitcher.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/layerswitcher/templates/layerswitcher.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         scope: {
             anolLayerswitcher: '@anolLayerswitcher',
             tooltipText: '@',

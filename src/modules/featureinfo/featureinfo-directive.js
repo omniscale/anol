@@ -25,7 +25,10 @@ angular.module('anol.featureinfo')
         scope: {
             customTargetFilled: '&'
         },
-        templateUrl: 'src/modules/featureinfo/templates/popup.html',
+        templateUrl: function(tElement, tAttrs) {
+            var defaultUrl = 'src/modules/featureinfo/templates/popup.html';
+            return tAttrs.templateUrl || defaultUrl;
+        },
         link: {
             pre: function(scope, element) {
                 $compile(element.contents())(scope);
