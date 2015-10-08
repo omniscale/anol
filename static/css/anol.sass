@@ -57,13 +57,13 @@
 
 
 /**
- * anol-featureinfo
+ * anol-popup
+ * for featurepopup- and featureinfo-directive
  */
 .anol-popup
   position: absolute
   background-color: white
-  padding: 15px
-  border-radius: 10px
+  padding: 5px 15px 5px 10px
   border: 1px solid #cccccc
   bottom: 12px
   left: -50px
@@ -83,31 +83,16 @@
     left: 48px
     margin-left: -10px
 
-  &:before
-    border-top-color: #cccccc
-    border-width: 11px
-    left: 48px
-    margin-left: -11px
+  .anol-popup-content
+    white-space: nowrap
 
-  #popup-content
-    font-size: 13px
-    line-height: 18px
-    width: 200px
-    height: 200px
-    iframe
-      width: 200px
-      height: 200px
-
-  &.close-button
-    position: absolute
-    right: 10px
-    top: 5px
+  .anol-popup-closer
     cursor: pointer
-    color: #cccccc
-    font-weight: bold
-
-    &:before
-      content: "x"
+    text-decoration: none
+    position: absolute
+    top: 3px
+    right: 3px
+    font-size: 10px
 
 
 /**

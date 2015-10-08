@@ -1,5 +1,6 @@
-<div ng-show="popupVisible">
-    <div class="alert alert-info">
+<div class="anol-popup" ng-show="popupVisible">
+    <span class="anol-popup-closer glyphicon glyphicon-remove" ng-click="close()"></span>
+    <div class="anol-popup-content">
         <div ng-repeat="properties in propertiesCollection">
             <div ng-repeat="(key, value) in properties">{{ key }}: {{ value }}</div>
         </div>

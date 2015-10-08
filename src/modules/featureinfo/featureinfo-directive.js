@@ -35,7 +35,7 @@ angular.module('anol.featureinfo')
 
                 scope.map = MapService.getMap();
                 var view = scope.map.getView();
-                var popupContent = element.find('#popup-content');
+                var popupContent = element.find('.anol-popup-content');
                 var popupOverlay = new ol.Overlay({
                     element: element.context,
                     autoPan: true,
@@ -46,7 +46,7 @@ angular.module('anol.featureinfo')
 
                 scope.map.addOverlay(popupOverlay);
 
-                scope.handlePopupClose = function() {
+                scope.close = function() {
                     element.css('display', 'none');
                 };
 
