@@ -20,43 +20,53 @@ angular.module('anol.layerswitcher')
         transclude: true,
         templateUrl: 'src/modules/layerswitcher/templates/layerswitcher.html',
         scope: {
-            anolLayerswitcher: '@anolLayerswitcher'
+            anolLayerswitcher: '@anolLayerswitcher',
+            tooltipText: '@',
+            tooltipPlacement: '@'
         },
-        link: {
-            pre: function(scope, element, attrs, AnolMapController) {
-                scope.collapsed = false;
-                scope.showToggle = false;
+        compile: function(tElement, tAttrs) {
+            var prepareAttr = function(attr, _default) {
+                return attr || _default;
+            };
+            tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle layerswitcher');
+            tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
 
-                scope.backgroundLayers = LayersService.backgroundLayers;
-                var overlayLayers = [];
+            return {
+                pre: function(scope, element, attrs, AnolMapController) {
+                    scope.collapsed = false;
+                    scope.showToggle = false;
 
-                angular.forEach(LayersService.overlayLayers, function(layer) {
-                    if(layer.displayInLayerswitcher !== false) {
-                        overlayLayers.push(layer);
+                    scope.backgroundLayers = LayersService.backgroundLayers;
+                    var overlayLayers = [];
+
+                    angular.forEach(LayersService.overlayLayers, function(layer) {
+                        if(layer.displayInLayerswitcher !== false) {
+                            overlayLayers.push(layer);
+                        }
+                    });
+                    scope.overlayLayers = overlayLayers;
+                    if(angular.isDefined(AnolMapController)) {
+                        scope.collapsed = scope.anolLayerswitcher !== 'open';
+                        scope.showToggle = true;
+                        ControlsService.addControl(
+                            new anol.control.Control({
+                                element: element
+                            })
+                        );
                     }
-                });
-                scope.overlayLayers = overlayLayers;
-                if(angular.isDefined(AnolMapController)) {
-                    scope.collapsed = scope.anolLayerswitcher !== 'open';
-                    scope.showToggle = true;
-                    ControlsService.addControl(
-                        new anol.control.Control({
-                            element: element
-                        })
-                    );
+                },
+                post: function(scope, element, attrs) {
+                    scope.backgroundLayer = LayersService.activeBackgroundLayer();
+                    scope.$watch('backgroundLayer', function(newVal, oldVal) {
+                        if(angular.isDefined(oldVal)) {
+                            oldVal.setVisible(false);
+                        }
+                        if(angular.isDefined(newVal)) {
+                            newVal.setVisible(true);
+                        }
+                    });
                 }
-            },
-            post: function(scope, element, attrs) {
-                scope.backgroundLayer = LayersService.activeBackgroundLayer();
-                scope.$watch('backgroundLayer', function(newVal, oldVal) {
-                    if(angular.isDefined(oldVal)) {
-                        oldVal.setVisible(false);
-                    }
-                    if(angular.isDefined(newVal)) {
-                        newVal.setVisible(true);
-                    }
-                });
-            }
+            };
         },
         controller: function($scope, $element, $attrs) {
             $scope.isGroup = function(toTest) {

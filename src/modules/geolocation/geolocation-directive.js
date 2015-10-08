@@ -22,40 +22,52 @@ angular.module('anol.geolocation')
       scope: {
         anolGeolocation: '@',
         disableButton: '@',
-        zoom: '@'
+        zoom: '@',
+        tooltipText: '@',
+        tooltipPlacement: '@'
       },
-      link: function(scope, element) {
-        scope.anolGeolocation = 'false' !== scope.anolGeolocation;
-        if('true' !== scope.disableButton) {
-          var button = angular.element('<button ng-click="locate()"></button>');
-          element.addClass('anol-geolocation');
-          element.append($compile(button)(scope));
-        }
-
-        var view = MapService.getMap().getView();
-        var geolocation = new ol.Geolocation({
-          projection: view.getProjection(),
-          tracking: scope.anolGeolocation
-        });
-
-        geolocation.on('change:position', function() {
-          geolocation.setTracking(false);
-          var position = geolocation.getPosition();
-          view.setCenter(position);
-          if(angular.isDefined(scope.zoom)) {
-            view.setZoom(parseInt(scope.zoom));
-          }
-        });
-
-        scope.locate = function() {
-          geolocation.setTracking(true);
+      templateUrl: 'src/modules/geolocation/templates/geolocation.html',
+      compile: function(tElement, tAttrs) {
+        var prepareAttr = function(attr, _default) {
+            return attr || _default;
         };
+        tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Start geolocation');
+        tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'right');
 
-        element.addClass('ol-control');
+        return function(scope, element) {
+          scope.anolGeolocation = 'false' !== scope.anolGeolocation;
 
-        ControlsService.addControl(new anol.control.Control({
-          element: element
-        }));
+          if('true' !== scope.disableButton) {
+            var button = angular.element('');
+            element.addClass('anol-geolocation');
+            element.append($compile(button)(scope));
+          }
+
+          var view = MapService.getMap().getView();
+          var geolocation = new ol.Geolocation({
+            projection: view.getProjection(),
+            tracking: scope.anolGeolocation
+          });
+
+          geolocation.on('change:position', function() {
+            geolocation.setTracking(false);
+            var position = geolocation.getPosition();
+            view.setCenter(position);
+            if(angular.isDefined(scope.zoom)) {
+              view.setZoom(parseInt(scope.zoom));
+            }
+          });
+
+          scope.locate = function() {
+            geolocation.setTracking(true);
+          };
+
+          element.addClass('ol-control');
+
+          ControlsService.addControl(new anol.control.Control({
+            element: element
+          }));
+        };
       }
     };
 }]);

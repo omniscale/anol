@@ -72,6 +72,7 @@ module.exports = function(grunt) {
         src: [
           'libs/jquery/jquery-2.1.1.min.js',
           'libs/angular/angular.min.js',
+          'libs/angular/ui-bootstrap-tpls-0.13.4.min.js',
           'libs/ol3/ol.custom.min.js',
           'build/<%= pkg.name %>.ugly.js'
         ],

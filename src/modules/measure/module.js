@@ -4,4 +4,4 @@
  * @description
  * Module providing ol3 map related services and directives
  */
-angular.module('anol.measure', ['anol']);
+angular.module('anol.measure', ['ui.bootstrap', 'anol']);
