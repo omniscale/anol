@@ -19,7 +19,7 @@
     <![endif]-->
   </head>
 
-  <body ng-app="example" ng-controller="ExampleController">
+  <body ng-app="example">
     <!-- map -->
     <div anol-map width="600" height="400" style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-overview-map></div>
@@ -52,14 +52,6 @@
             }
           });
           LayersServiceProvider.setLayers([wms]);
-      }])
-      .controller('ExampleController', ['$scope', 'MapService', function($scope, MapService) {
-        $scope.$watch(function() {
-          return MapService.getMap().getSize();
-        }, function(n, o) {
-          console.log(n, o);
-        });
-        /*console.log(MapService.getMap().setSize([100, 100]))*/
       }]);
     </script>
   </body>
