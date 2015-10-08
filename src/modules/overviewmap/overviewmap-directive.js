@@ -11,7 +11,8 @@ angular.module('anol.overviewmap')
             });
             var control = new anol.control.Control({
                 olControl: new ol.control.OverviewMap({
-                    layers: backgroundLayers
+                    layers: backgroundLayers,
+                    label: null
                 })
             });
             ControlsService.addControl(control);
