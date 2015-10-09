@@ -25,6 +25,7 @@
         <div class="col-md-4">
       <!-- map -->
           <div anol-map style="border: 1px solid black;">
+            <div anol-zoom></div>
             <div anol-draw draw-layer='drawLayer' point-tooltip-text='Point' point-tooltip-placement="right"></div>
           </div>
         </div>
@@ -43,7 +44,7 @@
     <script type="text/javascript" src="../../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol', 'anol.map', 'anol.draw'])
+      angular.module('example', ['anol.draw', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({

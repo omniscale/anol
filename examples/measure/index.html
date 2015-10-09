@@ -22,6 +22,7 @@
   <body ng-app="example" ng-controller="exampleController">
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
+      <div anol-zoom></div>
       <div anol-measure style="lineStyle" geodesic="true"></div>
       <div anol-measure='area' geodesic="true"></div>
     </div>
@@ -35,7 +36,7 @@
     <script type="text/javascript" src="../../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol', 'anol.map', 'anol.measure'])
+      angular.module('example', ['anol.measure', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({

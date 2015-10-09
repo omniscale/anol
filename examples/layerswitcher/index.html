@@ -22,7 +22,8 @@
   <body ng-app="example">
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
-        <div anol-layerswitcher></div>
+    <div anol-zoom></div>
+      <div anol-layerswitcher></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -34,7 +35,7 @@
     <script type="text/javascript" src="../../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol', 'anol.map', 'anol.layerswitcher'])
+      angular.module('example', ['anol.layerswitcher', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
