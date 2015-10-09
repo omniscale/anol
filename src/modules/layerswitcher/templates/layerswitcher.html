@@ -4,10 +4,12 @@
 <div class="anol-layerswitcher-container" ng-show="!collapsed">
     <div ng-show="backgroundLayers.length > 1">
         <h4>Background Layers</h4>
-        <div ng-repeat="layer in backgroundLayers">
-             <!-- used $parent to get out of ng-repeat scope -->
-            <input type="radio" ng-model="$parent.backgroundLayer" ng-value="layer">
-            {{ layer.title }}
+        <div ng-repeat="layer in backgroundLayers" class="radio">
+            <!-- used $parent to get out of ng-repeat scope -->
+            <label>
+                <input type="radio" ng-model="$parent.backgroundLayer" ng-value="layer">
+                {{ layer.title }}
+            </label>
         </div>
     </div>
     <div ng-show="overlayLayers.length > 0">
@@ -15,29 +17,34 @@
         <div ng-repeat="layer in overlayLayers" ng-if="layer.displayInLayerswitcher !== false">
             <div ng-if="isGroup(layer) && layer.layers.length > 1">
                 <span class="glyphicon" ng-class="{'glyphicon-plus': layer.collapsed, 'glyphicon-minus': !layer.collapsed}" ng-click="layer.collapsed=!layer.collapsed"></span>
-                <span class="glyphicon" ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}" ng-click="layer.setVisible(!layer.getVisible())"></span>
-                {{ layer.title }}
+                <span ng-click="layer.setVisible(!layer.getVisible())" class="pointer">
+                    <span class="glyphicon" ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}"></span>
+                    {{ layer.title }}
+                </span>
                 <div class="group-layers-container" ng-repeat="groupLayer in layer.layers" ng-show="!layer.collapsed">
-                    <span class="glyphicon"
-                          ng-class="{'glyphicon-eye-open': groupLayer.getVisible(), 'glyphicon-eye-close': !groupLayer.getVisible()}"
-                          ng-click="groupLayer.setVisible(!groupLayer.getVisible())">
+                    <span ng-click="groupLayer.setVisible(!groupLayer.getVisible())" class="pointer">
+                        <span class="glyphicon"
+                              ng-class="{'glyphicon-eye-open': groupLayer.getVisible(), 'glyphicon-eye-close': !groupLayer.getVisible()}">
+                        </span>
+                        {{ groupLayer.title }}
                     </span>
-                    {{ groupLayer.title }}
                 </div>
             </div>
             <div ng-if="isGroup(layer) && layer.layers.length == 1">
-                <span class="glyphicon"
-                      ng-class="{'glyphicon-eye-open': layer.layers[0].getVisible(), 'glyphicon-eye-close': !layer.layers[0].getVisible()}"
-                      ng-click="layer.layers[0].setVisible(!layer.layers[0].getVisible())">
+                <span ng-click="layer.layers[0].setVisible(!layer.layers[0].getVisible())" class="pointer">
+                    <span class="glyphicon"
+                          ng-class="{'glyphicon-eye-open': layer.layers[0].getVisible(), 'glyphicon-eye-close': !layer.layers[0].getVisible()}">
+                    </span>
+                    {{ layer.layers[0].title }}
                 </span>
-                {{ layer.layers[0].title }}
             </div>
             <div ng-if="!isGroup(layer)">
-                <span class="glyphicon"
-                      ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}"
-                      ng-click="layer.setVisible(!layer.getVisible())">
+                <span ng-click="layer.setVisible(!layer.getVisible())" class="pointer">
+                    <span class="glyphicon"
+                          ng-class="{'glyphicon-eye-open': layer.getVisible(), 'glyphicon-eye-close': !layer.getVisible()}">
+                    </span>
+                    {{ layer.title }}
                 </span>
-                {{ layer.title }}
             </div>
         </div>
     </div>
