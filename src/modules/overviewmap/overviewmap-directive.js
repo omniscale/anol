@@ -1,9 +1,12 @@
 angular.module('anol.overviewmap')
 
-.directive('anolOverviewMap', ['ControlsService', 'LayersService', 'MapService', function(ControlsService, LayersService, MapService) {
+.directive('anolOverviewMap', ['$compile', 'ControlsService', 'LayersService', 'MapService', function($compile, ControlsService, LayersService) {
     return {
         restrict: 'A',
-        scope: {},
+        scope: {
+            tooltipText: '@',
+            tooltipPlacement: '@'
+        },
         link: function(scope, element, attrs) {
             var backgroundLayers = [];
             angular.forEach(LayersService.backgroundLayers, function(layer) {
@@ -19,13 +22,12 @@ angular.module('anol.overviewmap')
                 olControl: olControl
             });
             // disable nativ tooltip
-            /*var overviewmapButton = angular.element(olControl.element).find('button');
-            overviewmapButton.removeAttr('title');*/
-
-/*            var tooltip = new anol.Tooltip({
-                text: 'Overview Map',
-                bindTo: overviewmapButton
-            });*/
+            var overviewmapButton = angular.element(olControl.element).find('button');
+            overviewmapButton.removeAttr('title');
+            // add cool tooltip
+            overviewmapButton.attr('tooltip', scope.tooltipText || 'Overview Map');
+            overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
+            $compile(overviewmapButton)(scope);
 
             ControlsService.addControl(control);
         }
