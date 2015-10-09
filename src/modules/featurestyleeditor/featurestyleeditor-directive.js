@@ -3,7 +3,9 @@ angular.module('anol.featurestyleeditor')
 .directive('anolFeatureStyleEditor', ['$modal', function($modal) {
     return {
         restrict: 'A',
-        scope: {},
+        scope: {
+            modalTemplateUrl: '@'
+        },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
             return tAttrs.templateUrl || defaultUrl;
