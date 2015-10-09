@@ -40,6 +40,8 @@ angular.module('anol.legend')
                 pre: function(scope, element, attrs, AnolMapController) {
                     scope.collapsed = false;
                     scope.showToggle = false;
+                    // get callback from wrapper function
+                    scope.customTargetCallback = scope.customTargetFilled();
                     if(angular.isDefined(AnolMapController)) {
                         scope.collapsed = scope.anolLegend !== 'open';
                         scope.showToggle = true;
@@ -193,8 +195,8 @@ angular.module('anol.legend')
                                     angular.forEach(legendImages, function(legendImage) {
                                         target.append(legendImage);
                                     });
-                                    if(angular.isFunction(scope.customTargetFilled)) {
-                                        scope.customTargetFilled()();
+                                    if(angular.isFunction(scope.customTargetCallback)) {
+                                        scope.customTargetCallback();
                                     }
                                 });
                                 container.append(showLegendButton);

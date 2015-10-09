@@ -34,6 +34,8 @@ angular.module('anol.featureinfo')
                 $compile(element.contents())(scope);
 
                 scope.map = MapService.getMap();
+                // get callback from wrapper function
+                scope.customTargetCallback = scope.customTargetFilled();
                 var view = scope.map.getView();
                 var popupContent = element.find('.anol-popup-content');
                 var popupOverlay = new ol.Overlay({
@@ -103,9 +105,8 @@ angular.module('anol.featureinfo')
                                                     divTargetCleared = true;
                                                 }
                                                 target.append(iframe);
-                                                if(angular.isFunction(scope.customTargetFilled)) {
-                                                    // first function call get function, we want to call
-                                                    scope.customTargetFilled()();
+                                                if(angular.isFunction(scope.customTargetCallback)) {
+                                                    scope.customTargetCallback();
                                                 }
                                             break;
                                         }
