@@ -4,4 +4,4 @@
  * @description
  * Module providing the overview map directive
  */
-angular.module('anol.overviewmap', ['anol.map', 'ui.bootstrap']);
+angular.module('anol.overviewmap', ['anol.map']);

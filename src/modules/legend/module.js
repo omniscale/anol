@@ -4,4 +4,4 @@
  * @description
  * Module providing the featurepopup directive
  */
-angular.module('anol.legend', ['ui.bootstrap', 'anol.map']);
+angular.module('anol.legend', ['anol.map']);

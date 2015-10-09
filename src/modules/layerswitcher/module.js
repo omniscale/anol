@@ -4,4 +4,4 @@
  * @description
  * Module providing the layerswitcher directive
  */
-angular.module('anol.layerswitcher', ['ui.bootstrap', 'anol.map']);
+angular.module('anol.layerswitcher', ['anol.map']);

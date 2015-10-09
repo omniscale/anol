@@ -4,7 +4,7 @@
  * @description
  * Base anol module
  */
-angular.module('anol', [])
+angular.module('anol', ['ui.bootstrap'])
 /**
  * @ngdoc object
  * @name anol.constant:DefaultMapName

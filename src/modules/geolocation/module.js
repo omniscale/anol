@@ -4,4 +4,4 @@
  * @description
  * Module providing the geolocate directive
  */
-angular.module('anol.geolocation', ['ui.bootstrap', 'anol.map']);
+angular.module('anol.geolocation', ['anol.map']);

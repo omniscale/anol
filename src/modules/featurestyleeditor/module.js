@@ -4,4 +4,4 @@
  * @description
  * Module providing the feature style editor directive
  */
-angular.module('anol.featurestyleeditor', ['ui.bootstrap', 'anol.map']);
+angular.module('anol.featurestyleeditor', ['anol.map']);
