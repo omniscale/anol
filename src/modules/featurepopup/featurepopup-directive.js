@@ -6,8 +6,10 @@ angular.module('anol.featurepopup')
  * @restrict A
  * @requires $timeout
  * @requires anol.map.MapService
+ * @requires anol.map.LayersService
  *
  * @param {Float} extentWidth Width of square bounding box around clicked point
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Shows feature properties for layers with 'featureinfo' property.

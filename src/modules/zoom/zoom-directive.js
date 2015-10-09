@@ -1,4 +1,19 @@
 angular.module('anol.zoom')
+/**
+ * @ngdoc directive
+ * @name anol.zoom.directive:anolZoom
+ *
+ * @requires $compile
+ * @requires anol.map.ControlsService
+ *
+ * @param {string} zoomInTooltipText Tooltip text for zoom in button
+ * @param {string} zoomOutTooltipText Tooltip text for zoom out button
+ * @param {string} zoomInTooltipPlacement Tooltip position for zoom in button
+ * @param {string} zoomOutTooltipPlacement Tooltip position for zoom out button
+ *
+ * @description
+ * Provides zoom buttons
+ */
 .directive('anolZoom', ['$compile', 'ControlsService',
     function($compile, ControlsService) {
     return {

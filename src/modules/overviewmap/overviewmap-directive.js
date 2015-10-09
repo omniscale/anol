@@ -1,5 +1,19 @@
 angular.module('anol.overviewmap')
-
+/**
+ * @ngdoc directive
+ * @name anol.overviewmap.directive:anolOverviewMap
+ *
+ * @requires $compile
+ * @requires anol.map.ControlsSerivce
+ * @requries anol.map.LayersService
+ * @requries anol.map.MapService
+ *
+ * @param {string} tooltipText Text for tooltip
+ * @param {string} tooltipPlacement Position of tooltip
+ *
+ * @description
+ * Adds a overview map
+ */
 .directive('anolOverviewMap', ['$compile', 'ControlsService', 'LayersService', 'MapService', function($compile, ControlsService, LayersService) {
     return {
         restrict: 'A',

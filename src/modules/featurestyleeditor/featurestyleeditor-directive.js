@@ -1,5 +1,17 @@
 angular.module('anol.featurestyleeditor')
-
+/**
+ * @ngdoc directive
+ * @name anol.featurestyleeditor.directive:anolFeatureStyleEditor
+ *
+ * @restrict A
+ * @requires $modal
+ *
+ * @param {string} templateUrl Url to template to use instead of default one
+ * @param {string} modalTemplateUrl Url to template to use for modal instead of default one
+ *
+ * @description
+ * Shows a modal for editing feature style
+ */
 .directive('anolFeatureStyleEditor', ['$modal', function($modal) {
     return {
         restrict: 'A',

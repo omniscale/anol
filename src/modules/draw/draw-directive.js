@@ -1,5 +1,4 @@
 angular.module('anol.draw')
-
 /**
  * @ngdoc directive
  * @name anol.draw.anolDraw
@@ -8,12 +7,19 @@ angular.module('anol.draw')
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
  * @requries anol.map.LayersService
- * @requires anol.map.InteractionsService
  *
  * @param {ol.style.Style} style Default style
+ * @param {anol.layer.Layer} drawLayer Target layer to draw in. Must be a feature layer.
+ * @param {string} pointTooltipText Text for point tooltip
+ * @param {string} lineTooltipText Text for line tooltip
+ * @param {string} polygonTooltipText Text for polygon tooltip
+ * @param {string} pointTooltipPlacement Position of point tooltip
+ * @param {string} lineTooltipPlacement Position of line tooltip
+ * @param {string} polygonTooltipPlacement Position of polygon tooltip
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
- * Line drawment
+ * Provides controls to draw points, lines and polygons
  */
 .directive('anolDraw', ['$compile', 'ControlsService', 'LayersService', 'MapService',
     function($compile, ControlsService, LayersService, MapService) {

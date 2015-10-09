@@ -8,7 +8,10 @@ angular.module('anol.layerswitcher')
  * @requires anol.map.LayersService
  * @requires anol.map.ControlsService
  *
- * @param {string=} anolLayerswitcher If containing "open" layerswitcher initial state is expanded. Otherweise it is collapsed.
+ * @param {string} anolLayerswitcher If containing "open" layerswitcher initial state is expanded. Otherweise it is collapsed.
+ * @param {string} tooltipText Text for tooltip
+ * @param {string} tooltipPlacement Position of tooltip
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Shows/hides background- and overlaylayer

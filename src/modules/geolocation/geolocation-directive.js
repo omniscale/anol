@@ -11,6 +11,9 @@ angular.module('anol.geolocation')
  * @param {boolean} anolGeolocation When true, geolocation is startet just after map init
  * @param {boolean} disableButton When true, no geolocate button is added
  * @param {number} zoom Zoom level after map centered on geolocated point
+ * @param {string} tooltipText Text for tooltip
+ * @param {string} tooltipPlacement Position of tooltip
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Get current position and center map on it.

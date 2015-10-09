@@ -1,5 +1,17 @@
 angular.module('anol.featurepropertieseditor')
-
+/**
+ * @ngdoc directive
+ * @name anol.featurepropertieseditor.directive:anolFeaturePropertiesEditor
+ *
+ * @restrict A
+ * @requires $modal
+ *
+ * @param {string} templateUrl Url to template to use instead of default one
+ * @param {string} modalTemplateUrl Url to modal template to use instead of default one
+ *
+ * @description
+ * Shows a modal for editing feature properties
+ */
 .directive('anolFeaturePropertiesEditor', ['$modal', function($modal) {
     return {
         restrict: 'A',

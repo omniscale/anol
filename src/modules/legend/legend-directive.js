@@ -7,7 +7,11 @@ angular.module('anol.legend')
  * @requires anol.map.LayersService
  * @requires anol.map.ControlsSerivce
  *
- * @param {string=} anolLegend If containing "open" legend initial state is expanded. Otherweise it is collapsed.
+ * @param {string} anolLegend If containing "open" legend initial state is expanded. Otherweise it is collapsed.
+ * @param {function} customTargetFilled
+ * @param {string} tooltipText Text for tooltip
+ * @param {string} tooltipPlacement Position of tooltip
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Shows vector symbols as legend for each vector layer with defined *geometryType*

@@ -4,12 +4,16 @@ angular.module('anol.geocoder')
  * @name anol.geocoder.directive:anolGeocoderSearchbox
  *
  * @restrict A
+ * @requires $http
  * @required $timeout
  * @requires anol.map.MapService
  * @requires anol.map.ControlsService
  *
  * @param {string} anolGeocoderSearchbox Name of geocoder to use. Must be an available anol.geocoder
  * @param {string} zoomLevel Level to show result in
+ * @param {string} placeholder Placeholder for input field
+ * @param {string} templateUrl Url to template to use instead of default one
+ *
  * @description
  * Search for a location string on given geocoder, display and select results
  */

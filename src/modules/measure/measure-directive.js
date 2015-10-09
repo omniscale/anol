@@ -1,8 +1,7 @@
 angular.module('anol.measure')
-
 /**
  * @ngdoc directive
- * @name anol.measure.anolLineMeasure
+ * @name anol.measure.directive:anolLineMeasure
  *
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
@@ -12,9 +11,12 @@ angular.module('anol.measure')
  * @param {boolean} geodesic Use geodesic measure method
  * @param {ol.style.Style} drawStyle Style for lines while drawing
  * @param {ol.style.Style} style Style for drawed lines
+ * @param {string} tooltipText Text for tooltip
+ * @param {string} tooltipPlacement Position of tooltip
+ * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
- * Line measurement
+ * Line or area measurement
  */
 .directive('anolMeasure', ['ControlsService', 'LayersService', 'MapService',
     function(ControlsService, LayersService, MapService) {

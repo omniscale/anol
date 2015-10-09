@@ -14,6 +14,9 @@ angular.module('anol.featureinfo')
  * Makes GetFeatureInfo request on all non vector layers with 'featureinfo' property
  * and show result if not empty depending on 'target' specified in 'featureinfo'
  *
+ * @param {function} customTargetFilled Callback called after featureinfo result added to custom element
+ * @param {string} templateUrl Url to template to use instead of default one
+ *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
