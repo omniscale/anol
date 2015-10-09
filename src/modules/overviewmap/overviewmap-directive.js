@@ -14,7 +14,6 @@ angular.module('anol.overviewmap')
             });
             var olControl = new ol.control.OverviewMap({
                 layers: backgroundLayers,
-                tipLabel: false,
                 label: document.createTextNode(''),
                 collapseLabel: document.createTextNode('')
             });
