@@ -60,6 +60,10 @@ angular.module('anol.mouseposition')
                     }
                 });
 
+                var control = new anol.control.Control({
+                    olControl: olControl
+                });
+
                 if(!inMap) {
                     element.css('display', 'inherit');
                 }
@@ -71,7 +75,7 @@ angular.module('anol.mouseposition')
                     }
                 });
 
-                ControlsService.addControl(olControl);
+                ControlsService.addControl(control);
             }
         }
     };
