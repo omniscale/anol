@@ -80,6 +80,7 @@ angular.module('anol.print')
                 element.find('.download-link').attr('href', fileURL);
                 scope.downloadReady = true;
                 scope.prepareDownload = false;
+                scope.removePrintArea();
               }).error(function(response) {
                 scope.prepareDownload = false;
                 scope.downloadError = true;
@@ -118,6 +119,12 @@ angular.module('anol.print')
                 return false;
               }
               return scope.havePageSize();
+            };
+            scope.removePrintArea = function() {
+              PrintPageService.removePrintArea();
+              scope.printAttributes.pageSizeId = undefined;
+              scope.printAttributes.pageSize = undefined;
+
             };
         },
         post: function(scope, element, attrs) {

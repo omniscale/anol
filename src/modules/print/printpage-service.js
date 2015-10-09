@@ -245,6 +245,18 @@ angular.module('anol.print')
             this.createInteractions();
         };
         /**
+         * @ngdoc method
+         * @name removePrintArea
+         * @methodOf anol.print.PrintPageService
+         *
+         * @description
+         * Removes print area and all resize geometries
+         */
+        PrintPage.prototype.removePrintArea = function() {
+            _printSource.clear();
+            _printArea = undefined;
+        },
+        /**
          * @private
          * @name createDragFeatures
          * @methodOf anol.print.PrintPageService

@@ -21,6 +21,7 @@
     </select>
     <br>
     <div class="text-center">
+      <button class="btn btn-default" ng-click="removePrintArea()" ng-disabled="!isPrintable()">Remove print area</button>
       <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">Start print</button>
     </div>
     <br><br>
