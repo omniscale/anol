@@ -26,8 +26,9 @@ angular.module('anol.overviewmap')
             // add cool tooltip
             overviewmapButton.attr('tooltip', scope.tooltipText || 'Overview Map');
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
-            $compile(overviewmapButton)(scope);
+            overviewmapButton.attr('tooltip-append-to-body', true);
 
+            $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);
         }
     };

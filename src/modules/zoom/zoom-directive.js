@@ -21,12 +21,14 @@ angular.module('anol.zoom')
             zoomInButton.removeAttr('title');
             zoomInButton.attr('tooltip', scope.zoomInTooltipText || 'Zoom in');
             zoomInButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
+            zoomInButton.attr('tooltip-append-to-body', true);
             $compile(zoomInButton)(scope);
 
             var zoomOutButton = angular.element(olControl.element).find('.ol-zoom-out');
             zoomOutButton.removeAttr('title');
             zoomOutButton.attr('tooltip', scope.zoomOutTooltipText || 'Zoom out');
             zoomOutButton.attr('tooltip-placement', scope.zoomOutTooltipPlacement || 'right');
+            zoomOutButton.attr('tooltip-append-to-body', true);
             $compile(zoomOutButton)(scope);
 
             ControlsService.addControl(control);
