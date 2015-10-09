@@ -20,8 +20,9 @@
       <select class="form-control" ng-model="printAttributes.outputFormat" ng-options="format as format.label for format in outputFormats">
     </select>
     <br>
-    <button class="btn btn-default" ng-click="updatePrintPage()" ng-disabled="!havePageSize()">Show print area</button>
-    <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">Start print</button>
+    <div class="text-center">
+      <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">Start print</button>
+    </div>
     <br><br>
     <div ng-show="prepareDownload" class="alert alert-info text-center" ng-cloak>
       Output is prepared.<br>
