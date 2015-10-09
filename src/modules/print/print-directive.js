@@ -29,10 +29,13 @@ angular.module('anol.print')
             scope.printAttributes = {
               pageSize: [],
               pageSizeId: undefined,
-              scale: angular.copy(PrintPageService.defaultScale),
+              scale: angular.copy(PrintPageService.defaultScale)
             };
             scope.definedPageSizes = PrintPageService.pageSizes;
             scope.outputFormats = PrintPageService.outputFormats;
+            if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
+              scope.printAttributes.outputFormat = scope.outputFormats[0];
+            }
             scope.prepareDownload = false;
             scope.downloadReady = false;
             scope.downloadError = false;
