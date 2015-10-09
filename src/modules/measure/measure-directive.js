@@ -4,11 +4,9 @@ angular.module('anol.measure')
  * @ngdoc directive
  * @name anol.measure.anolLineMeasure
  *
- * @requires $compile
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
  * @requries anol.map.LayersService
- * @requires anol.map.InteractionsService
  *
  * @param {string} anolMeasure Type of measurement. Supported values are *line* and *area*. Default: *line*
  * @param {boolean} geodesic Use geodesic measure method
@@ -18,8 +16,8 @@ angular.module('anol.measure')
  * @description
  * Line measurement
  */
-.directive('anolMeasure', ['$compile', 'ControlsService', 'LayersService', 'InteractionsService', 'MapService',
-    function($compile, ControlsService, LayersService, InteractionsService, MapService) {
+.directive('anolMeasure', ['ControlsService', 'LayersService', 'MapService',
+    function(ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
