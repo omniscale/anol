@@ -4,13 +4,13 @@ angular.module('anol.scale')
  * @ngdoc directive
  * @name anol.scale.directive:anolScaleLine
  *
- * @requires MapService
+ * @requires anol.map.MapService
  *
  * @description
  * Add a ol scaleline to element directive is used in.
  * If element is defined inside anol-map-directive, scaleline is added to map
  */
-.directive('anolScaleLine', ['MapService', function(MapService) {
+.directive('anolScaleLine', ['MapService', 'ControlsService', function(MapService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -28,9 +28,11 @@ angular.module('anol.scale')
                     };
                 }
 
-                scope.map.addControl(
-                    new ol.control.ScaleLine(controlOptions)
-                );
+                var olControl = new ol.control.ScaleLine(controlOptions);
+                var control = new anol.control.Control({
+                    olControl: olControl
+                });
+                ControlsService.addControl(control);
             }
         }
     };
