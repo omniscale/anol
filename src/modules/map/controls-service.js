@@ -32,7 +32,7 @@ angular.module('anol.map')
             self.exclusiveControls = [];
             self.map = undefined;
             if(controls === undefined) {
-                angular.forEach(ol.control.defaults(), function(olControl) {
+                angular.forEach(ol.control.defaults({zoom: false}), function(olControl) {
                     self.olControls.push(olControl);
                     self.controls.push(new anol.control.Control({olControl: olControl}));
                 });
