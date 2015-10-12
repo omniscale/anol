@@ -12,6 +12,7 @@ angular.module('anol.legend')
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {string} templateUrl Url to template to use instead of default one
+ * @param {boolean} showInactive If true a legend item for not visible layers with legend options is also created
  *
  * @description
  * Shows vector symbols as legend for each vector layer with defined *geometryType*
@@ -31,7 +32,8 @@ angular.module('anol.legend')
             anolLegend: '@',
             customTargetFilled: '&',
             tooltipText: '@',
-            tooltipPlacement: '@'
+            tooltipPlacement: '@',
+            showInactive: '@'
         },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
@@ -39,6 +41,7 @@ angular.module('anol.legend')
             };
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle legend');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
+            tAttrs.showInactive = (tAttrs.showInactive === true || tAttrs.showInactive === 'true');
 
             return {
                 pre: function(scope, element, attrs, AnolMapController) {
@@ -58,6 +61,8 @@ angular.module('anol.legend')
                     }
                 },
                 post: function(scope, element, attrs) {
+                    var legendLayers = [];
+                    var legendItemsContainer = element.find('.anol-legend-items');
                     var VectorLegend = {
                         createCanvas: function() {
                             var canvas = angular.element('<canvas></canvas>');
@@ -130,7 +135,7 @@ angular.module('anol.legend')
                                 break;
                                 default:
                             }
-                            element.find('.anol-legend-items').append(container);
+                            legendItemsContainer.append(container);
                         }
                     };
 
@@ -211,10 +216,30 @@ angular.module('anol.legend')
                                 });
                             }
 
-                            element.find('.anol-legend-items').append(container);
+                            legendItemsContainer.append(container);
                         }
                     };
 
+                    var refreshLegend = function() {
+                        legendItemsContainer.empty();
+                        angular.forEach(legendLayers, function(layer) {
+                            if(!layer.getVisible() && scope.showInactive !== true) {
+                                return;
+                            }
+                            if(layer.olLayer instanceof ol.layer.Vector) {
+                                VectorLegend.createLegendEntry(
+                                    layer.title,
+                                    layer.legend.type,
+                                    layer.olLayer.getStyle()
+                                );
+                            } else {
+                                RasterLegend.createLegendEntry(layer);
+                            }
+                        });
+                    };
+
+                    // Adding visible change listener to legend layers
+                    // TODO add visible change listener also to legend layers added at runtime
                     angular.forEach(LayersService.layers, function(_layer) {
                         var layers = [_layer];
                         if(_layer instanceof anol.layer.Group) {
@@ -224,13 +249,12 @@ angular.module('anol.legend')
                             if(layer.legend === false) {
                                 return;
                             }
-                            if(layer.olLayer instanceof ol.layer.Vector) {
-                                VectorLegend.createLegendEntry(layer.title, layer.legend.type, layer.olLayer.getStyle());
-                            } else {
-                                RasterLegend.createLegendEntry(layer);
-                            }
+                            layer.onVisibleChange(refreshLegend);
+                            legendLayers.push(layer);
                         });
                     });
+
+                    refreshLegend();
                 }
             };
         }

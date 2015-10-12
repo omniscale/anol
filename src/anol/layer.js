@@ -73,6 +73,14 @@ anol.layer.Layer.prototype = {
         var self = this;
         self.olLayer.setVisible(visible);
     },
+    onVisibleChange: function(func) {
+        var self = this;
+        return self.olLayer.on('change:visible', func);
+    },
+    offVisibleChange: function(key) {
+        var self = this;
+        self.olLayer.off(key);
+    },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
         if(srcOptions.attribution !== undefined) {

@@ -23,6 +23,7 @@
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-zoom></div>
+      <div anol-layerswitcher></div>
       <!-- popup -->
       <div anol-legend></div>
     </div>
@@ -36,7 +37,7 @@
     <script type="text/javascript" src="../../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.legend', 'anol.zoom'])
+      angular.module('example', ['anol.legend', 'anol.zoom', 'anol.layerswitcher'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
