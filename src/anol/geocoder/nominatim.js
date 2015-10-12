@@ -5,6 +5,9 @@
  * @param {Object} options Options
  * @param {string} options.url Url of nominatim geocoder. Default 'http://nominatim.openstreetmap.org/search?'
  * @param {Array} options.viewbox Box to restrict search to
+ *
+ * @description
+ * Nominatim geocoder. See http://wiki.openstreetmap.org/wiki/Nominatim
  */
 anol.geocoder.Nominatim = function(_options) {
     var defaults = {
