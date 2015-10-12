@@ -1,3 +1,21 @@
+/**
+ * @ngdoc object
+ * @name anol.Control.Control
+ *
+ * @param {Object} options AnOl Control options
+ * @param {boolean} options.active Controls initial active state. Default false
+ * @param {boolean} options.exclusive Flag control as exclusive. Only one exclusive control can be active at one time
+ * @param {boolean} options.subordinate Flag control as subordinate. Subordinate controls are permanently active as long as no exclusive control is active.
+ * @param {Object} options.element DOM-Element control belongs to
+ * @param {Object} options.target DOM-Element control should be placed in
+ * @param {ol.interaction.Interaction} options.interaction Openlayers interaction used by control
+ * @param {ol.control.Control} options.olControl OpenLayers control if this control.
+ * - If olControl is undefined, a new ol.control.Control with given options.element and options.target is created
+ * - If olControl is null, anol.control.Control don't have an ol.control.Control
+ *
+ * @description
+ * anol.control.Control is designed to work with anol.map.ControlsService.
+ */
 anol.control.Control = function(options) {
     if(options === undefined) {
         return;
@@ -5,6 +23,7 @@ anol.control.Control = function(options) {
 
     this.active = options.active || false;
     this.exclusive = options.exclusive || false;
+    this.subordinate = options.subordinate || false;
     this.element = options.element;
     this.interaction = options.interaction;
 
@@ -40,6 +59,12 @@ anol.control.Control.prototype = {
             func(targetControl, context);
         });
     },
+    oneActivate: function(func, context) {
+        var targetControl = this;
+        $(this).one('anol.control.activate', function() {
+            func(targetControl, context);
+        });
+    },
     deactivate: function() {
         this.active = false;
         $(this).triggerHandler('anol.control.deactivate');
@@ -47,6 +72,12 @@ anol.control.Control.prototype = {
     onDeactivate: function(func, context) {
         var targetControl = this;
         $(this).on('anol.control.deactivate', function() {
+            func(targetControl, context);
+        });
+    },
+    oneDeactivate: function(func, context) {
+        var targetControl = this;
+        $(this).one('anol.control.deactivate', function() {
             func(targetControl, context);
         });
     }

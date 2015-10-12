@@ -30,6 +30,7 @@ angular.module('anol.map')
             self.olControls = [];
             self.controls = [];
             self.exclusiveControls = [];
+            self.subordinateControls = [];
             self.map = undefined;
             if(controls === undefined) {
                 angular.forEach(ol.control.defaults({zoom: false}), function(olControl) {
@@ -59,7 +60,7 @@ angular.module('anol.map')
          * Adds a single control
          */
         Controls.prototype.addControl = function(control) {
-            if(this.map !== undefined) {
+            if(this.map !== undefined && control.olControl instanceof ol.control.Control) {
                 this.map.addControl(control.olControl);
             }
             this.controls.push(control);
@@ -67,6 +68,9 @@ angular.module('anol.map')
             if(control.exclusive === true) {
                 control.onActivate(Controls.prototype.handleExclusiveControlActivate, this);
                 this.exclusiveControls.push(control);
+            }
+            if(control.subordinate === true) {
+                this.subordinateControls.push(control);
             }
         };
         /**
@@ -88,7 +92,7 @@ angular.module('anol.map')
         /**
          * private function
          *
-         * disable other active discrete controls when discrete control is activeted
+         * handler called on exclusiv control activate
          */
         Controls.prototype.handleExclusiveControlActivate = function(targetControl, context) {
             var self = context;
@@ -98,6 +102,23 @@ angular.module('anol.map')
                         control.deactivate();
                     }
                 }
+            });
+            angular.forEach(self.subordinateControls, function(control) {
+                if(control.active === true) {
+                    control.deactivate();
+                }
+            });
+            targetControl.oneDeactivate(Controls.prototype.handleExclusiveControlDeactivate, self);
+        };
+        /**
+         * private function
+         *
+         * handler called on exclusiv control deactivate
+         */
+        Controls.prototype.handleExclusiveControlDeactivate = function(targetControl, context) {
+            var self = context;
+            angular.forEach(self.subordinateControls, function(control) {
+                control.activate();
             });
         };
         return new Controls(_controls);

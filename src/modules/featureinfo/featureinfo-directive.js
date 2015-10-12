@@ -9,6 +9,7 @@ angular.module('anol.featureinfo')
  * @required $window
  * @requires anol.map.MapService
  * @requires anol.map.LayersService
+ * @requires anol.map.ControlsService
  *
  * @description
  * Makes GetFeatureInfo request on all non vector layers with 'featureinfo' property
@@ -20,7 +21,9 @@ angular.module('anol.featureinfo')
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
-.directive('anolFeatureInfo', ['$compile', '$http', '$window', 'MapService', 'LayersService', function($compile, $http, $window, MapService, LayersService) {
+.directive('anolFeatureInfo', [
+    '$compile', '$http', '$window', 'MapService', 'LayersService', 'ControlsService',
+    function($compile, $http, $window, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -121,7 +124,21 @@ angular.module('anol.featureinfo')
                 };
             },
             post: function(scope) {
-                scope.map.on('singleclick', scope.handleClick, this);
+                var handlerKey;
+                var control = new anol.control.Control({
+                    subordinate: true,
+                    olControl: null
+                });
+                control.onDeactivate(function() {
+                    scope.map.unByKey(handlerKey);
+                });
+                control.onActivate(function() {
+                    handlerKey = scope.map.on('singleclick', scope.handleClick, this);
+                });
+
+                control.activate();
+
+                ControlsService.addControl(control);
             }
         }
     };

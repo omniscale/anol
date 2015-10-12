@@ -7,6 +7,7 @@ angular.module('anol.featurepopup')
  * @requires $timeout
  * @requires anol.map.MapService
  * @requires anol.map.LayersService
+ * @requires anol.map.ControlsService
  *
  * @param {Float} extentWidth Width of square bounding box around clicked point
  * @param {string} templateUrl Url to template to use instead of default one
@@ -17,7 +18,7 @@ angular.module('anol.featurepopup')
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **properties** {Array<String>} - Property names to display
  */
-.directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', function($timeout, MapService, LayersService) {
+.directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', 'ControlsService', function($timeout, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -131,7 +132,7 @@ angular.module('anol.featurepopup')
                 };
             },
             post: function(scope, element, attrs) {
-                scope.map.on('click', scope.handleClick, this);
+                var handlerKey;
 
                 scope.popup = new ol.Overlay(scope.overlayOptions);
                 scope.map.addOverlay(scope.popup);
@@ -139,6 +140,21 @@ angular.module('anol.featurepopup')
                 scope.close = function() {
                     scope.popupVisible = false;
                 };
+
+                var control = new anol.control.Control({
+                    subordinate: true,
+                    olControl: null
+                });
+                control.onDeactivate(function() {
+                    scope.map.unByKey(handlerKey);
+                });
+                control.onActivate(function() {
+                    handlerKey = scope.map.on('singleclick', scope.handleClick, this);
+                });
+
+                control.activate();
+
+                ControlsService.addControl(control);
             }
         }
     };
