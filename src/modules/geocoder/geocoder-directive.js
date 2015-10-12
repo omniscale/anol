@@ -29,7 +29,8 @@ angular.module('anol.geocoder')
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',
-        placeholder: '@'
+        placeholder: '@',
+        geocoderOptions: '='
       },
       compile: function(tElement, tAttrs) {
         var prepareAttr = function(attr, _default) {
@@ -37,7 +38,7 @@ angular.module('anol.geocoder')
         };
         tAttrs.placeholder = prepareAttr(tAttrs.placeholder, 'Search a place');
         return function(scope, element, attrs) {
-          var geocoder = new anol.geocoder[scope.geocoder]();
+          var geocoder = new anol.geocoder[scope.geocoder](scope.geocoderOptions);
 
           scope.searchResults = [];
 

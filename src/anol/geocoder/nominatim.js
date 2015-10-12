@@ -1,6 +1,14 @@
+/**
+ * @ngdoc object
+ * @name anol.geocoder.Nominatim
+ *
+ * @param {Object} options Options
+ * @param {string} options.url Url of nominatim geocoder. Default 'http://nominatim.openstreetmap.org/search?'
+ * @param {Array} options.viewbox Box to restrict search to
+ */
 anol.geocoder.Nominatim = function(_options) {
     var defaults = {
-        url: 'http://nominatim.openstreetmap.org/search?format=json&q='
+        url: 'http://nominatim.openstreetmap.org/search?'
     };
     var options = $.extend({},
         defaults,
@@ -22,6 +30,12 @@ $.extend(anol.geocoder.Nominatim.prototype, {
         ];
     },
     getUrl: function(searchString) {
-        return this.url + searchString;
+        var url = this.url;
+        url += 'format=json';
+        if(this.options.viewbox !== undefined) {
+            url += '&bounded=1';
+            url += '&viewbox=' + this.options.viewbox.join(',');
+        }
+        return url + '&q=' + searchString;
     }
 });

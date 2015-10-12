@@ -3,6 +3,7 @@ anol.geocoder.Base = function(_options) {
         return;
     }
     this.url = _options.url;
+    this.options = _options;
 };
 
 anol.geocoder.Base.prototype = {
