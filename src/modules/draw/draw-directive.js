@@ -60,7 +60,7 @@ angular.module('anol.draw')
                 var drawPointControl, drawLineControl, drawPolygonControl;
 
                 if(angular.isUndefined(scope.drawLayer)) {
-                    scope.drawLayer = new anol.layer.Vector({
+                    scope.drawLayer = new anol.layer.Feature({
                         name: 'draw_layer',
                         title: 'Draw Layer'
                     });
