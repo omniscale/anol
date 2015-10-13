@@ -82,43 +82,53 @@ angular.module('anol.featureinfo')
                                 return;
                             }
 
-                            var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
-                                coordinate, viewResolution, view.getProjection(),
-                                {'INFO_FORMAT': 'text/html'}
-                            );
-                            if(angular.isDefined(url)) {
-                                $http.get(url).success(function(response) {
-                                    if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
-                                        var iframe;
-                                        if(layer.featureinfo.target !== '_blank') {
-                                            iframe = $('<iframe seamless src="' + url + '"></iframe>');
-                                        }
-                                        switch(layer.featureinfo.target) {
-                                            case '_blank':
-                                                $window.open(url, '_blank');
-                                            break;
-                                            case '_popup':
-                                                popupContent.append(iframe);
-                                                if(element.css('display') === 'none') {
-                                                    element.css('display', '');
-                                                    popupOverlay.setPosition(coordinate);
-                                                }
-                                            break;
-                                            default:
-                                                var target = $(layer.featureinfo.target);
-                                                if(divTargetCleared === false) {
-                                                    target.empty();
-                                                    divTargetCleared = true;
-                                                }
-                                                target.append(iframe);
-                                                if(angular.isFunction(scope.customTargetCallback)) {
-                                                    scope.customTargetCallback();
-                                                }
-                                            break;
-                                        }
+                            var params = layer.olLayer.getSource().getParams();
+                            var queryLayers = params.layers || params.LAYERS;
+                            queryLayers = queryLayers.split(',');
+
+                            angular.forEach(queryLayers, function(queryLayer) {
+                                var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
+                                    coordinate, viewResolution, view.getProjection(),
+                                    {
+                                        'INFO_FORMAT': 'text/html',
+                                        'QUERY_LAYERS': queryLayer
+
                                     }
-                                });
-                            }
+                                );
+                                if(angular.isDefined(url)) {
+                                    $http.get(url).success(function(response) {
+                                        if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
+                                            var iframe;
+                                            if(layer.featureinfo.target !== '_blank') {
+                                                iframe = $('<iframe seamless src="' + url + '"></iframe>');
+                                            }
+                                            switch(layer.featureinfo.target) {
+                                                case '_blank':
+                                                    $window.open(url, '_blank');
+                                                break;
+                                                case '_popup':
+                                                    popupContent.append(iframe);
+                                                    if(element.css('display') === 'none') {
+                                                        element.css('display', '');
+                                                        popupOverlay.setPosition(coordinate);
+                                                    }
+                                                break;
+                                                default:
+                                                    var target = $(layer.featureinfo.target);
+                                                    if(divTargetCleared === false) {
+                                                        target.empty();
+                                                        divTargetCleared = true;
+                                                    }
+                                                    target.append(iframe);
+                                                    if(angular.isFunction(scope.customTargetCallback)) {
+                                                        scope.customTargetCallback();
+                                                    }
+                                                break;
+                                            }
+                                        }
+                                    });
+                                }
+                            });
                         });
                     });
                 };
