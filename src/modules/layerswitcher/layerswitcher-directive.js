@@ -12,6 +12,7 @@ angular.module('anol.layerswitcher')
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
+ * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -30,15 +31,17 @@ angular.module('anol.layerswitcher')
             anolLayerswitcher: '@anolLayerswitcher',
             tooltipText: '@',
             tooltipPlacement: '@',
-            tooltipDelay: '@'
+            tooltipDelay: '@',
+            tooltipEnable: '@'
         },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
-                return attr || _default;
+                return attr === undefined ? _default : attr;
             };
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle layerswitcher');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
+            tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
 
             return {
                 pre: function(scope, element, attrs, AnolMapController) {

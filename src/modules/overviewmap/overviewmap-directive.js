@@ -11,6 +11,7 @@ angular.module('anol.overviewmap')
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
+ * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
  *
  * @description
  * Adds a overview map
@@ -44,6 +45,7 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
             overviewmapButton.attr('tooltip-append-to-body', true);
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
+            overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
 
             $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);

@@ -14,6 +14,7 @@ angular.module('anol.geolocation')
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
+ * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -29,7 +30,8 @@ angular.module('anol.geolocation')
         zoom: '@',
         tooltipText: '@',
         tooltipPlacement: '@',
-        tooltipDelay: '@'
+        tooltipDelay: '@',
+        tooltipEnable: '@'
       },
       templateUrl: function(tElement, tAttrs) {
           var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
@@ -37,11 +39,12 @@ angular.module('anol.geolocation')
       },
       compile: function(tElement, tAttrs) {
         var prepareAttr = function(attr, _default) {
-            return attr || _default;
+            return attr === undefined ? _default : attr;
         };
         tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Start geolocation');
         tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'right');
         tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
+        tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
 
         return function(scope, element) {
           scope.anolGeolocation = 'false' !== scope.anolGeolocation;

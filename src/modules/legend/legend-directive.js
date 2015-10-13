@@ -12,6 +12,7 @@ angular.module('anol.legend')
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
+ * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens}
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {boolean} showInactive If true a legend item for not visible layers with legend options is also created
  *
@@ -35,15 +36,17 @@ angular.module('anol.legend')
             tooltipText: '@',
             tooltipPlacement: '@',
             tooltipDelay: '@',
+            tooltipEnable: '@',
             showInactive: '@'
         },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
-            return attr || _default;
+            return attr === undefined ? _default : attr;
             };
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle legend');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
+            tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
             tAttrs.showInactive = (tAttrs.showInactive === true || tAttrs.showInactive === 'true');
 
             return {

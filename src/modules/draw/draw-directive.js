@@ -17,6 +17,7 @@ angular.module('anol.draw')
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
+ * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -31,6 +32,7 @@ angular.module('anol.draw')
             style: '=',
             drawLayer: '=',
             tooltipDelay: '@',
+            tooltipEnable: '@',
             pointTooltipText: '@',
             pointTooltipPlacement: '@',
             lineTooltipText: '@',
@@ -45,10 +47,11 @@ angular.module('anol.draw')
         },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
-                return attr || _default;
+                return attr === undefined ? _default : attr;
             };
 
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
+            tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
             tAttrs.pointTooltipText = prepareAttr(tAttrs.pointTooltipText, 'Draw point');
             tAttrs.pointTooltipPlacement = prepareAttr(tAttrs.pointTooltipPlacement, 'right');
             tAttrs.lineTooltipText = prepareAttr(tAttrs.lineTooltipText, 'Draw line');
