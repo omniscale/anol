@@ -89,6 +89,9 @@ anol.layer.Layer.prototype = {
             })];
             delete srcOptions.attribution;
         }
+        if(srcOptions.tilePixelRatio !== undefined) {
+            srcOptions.tilePixelRatio = ol.has.DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
+        }
         return srcOptions;
     }
 };

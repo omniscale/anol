@@ -69,12 +69,12 @@ $.extend(anol.layer.WMTS.prototype, {
         var size = ol.extent.getWidth(sourceOpts.extent) / 256;
         var url = this._createRequestUrl(sourceOpts);
 
-        deferred.resolve({
+        sourceOpts = anol.layer.Layer.prototype._createSourceOptions(
+            sourceOpts
+        );
+
+        deferred.resolve($.extend(sourceOpts, {
             url: url,
-            layer: sourceOpts.layer,
-            matrixSet: sourceOpts.matrixSet,
-            format: sourceOpts.format,
-            projection: sourceOpts.projection,
             tileGrid: new ol.tilegrid.WMTS({
                 origin: ol.extent.getTopLeft(sourceOpts.extent),
                 resolutions: this._createResolution(levels, size),
@@ -83,7 +83,7 @@ $.extend(anol.layer.WMTS.prototype, {
             requestEncoding: 'REST',
             style: 'default',
             wrapX: true
-        });
+        }));
         return deferred.promise();
     },
     _createSourceOptionsFromCapabilities: function(sourceOpts) {
