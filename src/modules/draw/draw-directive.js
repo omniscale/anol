@@ -16,6 +16,7 @@ angular.module('anol.draw')
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -29,6 +30,7 @@ angular.module('anol.draw')
         scope: {
             style: '=',
             drawLayer: '=',
+            tooltipDelay: '@',
             pointTooltipText: '@',
             pointTooltipPlacement: '@',
             lineTooltipText: '@',
@@ -46,6 +48,7 @@ angular.module('anol.draw')
                 return attr || _default;
             };
 
+            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.pointTooltipText = prepareAttr(tAttrs.pointTooltipText, 'Draw point');
             tAttrs.pointTooltipPlacement = prepareAttr(tAttrs.pointTooltipPlacement, 'right');
             tAttrs.lineTooltipText = prepareAttr(tAttrs.lineTooltipText, 'Draw line');

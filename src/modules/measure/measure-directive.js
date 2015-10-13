@@ -13,6 +13,7 @@ angular.module('anol.measure')
  * @param {ol.style.Style} style Style for drawed lines
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -29,7 +30,8 @@ angular.module('anol.measure')
             drawStyle: '=',
             style: '=',
             tooltipText: '@',
-            tooltipPlacement: '@'
+            tooltipPlacement: '@',
+            tooltipDelay: '@'
         },
         templateUrl: function(tElement, tAttrs) {
           var defaultUrl = 'src/modules/measure/templates/measure.html';
@@ -42,6 +44,7 @@ angular.module('anol.measure')
             var defaultTooltipText = 'Measure ' + (tAttrs.anolMeasure === 'area' ? 'area' : 'line');
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, defaultTooltipText);
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'right');
+            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
 
             return function(scope, element, attrs) {
                 scope.measureOverlay = undefined;

@@ -11,6 +11,7 @@ angular.module('anol.legend')
  * @param {function} customTargetFilled
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {boolean} showInactive If true a legend item for not visible layers with legend options is also created
  *
@@ -33,6 +34,7 @@ angular.module('anol.legend')
             customTargetFilled: '&',
             tooltipText: '@',
             tooltipPlacement: '@',
+            tooltipDelay: '@',
             showInactive: '@'
         },
         compile: function(tElement, tAttrs) {
@@ -41,6 +43,7 @@ angular.module('anol.legend')
             };
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle legend');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
+            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.showInactive = (tAttrs.showInactive === true || tAttrs.showInactive === 'true');
 
             return {

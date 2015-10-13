@@ -10,6 +10,7 @@ angular.module('anol.overviewmap')
  *
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  *
  * @description
  * Adds a overview map
@@ -19,7 +20,8 @@ angular.module('anol.overviewmap')
         restrict: 'A',
         scope: {
             tooltipText: '@',
-            tooltipPlacement: '@'
+            tooltipPlacement: '@',
+            tooltipDelay: '@'
         },
         link: function(scope, element, attrs) {
             var backgroundLayers = [];
@@ -41,6 +43,7 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip', scope.tooltipText || 'Overview Map');
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
             overviewmapButton.attr('tooltip-append-to-body', true);
+            overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
 
             $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);

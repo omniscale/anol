@@ -13,6 +13,7 @@ angular.module('anol.geolocation')
  * @param {number} zoom Zoom level after map centered on geolocated point
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -27,7 +28,8 @@ angular.module('anol.geolocation')
         disableButton: '@',
         zoom: '@',
         tooltipText: '@',
-        tooltipPlacement: '@'
+        tooltipPlacement: '@',
+        tooltipDelay: '@'
       },
       templateUrl: function(tElement, tAttrs) {
           var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
@@ -39,6 +41,7 @@ angular.module('anol.geolocation')
         };
         tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Start geolocation');
         tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'right');
+        tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
 
         return function(scope, element) {
           scope.anolGeolocation = 'false' !== scope.anolGeolocation;

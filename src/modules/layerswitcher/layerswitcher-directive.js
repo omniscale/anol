@@ -11,6 +11,7 @@ angular.module('anol.layerswitcher')
  * @param {string} anolLayerswitcher If containing "open" layerswitcher initial state is expanded. Otherweise it is collapsed.
  * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
+ * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -28,7 +29,8 @@ angular.module('anol.layerswitcher')
         scope: {
             anolLayerswitcher: '@anolLayerswitcher',
             tooltipText: '@',
-            tooltipPlacement: '@'
+            tooltipPlacement: '@',
+            tooltipDelay: '@'
         },
         compile: function(tElement, tAttrs) {
             var prepareAttr = function(attr, _default) {
@@ -36,6 +38,7 @@ angular.module('anol.layerswitcher')
             };
             tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle layerswitcher');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
+            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
 
             return {
                 pre: function(scope, element, attrs, AnolMapController) {

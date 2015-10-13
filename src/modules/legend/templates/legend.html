@@ -1,8 +1,8 @@
-<div class="ol-unselectable ol-control anol-legend-hidden" ng-show="showToggle && collapsed" tooltip="{{ tooltipText }}" tooltip-placement="{{tooltipPlacement}}" tooltip-append-to-body="true">
+<div class="ol-unselectable ol-control anol-legend-hidden" ng-show="showToggle && collapsed" tooltip="{{ tooltipText }}" tooltip-placement="{{tooltipPlacement}}" tooltip-append-to-body="true" tooltip-popup-delay="{{ tooltipDelay }}">
     <button class="glyphicon glyphicon-chevron-left cursor-pointer" ng-click="collapsed=!collapsed"></button>
 </div>
 <div ng-hide="collapsed" class="anol-legend-container">
-    <div class="ol-unselectable ol-control anol-legend-visible" ng-show="showToggle" tooltip="{{ tooltipText }}" tooltip-placement="{{tooltipPlacement}}" tooltip-append-to-body="true">
+    <div class="ol-unselectable ol-control anol-legend-visible" ng-show="showToggle" tooltip="{{ tooltipText }}" tooltip-placement="{{tooltipPlacement}}" tooltip-append-to-body="true" tooltip-popup-delay="{{ tooltipDelay }}">
         <button class="glyphicon glyphicon-chevron-right" ng-click="collapsed=!collapsed"></button>
     </div>
     <div class="anol-legend-items"></div>
