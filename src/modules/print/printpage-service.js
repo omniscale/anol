@@ -16,6 +16,7 @@ angular.module('anol.print')
      * @methodOf anol.print.PrintPageServiceProvider
      * @param {Array.<Object>} pageSizes List of page sizes.
      * Each page size is an object, containing the following elements
+     * - **id** - {string} - Unique page size id
      * - **label** - {string} - Label of defined page size. Will be displayed in html
      * - **icon** - {string} - Icon of defined page size
      * - **value** - {Array.<number>} - Height, width of defined page size
@@ -255,7 +256,7 @@ angular.module('anol.print')
         PrintPage.prototype.removePrintArea = function() {
             _printSource.clear();
             _printArea = undefined;
-        },
+        };
         /**
          * @private
          * @name createDragFeatures

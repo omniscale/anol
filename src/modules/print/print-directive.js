@@ -3,9 +3,9 @@ angular.module('anol.print')
  * @ngdoc directive
  * @name anol.print.directive:anolPrint
  *
- * @requires $http
- * @requires anol.map.MapService
+  * @requires anol.map.MapService
  * @requires anol.map.LayersService
+ * @requires anol.print.PrintService
  * @requires anol.print.PrintPageService
  *
  * @description
@@ -13,17 +13,15 @@ angular.module('anol.print')
  * printed map from backend
  * Backend must send response as attached file with correct mimetype
  */
-.directive('anolPrint', ['$http', 'PrintPageService', 'MapService', 'LayersService',
-  function($http, PrintPageService, MapService, LayersService) {
+.directive('anolPrint', ['PrintService', 'PrintPageService', 'MapService', 'LayersService',
+  function(PrintService, PrintPageService, MapService, LayersService) {
     return {
       restrict: 'A',
       templateUrl: function(tElement, tAttrs) {
         var defaultUrl = 'src/modules/print/templates/print.html';
         return tAttrs.templateUrl || defaultUrl;
       },
-      scope: {
-        anolPrint: '@'
-      },
+      scope: {},
       link: {
         pre: function(scope, element, attrs) {
             scope.printAttributes = {
@@ -61,30 +59,31 @@ angular.module('anol.print')
               var bbox = PrintPageService.getBounds();
               var outputFormat = angular.copy(scope.printAttributes.outputFormat);
               var layers = [LayersService.activeBackgroundLayer().name];
-
               layers = layers.concat(prepareOverlays(LayersService.overlayLayers));
 
-              $http.post(scope.anolPrint, {
-                  bbox: bbox,
-                  scale: scope.printAttributes.scale,
-                  layers: layers,
-                  format: outputFormat.value,
-                  pageSize: scope.printAttributes.pageSize,
-                  pageSizeId: scope.printAttributes.pageSizeId,
-                  projection: MapService.getMap().getView().getProjection().getCode()
-                }, {
-                  responseType: 'arraybuffer'
-              }).success(function(response) {
-                var file = new Blob([response], {type: outputFormat.mimetype});
-                var fileURL = URL.createObjectURL(file);
-                element.find('.download-link').attr('href', fileURL);
-                scope.downloadReady = true;
-                scope.prepareDownload = false;
-                scope.removePrintArea();
-              }).error(function(response) {
-                scope.prepareDownload = false;
-                scope.downloadError = true;
-              });
+              var downloadPromise = PrintService.startPrint(
+                bbox,
+                scope.printAttributes.scale,
+                layers,
+                outputFormat.value,
+                scope.printAttributes.pageSize,
+                scope.printAttributes.pageSizeId,
+                MapService.getMap().getView().getProjection().getCode(),
+                outputFormat.mimetype
+              );
+
+              downloadPromise.then(
+                function(downloadUrl) {
+                  element.find('.download-link').attr('href', downloadUrl);
+                  scope.downloadReady = true;
+                  scope.prepareDownload = false;
+                  scope.removePrintArea();
+                },
+                function() {
+                  scope.prepareDownload = false;
+                  scope.downloadError = true;
+                }
+              );
             };
 
             // if we assign pageSize = value in template angular put only a reverence
