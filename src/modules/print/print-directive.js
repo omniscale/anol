@@ -21,7 +21,9 @@ angular.module('anol.print')
         var defaultUrl = 'src/modules/print/templates/print.html';
         return tAttrs.templateUrl || defaultUrl;
       },
-      scope: {},
+      scope: {
+        showPrintArea: '='
+      },
       link: {
         pre: function(scope, element, attrs) {
             scope.printAttributes = {
@@ -137,6 +139,13 @@ angular.module('anol.print')
               }
             }
           );
+          scope.$watch('showPrintArea', function(n) {
+            if(n === true) {
+              scope.updatePrintPage();
+            } else if (n === false) {
+              scope.removePrintArea();
+            }
+          });
         }
       }
   };
