@@ -21,7 +21,7 @@
         _options
     );
 
-    options.olLayer.source = new ol.source.TileImage(
+    options.olLayer.source = new ol.source.XYZ(
         this._createSourceOptions(options.olLayer.source)
     );
 
@@ -36,7 +36,7 @@ $.extend(anol.layer.TMS.prototype, {
      * Additional source options:
      * - baseUrl
      * - layer
-     * - resolutions
+     * - extent
      * - format
      */
     _createSourceOptions: function(srcOptions) {
@@ -53,26 +53,41 @@ $.extend(anol.layer.TMS.prototype, {
                 srcOptions.format
             );
         };
-
-        if(srcOptions.extent && srcOptions.resolutions) {
+        if(
+            srcOptions.tileGrid === undefined &&
+            srcOptions.extent !== undefined
+        ) {
             srcOptions.tileGrid = new ol.tilegrid.TileGrid({
                 origin: ol.extent.getBottomLeft(srcOptions.extent),
-                resolutions: srcOptions.resolutions
+                resolutions: self._createResolutions(
+                    ol.extent.getWidth(srcOptions.extent) / 256,
+                    srcOptions.levels || 22
+                )
             });
         }
-
         return srcOptions;
+    },
+    _createResolutions: function(size, levels) {
+        var resolutions = [];
+        // need one resolution more
+        for(var z = 0; z <= levels; ++z) {
+            resolutions[z] = size / Math.pow(2, z);
+        }
+        // becouse first resolutions is removed
+        // so ol requests 4 tiles instead of one for first zoom level
+        resolutions.shift();
+        return resolutions;
     },
     tileUrlFunction: function(tileCoord, baseUrl, layer, format) {
         var url = '';
-            if (tileCoord[1] >= 0 && tileCoord[2] >= 0) {
-                url += baseUrl + '/';
-                url += layer + '/';
-                url += tileCoord[0].toString() + '/';
-                url += tileCoord[1].toString() + '/';
-                url += tileCoord[2].toString();
-                url += '.' + format;
-            }
-            return url;
+        if (tileCoord[1] >= 0 && tileCoord[2] >= 0) {
+            url += baseUrl + '/';
+            url += layer + '/';
+            url += tileCoord[0].toString() + '/';
+            url += tileCoord[1].toString() + '/';
+            url += tileCoord[2].toString();
+            url += '.' + format.split('/')[1];
+        }
+        return url;
     }
 });
