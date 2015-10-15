@@ -54,7 +54,7 @@ $.extend(anol.layer.TMS.prototype, {
             );
         };
 
-        if(srcOptions.extent && srcOptions.resolution) {
+        if(srcOptions.extent && srcOptions.resolutions) {
             srcOptions.tileGrid = new ol.tilegrid.TileGrid({
                 origin: [srcOptions.extent[0], srcOptions.extent[1]],
                 resolutions: srcOptions.resolutions
