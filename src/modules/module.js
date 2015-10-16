@@ -30,6 +30,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'TOOLTIP_DRAW_POLYGON': 'Draw polygon',
                 'DRAW_LAYER_TITLE': 'Draw layer'
             },
+            'featurepopup': {
+                'NO_INFORMATIONS_AVAILABLE': 'No informations available'
+            },
             'featurepropertieseditor': {
                 'EDIT_FEATURE_PROPERTIES': 'Edit feature properties',
                 'NEW_PROPERTY': 'New property',

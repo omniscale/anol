@@ -116,22 +116,16 @@ angular.module('anol.featurepopup')
                 var getProperties = angular.isDefined(scope.extentWidth) ? propertiesByExtent : propertiesAtPixel;
 
                 scope.handleClick = function(evt) {
-                    var visible = false;
                     var propertiesCollection = getProperties(evt);
-
-                    if(propertiesCollection.length > 0) {
-                        visible = true;
-                    }
 
                     scope.$apply(function() {
                         scope.propertiesCollection = propertiesCollection;
-                        scope.popupVisible = visible;
+                        scope.popupVisible = true;
                     });
-                    if(visible) {
-                        $timeout(function() {
-                            scope.popup.setPosition(evt.coordinate);
-                        });
-                    }
+
+                    $timeout(function() {
+                        scope.popup.setPosition(evt.coordinate);
+                    });
                 };
             },
             post: function(scope, element, attrs) {
