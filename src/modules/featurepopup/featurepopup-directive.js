@@ -55,11 +55,11 @@ angular.module('anol.featurepopup')
                         var properties = {};
                         angular.forEach(feature.getProperties(), function(value, key) {
                             if(
-                                $.inArray(key, displayProperties) > -1 &&
+                                key in displayProperties &&
                                 angular.isString(value) &&
                                 value !== ''
                             ) {
-                                properties[key] = value;
+                                properties[displayProperties[key]] = value;
                             }
                         });
                         if(!angular.equals(properties, {})) {
