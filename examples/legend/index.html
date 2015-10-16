@@ -47,6 +47,9 @@
           }));
 
           var wms = new anol.layer.SingleTileWMS({
+            name: 'osm',
+            title: 'OSM Omniscale',
+            isBackground: true,
             olLayer: {
               source: {
                 url: 'http://maps.omniscale.net/wms/demo/default/service?',
