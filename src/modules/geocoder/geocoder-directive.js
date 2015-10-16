@@ -18,7 +18,7 @@ angular.module('anol.geocoder')
  // TODO add text when no result found
  // TODO show user search is in progress
 .directive('anolGeocoderSearchbox', ['$timeout', 'MapService', 'ControlsService',
-  function($http, $timeout, MapService, ControlsService) {
+  function($timeout, MapService, ControlsService) {
     return {
       restrict: 'A',
       transclude: true,
