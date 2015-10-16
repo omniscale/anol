@@ -54,7 +54,21 @@ angular.module('anol.featurestyleeditor')
         }
     };
 }])
-
+/**
+ * @ngdoc controller
+ * @name anol.featurestyleeditor.controller:anolFeatureStyleEditorModalController
+ *
+ * @restrict A
+ * @requires $rootScope
+ * @requires $scope
+ * @requires $modalInstance
+ * @requires $translate
+ * @requires style
+ * @requires geometryType
+ *
+ * @description
+ * Controller for style editor modal
+ */
 .controller('FeatureStyleEditorModalController', ['$rootScope', '$scope', '$modalInstance', '$translate', 'style', 'geometryType',
     function($rootScope, $scope, $modalInstance, $translate, style, geometryType) {
         $scope.style = style;

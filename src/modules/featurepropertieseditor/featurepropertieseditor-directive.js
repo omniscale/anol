@@ -55,8 +55,19 @@ angular.module('anol.featurepropertieseditor')
         }
     };
 }])
-
-.controller('FeaturePropertiesEditorModalController', function($scope, $modalInstance, properties) {
+/**
+ * @ngdoc controller
+ * @name anol.featurepropertieseditor.controller:anolFeaturePropertiesEditorModalController
+ *
+ * @restrict A
+ * @requires $scope
+ * @requires $modalInstance
+ * @requiresd properties
+ *
+ * @description
+ * Controller for properties editor modal
+ */
+.controller('FeaturePropertiesEditorModalController', ['$scope', '$modalInstance', 'properties', function($scope, $modalInstance, properties) {
     delete properties.geometry;
     delete properties.style;
     $scope.properties = properties;
@@ -74,4 +85,4 @@ angular.module('anol.featurepropertieseditor')
     $scope.removeProperty = function(key) {
         delete $scope.properties[key];
     };
-});
+}]);

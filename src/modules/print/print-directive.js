@@ -3,7 +3,7 @@ angular.module('anol.print')
  * @ngdoc directive
  * @name anol.print.directive:anolPrint
  *
-  * @requires anol.map.MapService
+ * @requires anol.map.MapService
  * @requires anol.map.LayersService
  * @requires anol.print.PrintService
  * @requires anol.print.PrintPageService

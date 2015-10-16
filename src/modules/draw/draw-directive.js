@@ -4,6 +4,8 @@ angular.module('anol.draw')
  * @name anol.draw.anolDraw
  *
  * @requires $compile
+ * @requires $rootScope
+ * @requires $translate
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
  * @requries anol.map.LayersService
@@ -20,8 +22,8 @@ angular.module('anol.draw')
  * @description
  * Provides controls to draw points, lines and polygons
  */
-.directive('anolDraw', ['$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'LayersService', 'MapService',
-    function($compile, $rootScope, $translate, $timeout, ControlsService, LayersService, MapService) {
+.directive('anolDraw', ['$compile', '$rootScope', '$translate', 'ControlsService', 'LayersService', 'MapService',
+    function($compile, $rootScope, $translate, ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],

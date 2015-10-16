@@ -69,6 +69,17 @@ angular.module('anol.print')
      };
 
     this.$get = ['$rootScope', 'MapService', 'LayersService', 'InteractionsService', function($rootScope, MapService, LayersService, InteractionsService) {
+        /**
+         * @ngdoc service
+         * @name anol.print.PrintPageService
+         * @requires $rootScope
+         * @requires anol.map.MapService
+         * @requires anol.map.LayersService
+         * @requires anol.map.InteractionsService
+         *
+         * @description
+         * Service for showing/hiding print area in map. It provides also the bbox of print area.
+         */
         var _modify;
         var _drag;
         var _printArea;

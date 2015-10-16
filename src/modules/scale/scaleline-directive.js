@@ -5,6 +5,7 @@ angular.module('anol.scale')
  * @name anol.scale.directive:anolScaleLine
  *
  * @requires anol.map.MapService
+ * @requires anol.map.ControlsService
  *
  * @description
  * Add a ol scaleline to element directive is used in.

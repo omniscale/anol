@@ -4,7 +4,6 @@ angular.module('anol.geocoder')
  * @name anol.geocoder.directive:anolGeocoderSearchbox
  *
  * @restrict A
- * @requires $http
  * @required $timeout
  * @requires anol.map.MapService
  * @requires anol.map.ControlsService
@@ -18,7 +17,7 @@ angular.module('anol.geocoder')
  */
  // TODO add text when no result found
  // TODO show user search is in progress
-.directive('anolGeocoderSearchbox', ['$http', '$timeout', 'MapService', 'ControlsService',
+.directive('anolGeocoderSearchbox', ['$timeout', 'MapService', 'ControlsService',
   function($http, $timeout, MapService, ControlsService) {
     return {
       restrict: 'A',
