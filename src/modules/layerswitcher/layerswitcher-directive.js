@@ -52,7 +52,6 @@ angular.module('anol.layerswitcher')
 
                     angular.forEach(LayersService.overlayLayers, function(layer) {
                         if(layer.displayInLayerswitcher !== false) {
-                            console.log(layer.name, layer.title);
                             overlayLayers.push(layer);
                         }
                     });
