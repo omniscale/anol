@@ -41,8 +41,7 @@
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [914764, 7011016],
-            zoom: 18,
-            rotation: Math.PI / 6
+            zoom: 18
           }));
 
           var wms = new anol.layer.SingleTileWMS({
