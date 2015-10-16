@@ -85,12 +85,12 @@ angular.module('anol.draw')
                         type: drawType
                     });
 
-                    if(angular.isDefined(AnolFeaturePropertiesEditor)) {
+                    if(angular.isObject(AnolFeaturePropertiesEditor)) {
                         draw.on('drawend', function(evt) {
                             var feature = evt.feature;
                             AnolFeaturePropertiesEditor.editFeature(feature);
                         });
-                    } else if (angular.isDefined(AnolFeatureStyleEditor)) {
+                    } else if (angular.isObject(AnolFeatureStyleEditor)) {
                         draw.on('drawend', function(evt) {
                             var feature = evt.feature;
                             AnolFeatureStyleEditor.editFeature(feature);
