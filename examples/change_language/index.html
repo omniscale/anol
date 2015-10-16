@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Feature Properties Editor Example</title>
+    <title>Change Language Example</title>
 
     <!-- Core CSS -->
     <link href="../../libs/bootstrap/bootstrap.css" rel="stylesheet">
@@ -26,12 +26,13 @@
           <!-- map -->
           <div anol-map style="border: 1px solid black;">
             <div anol-zoom></div>
-            <div anol-feature-properties-editor>
+            <div anol-feature-style-editor>
               <div anol-draw draw-layer='drawLayer'></div>
             </div>
           </div>
         </div>
         <div class="col-md-8">
+          <select ng-model="language" ng-options="lang.value as lang.label for lang in languages"></select>
           <pre>{{ features | json }}</pre>
         </div>
       </div>
@@ -42,12 +43,13 @@
     <script type="text/javascript" src="../../libs/angular/angular-debug.js"></script>
     <script type="text/javascript" src="../../libs/angular/ui-bootstrap-tpls-0.13.4.min.js"></script>
     <script type="text/javascript" src="../../node_modules/angular-translate/dist/angular-translate.min.js"></script>
+    <script type="text/javascript" src="../../node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
     <script type="text/javascript" src="../../libs/ol3/ol3-debug.js"></script>
     <script type="text/javascript" src="../../build/anol.js"></script>
     <script type="text/javascript" src="../../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.draw', 'anol.featurepropertieseditor', 'anol.zoom'])
+      angular.module('example', ['anol.draw', 'anol.featurestyleeditor', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
@@ -68,13 +70,40 @@
           });
           LayersServiceProvider.setLayers([wms]);
       }])
-      .controller('DrawExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
+      .config(['$translateProvider', function($translateProvider) {
+        // define location of language jsons to load
+        $translateProvider.useStaticFilesLoader({
+          files: [{
+              'prefix': '',
+              'suffix': '.json'
+            }
+          ]
+        });
+        $translateProvider.preferredLanguage('de_DE');
+      }])
+      .controller('DrawExampleController', ['$rootScope', '$scope', '$translate', 'LayersService', function($rootScope, $scope, $translate, LayersService) {
         var geojsonFormat = new ol.format.GeoJSON();
-        $scope.drawLayer = new anol.layer.Feature();
+        $scope.drawLayer = new anol.layer.StaticGeoJSON();
         LayersService.addLayer($scope.drawLayer);
         $scope.drawLayer.olLayer.getSource().on('change', function() {
           $scope.features = geojsonFormat.writeFeaturesObject($scope.drawLayer.olLayer.getSource().getFeatures());
         });
+
+        $rootScope.$on('$translateChangeSuccess', function () {
+          $translate(['ENGLISH', 'GERMAN']).then(function(translations) {
+            $scope.languages = [
+              {value: 'en_US', label: translations.ENGLISH},
+              {value: 'de_DE', label: translations.GERMAN}
+            ];
+          });
+        });
+
+        $scope.language = 'de_DE';
+
+        $scope.$watch('language', function(n) {
+          $translate.use(n);
+        });
+
       }]);
     </script>
   </body>

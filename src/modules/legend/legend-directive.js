@@ -9,7 +9,6 @@ angular.module('anol.legend')
  *
  * @param {string} anolLegend If containing "open" legend initial state is expanded. Otherweise it is collapsed.
  * @param {function} customTargetFilled
- * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens}
@@ -21,7 +20,7 @@ angular.module('anol.legend')
  * Shows img with src=layer.legend.url for each raster layer. For raster layers layer.legend.target defines a external container
  * to show img in
  */
-.directive('anolLegend', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
+.directive('anolLegend', ['$compile', 'LayersService', 'ControlsService', function($compile, LayersService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -33,7 +32,6 @@ angular.module('anol.legend')
         scope: {
             anolLegend: '@',
             customTargetFilled: '&',
-            tooltipText: '@',
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@',
@@ -43,7 +41,7 @@ angular.module('anol.legend')
             var prepareAttr = function(attr, _default) {
             return attr === undefined ? _default : attr;
             };
-            tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle legend');
+
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
@@ -69,6 +67,7 @@ angular.module('anol.legend')
                 post: function(scope, element, attrs) {
                     var legendLayers = [];
                     var legendItemsContainer = element.find('.anol-legend-items');
+
                     var VectorLegend = {
                         createCanvas: function() {
                             var canvas = angular.element('<canvas></canvas>');
@@ -202,7 +201,7 @@ angular.module('anol.legend')
                             // Display in element with given id
                             if (angular.isDefined(layer.legend.target)) {
                                 var target = angular.element(layer.legend.target);
-                                var showLegendButton = angular.element('<button>Show Legend</button>');
+                                var showLegendButton = angular.element('<button>{{ \'anol.legend.SHOW_LEGEND\' | translate }}</button>');
                                 showLegendButton.addClass('btn');
                                 showLegendButton.addClass('btn-sm');
                                 showLegendButton.on('click', function() {
@@ -214,7 +213,9 @@ angular.module('anol.legend')
                                         scope.customTargetCallback();
                                     }
                                 });
-                                container.append(showLegendButton);
+                                container.append(
+                                    $compile(showLegendButton)(scope)
+                                );
                             // Display in legend control
                             } else {
                                 angular.forEach(legendImages, function(legendImage) {

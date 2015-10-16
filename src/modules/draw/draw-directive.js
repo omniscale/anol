@@ -10,9 +10,6 @@ angular.module('anol.draw')
  *
  * @param {ol.style.Style} style Default style
  * @param {anol.layer.Layer} drawLayer Target layer to draw in. Must be a feature layer.
- * @param {string} pointTooltipText Text for point tooltip
- * @param {string} lineTooltipText Text for line tooltip
- * @param {string} polygonTooltipText Text for polygon tooltip
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
@@ -23,21 +20,18 @@ angular.module('anol.draw')
  * @description
  * Provides controls to draw points, lines and polygons
  */
-.directive('anolDraw', ['$compile', 'ControlsService', 'LayersService', 'MapService',
-    function($compile, ControlsService, LayersService, MapService) {
+.directive('anolDraw', ['$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'LayersService', 'MapService',
+    function($compile, $rootScope, $translate, $timeout, ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
-            style: '=',
-            drawLayer: '=',
+            style: '=?',
+            drawLayer: '=?',
             tooltipDelay: '@',
             tooltipEnable: '@',
-            pointTooltipText: '@',
             pointTooltipPlacement: '@',
-            lineTooltipText: '@',
             lineTooltipPlacement: '@',
-            polygonTooltipText: '@',
             polygonTooltipPlacement: '@',
 
         },
@@ -52,11 +46,8 @@ angular.module('anol.draw')
 
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
-            tAttrs.pointTooltipText = prepareAttr(tAttrs.pointTooltipText, 'Draw point');
             tAttrs.pointTooltipPlacement = prepareAttr(tAttrs.pointTooltipPlacement, 'right');
-            tAttrs.lineTooltipText = prepareAttr(tAttrs.lineTooltipText, 'Draw line');
             tAttrs.lineTooltipPlacement = prepareAttr(tAttrs.lineTooltipPlacement, 'right');
-            tAttrs.polygonTooltipText = prepareAttr(tAttrs.polygonTooltipText, 'Draw polygon');
             tAttrs.polygonTooltipPlacement = prepareAttr(tAttrs.polygonTooltipPlacement, 'right');
 
             return function(scope, element, attrs, controllers) {
@@ -67,12 +58,19 @@ angular.module('anol.draw')
 
                 if(angular.isUndefined(scope.drawLayer)) {
                     scope.drawLayer = new anol.layer.Feature({
-                        name: 'draw_layer',
-                        title: 'Draw Layer'
+                        name: 'draw_layer'
                     });
                     if(angular.isDefined(scope.style)) {
                         scope.drawLayer.olLayer.setStyle(scope.style);
                     }
+
+                    // TODO take a look at when layerswitcher can handle
+                    // add layer
+                    $rootScope.$on('$translateChangeSuccess', function () {
+                        $translate('anol.draw.DRAW_LAYER_TITLE').then(function(title) {
+                            scope.drawLayer.title = title;
+                        });
+                    });
                     LayersService.addLayer(scope.drawLayer);
                 }
 

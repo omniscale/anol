@@ -32,6 +32,8 @@
     "karma-jasmine": "~0.2.0",
     "karma-phantomjs-launcher": "0.1.4",
     "karma-safari-launcher": "latest",
-    "karma-script-launcher": "~0.1.0"
+    "karma-script-launcher": "~0.1.0",
+    "angular-translate": "~2.8.1",
+    "angular-translate-loader-static-files": "~2.8.1"
   }
 }

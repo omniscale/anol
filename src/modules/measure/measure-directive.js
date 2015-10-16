@@ -11,7 +11,6 @@ angular.module('anol.measure')
  * @param {boolean} geodesic Use geodesic measure method
  * @param {ol.style.Style} drawStyle Style for lines while drawing
  * @param {ol.style.Style} style Style for drawed lines
- * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -30,7 +29,6 @@ angular.module('anol.measure')
             geodesic: '@',
             drawStyle: '=',
             style: '=',
-            tooltipText: '@',
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@'
@@ -43,8 +41,6 @@ angular.module('anol.measure')
             var prepareAttr = function(attr, _default) {
                 return attr === undefined ? _default : attr;
             };
-            var defaultTooltipText = 'Measure ' + (tAttrs.anolMeasure === 'area' ? 'area' : 'line');
-            tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, defaultTooltipText);
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'right');
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);

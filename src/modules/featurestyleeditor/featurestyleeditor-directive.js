@@ -55,22 +55,35 @@ angular.module('anol.featurestyleeditor')
     };
 }])
 
-.controller('FeatureStyleEditorModalController', function($scope, $modalInstance, style, geometryType) {
-    $scope.style = style;
-    $scope.geometryType = geometryType;
-    $scope.strokeDashStyles = [
-        'solid',
-        'dot',
-        'dash',
-        'dashdot',
-        'longdash',
-        'longdashdot'
-    ];
+.controller('FeatureStyleEditorModalController', ['$rootScope', '$scope', '$modalInstance', '$translate', 'style', 'geometryType',
+    function($rootScope, $scope, $modalInstance, $translate, style, geometryType) {
+        $scope.style = style;
+        $scope.geometryType = geometryType;
+        $rootScope.$on('$translateChangeSuccess', function () {
+            $translate([
+                'anol.featurestyleeditor.SOLID',
+                'anol.featurestyleeditor.DOT',
+                'anol.featurestyleeditor.DASH',
+                'anol.featurestyleeditor.DASHDOT',
+                'anol.featurestyleeditor.LONGDASH',
+                'anol.featurestyleeditor.LONGDASHDOT'
+            ]).then(function(translations) {
+                $scope.strokeDashStyles = [
+                    {value: 'solid', label: translations['anol.featurestyleeditor.SOLID']},
+                    {value: 'dot', label: translations['anol.featurestyleeditor.DOT']},
+                    {value: 'dash', label: translations['anol.featurestyleeditor.DASH']},
+                    {value: 'dashdot', label: translations['anol.featurestyleeditor.DASHDOT']},
+                    {value: 'longdash', label: translations['anol.featurestyleeditor.LONGDASH']},
+                    {value: 'longdashdot', label: translations['anol.featurestyleeditor.LONGDASHDOT']}
+                ];
+            });
+        });
 
-    $scope.ok = function () {
-        $modalInstance.close($scope.style);
-    };
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
-});
+
+        $scope.ok = function () {
+            $modalInstance.close($scope.style);
+        };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
+}]);

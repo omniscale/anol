@@ -1,6 +1,6 @@
 <div class="modal-header">
   <button type="button" class="close" ng-click="cancel()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-  <h4 class="modal-title">Edit feature style</h4>
+  <h4 class="modal-title">{{ 'anol.featurestyleeditor.EDIT_FEATURE_STYLE' | translate }}</h4>
 </div>
 <div class="modal-body" id="feature-properties-container">
   <div class="form-horizontal">
@@ -20,13 +20,13 @@
     </div>
   </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" ng-click="ok()">OK</button>
-  <button type="button" class="btn btn-warning" ng-click="cancel()">Cancel</button>
+  <button type="button" class="btn btn-primary" ng-click="ok()">{{ 'anol.featurestyleeditor.OK' | translate }}</button>
+  <button type="button" class="btn btn-warning" ng-click="cancel()">{{ 'anol.featurestyleeditor.CANCEL' | translate }}</button>
 </div>
 
 <script type="text/ng-template" id="point-style-inputs.html">
   <div class="form-group">
-    <label class="control-label col-sm-3">Radius</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.RADIUS' | translate }}</label>
     <div class="col-sm-9">
       <input type="number" class="form-control" ng-model="style.radius" />
     </div>
@@ -35,40 +35,40 @@
 
 <script type="text/ng-template" id="stroke-style-inputs.html">
   <div class="form-group">
-    <label class="control-label col-sm-3">Line Color</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.LINE_COLOR' | translate }}</label>
     <div class="col-sm-9">
       <input class="form-control" ng-model="style.strokeColor" />
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label col-sm-3">Line Width</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.LINE_WIDTH' | translate }}</label>
     <div class="col-sm-9">
       <input type="number" class="form-control" ng-model="style.strokeWidth" />
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label col-sm-3">Line Opacity</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.LINE_OPACITY' | translate }}</label>
     <div class="col-sm-9">
       <input type="number" class="form-control" ng-model="style.strokeOpacity" />
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label col-sm-3">Line Dashstyle</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.LINE_DASHSTYLE' | translate }}</label>
     <div class="col-sm-9">
-      <select class="form-control" ng-model="style.strokeDashstyle" ng-options="dashStyle for dashStyle in strokeDashStyles"></select>
+      <select class="form-control" ng-model="style.strokeDashstyle" ng-options="dashStyle.value as dashStyle.label for dashStyle in strokeDashStyles"></select>
     </div>
   </div>
 </script>
 
 <script type="text/ng-template" id="fill-style-inputs.html">
   <div class="form-group">
-    <label class="control-label col-sm-3">Fill Color</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.FILL_COLOR' | translate }}</label>
     <div class="col-sm-9">
       <input class="form-control" ng-model="style.fillColor" />
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label col-sm-3">Fill Opacity</label>
+    <label class="control-label col-sm-3">{{ 'anol.featurestyleeditor.FILL_OPACITY' | translate }}</label>
     <div class="col-sm-9">
       <input type="number" class="form-control" ng-model="style.fillOpacity" />
     </div>

@@ -6,8 +6,6 @@ angular.module('anol.zoom')
  * @requires $compile
  * @requires anol.map.ControlsService
  *
- * @param {string} zoomInTooltipText Tooltip text for zoom in button
- * @param {string} zoomOutTooltipText Tooltip text for zoom out button
  * @param {string} zoomInTooltipPlacement Tooltip position for zoom in button
  * @param {string} zoomOutTooltipPlacement Tooltip position for zoom out button
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip. Default 500ms
@@ -21,8 +19,6 @@ angular.module('anol.zoom')
     return {
         restrict: 'A',
         scope: {
-            zoomInTooltipText: '@',
-            zoomInTooltipPlacement: '@',
             zoomOutTooltipText: '@',
             zoomOutTooltipPlacement: '@',
             tooltipDelay: '@',
@@ -38,7 +34,7 @@ angular.module('anol.zoom')
             });
             var zoomInButton = angular.element(olControl.element).find('.ol-zoom-in');
             zoomInButton.removeAttr('title');
-            zoomInButton.attr('tooltip', scope.zoomInTooltipText || 'Zoom in');
+            zoomInButton.attr('tooltip', '{{\'anol.zoom.TOOLTIP_ZOOM_IN\' | translate }}');
             zoomInButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
             zoomInButton.attr('tooltip-append-to-body', true);
             zoomInButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
@@ -47,7 +43,7 @@ angular.module('anol.zoom')
 
             var zoomOutButton = angular.element(olControl.element).find('.ol-zoom-out');
             zoomOutButton.removeAttr('title');
-            zoomOutButton.attr('tooltip', scope.zoomOutTooltipText || 'Zoom out');
+            zoomOutButton.attr('tooltip', '{{\'anol.zoom.TOOLTIP_ZOOM_OUT\' | translate }}');
             zoomOutButton.attr('tooltip-placement', scope.zoomOutTooltipPlacement || 'right');
             zoomOutButton.attr('tooltip-append-to-body', true);
             zoomOutButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);

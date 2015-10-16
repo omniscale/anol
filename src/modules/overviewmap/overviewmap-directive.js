@@ -8,7 +8,6 @@ angular.module('anol.overviewmap')
  * @requries anol.map.LayersService
  * @requries anol.map.MapService
  *
- * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -20,7 +19,6 @@ angular.module('anol.overviewmap')
     return {
         restrict: 'A',
         scope: {
-            tooltipText: '@',
             tooltipPlacement: '@',
             tooltipDelay: '@'
         },
@@ -41,7 +39,7 @@ angular.module('anol.overviewmap')
             var overviewmapButton = angular.element(olControl.element).find('button');
             overviewmapButton.removeAttr('title');
             // add cool tooltip
-            overviewmapButton.attr('tooltip', scope.tooltipText || 'Overview Map');
+            overviewmapButton.attr('tooltip', '{{ \'anol.overviewmap.TOOLTIP\' | translate }}');
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
             overviewmapButton.attr('tooltip-append-to-body', true);
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);

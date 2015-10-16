@@ -9,7 +9,6 @@ angular.module('anol.layerswitcher')
  * @requires anol.map.ControlsService
  *
  * @param {string} anolLayerswitcher If containing "open" layerswitcher initial state is expanded. Otherweise it is collapsed.
- * @param {string} tooltipText Text for tooltip
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -18,6 +17,8 @@ angular.module('anol.layerswitcher')
  * @description
  * Shows/hides background- and overlaylayer
  */
+ // TODO handle add / remove layer
+ // TODO handle edit layers title
 .directive('anolLayerswitcher', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
     return {
         restrict: 'A',
@@ -29,7 +30,6 @@ angular.module('anol.layerswitcher')
         },
         scope: {
             anolLayerswitcher: '@anolLayerswitcher',
-            tooltipText: '@',
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@'
@@ -38,7 +38,6 @@ angular.module('anol.layerswitcher')
             var prepareAttr = function(attr, _default) {
                 return attr === undefined ? _default : attr;
             };
-            tAttrs.tooltipText = prepareAttr(tAttrs.tooltipText, 'Toggle layerswitcher');
             tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
             tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
             tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
@@ -53,6 +52,7 @@ angular.module('anol.layerswitcher')
 
                     angular.forEach(LayersService.overlayLayers, function(layer) {
                         if(layer.displayInLayerswitcher !== false) {
+                            console.log(layer.name, layer.title);
                             overlayLayers.push(layer);
                         }
                     });

@@ -1,0 +1,35 @@
+{
+    "anol": {
+        "draw": {
+            "TOOLTIP_DRAW_POINT": "Punkt zeichnen",
+            "TOOLTIP_DRAW_LINE": "Linie zeichnen",
+            "TOOLTIP_DRAW_POLYGON": "Polygon zeichnen",
+            "DRAW_LAYER_TITLE": "Zeichenlayer"
+        },
+        "featurestyleeditor": {
+            "EDIT_FEATURE_STYLE": "Feature Style bearbeiten",
+            "OK": "OK",
+            "CANCEL": "Abbrechen",
+            "RADIUS": "Radius",
+            "LINE_COLOR": "Linienfarbe",
+            "LINE_WIDTH": "Linienstärke",
+            "LINE_OPACITY": "Liniendeckkraft",
+            "LINE_DASHSTYLE": "Linendarstellung",
+            "FILL_COLOR": "Füllfarbe",
+            "FILL_OPACITY": "Fülldeckkraft",
+            "SOLID": "Durchgezogen",
+            "DOT": "Gepunktet",
+            "DASH": "Gestrichelt",
+            "DASHDOT": "Gestrichelt und gepunktet",
+            "LONGDASH": "Lang gestrichelt",
+            "LONGDASHDOT": "Lang gestrichelt und gepunktet"
+        },
+        "zoom": {
+            "TOOLTIP_ZOOM_IN": "Hineinzoomen",
+            "TOOLTIP_ZOOM_OUT": "Herauszoomen"
+        }
+    },
+    "CHANGE_LANGUAGE": "Sprache wechseln",
+    "ENGLISH": "Englisch",
+    "GERMAN": "Deutsch"
+}
