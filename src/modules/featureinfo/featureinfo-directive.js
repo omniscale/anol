@@ -114,12 +114,19 @@ angular.module('anol.featureinfo')
                                                     }
                                                 break;
                                                 default:
-                                                    var target = $(layer.featureinfo.target);
+                                                    var temp = $('<div></div>');
+                                                    var target = angular.element(layer.featureinfo.target);
                                                     if(divTargetCleared === false) {
                                                         target.empty();
                                                         divTargetCleared = true;
                                                     }
-                                                    target.append(iframe);
+                                                    var content = angular.element(response);
+                                                    temp.append(content);
+                                                    temp.find('meta').remove();
+                                                    temp.find('link').remove();
+                                                    temp.find('title').remove();
+                                                    temp.find('script').remove();
+                                                    target.append(temp.children());
                                                     if(angular.isFunction(scope.customTargetCallback)) {
                                                         scope.customTargetCallback();
                                                     }
