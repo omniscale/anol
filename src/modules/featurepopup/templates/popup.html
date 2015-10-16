@@ -2,7 +2,7 @@
     <span class="anol-popup-closer glyphicon glyphicon-remove" ng-click="close()"></span>
     <div class="anol-popup-content">
         <div ng-if="propertiesCollection.length > 0" ng-repeat="properties in propertiesCollection">
-            <div ng-repeat="(key, value) in properties">{{ key }}: {{ value }}</div>
+            <div ng-repeat="(key, value) in properties">{{ key | translate }}: {{ value }}</div>
         </div>
         <div ng-if="propertiesCollection.length === 0">
             <div>{{ 'anol.featurepopup.NO_INFORMATIONS_AVAILABLE' | translate }}</div>
