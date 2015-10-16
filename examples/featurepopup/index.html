@@ -42,13 +42,25 @@
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [0, 0],
-            zoom: 6
+            zoom: 18
           }));
 
           var feature = new ol.Feature({
             geometry: new ol.geom.Point([0, 0]),
             name: 'Feature',
             description: 'I am a feature'
+          });
+
+          var anotherFeature = new ol.Feature({
+            geometry: new ol.geom.Point([10, 10]),
+            name: '',
+            description: 'I am a feature'
+          });
+
+          var oneFeatureMore = new ol.Feature({
+            geometry: new ol.geom.Point([-10, 10]),
+            name: '',
+            description: ''
           });
 
           var featureLayer = new anol.layer.Feature({
@@ -58,7 +70,7 @@
             },
             olLayer: {
               source: {
-                features: [feature]
+                features: [feature, anotherFeature, oneFeatureMore]
               }
             }
           });
