@@ -99,7 +99,7 @@ angular.module('anol.featureinfo')
                                     $http.get(url).success(function(response) {
                                         if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
                                             var iframe;
-                                            if(layer.featureinfo.target !== '_blank') {
+                                            if(layer.featureinfo.target === '_popup') {
                                                 iframe = $('<iframe seamless src="' + url + '"></iframe>');
                                             }
                                             switch(layer.featureinfo.target) {
