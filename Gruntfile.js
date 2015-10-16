@@ -70,10 +70,12 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-          'libs/jquery/jquery-2.1.1.min.js',
-          'libs/angular/angular.min.js',
-          'libs/angular/ui-bootstrap-tpls-0.13.4.min.js',
-          'libs/ol3/ol.custom.min.js',
+          'node_modules/jquery/dist/jquery.min.js',
+          'node_modules/angular/angular.min.js',
+          'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
+          'node_modules/angular-translate/dist/angular-translate.min.js',
+          'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
+          'node_modules/openlayers/dist/ol.js',
           'build/<%= pkg.name %>.ugly.js'
         ],
         dest: 'build/<%= pkg.name %>.min.js'
@@ -111,8 +113,9 @@ module.exports = function(grunt) {
             flatten: true,
             expand: true,
             src: [
-              'libs/bootstrap/bootstrap.css',
-              'libs/ol3/ol3.css'
+              'node_modules/bootstrap/dist/css/bootstrap.css',
+              'node_modules/openlayers/dist/ol.css',
+              'node_modules/bootstrap/dist/fonts'
             ],
             dest: 'build/'
           }
@@ -159,10 +162,10 @@ module.exports = function(grunt) {
         editExample: false,
         demoExample: false,
         scripts: [
-          '../libs/ol3/ol3-debug.js',
-          '../libs/jquery/jquery-2.1.1.min.js',
-          '../libs/angular/angular.min.js',
-          '../libs/angular/angular-animate.min.js',
+          '../node_modules/openlayers/dist/ol-debug.js',
+          '../node_modules/jquery/dist/jquery.min.js',
+          '../node_modules/angular/angular.min.js',
+          '../node_modules/angular-animate/angular-animate.min.js',
           '../build/anol.js',
           '../build/templates.js'
         ]
