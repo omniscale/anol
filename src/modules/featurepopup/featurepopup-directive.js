@@ -133,6 +133,8 @@ angular.module('anol.featurepopup')
                         scope.popupVisible = true;
                     });
 
+                    // wait until scope changes applied ($digest cycle completed) before set popup position
+                    // otherwise Overlay.autoPan is not work correctly
                     $timeout(function() {
                         scope.popup.setPosition(evt.coordinate);
                     });
