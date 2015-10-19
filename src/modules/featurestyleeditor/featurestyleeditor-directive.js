@@ -92,7 +92,7 @@ angular.module('anol.featurestyleeditor')
                     {value: 'longdashdot', label: translations['anol.featurestyleeditor.LONGDASHDOT']}
                 ];
             });
-        }
+        };
 
         $rootScope.$on('$translateChangeSuccess', translate);
         translate();
