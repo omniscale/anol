@@ -56,7 +56,10 @@
           var featureLayer = new anol.layer.Feature({
             name: 'featureLayer',
             featureinfo: {
-              properties: ['name', 'description']
+              properties: {
+                'name': 'Name',
+                'description': 'Description'
+              }
             },
             olLayer: {
               source: {

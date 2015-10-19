@@ -34,6 +34,7 @@ angular.module('anol.featurepopup')
                 scope.map = MapService.getMap();
                 scope.propertiesCollection = [];
                 scope.popupVisible = false;
+                scope.hasFeature = false;
                 scope.overlayOptions = {
                     element: element[0],
                     autoPan: true,
@@ -84,9 +85,11 @@ angular.module('anol.featurepopup')
                             if(!anolLayer.featureinfo) {
                                 return;
                             }
+                            var features = anolLayer.olLayer.getSource().getFeaturesInExtent(extent);
+                            scope.hasFeature = features.length > 0;
                             propertiesCollection = propertiesCollection.concat(
                                 extractProperties(
-                                    anolLayer.olLayer.getSource().getFeaturesInExtent(extent),
+                                    features,
                                     anolLayer.featureinfo.properties
                                 )
                             );
@@ -104,6 +107,9 @@ angular.module('anol.featurepopup')
                         if(!layer.get('anolLayer') || !layer.get('anolLayer').featureinfo) {
                             return;
                         }
+                        if(angular.isObject(feature)) {
+                            scope.hasFeature = true;
+                        }
                         propertiesCollection = propertiesCollection.concat(
                             extractProperties(
                                 [feature],
@@ -116,8 +122,12 @@ angular.module('anol.featurepopup')
                 var getProperties = angular.isDefined(scope.extentWidth) ? propertiesByExtent : propertiesAtPixel;
 
                 scope.handleClick = function(evt) {
+                    // if click hit one or more features, getProperties set scope.hasFeature = true
+                    scope.hasFeature = false;
                     var propertiesCollection = getProperties(evt);
-
+                    if(scope.hasFeature === false) {
+                        return;
+                    }
                     scope.$apply(function() {
                         scope.propertiesCollection = propertiesCollection;
                         scope.popupVisible = true;
