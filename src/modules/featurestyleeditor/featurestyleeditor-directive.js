@@ -73,7 +73,8 @@ angular.module('anol.featurestyleeditor')
     function($rootScope, $scope, $modalInstance, $translate, style, geometryType) {
         $scope.style = style;
         $scope.geometryType = geometryType;
-        $rootScope.$on('$translateChangeSuccess', function () {
+
+        var translate = function() {
             $translate([
                 'anol.featurestyleeditor.SOLID',
                 'anol.featurestyleeditor.DOT',
@@ -91,7 +92,10 @@ angular.module('anol.featurestyleeditor')
                     {value: 'longdashdot', label: translations['anol.featurestyleeditor.LONGDASHDOT']}
                 ];
             });
-        });
+        }
+
+        $rootScope.$on('$translateChangeSuccess', translate);
+        translate();
 
 
         $scope.ok = function () {
