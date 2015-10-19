@@ -22,7 +22,6 @@ angular.module('anol.geolocation')
 .directive('anolGeolocation', ['$compile', 'MapService', 'ControlsService',
   function($compile, MapService, ControlsService) {
     return {
-      require: '?anolMap',
       scope: {
         anolGeolocation: '@',
         disableButton: '@',

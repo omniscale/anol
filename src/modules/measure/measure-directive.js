@@ -23,7 +23,6 @@ angular.module('anol.measure')
     function(ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
-        require: '?^anolMap',
         scope: {
             measureType: '@anolMeasure',
             geodesic: '@',

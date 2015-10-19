@@ -26,7 +26,6 @@ angular.module('anol.featureinfo')
     function($compile, $http, $window, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
-        require: '?^anolMap',
         replace: true,
         scope: {
             customTargetFilled: '&'
