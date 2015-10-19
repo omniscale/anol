@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Mouse Position Example</title>
+    <title>Overview Map Example</title>
 
     <!-- Core CSS -->
-    <link href="../../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-    <link href="../../node_modules/openlayers/dist/ol.css" rel="stylesheet">
-    <link href="../../build/anol.css" rel="stylesheet">
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="../node_modules/openlayers/dist/ol.css" rel="stylesheet">
+    <link href="../build/anol.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -21,31 +21,28 @@
 
   <body ng-app="example">
     <!-- map -->
-    <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
+    <div anol-map width="600" height="400" style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-zoom></div>
-      <div anol-mouse-position precision="4" projection-code="projectionCode">Lat <b>{{x}}</b>Lon <b>{{y}}</b></div>
+      <div anol-overview-map tooltip="OverviewMap"></div>
     </div>
-    <select ng-model="projectionCode">
-      <option value="EPSG:3857" selected>EPSG:3857</option>
-      <option value="EPSG:4326">EPSG:4326</option>
-    </select>
-
 
     <!-- Remove libs when build dist -->
-    <script type="text/javascript" src="../../node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/angular/angular.js"></script>
-    <script type="text/javascript" src="../../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/angular-translate/dist/angular-translate.min.js"></script>
-    <script type="text/javascript" src="../../node_modules/openlayers/dist/ol-debug.js"></script>
-    <script type="text/javascript" src="../../build/anol.js"></script>
+    <script type="text/javascript" src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../node_modules/angular/angular.js"></script>
+    <script type="text/javascript" src="../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="../node_modules/angular-translate/dist/angular-translate.min.js"></script>
+
+    <script type="text/javascript" src="../node_modules/openlayers/dist/ol-debug.js"></script>
+
+    <script type="text/javascript" src="../build/anol.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.mouseposition', 'anol.zoom'])
+      angular.module('example', ['anol.overviewmap', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
             center: [914764, 7011016],
-            zoom: 12
+            zoom: 18
           }));
 
           var wms = new anol.layer.SingleTileWMS({
