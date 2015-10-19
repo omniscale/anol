@@ -18,8 +18,7 @@ angular.module('anol.attribution')
     return {
         restrict: 'A',
         scope: {
-            zoomOutTooltipText: '@',
-            zoomOutTooltipPlacement: '@',
+            tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@'
         },
