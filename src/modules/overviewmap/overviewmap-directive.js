@@ -15,7 +15,7 @@ angular.module('anol.overviewmap')
  * @description
  * Adds a overview map
  */
-.directive('anolOverviewMap', ['$compile', 'ControlsService', 'LayersService', 'MapService', function($compile, ControlsService, LayersService) {
+.directive('anolOverviewMap', ['$compile', 'ControlsService', 'LayersService', 'MapService', function($compile, ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
         scope: {
@@ -30,7 +30,10 @@ angular.module('anol.overviewmap')
             var olControl = new ol.control.OverviewMap({
                 layers: backgroundLayers,
                 label: document.createTextNode(''),
-                collapseLabel: document.createTextNode('')
+                collapseLabel: document.createTextNode(''),
+                view: new ol.View({
+                    projection: MapService.getMap().getView().getProjection()
+                })
             });
             var control = new anol.control.Control({
                 olControl: olControl
