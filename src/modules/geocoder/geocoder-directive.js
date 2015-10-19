@@ -17,8 +17,8 @@ angular.module('anol.geocoder')
  */
  // TODO add text when no result found
  // TODO show user search is in progress
-.directive('anolGeocoderSearchbox', ['$timeout', 'MapService', 'ControlsService',
-  function($timeout, MapService, ControlsService) {
+.directive('anolGeocoderSearchbox', ['MapService', 'ControlsService',
+  function(MapService, ControlsService) {
     return {
       restrict: 'A',
       transclude: true,
@@ -39,10 +39,7 @@ angular.module('anol.geocoder')
           event.stopPropagation();
           if((event.key === 'ArrowDown' || event.keyCode === 40) && scope.searchResults.length > 0) {
             event.preventDefault();
-            // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
-            $timeout(function() {
-              element.find('.dropdown-menu li a:first').focus();
-            }, 0);
+            element.find('.dropdown-menu li a:first').focus();
           }
           if(event.key === 'Enter' || event.keyCode === 13) {
             geocoder.request(scope.searchString)
@@ -76,10 +73,7 @@ angular.module('anol.geocoder')
         };
 
         scope.handleMouseover = function(event) {
-          // use timeout to prevent input element on-blur bug. ($apply already in progress error is raised)
-          $timeout(function() {
-            angular.element(event.currentTarget).focus();
-          }, 0);
+          angular.element(event.currentTarget).focus();
         };
 
         scope.showResult = function(result) {
