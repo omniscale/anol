@@ -33,7 +33,12 @@ angular.module('anol.map')
             self.subordinateControls = [];
             self.map = undefined;
             if(controls === undefined) {
-                angular.forEach(ol.control.defaults({zoom: false}), function(olControl) {
+                // Zoom- and AttributionControls provided by corresponding directives
+                var defaultControls = ol.control.defaults({
+                    attribution: false,
+                    zoom: false
+                });
+                angular.forEach(defaultControls, function(olControl) {
                     self.olControls.push(olControl);
                     self.controls.push(new anol.control.Control({olControl: olControl}));
                 });

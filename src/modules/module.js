@@ -24,6 +24,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
     // see https://angular-translate.github.io/docs/#/guide/12_asynchronous-loading 'FOUC - Flash of untranslated content'
     $translateProvider.translations('en_US', {
         'anol': {
+            'attribution': {
+                'TOOLTIP': 'Attributions'
+            },
             'draw': {
                 'TOOLTIP_DRAW_POINT': 'Draw point',
                 'TOOLTIP_DRAW_LINE': 'Draw line',

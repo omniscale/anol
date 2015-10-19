@@ -235,10 +235,14 @@
 /**
  * attributions
  */
-.ol-control
+.ol-attribution
   button
-    span
-      color: white
+    &:before
+      content: '»'
+  &.ol-collapsed
+    button
+      &:before
+        content: 'i'
 
 /**
  * common
