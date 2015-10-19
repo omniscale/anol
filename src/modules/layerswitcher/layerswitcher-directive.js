@@ -34,50 +34,49 @@ angular.module('anol.layerswitcher')
             tooltipDelay: '@',
             tooltipEnable: '@'
         },
-        compile: function(tElement, tAttrs) {
-            var prepareAttr = function(attr, _default) {
-                return attr === undefined ? _default : attr;
-            };
-            tAttrs.tooltipPlacement = prepareAttr(tAttrs.tooltipPlacement, 'left');
-            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
-            tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
+        link: {
+            pre: function(scope, element, attrs, AnolMapController) {
+                scope.collapsed = false;
+                scope.showToggle = false;
 
-            return {
-                pre: function(scope, element, attrs, AnolMapController) {
-                    scope.collapsed = false;
-                    scope.showToggle = false;
+                // attribute defaults
+                scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
+                    scope.tooltipPlacement : 'left';
+                scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
+                    scope.tooltipDelay : 500;
+                scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
+                    scope.tooltipEnable : !ol.has.TOUCH;
 
-                    scope.backgroundLayers = LayersService.backgroundLayers;
-                    var overlayLayers = [];
+                scope.backgroundLayers = LayersService.backgroundLayers;
+                var overlayLayers = [];
 
-                    angular.forEach(LayersService.overlayLayers, function(layer) {
-                        if(layer.displayInLayerswitcher !== false) {
-                            overlayLayers.push(layer);
-                        }
-                    });
-                    scope.overlayLayers = overlayLayers;
-                    if(angular.isDefined(AnolMapController)) {
-                        scope.collapsed = scope.anolLayerswitcher !== 'open';
-                        scope.showToggle = true;
-                        ControlsService.addControl(
-                            new anol.control.Control({
-                                element: element
-                            })
-                        );
+                angular.forEach(LayersService.overlayLayers, function(layer) {
+                    if(layer.displayInLayerswitcher !== false) {
+                        overlayLayers.push(layer);
                     }
-                },
-                post: function(scope, element, attrs) {
-                    scope.backgroundLayer = LayersService.activeBackgroundLayer();
-                    scope.$watch('backgroundLayer', function(newVal, oldVal) {
-                        if(angular.isDefined(oldVal)) {
-                            oldVal.setVisible(false);
-                        }
-                        if(angular.isDefined(newVal)) {
-                            newVal.setVisible(true);
-                        }
-                    });
+                });
+                scope.overlayLayers = overlayLayers;
+                if(angular.isDefined(AnolMapController)) {
+                    scope.collapsed = scope.anolLayerswitcher !== 'open';
+                    scope.showToggle = true;
+                    ControlsService.addControl(
+                        new anol.control.Control({
+                            element: element
+                        })
+                    );
                 }
-            };
+            },
+            post: function(scope, element, attrs) {
+                scope.backgroundLayer = LayersService.activeBackgroundLayer();
+                scope.$watch('backgroundLayer', function(newVal, oldVal) {
+                    if(angular.isDefined(oldVal)) {
+                        oldVal.setVisible(false);
+                    }
+                    if(angular.isDefined(newVal)) {
+                        newVal.setVisible(true);
+                    }
+                });
+            }
         },
         controller: function($scope, $element, $attrs) {
             $scope.isGroup = function(toTest) {

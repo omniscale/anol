@@ -41,138 +41,138 @@ angular.module('anol.draw')
             var defaultUrl = 'src/modules/draw/templates/draw.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        compile: function(tElement, tAttrs) {
-            var prepareAttr = function(attr, _default) {
-                return attr === undefined ? _default : attr;
-            };
+        link: function(scope, element, attrs, controllers) {
+            var AnolFeaturePropertiesEditor = controllers[0];
+            var AnolFeatureStyleEditor = controllers[1];
 
-            tAttrs.tooltipDelay = prepareAttr(tAttrs.tooltipDelay, 500);
-            tAttrs.tooltipEnable = prepareAttr(tAttrs.tooltipEnable, !ol.has.TOUCH);
-            tAttrs.pointTooltipPlacement = prepareAttr(tAttrs.pointTooltipPlacement, 'right');
-            tAttrs.lineTooltipPlacement = prepareAttr(tAttrs.lineTooltipPlacement, 'right');
-            tAttrs.polygonTooltipPlacement = prepareAttr(tAttrs.polygonTooltipPlacement, 'right');
+            // attribute defaults
+            scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
+                scope.tooltipEnable : !ol.has.TOUCH;
+            scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
+                scope.tooltipDelay : 500;
+            scope.pointTooltipPlacement = angular.isDefined(scope.pointTooltipPlacement) ?
+                scope.pointTooltipPlacement : 'right';
+            scope.lineTooltipPlacement = angular.isDefined(scope.lineTooltipPlacement) ?
+                scope.lineTooltipPlacement : 'right';
+            scope.polygonTooltipPlacement = angular.isDefined(scope.polygonTooltipPlacement) ?
+                scope.polygonTooltipPlacement : 'right';
 
-            return function(scope, element, attrs, controllers) {
-                var AnolFeaturePropertiesEditor = controllers[0];
-                var AnolFeatureStyleEditor = controllers[1];
+            var drawPointControl, drawLineControl, drawPolygonControl;
 
-                var drawPointControl, drawLineControl, drawPolygonControl;
-
-                if(angular.isUndefined(scope.drawLayer)) {
-                    scope.drawLayer = new anol.layer.Feature({
-                        name: 'draw_layer'
-                    });
-                    if(angular.isDefined(scope.style)) {
-                        scope.drawLayer.olLayer.setStyle(scope.style);
-                    }
-
-                    // TODO take a look at when layerswitcher can handle
-                    // add layer
-                    $rootScope.$on('$translateChangeSuccess', function () {
-                        $translate('anol.draw.DRAW_LAYER_TITLE').then(function(title) {
-                            scope.drawLayer.title = title;
-                        });
-                    });
-                    LayersService.addLayer(scope.drawLayer);
+            if(angular.isUndefined(scope.drawLayer)) {
+                scope.drawLayer = new anol.layer.Feature({
+                    name: 'draw_layer'
+                });
+                if(angular.isDefined(scope.style)) {
+                    scope.drawLayer.olLayer.setStyle(scope.style);
                 }
 
-                scope.drawSource = scope.drawLayer.olLayer.getSource();
-
-                var createDrawInteraction = function(drawType) {
-                    // create draw interaction
-                    var draw = new ol.interaction.Draw({
-                        source: scope.drawSource,
-                        type: drawType
+                // TODO take a look at when layerswitcher can handle
+                // add layer
+                $rootScope.$on('$translateChangeSuccess', function () {
+                    $translate('anol.draw.DRAW_LAYER_TITLE').then(function(title) {
+                        scope.drawLayer.title = title;
                     });
+                });
+                LayersService.addLayer(scope.drawLayer);
+            }
 
-                    if(angular.isObject(AnolFeaturePropertiesEditor)) {
-                        draw.on('drawend', function(evt) {
-                            var feature = evt.feature;
-                            AnolFeaturePropertiesEditor.editFeature(feature);
-                        });
-                    } else if (angular.isObject(AnolFeatureStyleEditor)) {
-                        draw.on('drawend', function(evt) {
-                            var feature = evt.feature;
-                            AnolFeatureStyleEditor.editFeature(feature);
-                        });
-                    }
+            scope.drawSource = scope.drawLayer.olLayer.getSource();
 
-                    return draw;
-                };
-
-                var createDrawControl = function(controlElement, controlTarget, interaction) {
-                    var drawControl = new anol.control.Control({
-                        element: controlElement,
-                        target: controlTarget,
-                        interaction: interaction,
-                        exclusive: true
-                    });
-                    drawControl.onDeactivate(deactivate, scope);
-                    drawControl.onActivate(activate, scope);
-                    return drawControl;
-                };
-
-                var deactivate = function(targetControl, context) {
-                    context.map.removeInteraction(targetControl.interaction);
-                };
-
-                var activate = function(targetControl, context) {
-                    context.map.addInteraction(targetControl.interaction);
-                };
-
-                scope.drawPoint = function() {
-                    if(drawPointControl.active) {
-                        drawPointControl.deactivate();
-                    } else {
-                        drawPointControl.activate();
-                    }
-                };
-
-                scope.drawLine = function() {
-                    if(drawLineControl.active) {
-                        drawLineControl.deactivate();
-                    } else {
-                        drawLineControl.activate();
-                    }
-                };
-
-                scope.drawPolygon = function() {
-                    if(drawPolygonControl.active) {
-                        drawPolygonControl.deactivate();
-                    } else {
-                        drawPolygonControl.activate();
-                    }
-                };
-
-                scope.map = MapService.getMap();
-
-                element.addClass('ol-control');
-                element.addClass('anol-draw');
-
-                var drawControl = new anol.control.Control({
-                    element: element
+            var createDrawInteraction = function(drawType) {
+                // create draw interaction
+                var draw = new ol.interaction.Draw({
+                    source: scope.drawSource,
+                    type: drawType
                 });
 
-                drawPointControl = createDrawControl(
-                    element.find('.anol-draw-point'),
-                    element,
-                    createDrawInteraction('Point')
-                );
+                if(angular.isObject(AnolFeaturePropertiesEditor)) {
+                    draw.on('drawend', function(evt) {
+                        var feature = evt.feature;
+                        AnolFeaturePropertiesEditor.editFeature(feature);
+                    });
+                } else if (angular.isObject(AnolFeatureStyleEditor)) {
+                    draw.on('drawend', function(evt) {
+                        var feature = evt.feature;
+                        AnolFeatureStyleEditor.editFeature(feature);
+                    });
+                }
 
-                drawLineControl = createDrawControl(
-                    element.find('.anol-draw-line'),
-                    element,
-                    createDrawInteraction('LineString')
-                );
-
-                drawPolygonControl = createDrawControl(
-                    element.find('.anol-draw-polygon'),
-                    element,
-                    createDrawInteraction('Polygon')
-                );
-
-                ControlsService.addControls([drawControl, drawPointControl, drawLineControl, drawPolygonControl]);
+                return draw;
             };
+
+            var createDrawControl = function(controlElement, controlTarget, interaction) {
+                var drawControl = new anol.control.Control({
+                    element: controlElement,
+                    target: controlTarget,
+                    interaction: interaction,
+                    exclusive: true
+                });
+                drawControl.onDeactivate(deactivate, scope);
+                drawControl.onActivate(activate, scope);
+                return drawControl;
+            };
+
+            var deactivate = function(targetControl, context) {
+                context.map.removeInteraction(targetControl.interaction);
+            };
+
+            var activate = function(targetControl, context) {
+                context.map.addInteraction(targetControl.interaction);
+            };
+
+            scope.drawPoint = function() {
+                if(drawPointControl.active) {
+                    drawPointControl.deactivate();
+                } else {
+                    drawPointControl.activate();
+                }
+            };
+
+            scope.drawLine = function() {
+                if(drawLineControl.active) {
+                    drawLineControl.deactivate();
+                } else {
+                    drawLineControl.activate();
+                }
+            };
+
+            scope.drawPolygon = function() {
+                if(drawPolygonControl.active) {
+                    drawPolygonControl.deactivate();
+                } else {
+                    drawPolygonControl.activate();
+                }
+            };
+
+            scope.map = MapService.getMap();
+
+            element.addClass('ol-control');
+            element.addClass('anol-draw');
+
+            var drawControl = new anol.control.Control({
+                element: element
+            });
+
+            drawPointControl = createDrawControl(
+                element.find('.anol-draw-point'),
+                element,
+                createDrawInteraction('Point')
+            );
+
+            drawLineControl = createDrawControl(
+                element.find('.anol-draw-line'),
+                element,
+                createDrawInteraction('LineString')
+            );
+
+            drawPolygonControl = createDrawControl(
+                element.find('.anol-draw-polygon'),
+                element,
+                createDrawInteraction('Polygon')
+            );
+
+            ControlsService.addControls([drawControl, drawPointControl, drawLineControl, drawPolygonControl]);
         }
     };
 }]);
