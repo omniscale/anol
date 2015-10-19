@@ -13,11 +13,10 @@ angular.module('anol.map')
 .provider('MapService', [function() {
     var _view, _bbox;
 
-    var buildMapConfig = function(layers, controls, interactions) {
+    var buildMapConfig = function(controls, interactions) {
         var map = new ol.Map(angular.extend({}, {
             controls: controls,
             interactions: interactions,
-            layers: layers,
             logo: false
         }));
         map.setView(_view);
@@ -89,7 +88,6 @@ angular.module('anol.map')
         MapService.prototype.getMap = function() {
             if(angular.isUndefined(this.map)) {
                 this.map = buildMapConfig(
-                    LayersService.olLayers,
                     ControlsService.olControls,
                     InteractionsService.interactions
                 );

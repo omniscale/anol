@@ -13,7 +13,7 @@ angular.module('anol.map')
  *
  * It also add the DefaultMapName as id and class to the map element.
  */
-.directive('anolMap', ['$timeout', 'DefaultMapName', 'MapService', function($timeout, DefaultMapName, MapService) {
+.directive('anolMap', ['$timeout', 'DefaultMapName', 'MapService', 'LayersService', function($timeout, DefaultMapName, MapService, LayersService) {
     return {
         scope: {},
         link: {
@@ -26,9 +26,14 @@ angular.module('anol.map')
 
                 scope.map.setTarget(scope.mapName);
             },
-            post: function (scope, element, attrs) {
+            post: function(scope, element, attrs) {
                 $timeout(function() {
                     scope.map.updateSize();
+                    // add layers after map has correct size to prevent
+                    // loading layer twice (before and after resize)
+                    angular.forEach(LayersService.olLayers, function(layer) {
+                        scope.map.addLayer(layer);
+                    });
                 });
             }
         },
