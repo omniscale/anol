@@ -49,7 +49,7 @@ angular.module('anol.mouseposition')
                 scope.precision = parseInt(scope.precision || 0);
             },
             post: function(scope, element, attrs, AnolMapController) {
-                var inMap = angular.isDefined(AnolMapController);
+                var inMap = angular.isObject(AnolMapController);
                 var olControl = new ol.control.MousePosition({
                     coordinateFormat: function(coordinate) {
                         scope.$apply(function() {

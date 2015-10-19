@@ -56,7 +56,7 @@ angular.module('anol.layerswitcher')
                     }
                 });
                 scope.overlayLayers = overlayLayers;
-                if(angular.isDefined(AnolMapController)) {
+                if(angular.isObject(AnolMapController)) {
                     scope.collapsed = scope.anolLayerswitcher !== 'open';
                     scope.showToggle = true;
                     ControlsService.addControl(

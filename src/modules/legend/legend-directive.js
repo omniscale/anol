@@ -52,7 +52,7 @@ angular.module('anol.legend')
                 scope.showInactive = (scope.showInactive === true || scope.showInactive === 'true');
                 // get callback from wrapper function
                 scope.customTargetCallback = scope.customTargetFilled();
-                if(angular.isDefined(AnolMapController)) {
+                if(angular.isObject(AnolMapController)) {
                     scope.collapsed = scope.anolLegend !== 'open';
                     scope.showToggle = true;
                     element.addClass('anol-legend');
