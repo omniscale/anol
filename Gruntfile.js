@@ -44,6 +44,8 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'src/anol/anol.js',
+          'src/anol/layer.js',
+          'src/anol/layer/staticgeojson.js',
           'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
@@ -54,7 +56,7 @@ module.exports = function(grunt) {
     },
     concat: {
       options: {
-        separator: ';'
+        separator: ';\n'
       },
       dev: {
         src: [
