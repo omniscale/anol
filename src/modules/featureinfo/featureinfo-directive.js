@@ -17,6 +17,7 @@ angular.module('anol.featureinfo')
  *
  * @param {function} customTargetFilled Callback called after featureinfo result added to custom element
  * @param {string} templateUrl Url to template to use instead of default one
+ * @param {function} beforeRequest Callback called before featureinfo requests are fulfilled
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
@@ -28,7 +29,8 @@ angular.module('anol.featureinfo')
         restrict: 'A',
         replace: true,
         scope: {
-            customTargetFilled: '&'
+            customTargetFilled: '&',
+            beforeRequest: '&'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featureinfo/templates/popup.html';
@@ -41,6 +43,7 @@ angular.module('anol.featureinfo')
                 scope.map = MapService.getMap();
                 // get callback from wrapper function
                 scope.customTargetCallback = scope.customTargetFilled();
+                scope.beforeRequest = scope.beforeRequest();
                 var view = scope.map.getView();
                 var popupContent = element.find('.anol-popup-content');
                 var popupOverlay = new ol.Overlay({
@@ -64,6 +67,10 @@ angular.module('anol.featureinfo')
 
                     element.css('display', 'none');
                     popupContent.empty();
+
+                    if(angular.isFunction(scope.beforeRequest)) {
+                        scope.beforeRequest();
+                    }
 
                     angular.forEach(LayersService.layers, function(layer) {
                         var layers = [layer];
