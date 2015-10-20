@@ -69,7 +69,9 @@ angular.module('anol.map')
                 this.map.addControl(control.olControl);
             }
             this.controls.push(control);
-            this.olControls.push(control.olControl);
+            if(control.olControl instanceof ol.control.Control) {
+                this.olControls.push(control.olControl);
+            }
             if(control.exclusive === true) {
                 control.onActivate(Controls.prototype.handleExclusiveControlActivate, this);
                 this.exclusiveControls.push(control);
@@ -88,11 +90,9 @@ angular.module('anol.map')
          */
         Controls.prototype.addControls = function(controls) {
             var self = this;
-            if(this.map !== undefined) {
-                angular.forEach(controls, function(control) {
-                    self.addControl(control);
-                });
-            }
+            angular.forEach(controls, function(control) {
+                self.addControl(control);
+            });
         };
         /**
          * private function
