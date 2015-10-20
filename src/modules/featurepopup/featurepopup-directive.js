@@ -18,7 +18,7 @@ angular.module('anol.featurepopup')
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **properties** {Array<String>} - Property names to display
  */
-.directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', 'ControlsService', function($timeout, MapService, LayersService, ControlsService) {
+.directive('anolFeaturePopup', ['$timeout', '$translate', 'MapService', 'LayersService', 'ControlsService', function($timeout, $translate, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -60,7 +60,19 @@ angular.module('anol.featurepopup')
                                 angular.isString(value) &&
                                 value !== ''
                             ) {
-                                properties[displayProperties[key]] = value;
+                                properties[displayProperties[key].label] = value;
+                                if(angular.isDefined(displayProperties[key].translateValue) &&
+                                    (
+                                        displayProperties[key].translateValue === true ||
+                                        displayProperties[key].translateValue === 'true'
+                                    )
+                                ) {
+                                    $translate(key + '.' + value).then(
+                                        function(translation) {
+                                            properties[displayProperties[key].label] = translation;
+                                        }
+                                    );
+                                }
                             }
                         });
                         if(!angular.equals(properties, {})) {

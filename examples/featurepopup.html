@@ -38,6 +38,14 @@
 
     <script type="text/javascript">
       angular.module('example', ['anol.featurepopup', 'anol.zoom'])
+      .config(['$translateProvider', function($translateProvider) {
+        $translateProvider.translations('en_US', {
+          'description': {
+            'I am a feature': 'Ich bin ein Feature'
+          },
+          'DESCRIPTION': 'Beschreibung'
+        });
+      }])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
@@ -67,8 +75,13 @@
             name: 'featureLayer',
             featureinfo: {
               properties: {
-                'name': 'Name',
-                'description': 'Description'
+                'name': {
+                  'label': 'Name'
+                },
+                'description': {
+                  'label': 'DESCRIPTION',
+                  'translateValue': true
+                }
               }
             },
             olLayer: {
