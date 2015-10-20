@@ -82,6 +82,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         // we can't use source.clear() at this place, cause
         // source.clear() will trigger to reload features from server
         // and this leads to an infinite loop
+        // even with opt_fast=true
         var sourceFeatures = self._source.getFeatures();
         for(var i = 0; i < sourceFeatures.length; i++) {
             self._source.removeFeature(sourceFeatures[i]);
@@ -91,9 +92,5 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             featureProjection: featureProjection
         });
         self._source.addFeatures(features);
-        // we have to dispatch own event couse change-event triggered
-        // for each feature remove and for feature added
-        // remove when ol3 provide something like source.update
-        self._source.dispatchEvent('anolSourceUpdated');
     }
 });
