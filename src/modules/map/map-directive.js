@@ -35,9 +35,16 @@ angular.module('anol.map')
                     angular.forEach(LayersService.olLayers, function(layer) {
                         scope.map.addLayer(layer);
                     });
-                    LayersService.registerMap(this.map);
-                    ControlsService.registerMap(this.map);
-                    InteractionsService.registerMap(this.map);
+                    LayersService.registerMap(scope.map);
+                    // add registered controls and interactions
+                    angular.forEach(ControlsService.olControls, function(control) {
+                        scope.map.addControl(control);
+                    });
+                    ControlsService.registerMap(scope.map);
+                    angular.forEach(InteractionsService.interactions, function(interaction) {
+                        scope.map.addInteraction(interaction);
+                    });
+                    InteractionsService.registerMap(scope.map);
                 });
             }
         },
