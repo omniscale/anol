@@ -47,6 +47,7 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip-append-to-body', true);
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
+            overviewmapButton.attr('tooltip-trigger', 'mouseenter click');
 
             $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);

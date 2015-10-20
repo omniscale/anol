@@ -39,6 +39,7 @@ angular.module('anol.zoom')
             zoomInButton.attr('tooltip-append-to-body', true);
             zoomInButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             zoomInButton.attr('tooltip-enable', !ol.has.TOUCH);
+            zoomInButton.attr('tooltip-trigger', 'mouseenter click');
             $compile(zoomInButton)(scope);
 
             var zoomOutButton = angular.element(olControl.element).find('.ol-zoom-out');
@@ -48,6 +49,7 @@ angular.module('anol.zoom')
             zoomOutButton.attr('tooltip-append-to-body', true);
             zoomOutButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             zoomOutButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnablea);
+            zoomOutButton.attr('tooltip-trigger', 'mouseenter click');
             $compile(zoomOutButton)(scope);
 
             ControlsService.addControl(control);

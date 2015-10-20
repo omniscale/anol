@@ -40,6 +40,7 @@ angular.module('anol.attribution')
             attributionButton.attr('tooltip-append-to-body', true);
             attributionButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             attributionButton.attr('tooltip-enable', tooltipEnable);
+            attributionButton.attr('tooltip-trigger', 'mouseenter click');
             $compile(attributionButton)(scope);
 
             ControlsService.addControl(control);
