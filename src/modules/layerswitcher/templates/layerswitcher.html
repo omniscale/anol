@@ -5,7 +5,7 @@
 </div>
 <div class="anol-layerswitcher-container" ng-show="!collapsed">
     <div ng-show="backgroundLayers.length > 1">
-        <h4>{{ 'anol.layerswitcher.BACKGROUND_LAYERS' | translate }}</h4>
+        <h4>{{ 'anol.layerswitcher.BACKGROUNDS' | translate }}</h4>
         <div ng-repeat="layer in backgroundLayers" class="radio">
             <!-- used $parent to get out of ng-repeat scope -->
             <label>
@@ -15,7 +15,7 @@
         </div>
     </div>
     <div ng-show="overlayLayers.length > 0">
-        <h4>{{ 'anol.layerswitcher.OVERLAY_LAYERS' | translate }}</h4>
+        <h4>{{ 'anol.layerswitcher.OVERLAYS' | translate }}</h4>
         <div ng-repeat="layer in overlayLayers" ng-if="layer.displayInLayerswitcher !== false">
             <div ng-if="isGroup(layer) && layer.layers.length > 1">
                 <span class="glyphicon" ng-class="{'glyphicon-plus': layer.collapsed, 'glyphicon-minus': !layer.collapsed}" ng-click="layer.collapsed=!layer.collapsed"></span>

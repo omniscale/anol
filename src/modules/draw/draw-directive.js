@@ -70,7 +70,7 @@ angular.module('anol.draw')
                 // TODO take a look at when layerswitcher can handle
                 // add layer
                 $rootScope.$on('$translateChangeSuccess', function () {
-                    $translate('anol.draw.DRAW_LAYER_TITLE').then(function(title) {
+                    $translate('anol.draw.LAYER_TITLE').then(function(title) {
                         scope.drawLayer.title = title;
                     });
                 });

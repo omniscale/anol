@@ -200,7 +200,7 @@ angular.module('anol.legend')
                         // Display in element with given id
                         if (angular.isDefined(layer.legend.target)) {
                             var target = angular.element(layer.legend.target);
-                            var showLegendButton = angular.element('<button>{{ \'anol.legend.SHOW_LEGEND\' | translate }}</button>');
+                            var showLegendButton = angular.element('<button>{{ \'anol.legend.SHOW\' | translate }}</button>');
                             showLegendButton.addClass('btn');
                             showLegendButton.addClass('btn-sm');
                             showLegendButton.on('click', function() {

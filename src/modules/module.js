@@ -28,23 +28,20 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'TOOLTIP': 'Attributions'
             },
             'draw': {
-                'TOOLTIP_DRAW_POINT': 'Draw point',
-                'TOOLTIP_DRAW_LINE': 'Draw line',
-                'TOOLTIP_DRAW_POLYGON': 'Draw polygon',
-                'DRAW_LAYER_TITLE': 'Draw layer'
-            },
-            'featurepopup': {
-                'NO_INFORMATIONS_AVAILABLE': 'No informations available'
+                'TOOLTIP_POINT': 'Draw point',
+                'TOOLTIP_LINE': 'Draw line',
+                'TOOLTIP_POLYGON': 'Draw polygon',
+                'LAYER_TITLE': 'Draw layer'
             },
             'featurepropertieseditor': {
-                'EDIT_FEATURE_PROPERTIES': 'Edit feature properties',
-                'NEW_PROPERTY': 'New property',
+                'TITLE': 'Edit feature properties',
+                'NEW': 'New property',
                 'ADD': 'Add',
                 'OK': 'OK',
                 'CANCEL': 'Cancel'
             },
             'featurestyleeditor': {
-                'EDIT_FEATURE_STYLE': 'Edit feature style',
+                'TITLE': 'Edit feature style',
                 'OK': 'OK',
                 'CANCEL': 'Cancel',
                 'RADIUS': 'Radius',
@@ -69,12 +66,12 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
             },
             'layerswitcher': {
                 'TOOLTIP': 'Toggle layerswitcher',
-                'BACKGROUND_LAYERS': 'Background layers',
-                'OVERLAY_LAYERS': 'Overlay layers'
+                'BACKGROUNDS': 'Background layers',
+                'OVERLAYS': 'Overlay layers'
             },
             'legend': {
                 'TOOLTIP': 'Toggle legend',
-                'SHOW_LEGEND': 'Show legend'
+                'SHOW': 'Show legend'
             },
             'measure': {
                 'TOOLTIP_MEASURE_LINE': 'Measure line',
