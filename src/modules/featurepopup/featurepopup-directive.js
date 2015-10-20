@@ -134,10 +134,13 @@ angular.module('anol.featurepopup')
                 var getProperties = angular.isDefined(scope.extentWidth) ? propertiesByExtent : propertiesAtPixel;
 
                 scope.handleClick = function(evt) {
-                    // if click hit one or more features, getProperties set scope.hasFeature = true
+                    scope.$apply(function() {
+                        scope.popupVisible = false;
+                    });
+                    // changed in getProperties on feature hit
                     scope.hasFeature = false;
                     var propertiesCollection = getProperties(evt);
-                    if(scope.hasFeature === false) {
+                    if(scope.hasFeature === false || propertiesCollection.length === 0) {
                         return;
                     }
                     scope.$apply(function() {
