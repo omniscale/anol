@@ -116,10 +116,17 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'node_modules/bootstrap/dist/css/bootstrap.css',
-              'node_modules/openlayers/dist/ol.css',
-              'node_modules/bootstrap/dist/fonts'
+              'node_modules/openlayers/dist/ol.css'
             ],
-            dest: 'build/'
+            dest: 'build/css/'
+          },
+          {
+            flatten: true,
+            expand: true,
+            src: [
+              'node_modules/bootstrap/dist/fonts/*'
+            ],
+            dest: 'build/fonts'
           }
         ]
       }
@@ -196,7 +203,7 @@ module.exports = function(grunt) {
         },
         dist: {
             files: {
-                'build/anol.css': 'static/css/*.sass'
+                'build/css/anol.css': 'static/css/*.sass'
             }
         }
     },
