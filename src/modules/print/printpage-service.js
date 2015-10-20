@@ -340,8 +340,14 @@ angular.module('anol.print')
             if(_cursorPointer !== undefined) {
                 InteractionsService.removeInteraction(_cursorPointer);
             }
+            var modifyFeatures = new ol.Collection();
+            modifyFeatures.extend(_modifyFeatures);
+            modifyFeatures.push(_printArea);
             var modifyOptions = {
-                features: _modifyFeatures
+                features: modifyFeatures,
+                deleteCondition: function() {
+                    return false;
+                }
             };
 
             if(_style !== undefined) {
