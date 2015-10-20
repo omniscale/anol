@@ -13,7 +13,8 @@ angular.module('anol.map')
  *
  * It also add the DefaultMapName as id and class to the map element.
  */
-.directive('anolMap', ['$timeout', 'DefaultMapName', 'MapService', 'LayersService', function($timeout, DefaultMapName, MapService, LayersService) {
+.directive('anolMap', ['$timeout', 'DefaultMapName', 'MapService', 'LayersService', 'ControlsService', 'InteractionsService',
+    function($timeout, DefaultMapName, MapService, LayersService, ControlsService, InteractionsService) {
     return {
         scope: {},
         link: {
@@ -34,6 +35,9 @@ angular.module('anol.map')
                     angular.forEach(LayersService.olLayers, function(layer) {
                         scope.map.addLayer(layer);
                     });
+                    LayersService.registerMap(this.map);
+                    ControlsService.registerMap(this.map);
+                    InteractionsService.registerMap(this.map);
                 });
             }
         },

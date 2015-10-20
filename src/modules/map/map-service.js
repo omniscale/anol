@@ -91,9 +91,6 @@ angular.module('anol.map')
                     ControlsService.olControls,
                     InteractionsService.interactions
                 );
-                LayersService.registerMap(this.map);
-                ControlsService.registerMap(this.map);
-                InteractionsService.registerMap(this.map);
             }
             return this.map;
         };
