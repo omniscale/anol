@@ -5,24 +5,44 @@ angular.module('anol.featurepopup')
  *
  * @restrict A
  * @requires $timeout
+ * @requires pascalprecht.$translate
  * @requires anol.map.MapService
  * @requires anol.map.LayersService
  * @requires anol.map.ControlsService
  *
  * @param {Float} extentWidth Width of square bounding box around clicked point
  * @param {string} templateUrl Url to template to use instead of default one
+ * @param {string} translationNamespace Namespace to use in translation table. Default "featureproperties".
  *
  * @description
  * Shows feature properties for layers with 'featureinfo' property.
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **properties** {Array<String>} - Property names to display
+ *
+ * **Translating feature properties**
+ * @example
+ * ```
+{
+    "featureproperties": {
+        "{layername}": {
+            "PROPERTY_KEY": "{property key translation}",
+            "property_key": {
+                "property_value_1": "{property value 1 translation}",
+                "property_value_2": "{property value 2 translation}"
+            }
+        }
+    }
+}```
+ *
+ *
  */
 .directive('anolFeaturePopup', ['$timeout', '$translate', 'MapService', 'LayersService', 'ControlsService', function($timeout, $translate, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
-            'extentWidth': '='
+            'extentWidth': '=',
+            'translationNamespace': '@'
         },
         replace: true,
         templateUrl: function(tElement, tAttrs) {
@@ -31,6 +51,8 @@ angular.module('anol.featurepopup')
         },
         link: {
             pre: function(scope, element, attrs) {
+                scope.translationNamespace = angular.isDefined(scope.translationNamespace) ?
+                    scope.translationNamespace : 'featureproperties';
                 scope.map = MapService.getMap();
                 scope.propertiesCollection = [];
                 scope.popupVisible = false;
@@ -50,29 +72,44 @@ angular.module('anol.featurepopup')
                     return [center[0] - width, center[1] - width, center[0] + width, center[1] + width];
                 };
 
-                var extractProperties = function(features, displayProperties) {
+                var extractProperties = function(features, anolLayer) {
+                    var displayProperties = anolLayer.featureinfo.properties;
                     var propertiesCollection = [];
                     angular.forEach(features, function(feature) {
                         var properties = {};
                         angular.forEach(feature.getProperties(), function(value, key) {
                             if(
-                                key in displayProperties &&
+                                $.inArray(key, displayProperties) > -1 &&
                                 angular.isString(value) &&
                                 value !== ''
                             ) {
-                                properties[displayProperties[key].label] = value;
-                                if(angular.isDefined(displayProperties[key].translateValue) &&
-                                    (
-                                        displayProperties[key].translateValue === true ||
-                                        displayProperties[key].translateValue === 'true'
-                                    )
-                                ) {
-                                    $translate(key + '.' + value).then(
-                                        function(translation) {
-                                            properties[displayProperties[key].label] = translation;
+                                properties[key] = {
+                                    key: key,
+                                    value: value
+                                };
+                                var translateKey = [scope.translationNamespace, anolLayer.name, key.toUpperCase()].join('.');
+                                var translateValue = [scope.translationNamespace, anolLayer.name, key, value].join('.');
+                                // this get never rejected cause of array usage
+                                // see https://github.com/angular-translate/angular-translate/issues/960
+                                $translate([
+                                    translateKey,
+                                    translateValue
+                                ]).then(
+                                    function(translations) {
+                                        var translatedKey = translations[translateKey];
+                                        var translatedValue = translations[translateValue];
+                                        if(translatedKey === translateKey) {
+                                            translatedKey = key;
                                         }
-                                    );
-                                }
+                                        if(translatedValue === translateValue) {
+                                            translatedValue = value;
+                                        }
+                                        properties[key] = {
+                                            key: translatedKey,
+                                            value: translatedValue
+                                        };
+                                    }
+                                );
                             }
                         });
                         if(!angular.equals(properties, {})) {
@@ -102,7 +139,7 @@ angular.module('anol.featurepopup')
                             propertiesCollection = propertiesCollection.concat(
                                 extractProperties(
                                     features,
-                                    anolLayer.featureinfo.properties
+                                    anolLayer
                                 )
                             );
                         });
@@ -125,7 +162,7 @@ angular.module('anol.featurepopup')
                         propertiesCollection = propertiesCollection.concat(
                             extractProperties(
                                 [feature],
-                                layer.get('anolLayer').featureinfo.properties
+                                layer.get('anolLayer')
                             )
                         );
                     });

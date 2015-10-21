@@ -40,10 +40,14 @@
       angular.module('example', ['anol.featurepopup', 'anol.zoom'])
       .config(['$translateProvider', function($translateProvider) {
         $translateProvider.translations('en_US', {
-          'description': {
-            'I am a feature': 'Ich bin ein Feature'
-          },
-          'DESCRIPTION': 'Beschreibung'
+          'featureproperties': {
+            'featureLayer': {
+              'DESCRIPTION': 'Beschreibung',
+              'description': {
+                'I am a feature': 'Ich bin ein Feature'
+              }
+            }
+          }
         });
       }])
       .config(['MapServiceProvider', 'LayersServiceProvider',
@@ -74,15 +78,7 @@
           var featureLayer = new anol.layer.Feature({
             name: 'featureLayer',
             featureinfo: {
-              properties: {
-                'name': {
-                  'label': 'Name'
-                },
-                'description': {
-                  'label': 'DESCRIPTION',
-                  'translateValue': true
-                }
-              }
+              properties: ['name', 'description']
             },
             olLayer: {
               source: {
