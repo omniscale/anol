@@ -5,7 +5,7 @@ angular.module('anol.map')
  * @name anol.map.InteractionsServiceProvider
  */
 .provider('InteractionsService', [function() {
-    var _interactions;
+    var _interactions, _dragZoomStyle;
 
     /**
      * @ngdoc method
@@ -16,6 +16,18 @@ angular.module('anol.map')
     this.setInteractions = function(interactions) {
         _interactions = interactions;
     };
+    /**
+     * @ngdoc method
+     * @name setDragZoomStyle
+     * @methodOf anol.map.InteractionsServiceProvider
+     * @param {ol.style.Style} dragZoomStyle Style for drag zoom box
+     *
+     * @description
+     * Defines style of drag zoom box if default interactions (no interactions explicit set) are used
+     */
+    this.setDragZoomStyle = function(dragZoomStyle) {
+        _dragZoomStyle = dragZoomStyle;
+    };
 
     this.$get = [function() {
         /**
@@ -25,9 +37,24 @@ angular.module('anol.map')
          * @description
          * Stores ol3 interactions and add them to map, if map present
          */
-        var Interactions = function(interactions) {
-            this.interactions = interactions || ol.interaction.defaults();
+        var Interactions = function(interactions, dragZoomStyle) {
             this.map = undefined;
+
+            if(interactions !== undefined) {
+                this.interactions = interactions;
+                return;
+
+            }
+            if(dragZoomStyle !== undefined) {
+                this.interactions = ol.interaction.defaults({
+                    shiftDragZoom: false
+                });
+                this.interactions.push(new ol.interaction.DragZoom({
+                    style: dragZoomStyle
+                }));
+                return;
+            }
+            this.interactions = ol.interaction.defaults();
         };
         /**
          * @ngdoc method
@@ -86,6 +113,6 @@ angular.module('anol.map')
                 this.interactions.splice(idx, 1);
             }
         };
-        return new Interactions(_interactions);
+        return new Interactions(_interactions, _dragZoomStyle);
     }];
 }]);
