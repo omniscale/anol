@@ -16,6 +16,7 @@ angular.module('anol.print')
  *
  * When *startPrint* called default print arguments plus **tempalteValues** passed to anol.print.PrintService:startPrint.
  * **templateValues** contains all values added to **printAttributes**.
+ * When using own print template, all inputs have to use **printAttributes.[name]** as *ng-model* statement.
  * *tempalteValues* can be extended by transclude input fields into directive. *ng-model* value for these fields have to be
  * *$parent.printAttributes.[name]*
  */
