@@ -4,7 +4,10 @@ angular.module('anol.print')
  * @name anol.print.PrintServiceProvider
  */
 .provider('PrintService', [function() {
-    var _preparePrintArgs, _downloadReady, _printUrl, _checkUrlAttribute;
+    var _downloadReady, _printUrl, _checkUrlAttribute;
+    var _preparePrintArgs = function(rawPrintArgs) {
+        return rawPrintArgs;
+    };
     var _mode = 'direct';
     /**
      * @ngdoc method
@@ -13,13 +16,11 @@ angular.module('anol.print')
      *
      * @param {function} preparePrintArgs Function returning argument dict send to print endpoint via post request
      * Function is called with the following parameters:
-     * - **bbox** - {Array.<number>} - Extent to print
-     * - **scale** - {number} - Scale of output
-     * - **layers** - {Array.<string>} - Names of layers to print
-     * - **format** {string} - Requested output format
-     * - **pageSize** {Array.<number>} - Output size
-     * - **pageSizeId** - {string} - Id of page size. @see anol.print.PrintPageServiceProvider:setPageSizes,
-     * - **projection** - {string} - Output projection code
+     * - **rawPrintArgs** - {Object} - Print args provided by anol.print.PrintDirective
+     * - **rawPrintArgs.bbox** - {Array.<number>} - Bounding box to print
+     * - **rawPrintArgs.layers** - {Array.<anol.layer>} - Layers to print
+     * - **rawPrintArgs.projection** {string} - Projection code
+     * - **rawPrintArgs.templateValues** {Object} - All values added to *printAttributes*. @see anol.print.PrintDirective
      *
      */
     this.setPreparePrintArgs = function(preparePrintArgs) {
@@ -92,28 +93,23 @@ angular.module('anol.print')
          * @name startPrint
          * @methodOf anol.print.PrintService
          *
-         * @param {Array.<number>} bbox Extent to print
-         * @param {number} scale Scale of output
-         * @param {Array.<string>} layers Names of layers to print
-         * @param {string} format Requested output format
-         * @param {Array.<number>} pageSizeOutput size
-         * @param {string} pageSizeId Id of page size. @see anol.print.PrintPageServiceProvider:setPageSizes,
-         * @param {string} projection Output projection code
-         * @param {string} mimetype Output format mimetype
+         * @param {Object} rawPrintArgs Arguments provided by print directive
+         * @param {Array.<number>} rawPrintArgs.bbox Print bounding box
+         * @param {Array.<anol.layer>} rawPrintArgs.layers Anol layers to print
+         * @param {string} rawPrintArgs.projection Output projection code
          *
          * @returns {Object} promise
          * @description
          * Requests the print endpoint and returns promise when resolved with downloadUrl
          */
-        Print.prototype.startPrint = function(bbox, scale, layers, format, pageSizeOutput, pageSizeId, projection, mimetype) {
-            var printArgs = this.preparePrintArgs(bbox, scale, layers, format, pageSizeOutput, pageSizeId, projection);
-
+        Print.prototype.startPrint = function(rawPrintArgs) {
+            var printArgs = this.preparePrintArgs(rawPrintArgs);
             switch(this.mode) {
                 case 'queque':
-                    return this.printQueque(printArgs, mimetype);
+                    return this.printQueque(printArgs);
                 // includes case 'direct'
                 default:
-                    return this.printDirect(printArgs, mimetype);
+                    return this.printDirect(printArgs);
             }
         };
 
@@ -160,14 +156,14 @@ angular.module('anol.print')
             return deferred.promise;
         };
 
-        Print.prototype.printDirect = function(printArgs, mimetype) {
+        Print.prototype.printDirect = function(printArgs) {
             var deferred = $q.defer();
             var filePromise = $http.post(this.printUrl, printArgs, {
                 responseType: 'arraybuffer'
             });
             filePromise.then(
                 function(response) {
-                    var file = new Blob([response.data], {type: mimetype});
+                    var file = new Blob([response.data], {type: printArgs.mimetype});
                     var fileUrl = URL.createObjectURL(file);
                     deferred.resolve(fileUrl);
                 },

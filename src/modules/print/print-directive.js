@@ -9,9 +9,15 @@ angular.module('anol.print')
  * @requires anol.print.PrintPageService
  *
  * @description
- * Provides print options, handles sending data to backend service and receives
- * printed map from backend
- * Backend must send response as attached file with correct mimetype
+ * User print interface with default print attributes.
+ * Default print attributes are:
+ * **bbox**, **projection** and **layers**.
+ * **layers** contains all currently active layers.
+ *
+ * When *startPrint* called default print arguments plus **tempalteValues** passed to anol.print.PrintService:startPrint.
+ * **templateValues** contains all values added to **printAttributes**.
+ * *tempalteValues* can be extended by transclude input fields into directive. *ng-model* value for these fields have to be
+ * *$parent.printAttributes.[name]*
  */
 .directive('anolPrint', ['PrintService', 'PrintPageService', 'MapService', 'LayersService',
   function(PrintService, PrintPageService, MapService, LayersService) {
@@ -24,6 +30,7 @@ angular.module('anol.print')
       scope: {
         showPrintArea: '='
       },
+      transclude: true,
       link: {
         pre: function(scope, element, attrs) {
             scope.printAttributes = {
@@ -47,7 +54,7 @@ angular.module('anol.print')
                   _layers = _layers.concat(prepareOverlays(layer.layers));
                 } else {
                   if(layer.displayInLayerswitcher && layer.getVisible()) {
-                    _layers.push(layer.name);
+                    _layers.push(layer);
                   }
                 }
               });
@@ -58,20 +65,16 @@ angular.module('anol.print')
               scope.downloadReady = false;
               scope.downloadError = false;
               scope.prepareDownload = true;
-              var bbox = PrintPageService.getBounds();
-              var outputFormat = angular.copy(scope.printAttributes.outputFormat);
-              var layers = [LayersService.activeBackgroundLayer().name];
+
+              var layers = [LayersService.activeBackgroundLayer()];
               layers = layers.concat(prepareOverlays(LayersService.overlayLayers));
 
-              var downloadPromise = PrintService.startPrint(
-                bbox,
-                scope.printAttributes.scale,
-                layers,
-                outputFormat.value,
-                scope.printAttributes.pageSize,
-                scope.printAttributes.pageSizeId,
-                MapService.getMap().getView().getProjection().getCode(),
-                outputFormat.mimetype
+              var downloadPromise = PrintService.startPrint({
+                  bbox: PrintPageService.getBounds(),
+                  projection: MapService.getMap().getView().getProjection().getCode(),
+                  layers: layers,
+                  templateValues: angular.copy(scope.printAttributes)
+                }
               );
 
               downloadPromise.then(

@@ -20,6 +20,7 @@
       <select class="form-control" ng-model="printAttributes.outputFormat" ng-options="format as format.label for format in outputFormats">
     </select>
     <br>
+    <ng-transclude></ng-transclude>
     <div class="text-center">
       <button class="btn btn-default" ng-click="removePrintArea()" ng-disabled="!isPrintable()">{{ 'anol.print.REMOVE_PRINT_AREA' | translate }}</button>
       <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">{{ 'anol.print.START_PRINT' | translate }}</button>
