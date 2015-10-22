@@ -36,7 +36,7 @@ angular.module('anol.print')
         pre: function(scope, element, attrs) {
             scope.printAttributes = {
               pageSize: [],
-              pageSizeId: undefined,
+              layout: undefined,
               scale: angular.copy(PrintPageService.defaultScale)
             };
             scope.definedPageSizes = PrintPageService.pageSizes;
@@ -95,9 +95,9 @@ angular.module('anol.print')
             // if we assign pageSize = value in template angular put only a reverence
             // into scope.pageSize and typing somethink into width/height input fields
             // will result in modifying selected availablePageSize value
-            scope.setPageSize = function(size, id) {
+            scope.setPageSize = function(size, layout) {
                 scope.printAttributes.pageSize = angular.copy(size);
-                scope.printAttributes.pageSizeId = angular.copy(id);
+                scope.printAttributes.layout = angular.copy(layout);
                 scope.updatePrintPage();
             };
 
@@ -127,7 +127,7 @@ angular.module('anol.print')
             };
             scope.removePrintArea = function() {
               PrintPageService.removePrintArea();
-              scope.printAttributes.pageSizeId = undefined;
+              scope.printAttributes.layout = undefined;
               scope.printAttributes.pageSize = undefined;
 
             };

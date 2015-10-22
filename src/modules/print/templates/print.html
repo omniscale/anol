@@ -4,8 +4,8 @@
       <div class="btn-group">
         <button type="button" class="btn btn-default"
                 ng-repeat="definedPageSize in definedPageSizes"
-                ng-class="{'active': definedPageSize.id === printAttributes.pageSizeId}"
-                ng-click="setPageSize(definedPageSize.value, definedPageSize.id)">
+                ng-class="{'active': definedPageSize.layout === printAttributes.layout}"
+                ng-click="setPageSize(definedPageSize.value, definedPageSize.layout)">
             {{ definedPageSize.label }}
             <span ng-if="definedPageSize.icon" class="glyphicon" ng-class="definedPageSize.icon"></span>
         </button>
