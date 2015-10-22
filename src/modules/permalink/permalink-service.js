@@ -81,20 +81,31 @@ angular.module('anol.permalink')
 
             var params = $location.search();
             var mapParams = extractMapParams(params);
-
             if(mapParams !== false) {
                 var center = ol.proj.transform(mapParams.center, mapParams.crs, self.view.getProjection());
                 self.view.setCenter(center);
                 self.view.setZoom(mapParams.zoom);
                 if(mapParams.layers !== false) {
                     self.visibleLayerNames = mapParams.layers;
+                    var backgroundLayerAdded = false;
                     angular.forEach(LayersService.layers, function(layer) {
+                        // only overlay layers are grouped
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
                                 groupLayer.setVisible(mapParams.layers.indexOf(groupLayer.name) !== -1);
                             });
                         } else {
-                            layer.setVisible(mapParams.layers.indexOf(layer.name) !== -1);
+                            var visible = mapParams.layers.indexOf(layer.name) > -1;
+
+                            if(layer.isBackground && visible) {
+                                if(!backgroundLayerAdded) {
+                                    backgroundLayerAdded = true;
+                                } else {
+                                    visible = false;
+                                }
+                            }
+
+                            layer.setVisible(visible);
                         }
                     });
                 }
