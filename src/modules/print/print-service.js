@@ -129,6 +129,9 @@ angular.module('anol.print')
                         function() {
                             deferred.reject();
                     });
+                },
+                function() {
+                    deferred.reject();
                 }
             );
             return deferred.promise;
