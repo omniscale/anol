@@ -4,7 +4,6 @@ angular.module('anol.featureinfo')
  * @name anol.featureinfo.directive:anolFeatureInfo
  *
  * @restrict A
- * @requires $compile
  * @requires $http
  * @required $window
  * @requires anol.map.MapService
@@ -23,8 +22,8 @@ angular.module('anol.featureinfo')
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
 .directive('anolFeatureInfo', [
-    '$compile', '$http', '$window', 'MapService', 'LayersService', 'ControlsService',
-    function($compile, $http, $window, MapService, LayersService, ControlsService) {
+    '$http', '$window', 'MapService', 'LayersService', 'ControlsService',
+    function($http, $window, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         replace: true,
@@ -38,8 +37,6 @@ angular.module('anol.featureinfo')
         },
         link: {
             pre: function(scope, element) {
-                $compile(element.contents())(scope);
-
                 scope.map = MapService.getMap();
                 // get callback from wrapper function
                 scope.customTargetCallback = scope.customTargetFilled();
