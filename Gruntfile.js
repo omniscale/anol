@@ -77,7 +77,7 @@ module.exports = function(grunt) {
           'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
           'node_modules/angular-translate/dist/angular-translate.min.js',
           'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
-          'node_modules/openlayers/dist/ol.js',
+          'node_modules/openlayers/build/ol-custom.js',
           'build/<%= pkg.name %>.ugly.js'
         ],
         dest: 'build/<%= pkg.name %>.min.js'
@@ -129,6 +129,16 @@ module.exports = function(grunt) {
             dest: 'build/fonts'
           }
         ]
+      }
+    },
+    shell: {
+      buildOl3: {
+        command: [
+          'cd node_modules/openlayers',
+          'make build',
+          'node tasks/build.js ../../config/openlayers.build.js build/ol-custom.js',
+          'cd -'
+        ].join('&&')
       }
     },
     connect: {
@@ -230,14 +240,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-concurrent');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.loadNpmTasks('grunt-karma');
+
+  grunt.registerTask('build-ol3', ['shell:buildOl3']);
 
   grunt.registerTask('test', ['karma:unit']);
   grunt.registerTask('dev', ['clean:prebuild', 'sass:dist', 'ngtemplates', 'concat:dev', 'connect:server', 'concurrent:dev']);
 
   grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
   grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'concat:dev']);
-  grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'concat:dist', 'clean:postbuild', 'copy:full']);
+  grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'shell:buildOl3', 'concat:dist', 'clean:postbuild', 'copy:full']);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
 };
