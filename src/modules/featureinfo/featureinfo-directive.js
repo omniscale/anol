@@ -17,6 +17,7 @@ angular.module('anol.featureinfo')
  * @param {function} customTargetFilled Callback called after featureinfo result added to custom element
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {function} beforeRequest Callback called before featureinfo requests are fulfilled
+ * @param {string} proxyUrl Url for proxy to use for requests
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
@@ -29,7 +30,8 @@ angular.module('anol.featureinfo')
         replace: true,
         scope: {
             customTargetFilled: '&',
-            beforeRequest: '&'
+            beforeRequest: '&',
+            proxyUrl: '@'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featureinfo/templates/popup.html';
@@ -85,6 +87,7 @@ angular.module('anol.featureinfo')
                                 return;
                             }
 
+                            // TODO do not request each layer seperate
                             var params = layer.olLayer.getSource().getParams();
                             var queryLayers = params.layers || params.LAYERS;
                             queryLayers = queryLayers.split(',');
@@ -95,9 +98,11 @@ angular.module('anol.featureinfo')
                                     {
                                         'INFO_FORMAT': 'text/html',
                                         'QUERY_LAYERS': queryLayer
-
                                     }
                                 );
+                                if(angular.isDefined(scope.proxyUrl)) {
+                                    url = scope.proxyUrl + url;
+                                }
                                 if(angular.isDefined(url)) {
                                     $http.get(url).success(function(response) {
                                         if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
