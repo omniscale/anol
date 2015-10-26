@@ -17,7 +17,8 @@ angular.module('anol.featureinfo')
  * @param {function} customTargetFilled Callback called after featureinfo result added to custom element
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {function} beforeRequest Callback called before featureinfo requests are fulfilled
- * @param {string} proxyUrl Url for proxy to use for requests
+ * @param {string} proxyUrl Url for proxy to use for requests. When proxyUrl is used, name of requested anol layer
+ *                          is appended as path to proxyUrl. E.g.: proxyUrl = '/foo', for layer with name 'bar' requested url is '/foo/bar/'
  *
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
@@ -52,6 +53,10 @@ angular.module('anol.featureinfo')
                         duration: 250
                     }
                 });
+
+                if(angular.isDefined(scope.proxyUrl) && !scope.proxyUrl.endsWith('/')) {
+                    scope.proxyUrl += '/';
+                }
 
                 scope.map.addOverlay(popupOverlay);
 
@@ -100,8 +105,6 @@ angular.module('anol.featureinfo')
                                         'QUERY_LAYERS': queryLayer
                                     }
                                 );
-                                if(angular.isDefined(scope.proxyUrl)) {
-                                    url = scope.proxyUrl + url;
                                 }
                                 if(angular.isDefined(url)) {
                                     $http.get(url).success(function(response) {
@@ -140,6 +143,9 @@ angular.module('anol.featureinfo')
                                                     }
                                                 break;
                                             }
+                            if(angular.isDefined(scope.proxyUrl)) {
+                                url = scope.proxyUrl + layer.name + '/' + url;
+                            }
                                         }
                                     });
                                 }
