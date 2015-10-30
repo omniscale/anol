@@ -144,7 +144,74 @@ angular.module('anol.map')
 
         return applyLayerProperties(layer, options);
     };
+    /**
+     * @ngdoc method
+     * @name newWMTS
+     * @methodOf anol.map.LayersFactory
+     * @param {Object} options
+     * - **baseURL** - {string} - Layers base url
+     * - **format ** - {string} - Tile image format
+     * - **extent** - {Array.<number>} - Layer extent
+     * - **resolutions** - {Array.<number>} - Layer resolutions
+     * - **matrixSet** - {string} - Matrix set
+     * - **matrixIds** - {Array.<number|string>} - Matrix ids
+     * - **projection** - {Object} - Layer projection (ol.proj.Projection)
+     * - **attributions** - {Array.<string>|string} - Layer attributions
+     * - **title** - {string} - Layer title
+     * - **shortcut** - {string} - Layer shortcut
+     * - **visible** - {boolean} - Initial layer visibility
+     * - **displayInLayerswitcher** - {boolean} - Layer should apear in layerswitcher
+     * - **isBackground** - {boolean} - Layer is a background layer
+     * - **layer** - {string} - Layer name
+     *
+     * @returns {Object} ol.layer.Tile with ol.source.TileImage
+     *
+     * @description
+     * Creates a WMTS layer
+     */
+    this.newWMTS = function(options) {
+        var tileGrid = false;
 
+        var tileURL = function(options) {
+            var url = '';
+            url += options.baseURL + '/';
+            url += options.layer + '/';
+            url += '{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.' + options.format;
+            return url;
+        };
+
+        if(options.matrixIds === undefined) {
+            options.matrixIds = [];
+            for(var i = 0; i < options.resolutions.length; ++i) {
+                options.matrixIds[i] = i;
+            }
+        }
+        console.log(options.matrixIds);
+        if(options.extent && options.resolutions) {
+            tileGrid = new ol.tilegrid.WMTS({
+                origin: ol.extent.getTopLeft(options.extent),
+                resolutions: options.resolutions,
+                matrixIds: options.matrixIds
+            });
+        }
+
+        var sourceOptions = createBasicSourceOptions(options);
+        sourceOptions.url = tileURL(options);
+        sourceOptions.requestEncoding = 'REST';
+        sourceOptions.style = 'default';
+        sourceOptions.wrapX = true;
+        sourceOptions.matrixSet = options.matrixSet;
+
+        if(tileGrid) {
+            sourceOptions.tileGrid = tileGrid;
+        }
+
+        var layer = new ol.layer.Tile({
+            source: new ol.source.WMTS(sourceOptions)
+        });
+
+        return applyLayerProperties(layer, options);
+    };
     /**
      * @ngdoc method
      * @name newDynamicGeoJSON
