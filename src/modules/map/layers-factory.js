@@ -163,7 +163,6 @@ angular.module('anol.map')
                 options.matrixIds[i] = i;
             }
         }
-        console.log(options.matrixIds);
         if(options.extent && options.resolutions) {
             tileGrid = new ol.tilegrid.WMTS({
                 origin: ol.extent.getTopLeft(options.extent),
