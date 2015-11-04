@@ -10,6 +10,8 @@ angular.module('anol.geocoder')
  *
  * @param {string} anolGeocoderSearchbox Name of geocoder to use. Must be an available anol.geocoder
  * @param {string} zoomLevel Level to show result in
+ * @param {object} geocoderOptions Options for selected geocoder
+ * @param {string} proxyUrl Proxy to use
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
@@ -29,9 +31,17 @@ angular.module('anol.geocoder')
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',
-        geocoderOptions: '='
+        geocoderOptions: '=',
+        proxyUrl: '@'
       },
       link: function(scope, element, attrs) {
+        if(angular.isDefined(scope.proxyUrl)) {
+          if(!scope.proxyUrl.endsWith('/')) {
+            scope.proxyUrl += '/';
+          }
+          scope.geocoderOptions.url = scope.proxyUrl + scope.geocoderOptions.url;
+        }
+
         var geocoder = new anol.geocoder[scope.geocoder](scope.geocoderOptions);
         scope.searchResults = [];
 
