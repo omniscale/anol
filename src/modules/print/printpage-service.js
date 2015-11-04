@@ -80,7 +80,7 @@ angular.module('anol.print')
          * @description
          * Service for showing/hiding print area in map. It provides also the bbox of print area.
          */
-        var _modify;
+        // var _modify;
         var _drag;
         var _printArea;
         var _cursorPointer;
@@ -331,32 +331,32 @@ angular.module('anol.print')
 
         PrintPage.prototype.createInteractions = function() {
             var self = this;
-            if(_modify !== undefined) {
-                InteractionsService.removeInteraction(_modify);
-            }
+            // if(_modify !== undefined) {
+            //     InteractionsService.removeInteraction(_modify);
+            // }
             if(_drag !== undefined) {
                 InteractionsService.removeInteraction(_drag);
             }
             if(_cursorPointer !== undefined) {
                 InteractionsService.removeInteraction(_cursorPointer);
             }
-            var modifyFeatures = new ol.Collection();
-            modifyFeatures.extend(_modifyFeatures);
-            modifyFeatures.push(_printArea);
-            var modifyOptions = {
-                features: modifyFeatures,
-                deleteCondition: function() {
-                    return false;
-                }
-            };
+            // var modifyFeatures = new ol.Collection();
+            // modifyFeatures.extend(_modifyFeatures);
+            // modifyFeatures.push(_printArea);
+            // var modifyOptions = {
+            //     features: modifyFeatures,
+            //     deleteCondition: function() {
+            //         return false;
+            //     }
+            // };
 
-            if(_style !== undefined) {
-                modifyOptions.style = _style;
-            }
-            _modify = new ol.interaction.Modify(modifyOptions);
-            _modify.on('modifyend', function() {
-                self.updateDragFeatures();
-            });
+            // if(_style !== undefined) {
+            //     modifyOptions.style = _style;
+            // }
+            // _modify = new ol.interaction.Modify(modifyOptions);
+            // _modify.on('modifyend', function() {
+            //     self.updateDragFeatures();
+            // });
 
             _drag = new DragPrintPageInteraction({
                 dragCallback: function() {
@@ -370,7 +370,7 @@ angular.module('anol.print')
                 layer: _printLayer
             });
 
-            InteractionsService.addInteraction(_modify);
+            // InteractionsService.addInteraction(_modify);
             InteractionsService.addInteraction(_drag);
             InteractionsService.addInteraction(_cursorPointer);
         };
