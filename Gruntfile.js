@@ -136,15 +136,21 @@ module.exports = function(grunt) {
           }
         ]
       },
-      cssImages: {
-        files: [
-          {
-            flatten: true,
-            expand: true,
-            src: 'static/img/*',
-            dest: 'build/img'
-          }
-        ]
+      resources: {
+        files: [{
+          flatten: true,
+          expand: true,
+          src: [
+            'node_modules/bootstrap/dist/fonts/*'
+          ],
+          dest: 'build/fonts'
+        },
+        {
+          flatten: true,
+          expand: true,
+          src: 'static/img/*',
+          dest: 'build/img'
+        }]
       }
     },
     shell: {
@@ -175,7 +181,7 @@ module.exports = function(grunt) {
       },
       sass: {
         files: ['static/css/*.sass'],
-        tasks: ['sass', 'copy:cssImages'],
+        tasks: ['sass', 'copy:resources'],
         options: {
           spawn: false,
         },
@@ -263,10 +269,10 @@ module.exports = function(grunt) {
   grunt.registerTask('build-ol3', ['shell:buildOl3']);
 
   grunt.registerTask('test', ['karma:unit']);
-  grunt.registerTask('dev', ['clean:prebuild', 'sass:dist', 'ngtemplates', 'concat:dev', 'copy:cssImages', 'connect:server', 'concurrent:dev']);
+  grunt.registerTask('dev', ['clean:prebuild', 'sass:dist', 'ngtemplates', 'concat:dev', 'copy:resources', 'connect:server', 'concurrent:dev']);
 
   grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
-  grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'concat:dev', 'copy:cssImages',]);
+  grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'concat:dev', 'copy:resources',]);
   grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'shell:buildOl3', 'concat:dist', 'clean:postbuild', 'copy:full']);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
 };
