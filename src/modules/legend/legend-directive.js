@@ -16,9 +16,13 @@ angular.module('anol.legend')
  * @param {boolean} showInactive If true a legend item for not visible layers with legend options is also created
  *
  * @description
- * Shows vector symbols as legend for each vector layer with defined *geometryType*
- * Shows img with src=layer.legend.url for each raster layer. For raster layers layer.legend.target defines a external container
- * to show img in
+ * Creates legend entries based on layer.legend configuration.
+ * When url is defined in layer.legend, an image with src = layer.legend.url is appended to legend.
+ * The url property is available for all types of layers.
+ * For vector layers layer.legend.type can be one of `point`, `line` or `polygon`. A legend entry depending on layer style is created.
+ * For raster layers with defined layer.legend a legend entry with result of getLegendGraphic request is created.
+ * For raster layers, if layer.legend.target points to a html element class or id, a button is rendered instead of legend image. After button pressed
+ * legend image is shown in element with given id/class.
  */
 .directive('anolLegend', ['$compile', 'LayersService', 'ControlsService', function($compile, LayersService, ControlsService) {
     return {
@@ -66,6 +70,15 @@ angular.module('anol.legend')
             post: function(scope, element, attrs) {
                 var legendLayers = [];
                 var legendItemsContainer = element.find('.anol-legend-items');
+
+                var createLegendEntryContainer = function(title) {
+                    var container = angular.element('<div></div>');
+                    var titleElement = angular.element('<div></div>');
+                    titleElement.addClass('anol-legend-item-title');
+                    titleElement.text(title);
+                    container.append(titleElement);
+                    return container;
+                };
 
                 var VectorLegend = {
                     createCanvas: function() {
@@ -122,11 +135,7 @@ angular.module('anol.legend')
                         if(angular.isFunction(style)) {
                             style = style()[0];
                         }
-                        var container = angular.element('<div></div>');
-                        var titleElement = angular.element('<div></div>');
-                        titleElement.addClass('anol-legend-item-title');
-                        titleElement.text(title);
-                        container.append(titleElement);
+                        var container = createLegendEntryContainer(title);
                         switch(type) {
                             case 'point':
                                 container.append(VectorLegend.drawPointLegend(style));
@@ -166,29 +175,20 @@ angular.module('anol.legend')
                         return urls;
                     },
                     createLegendEntry: function(layer) {
-                        var container = angular.element('<div></div>');
-                        var titleElement = angular.element('<div></div>');
-                        titleElement.addClass('anol-legend-item-title');
-                        titleElement.text(layer.title);
-                        container.append(titleElement);
-
+                        var container = createLegendEntryContainer(layer.title);
                         var urls = [];
-
-                        if(layer.legend.type === 'GetLegendGraphic') {
-                            var params = {};
-                            if(layer.legend.verison !== undefined) {
-                                params.VERSION = layer.legend.version;
-                            }
-                            if(layer.legend.sldVersion !== undefined) {
-                                params.SLD_VERSION = layer.legend.sldVersion;
-                            }
-                            if(layer.legend.format !== undefined) {
-                                params.FORMAT = layer.legend.format;
-                            }
-                            urls = RasterLegend.createGetLegendGraphicUrl(layer.olLayer.getSource(), params);
-                        } else {
-                            urls = [layer.legend.url];
+                        var params = {};
+                        if(layer.legend.verison !== undefined) {
+                            params.VERSION = layer.legend.version;
                         }
+                        if(layer.legend.sldVersion !== undefined) {
+                            params.SLD_VERSION = layer.legend.sldVersion;
+                        }
+                        if(layer.legend.format !== undefined) {
+                            params.FORMAT = layer.legend.format;
+                        }
+                        urls = RasterLegend.createGetLegendGraphicUrl(layer.olLayer.getSource(), params);
+
                         var legendImages = [];
                         angular.forEach(urls, function(url) {
                             var legendImage = angular.element('<img>');
@@ -226,13 +226,26 @@ angular.module('anol.legend')
                     }
                 };
 
+                var ImageLegend = {
+                    createLegendEntry: function(title, url) {
+                        var container = createLegendEntryContainer(title);
+                        var legendImage = angular.element('<img>');
+                        legendImage.addClass('anol-legend-item-image');
+                        legendImage[0].src = url;
+                        container.append(legendImage);
+                        legendItemsContainer.append(container);
+                    }
+                };
+
                 var refreshLegend = function() {
                     legendItemsContainer.empty();
                     angular.forEach(legendLayers, function(layer) {
                         if(!layer.getVisible() && scope.showInactive !== true) {
                             return;
                         }
-                        if(layer.olLayer instanceof ol.layer.Vector) {
+                        if(layer.legend.url !== undefined) {
+                            ImageLegend.createLegendEntry(layer.title, layer.legend.url);
+                        } else if(layer.olLayer instanceof ol.layer.Vector) {
                             VectorLegend.createLegendEntry(
                                 layer.title,
                                 layer.legend.type,
