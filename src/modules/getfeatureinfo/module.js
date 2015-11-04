@@ -1,7 +1,7 @@
 /**
  * @ngdoc overview
- * @name anol.featureinfo
+ * @name anol.getfeatureinfo
  * @description
- * Module providing the featureinfo directive
+ * Module providing the getfeatureinfo directive
  */
-angular.module('anol.featureinfo', ['anol.map']);
+angular.module('anol.getfeatureinfo', ['anol.map']);

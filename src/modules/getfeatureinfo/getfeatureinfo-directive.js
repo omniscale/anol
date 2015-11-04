@@ -1,7 +1,7 @@
-angular.module('anol.featureinfo')
+angular.module('anol.getfeatureinfo')
 /**
  * @ngdoc directive
- * @name anol.featureinfo.directive:anolFeatureInfo
+ * @name anol.getfeatureinfo.directive:anolGetFeatureInfo
  *
  * @restrict A
  * @requires $http
@@ -25,7 +25,7 @@ angular.module('anol.featureinfo')
  * Layer property **featureinfo** - {Object} - Contains properties:
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
-.directive('anolFeatureInfo', [
+.directive('anolGetFeatureInfo', [
     '$http', '$window', 'MapService', 'LayersService', 'ControlsService',
     function($http, $window, MapService, LayersService, ControlsService) {
     return {
@@ -37,7 +37,7 @@ angular.module('anol.featureinfo')
             proxyUrl: '@'
         },
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featureinfo/templates/popup.html';
+            var defaultUrl = 'src/modules/getfeatureinfo/templates/popup.html';
             return tAttrs.templateUrl || defaultUrl;
         },
         link: {
