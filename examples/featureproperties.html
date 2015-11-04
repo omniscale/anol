@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Feature Popup Example</title>
+    <title>Feature Properties Example</title>
 
     <!-- Core CSS -->
     <link href="../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
@@ -24,7 +24,7 @@
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-zoom></div>
       <!-- popup -->
-      <div anol-feature-popup></div>
+      <div anol-feature-properties></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -37,7 +37,7 @@
     <script type="text/javascript" src="../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.featurepopup', 'anol.zoom'])
+      angular.module('example', ['anol.featureproperties', 'anol.zoom'])
       .config(['$translateProvider', function($translateProvider) {
         $translateProvider.translations('en_US', {
           'featureproperties': {

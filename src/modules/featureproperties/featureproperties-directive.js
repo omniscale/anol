@@ -1,7 +1,7 @@
-angular.module('anol.featurepopup')
+angular.module('anol.featureproperties')
 /**
  * @ngdoc directive
- * @name anol.featurepopup.directive:anolFeaturePopup
+ * @name anol.featureproperties.directive:anolFeatureProperties
  *
  * @restrict A
  * @requires $timeout
@@ -37,7 +37,7 @@ angular.module('anol.featurepopup')
  *
  *
  */
-.directive('anolFeaturePopup', ['$timeout', '$translate', 'MapService', 'LayersService', 'ControlsService', function($timeout, $translate, MapService, LayersService, ControlsService) {
+.directive('anolFeatureProperties', ['$timeout', '$translate', 'MapService', 'LayersService', 'ControlsService', function($timeout, $translate, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -46,7 +46,7 @@ angular.module('anol.featurepopup')
         },
         replace: true,
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
+            var defaultUrl = 'src/modules/featureproperties/templates/popup.html';
             return tAttrs.templateUrl || defaultUrl;
         },
         link: {
