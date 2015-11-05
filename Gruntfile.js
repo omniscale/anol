@@ -99,13 +99,43 @@ module.exports = function(grunt) {
       }
     },
     copy: {
-      anol: {
+      debug: {
         files: [
           {
+            flatten: true,
+            expand: true,
             src: [
-              'build/anol.ugly.js'
+              'node_modules/jquery/dist/jquery.js',
+              'node_modules/angular/angular.js',
+              'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
+              'node_modules/angular-translate/dist/angular-translate.js',
+              'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+              'node_modules/openlayers/build/ol-custom.debug.js',
             ],
-            dest: 'build/anol.min.js'
+            dest: 'build'
+          },
+          {
+            flatten: true,
+            expand: true,
+            src: [
+              'node_modules/bootstrap/dist/css/bootstrap.css',
+              'node_modules/openlayers/dist/ol.css'
+            ],
+            dest: 'build/css/'
+          },
+          {
+            flatten: true,
+            expand: true,
+            src: [
+              'node_modules/bootstrap/dist/fonts/*'
+            ],
+            dest: 'build/fonts'
+          },
+          {
+            flatten: true,
+            expand: true,
+            src: 'static/img/*',
+            dest: 'build/img'
           }
         ]
       },
@@ -135,30 +165,22 @@ module.exports = function(grunt) {
             dest: 'build/img'
           }
         ]
-      },
-      resources: {
-        files: [{
-          flatten: true,
-          expand: true,
-          src: [
-            'node_modules/bootstrap/dist/fonts/*'
-          ],
-          dest: 'build/fonts'
-        },
-        {
-          flatten: true,
-          expand: true,
-          src: 'static/img/*',
-          dest: 'build/img'
-        }]
       }
     },
     shell: {
-      buildOl3: {
+      'build-ol3': {
         command: [
           'cd node_modules/openlayers',
           'make build',
-          'node tasks/build.js ../../config/openlayers.build.js build/ol-custom.js',
+          'node tasks/build.js ../../config/openlayers.build.json build/ol-custom.min.js',
+          'cd -'
+        ].join('&&')
+      },
+      'build-ol3-debug' :{
+        command: [
+          'cd node_modules/openlayers',
+          'make build',
+          'node tasks/build.js ../../config/openlayers.build.debug.json build/ol-custom.debug.js',
           'cd -'
         ].join('&&')
       }
@@ -266,13 +288,41 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('build-ol3', ['shell:buildOl3']);
+  grunt.registerTask('build-ol3', ['shell:build-ol3']);
+  grunt.registerTask('build-ol3-debug', ['shell:build-ol3-debug']);
 
   grunt.registerTask('test', ['karma:unit']);
-  grunt.registerTask('dev', ['clean:prebuild', 'sass:dist', 'ngtemplates', 'concat:dev', 'copy:resources', 'connect:server', 'concurrent:dev']);
+  grunt.registerTask('dev', [
+    'clean:prebuild',
+    'sass:dist',
+    'ngtemplates',
+    'concat:dev',
+    'shell:build-ol3-debug',
+    'copy:debug',
+    'connect:server',
+    'concurrent:dev'
+  ]);
 
-  grunt.registerTask('build', ['revision', 'clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'copy:anol', 'clean:postbuild']);
-  grunt.registerTask('build-debug', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'concat:dev', 'copy:resources',]);
-  grunt.registerTask('build-full', ['clean:prebuild', 'jshint', 'sass', 'ngtemplates', 'ngmin:dist', 'uglify', 'shell:buildOl3', 'concat:dist', 'clean:postbuild', 'copy:full']);
+  grunt.registerTask('build-debug', [
+    'clean:prebuild',
+    'jshint',
+    'sass',
+    'ngtemplates',
+    'concat:dev',
+    'shell:build-ol3-debug',
+    'copy:debug'
+  ]);
+  grunt.registerTask('build-full', [
+    'clean:prebuild',
+    'jshint',
+    'sass',
+    'ngtemplates',
+    'ngmin:dist',
+    'uglify',
+    'shell:build-ol3',
+    'concat:dist',
+    'clean:postbuild',
+    'copy:full'
+  ]);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
 };
