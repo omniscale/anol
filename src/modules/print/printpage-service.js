@@ -235,14 +235,14 @@ angular.module('anol.print')
          * @description
          * Creates the print area geometry visible in map
          */
-        PrintPage.prototype.createPrintArea = function(pageSize, scale, center) {
+        PrintPage.prototype.createPrintArea = function(pageSize, scale) {
             this.currentPageSize = pageSize;
             this.currentScale = scale;
             this.mapWidth = this.currentPageSize[0] / 1000 * this.currentScale;
             this.mapHeight = this.currentPageSize[1] / 1000 * this.currentScale;
 
             var view = MapService.getMap().getView();
-            center = center || view.getCenter();
+            var center = view.getCenter();
             var top = center[1] + (this.mapHeight / 2);
             var bottom = center[1] - (this.mapHeight / 2);
             var left = center[0] - (this.mapWidth / 2);
@@ -574,11 +574,7 @@ angular.module('anol.print')
             if(pageSize === undefined || pageSize.length === 0 || scale === undefined) {
                 return;
             }
-            if(_printArea === undefined) {
-                this.createPrintArea(pageSize, scale);
-            } else {
-                this.createPrintArea(pageSize, scale, _printArea.getGeometry().getInteriorPoint().getCoordinates());
-            }
+            this.createPrintArea(pageSize, scale);
         };
         /**
          * @ngdoc method
