@@ -3,9 +3,9 @@
       <label class="control-label" for="definedPageSizes">{{ 'anol.print.PAGE_SIZES' | translate }}</label>
       <div class="btn-group">
         <button type="button" class="btn btn-default"
-                ng-repeat="definedPageSize in definedPageSizes"
-                ng-class="{'active': definedPageSize.layout === printAttributes.layout}"
-                ng-click="setPageSize(definedPageSize.value, definedPageSize.layout)">
+                ng-repeat="(layout, definedPageSize) in definedPageSizes"
+                ng-class="{'active': layout === printAttributes.layout}"
+                ng-click="setPageSize(definedPageSize.value, layout)">
             {{ definedPageSize.label }}
             <span ng-if="definedPageSize.icon" class="glyphicon" ng-class="definedPageSize.icon"></span>
         </button>
