@@ -188,7 +188,7 @@ module.exports = function(grunt) {
         command: [
           'cd node_modules/openlayers',
           'make build',
-          'node tasks/build.js ../../config/openlayers.build.json build/ol-custom.min.js',
+          'node tasks/build.js ../../build/openlayers.build.json build/ol-custom.min.js',
           'cd -'
         ].join('&&')
       },
@@ -196,7 +196,7 @@ module.exports = function(grunt) {
         command: [
           'cd node_modules/openlayers',
           'make build',
-          'node tasks/build.js ../../config/openlayers.build.debug.json build/ol-custom.debug.js',
+          'node tasks/build.js ../../build/openlayers.build.debug.json build/ol-custom.debug.js',
           'cd -'
         ].join('&&')
       }
