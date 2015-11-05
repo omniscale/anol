@@ -96,6 +96,12 @@ module.exports = function(grunt) {
       },
       docs: {
         src: [ 'docs' ]
+      },
+      'openlayers-build-config': {
+        src: [
+          'build/openlayers.build.debug.json',
+          'build/openlayers.build.json'
+        ]
       }
     },
     copy: {
@@ -166,6 +172,16 @@ module.exports = function(grunt) {
           }
         ]
       }
+    },
+    'merge-json': {
+        'openlayers-build-debug': {
+            src: ['config/openlayers.exports.json'],
+            dest: 'build/openlayers.build.debug.json'
+        },
+        'openlayers-build': {
+            src: ['config/openlayers.exports.json', 'config/openlayers.compile.json'],
+            dest: 'build/openlayers.build.json'
+        }
     },
     shell: {
       'build-ol3': {
@@ -285,11 +301,20 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-merge-json');
 
   grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('build-ol3', ['shell:build-ol3']);
-  grunt.registerTask('build-ol3-debug', ['shell:build-ol3-debug']);
+  grunt.registerTask('build-ol3', [
+    'merge-json:openlayers-build',
+    'shell:build-ol3',
+    'clean:openlayers-build-config'
+  ]);
+  grunt.registerTask('build-ol3-debug', [
+    'merge-json:openlayers-build-debug',
+    'shell:build-ol3-debug',
+    'clean:openlayers-build-config'
+  ]);
 
   grunt.registerTask('test', ['karma:unit']);
   grunt.registerTask('dev', [
@@ -297,7 +322,7 @@ module.exports = function(grunt) {
     'sass:dist',
     'ngtemplates',
     'concat:dev',
-    'shell:build-ol3-debug',
+    'build-ol3-debug',
     'copy:debug',
     'connect:server',
     'concurrent:dev'
@@ -309,7 +334,7 @@ module.exports = function(grunt) {
     'sass',
     'ngtemplates',
     'concat:dev',
-    'shell:build-ol3-debug',
+    'build-ol3-debug',
     'copy:debug'
   ]);
   grunt.registerTask('build-full', [
@@ -319,7 +344,7 @@ module.exports = function(grunt) {
     'ngtemplates',
     'ngmin:dist',
     'uglify',
-    'shell:build-ol3',
+    'build-ol3',
     'concat:dist',
     'clean:postbuild',
     'copy:full'
