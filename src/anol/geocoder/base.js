@@ -23,11 +23,19 @@ anol.geocoder.Base.prototype = {
     request: function(searchString) {
         var self = this;
         var deferred = $.Deferred();
-        $.get(self.getUrl(searchString))
-            .success(function(response) {
-                var results = self.handleResponse(response);
-                deferred.resolve(results);
-            });
+        if(this.options.method === 'post') {
+            $.post(self.url, self.getData(searchString))
+                .success(function(response) {
+                    var results = self.handleResponse(response);
+                    deferred.resolve(results);
+                });
+        } else {
+            $.get(self.getUrl(searchString))
+                .success(function(response) {
+                    var results = self.handleResponse(response);
+                    deferred.resolve(results);
+                });
+        }
         return deferred.promise();
     },
     extractDisplayText: function() {
@@ -38,5 +46,10 @@ anol.geocoder.Base.prototype = {
     },
     getUrl: function() {
         throw 'Not implemented';
+    },
+    getData: function(searchString) {
+        return {
+            search: searchString
+        };
     }
 };
