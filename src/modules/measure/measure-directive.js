@@ -11,6 +11,7 @@ angular.module('anol.measure')
  * @param {boolean} geodesic Use geodesic measure method
  * @param {ol.style.Style} drawStyle Style for lines while drawing
  * @param {ol.style.Style} style Style for drawed lines
+ * @param {boolean} autoDisable When true, control is disabled after mesurement finished
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -19,8 +20,8 @@ angular.module('anol.measure')
  * @description
  * Line or area measurement
  */
-.directive('anolMeasure', ['ControlsService', 'LayersService', 'MapService',
-    function(ControlsService, LayersService, MapService) {
+.directive('anolMeasure', ['$timeout', 'ControlsService', 'LayersService', 'MapService',
+    function($timeout, ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -29,18 +30,19 @@ angular.module('anol.measure')
             geodesic: '@',
             drawStyle: '=',
             style: '=',
+            autoDisable: '=',
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@'
         },
         templateUrl: function(tElement, tAttrs) {
-          var defaultUrl = 'src/modules/measure/templates/measure.html';
-          return tAttrs.templateUrl || defaultUrl;
+            var defaultUrl = 'src/modules/measure/templates/measure.html';
+            return tAttrs.templateUrl || defaultUrl;
         },
-        link: function(scope, element, attrs) {
+        link: function(scope, element, attrs, AnolMapController) {
             scope.measureOverlay = undefined;
             scope.listener = undefined;
-
+            scope.autoDisable = scope.autoDisable === 'true' || scope.autoDisable === true;
             //attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
                 scope.tooltipPlacement : 'right';
@@ -209,6 +211,11 @@ angular.module('anol.measure')
 
                         // unset tooltip so that a new one can be created
                         ol.Observable.unByKey(scope.listener);
+                        if(scope.autoDisable) {
+                            $timeout(function() {
+                                control.deactivate();
+                            });
+                        }
                     }, this
                 );
 
