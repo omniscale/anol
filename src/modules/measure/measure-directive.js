@@ -23,6 +23,7 @@ angular.module('anol.measure')
     function(ControlsService, LayersService, MapService) {
     return {
         restrict: 'A',
+        require: '?^anolMap',
         scope: {
             measureType: '@anolMeasure',
             geodesic: '@',
@@ -242,13 +243,20 @@ angular.module('anol.measure')
 
             var draw = createDrawInteraction(drawStyle);
 
-            element.addClass('ol-control');
-            element.addClass(scope.measureType === 'area' ? 'anol-measure-area' : 'anol-measure-line');
+            if(AnolMapController === null) {
+                control = new anol.control.Control({
+                    exclusive: true,
+                    olControl: null
+                });
+            } else {
+                element.addClass('ol-control');
+                element.addClass(scope.measureType === 'area' ? 'anol-measure-area' : 'anol-measure-line');
+                control = new anol.control.Control({
+                    element: element,
+                    exclusive: true
+                });
+            }
 
-            control = new anol.control.Control({
-                element: element,
-                exclusive: true
-            });
             control.onDeactivate(deactivate, scope);
             control.onActivate(activate, scope);
             ControlsService.addControl(control);
