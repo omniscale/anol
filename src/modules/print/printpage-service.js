@@ -7,7 +7,7 @@ angular.module('anol.print')
 .provider('PrintPageService', [function() {
     // Better move directive configuration in directive so
     // direcitve can be replaced by custom one?
-    var _pageSizes, _outputFormats, _defaultScale, _style;
+    var _pageSizes, _outputFormats, _defaultScale, _style, _availableScales;
     var _allowPageResize = true;
 
     /**
@@ -44,6 +44,15 @@ angular.module('anol.print')
      */
     this.setDefaultScale = function(scale) {
         _defaultScale = scale;
+    };
+    /**
+     * @ngdoc method
+     * @name setAvailableScales
+     * @methodOf anol.print.PrintPageServiceProvider
+     * @param {Array.<number>} scales Available scales
+     */
+    this.setAvailableScales = function(scales) {
+        _availableScales = scales;
     };
     /**
      * @ngdoc method
@@ -215,10 +224,11 @@ angular.module('anol.print')
          * paper size for selected area is calculated.
          *
          */
-        var PrintPage = function(pageSizes, outputFormats, defaultScale, allowPageResize) {
+        var PrintPage = function(pageSizes, outputFormats, defaultScale, availableScales, allowPageResize) {
             this.pageSizes = pageSizes;
             this.outputFormats = outputFormats;
             this.defaultScale = defaultScale;
+            this.availableScales = availableScales;
             this.allowPageResize = allowPageResize;
             this.currentPageSize = undefined;
             this.currentScale = undefined;
@@ -605,6 +615,6 @@ angular.module('anol.print')
             _printLayer.setVisible(visibility);
         };
 
-        return new PrintPage(_pageSizes, _outputFormats, _defaultScale, _allowPageResize);
+        return new PrintPage(_pageSizes, _outputFormats, _defaultScale, _availableScales, _allowPageResize);
     }];
 }]);

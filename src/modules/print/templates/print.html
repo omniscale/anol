@@ -13,7 +13,7 @@
     </div>
     <div class="form-group">
       <label class="control-label" for="scale">{{ 'anol.print.SCALE' | translate }}</label>
-      <input class="form-control" id="scale" ng-model="printAttributes.scale" ng-change="updatePrintPage()" />
+      <select class="form-control" id="scale" ng-model="printAttributes.scale" ng-change="updatePrintPage()" ng-options="scale for scale in availableScales"></select>
     </div>
     <div class="form-group">
       <label class="control-label" for="outputFormat">{{ 'anol.print.OUTPUT_FORMAT' | translate }}</label>

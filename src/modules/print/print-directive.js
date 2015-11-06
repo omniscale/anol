@@ -39,6 +39,7 @@ angular.module('anol.print')
               layout: undefined,
               scale: angular.copy(PrintPageService.defaultScale)
             };
+            scope.availableScales = PrintPageService.availableScales;
             scope.definedPageSizes = PrintPageService.pageSizes;
             scope.outputFormats = PrintPageService.outputFormats;
             if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
