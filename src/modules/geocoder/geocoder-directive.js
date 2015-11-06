@@ -44,6 +44,7 @@ angular.module('anol.geocoder')
 
         var geocoder = new anol.geocoder[scope.geocoder](scope.geocoderOptions);
         scope.searchResults = [];
+        scope.noResults = false;
 
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
@@ -52,12 +53,22 @@ angular.module('anol.geocoder')
             element.find('.dropdown-menu li a:first').focus();
           }
           if(event.key === 'Enter' || event.keyCode === 13) {
+            scope.searchResults = [];
+            scope.noResults = false;
             geocoder.request(scope.searchString)
               .then(function(results) {
-                scope.$apply(function() {
-                  scope.searchResults = results;
-                  element.find('.anol-searchbox').addClass('open');
-                });
+                if(results.length === 0) {
+                  console.log('got no results')
+                  scope.$apply(function() {
+                    scope.noResults = true;
+                    console.log(scope.noResults)
+                  });
+                } else {
+                  scope.$apply(function() {
+                    scope.searchResults = results;
+                    element.find('.anol-searchbox').addClass('open');
+                  });
+                }
               });
           }
           return false;

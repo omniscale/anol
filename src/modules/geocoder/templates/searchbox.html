@@ -5,4 +5,9 @@
             <a href="javascript:;" ng-keydown="handleDropdownKeypress($event)" ng-mouseover="handleMouseover($event)">{{ result.displayText }}</a>
         </li>
     </ul>
+    <div class="open no-results" ng-show="noResults">
+        <ul class="dropdown-menu">
+            <li>{{ 'anol.geocoder.NO_RESULTS' | translate }}</li>
+        </ul>
+    </div>
 </div>

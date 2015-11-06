@@ -59,7 +59,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'LONGDASHDOT': 'Long dashed & dotted'
             },
             'geocoder': {
-                'PLACEHOLDER': 'Street, City'
+                'PLACEHOLDER': 'Street, City',
+                'NO_RESULTS': 'No results found'
             },
             'geolocation': {
                 'TOOLTIP': 'Start geolocation'
