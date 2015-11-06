@@ -28,7 +28,7 @@
                 id="scale"
                 ng-model="printAttributes.scale"
                 ng-change="updatePrintPage()"
-                ng-options="scale for scale in availableScales">
+                ng-options="scale as '1 : ' + scale for scale in availableScales">
         </select>
       </div>
     </div>
