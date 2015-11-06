@@ -42,7 +42,7 @@
     "angular-translate": "~2.8.1",
     "angular-translate-loader-static-files": "~2.8.1",
     "angular-ui-bootstrap": "~0.13.4",
-    "bootstrap": "~3.2.0",
+    "bootstrap": "~3.3.5",
     "openlayers": "~3.10.0"
   }
 }
