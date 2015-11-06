@@ -58,10 +58,8 @@ angular.module('anol.geocoder')
             geocoder.request(scope.searchString)
               .then(function(results) {
                 if(results.length === 0) {
-                  console.log('got no results')
                   scope.$apply(function() {
                     scope.noResults = true;
-                    console.log(scope.noResults)
                   });
                 } else {
                   scope.$apply(function() {
