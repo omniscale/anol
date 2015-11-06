@@ -1,39 +1,75 @@
 <div class="anol-print">
-    <div class="form-group">
-      <label class="control-label" for="definedPageSizes">{{ 'anol.print.PAGE_SIZES' | translate }}</label>
-      <div class="btn-group">
-        <button type="button" class="btn btn-default"
-                ng-repeat="(layout, definedPageSize) in definedPageSizes"
-                ng-class="{'active': layout === printAttributes.layout}"
-                ng-click="setPageSize(definedPageSize.value, layout)">
-            {{ definedPageSize.label }}
-            <span ng-if="definedPageSize.icon" class="glyphicon" ng-class="definedPageSize.icon"></span>
-        </button>
+  <div class="form-group">
+    <label class="control-label"
+           for="definedPageSizes">
+      {{ 'anol.print.PAGE_SIZES' | translate }}
+    </label>
+    <div class="btn-group">
+      <button type="button"
+              class="btn btn-default btn-sm"
+              ng-repeat="(layout, definedPageSize) in definedPageSizes"
+              ng-class="{'active': layout === printAttributes.layout}"
+              ng-click="setPageSize(definedPageSize.value, layout)">
+        {{ definedPageSize.label }}
+        <span ng-if="definedPageSize.icon"
+              class="glyphicon"
+              ng-class="definedPageSize.icon">
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="scale">
+          {{ 'anol.print.SCALE' | translate }}
+        </label>
+        <select class="form-control"
+                id="scale"
+                ng-model="printAttributes.scale"
+                ng-change="updatePrintPage()"
+                ng-options="scale for scale in availableScales">
+        </select>
       </div>
     </div>
-    <div class="form-group">
-      <label class="control-label" for="scale">{{ 'anol.print.SCALE' | translate }}</label>
-      <select class="form-control" id="scale" ng-model="printAttributes.scale" ng-change="updatePrintPage()" ng-options="scale for scale in availableScales"></select>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="outputFormat">
+          {{ 'anol.print.OUTPUT_FORMAT' | translate }}
+        </label>
+        <select class="form-control"
+                ng-model="printAttributes.outputFormat"
+                ng-options="format as format.label for format in outputFormats">
+        </select>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="control-label" for="outputFormat">{{ 'anol.print.OUTPUT_FORMAT' | translate }}</label>
-      <select class="form-control" ng-model="printAttributes.outputFormat" ng-options="format as format.label for format in outputFormats">
-    </select>
-    <br>
-    <ng-transclude></ng-transclude>
-    <div class="text-center">
-      <button class="btn btn-default" ng-click="removePrintArea()" ng-disabled="!isPrintable()">{{ 'anol.print.REMOVE_PRINT_AREA' | translate }}</button>
-      <button class="btn btn-primary" ng-click="startPrint()" ng-disabled="!isPrintable()">{{ 'anol.print.START_PRINT' | translate }}</button>
-    </div>
-    <br><br>
-    <div ng-show="prepareDownload" class="alert alert-info text-center" ng-cloak>
-      <pre>{{ 'anol.print.OUTPUT_PREPARED' | translate }}</pre>
-    </div>
-    <div ng-show="downloadReady" class="alert alert-success text-center" ng-cloak>
-      {{ 'anol.print.DOWNLOAD_READY' | translate }}
-      <a class="btn btn-success download-link" href="" >{{ 'anol.print.DOWNLOAD' | translate }}</a>
-    </div>
-    <div ng-show="downloadError" class="alert alert-danger" ng-cloak>
-      <pre>{{ 'anol.print.ERROR' | translate }}</pre>
-    </div>
+  </div>
+  <ng-transclude></ng-transclude>
+  <div class="text-center">
+    <button class="btn btn-sm btn-primary"
+            ng-click="startPrint()"
+            ng-disabled="!isPrintable()">
+      {{ 'anol.print.START_PRINT' | translate }}
+    </button>
+  </div>
+  <br>
+  <div ng-show="prepareDownload"
+       class="alert alert-info text-center"
+       ng-cloak>
+    <pre>{{ 'anol.print.OUTPUT_PREPARED' | translate }}</pre>
+  </div>
+  <div ng-show="downloadReady"
+       class="alert alert-success text-center"
+       ng-cloak>
+    <pre>{{ 'anol.print.DOWNLOAD_READY' | translate }}</pre>
+    <a class="btn btn-success download-link"
+       href="" >
+      {{ 'anol.print.DOWNLOAD' | translate }}
+    </a>
+  </div>
+  <div ng-show="downloadError"
+       class="alert alert-danger text-center"
+       ng-cloak>
+    <pre>{{ 'anol.print.ERROR' | translate }}</pre>
+  </div>
 </div>
