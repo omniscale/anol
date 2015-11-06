@@ -55,6 +55,7 @@ angular.module('anol.geocoder')
           if(event.key === 'Enter' || event.keyCode === 13) {
             scope.searchResults = [];
             scope.noResults = false;
+            element.find('.anol-searchbox').removeClass('open');
             geocoder.request(scope.searchString)
               .then(function(results) {
                 if(results.length === 0) {
