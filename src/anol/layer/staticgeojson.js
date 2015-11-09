@@ -35,6 +35,7 @@ anol.layer.StaticGeoJSON = function(_options) {
 
     options.olLayer = new ol.layer.Vector(options.olLayer);
     anol.layer.Layer.call(this, options);
+    this.isVector = true;
 
 };
 anol.layer.StaticGeoJSON.prototype = new anol.layer.Layer();

@@ -23,6 +23,7 @@
     options.olLayer = new ol.layer.Vector(options.olLayer);
 
     anol.layer.Layer.call(this, options);
+    this.isVector = true;
 };
 anol.layer.Feature.prototype = new anol.layer.Layer();
 $.extend(anol.layer.Feature.prototype, {

@@ -50,6 +50,7 @@ anol.layer.Layer = function(options) {
     this.isBackground = options.isBackground || false;
     this.featureinfo = options.featureinfo || false;
     this.legend = options.legend || false;
+    this.isVector = false;
 
     this.olLayer = options.olLayer;
     if(!(this.olLayer instanceof ol.layer.Base)) {
