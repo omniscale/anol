@@ -16,13 +16,7 @@ angular.module('anol.legend')
  * @param {boolean} showInactive If true a legend item for not visible layers with legend options is also created
  *
  * @description
- * Creates legend entries based on layer.legend configuration.
- * When url is defined in layer.legend, an image with src = layer.legend.url is appended to legend.
- * The url property is available for all types of layers.
- * For vector layers layer.legend.type can be one of `point`, `line` or `polygon`. A legend entry depending on layer style is created.
- * For raster layers with defined layer.legend a legend entry with result of getLegendGraphic request is created.
- * For raster layers, if layer.legend.target points to a html element class or id, a button is rendered instead of legend image. After button pressed
- * legend image is shown in element with given id/class.
+ * Adds a legend to map
  */
 .directive('anolLegend', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
     return {
@@ -90,6 +84,27 @@ angular.module('anol.legend')
     };
 }])
 
+/**
+ * @ngdoc directive
+ * @name anol.legend.directive:anolLegendImage
+ *
+ * @restrict A
+ * @requires $compile
+ *
+ * @param {anol.layer} anolLegendImage Layer to add legend image for.
+ * @param {function} customTargetFilled Callback for show legend button
+ * @param {boolean} prepend Add legend image before (true) or after (false) transcluded element(s)
+ * @param {Array<number>} size Size of canvas when generating legend image for vector layer
+ *
+ * @description
+ * Creates a legend image based on layer.legend configuration.
+ * When url is defined in layer.legend, an image with src = layer.legend.url is appended to legend.
+ * The url property is available for all types of layers.
+ * For vector layers layer.legend.type can be one of `point`, `line` or `polygon`. A legend entry depending on layer style is created.
+ * For raster layers with defined layer.legend a legend entry with result of getLegendGraphic request is created.
+ * For raster layers, if layer.legend.target points to a html element class or id, a button is rendered instead of legend image. After button pressed
+ * legend image is shown in element with given id/class.
+ */
 .directive('anolLegendImage', ['$compile', function($compile) {
     return {
         restrict: 'A',
