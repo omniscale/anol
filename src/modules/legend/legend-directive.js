@@ -97,14 +97,15 @@ angular.module('anol.legend')
             legendLayer: '=anolLegendImage',
             customTargetFilled: '&',
             prepend: '=',
+            size: '='
         },
         link: function(scope, element, attrs) {
             var VectorLegend = {
                 createCanvas: function() {
                     var canvas = angular.element('<canvas></canvas>');
                     canvas.addClass = 'anol-legend-item-image';
-                    canvas[0].width = 20;
-                    canvas[0].height = 20;
+                    canvas[0].width = scope.width;
+                    canvas[0].height = scope.height;
                     return canvas;
                 },
                 drawPointLegend: function(style) {
@@ -112,13 +113,26 @@ angular.module('anol.legend')
                     var ctx = canvas[0].getContext('2d');
 
                     if(angular.isDefined(style.getImage().getSrc)) {
+                        var width, height, ratio;
+                        if(scope.width >= scope.height) {
+                            ratio = scope.width / scope.height;
+                            width = scope.width - 1;
+                            height = width * ratio;
+                        } else {
+                            ratio = scope.height / scope.width;
+                            height = scope.height - 1;
+                            width = height * ratio;
+                        }
                         var img = new Image();
                         img.src = style.getImage().getSrc();
                         img.onload = function() {
-                            ctx.drawImage(img, 1, 1);
+                            ctx.drawImage(img, 0, 0, width, height);
                         };
                     } else {
-                        ctx.arc(10, 10, 7, 0, 2 * Math.PI, false);
+                        var x = scope.width / 2;
+                        var y = scope.height / 2;
+                        var r = (Math.min(scope.width, scope.height) / 2) - 2;
+                        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
                         ctx.strokeStyle = style.getImage().getStroke().getColor();
                         ctx.lineWidth = style.getImage().getStroke().getWidth();
                         ctx.fillStyle = style.getImage().getFill().getColor();
@@ -131,8 +145,11 @@ angular.module('anol.legend')
                     var canvas = VectorLegend.createCanvas();
                     var ctx = canvas[0].getContext('2d');
 
-                    ctx.moveTo(3, 10);
-                    ctx.lineTo(17, 10);
+                    var minX = 2;
+                    var maxX = scope.width - 2;
+                    var y = scope.height / 2;
+                    ctx.moveTo(minX, y);
+                    ctx.lineTo(maxX, y);
                     ctx.strokeStyle = style.getStroke().getColor();
                     ctx.lineWidth = style.getStroke().getWidth();
                     ctx.stroke();
@@ -142,7 +159,11 @@ angular.module('anol.legend')
                     var canvas = VectorLegend.createCanvas();
                     var ctx = canvas[0].getContext('2d');
 
-                    ctx.rect(3, 3, 14, 14);
+                    var minX = 1;
+                    var minY = 1;
+                    var maxX = scope.width - 2;
+                    var maxY = scope.height - 2;
+                    ctx.rect(minX, minY, maxX, maxY);
                     ctx.fillStyle = style.getFill().getColor();
                     ctx.strokeStyle = style.getStroke().getColor();
                     ctx.lineWidth = style.getStroke().getWidth();
@@ -243,6 +264,13 @@ angular.module('anol.legend')
 
             if(angular.isFunction(scope.customTargetFilled())) {
                 scope.customTargetCallback = scope.customTargetFilled();
+            }
+            if(angular.isArray(scope.size)) {
+                scope.width = scope.size[0];
+                scope.height = scope.size[1];
+            } else {
+                scope.width = 20;
+                scope.height = 20;
             }
 
             var legendItem;
