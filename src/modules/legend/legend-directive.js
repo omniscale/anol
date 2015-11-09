@@ -95,7 +95,8 @@ angular.module('anol.legend')
         restrict: 'A',
         scope: {
             legendLayer: '=anolLegendImage',
-            customTargetFilled: '&'
+            customTargetFilled: '&',
+            prepend: '=',
         },
         link: function(scope, element, attrs) {
             var VectorLegend = {
@@ -257,7 +258,11 @@ angular.module('anol.legend')
             } else {
                 legendItem = RasterLegend.createLegendEntry(scope.legendLayer);
             }
-            element.append(legendItem);
+            if(scope.prepend === true) {
+                element.prepend(legendItem);
+            } else {
+                element.append(legendItem);
+            }
         }
     };
 }]);
