@@ -118,7 +118,7 @@ angular.module('anol.legend')
             var VectorLegend = {
                 createCanvas: function() {
                     var canvas = angular.element('<canvas></canvas>');
-                    canvas.addClass = 'anol-legend-item-image';
+                    canvas.addClass('anol-legend-item-image');
                     canvas[0].width = scope.width;
                     canvas[0].height = scope.height;
                     return canvas;
