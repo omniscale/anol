@@ -89,6 +89,8 @@
     "ol.style.Fill#*",
     "ol.style.Icon",
     "ol.style.Icon#*",
+    "ol.style.Image",
+    "ol.style.Image#*",
     "ol.style.Stroke",
     "ol.style.Stroke#*",
     "ol.style.Style",

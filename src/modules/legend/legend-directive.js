@@ -124,11 +124,12 @@ angular.module('anol.legend')
                     return canvas;
                 },
                 drawPointLegend: function(style) {
+                    var ratio;
                     var canvas = VectorLegend.createCanvas();
                     var ctx = canvas[0].getContext('2d');
 
-                    if(angular.isDefined(style.getImage().getSrc)) {
-                        var width, height, ratio;
+                    if(angular.isFunction(style.getImage().getSrc)) {
+                        var width, height;
                         if(scope.width >= scope.height) {
                             ratio = scope.width / scope.height;
                             width = scope.width - 1;
@@ -147,9 +148,10 @@ angular.module('anol.legend')
                         var x = scope.width / 2;
                         var y = scope.height / 2;
                         var r = (Math.min(scope.width, scope.height) / 2) - 2;
+                        ratio = r / style.getImage().getRadius();
                         ctx.arc(x, y, r, 0, 2 * Math.PI, false);
                         ctx.strokeStyle = style.getImage().getStroke().getColor();
-                        ctx.lineWidth = style.getImage().getStroke().getWidth();
+                        ctx.lineWidth = style.getImage().getStroke().getWidth() * ratio;
                         ctx.fillStyle = style.getImage().getFill().getColor();
                         ctx.fill();
                         ctx.stroke();
