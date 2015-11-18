@@ -17,8 +17,15 @@
  * The default value is 22.
  */
 anol.layer.WMTS = function(_options) {
-    var defaults = {};
-    var options = $.extend({},
+    var defaults = {
+        olLayer: {
+            source: {
+                tileSize: [256, 256],
+                levels: 22
+            }
+        }
+    };
+    var options = $.extend(true, {},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,
         defaults,
         _options
@@ -43,10 +50,10 @@ anol.layer.WMTS = function(_options) {
 anol.layer.WMTS.prototype = new anol.layer.Layer();
 $.extend(anol.layer.WMTS.prototype, {
     CLASS_NAME: 'anol.layer.WMTS',
-    _createResolution: function(levels, size) {
+    _createResolution: function(levels, minRes) {
         var resolutions = [];
         for(var z = 0; z < levels; ++z) {
-            resolutions[z] = size / Math.pow(2, z);
+            resolutions[z] = minRes / Math.pow(2, z);
         }
         return resolutions;
     },
@@ -65,8 +72,11 @@ $.extend(anol.layer.WMTS.prototype, {
     },
     _createSourceOptions: function(sourceOpts) {
         var deferred = $.Deferred();
-        var levels = sourceOpts.levels || 22;
-        var size = ol.extent.getWidth(sourceOpts.extent) / 256;
+        var levels = sourceOpts.levels;
+        var extent = sourceOpts.extent || sourceOpts.projection.getExtent();
+        var w = ol.extent.getWidth(extent);
+        var h = ol.extent.getHeight(extent);
+        var minRes = Math.max(w / sourceOpts.tileSize[0], h / sourceOpts.tileSize[1]);
         var url = this._createRequestUrl(sourceOpts);
 
         sourceOpts = anol.layer.Layer.prototype._createSourceOptions(
@@ -76,13 +86,13 @@ $.extend(anol.layer.WMTS.prototype, {
         deferred.resolve($.extend(sourceOpts, {
             url: url,
             tileGrid: new ol.tilegrid.WMTS({
-                origin: ol.extent.getTopLeft(sourceOpts.extent),
-                resolutions: this._createResolution(levels, size),
+                extent: extent,
+                origin: ol.extent.getTopLeft(extent),
+                resolutions: this._createResolution(levels, minRes),
                 matrixIds: this._createMatrixIds(levels)
             }),
             requestEncoding: 'REST',
-            style: 'default',
-            wrapX: true
+            style: 'default'
         }));
         return deferred.promise();
     },
