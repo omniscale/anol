@@ -14,7 +14,14 @@
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
  anol.layer.TMS = function(_options) {
-    var defaults = {};
+    var defaults = {
+        olLayer: {
+            source: {
+                tileSize: [256, 256],
+                levels: 22
+            }
+        }
+    };
     var options = $.extend({},
         anol.layer.Layer.prototype.DEFAULT_OPTIONS,
         defaults,
@@ -57,21 +64,24 @@ $.extend(anol.layer.TMS.prototype, {
             srcOptions.tileGrid === undefined &&
             srcOptions.extent !== undefined
         ) {
+            var w = ol.extent.getWidth(extent);
+            var h = ol.extent.getHeight(extent);
+            var minRes = Math.max(w / sourceOpts.tileSize[0], h / sourceOpts.tileSize[1]);
             srcOptions.tileGrid = new ol.tilegrid.TileGrid({
                 origin: ol.extent.getBottomLeft(srcOptions.extent),
                 resolutions: self._createResolutions(
-                    ol.extent.getWidth(srcOptions.extent) / 256,
-                    srcOptions.levels || 22
+                    minRes,
+                    srcOptions.levels
                 )
             });
         }
         return srcOptions;
     },
-    _createResolutions: function(size, levels) {
+    _createResolutions: function(minRes, levels) {
         var resolutions = [];
         // need one resolution more
         for(var z = 0; z <= levels; ++z) {
-            resolutions[z] = size / Math.pow(2, z);
+            resolutions[z] = minRes / Math.pow(2, z);
         }
         // becouse first resolutions is removed
         // so ol requests 4 tiles instead of one for first zoom level
