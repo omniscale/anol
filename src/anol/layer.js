@@ -50,6 +50,7 @@ anol.layer.Layer = function(options) {
     this.isBackground = options.isBackground || false;
     this.featureinfo = options.featureinfo || false;
     this.legend = options.legend || false;
+    this.attribution = options.attribution || undefined;
     this.isVector = false;
 
     this.olLayer = options.olLayer;
@@ -84,12 +85,6 @@ anol.layer.Layer.prototype = {
     },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
-        if(srcOptions.attribution !== undefined) {
-            srcOptions.attributions = [new ol.Attribution({
-                html: srcOptions.attribution
-            })];
-            delete srcOptions.attribution;
-        }
         if(srcOptions.tilePixelRatio !== undefined) {
             srcOptions.tilePixelRatio = ol.has.DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
         }

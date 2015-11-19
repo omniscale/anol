@@ -22,8 +22,9 @@
   <body ng-app="example">
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
-      <div anol-attribution></div>
+      <div anol-attribution="true"></div>
       <div anol-zoom></div>
+      <div anol-layerswitcher></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -33,9 +34,10 @@
     <script type="text/javascript" src="../build/angular-translate.js"></script>
     <script type="text/javascript" src="../build/ol-custom.debug.js"></script>
     <script type="text/javascript" src="../build/anol.js"></script>
+    <script type="text/javascript" src="../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.zoom', 'anol.attribution'])
+      angular.module('example', ['anol.zoom', 'anol.attribution', 'anol.layerswitcher'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
@@ -44,10 +46,10 @@
           }));
 
           var wms = new anol.layer.TiledWMS({
+            attribution: '© 2015 Omniscale • Map Data: OpenStreetMap - (License: ODbL)',
             olLayer: {
               source: {
                 url: 'http://maps.omniscale.net/wms/demo/default/service?',
-                attribution: '© 2015 Omniscale • Map Data: OpenStreetMap - (License: ODbL)',
                 params: {
                   'LAYERS': 'osm',
                   'SRS': 'EPSG:3857'
@@ -55,7 +57,48 @@
               }
             }
           });
-          LayersServiceProvider.setLayers([wms]);
+          var wmsGray = new anol.layer.TiledWMS({
+            attribution: '© 2015 Omniscale • Map Data: OpenStreetMap - (License: ODbL)',
+            olLayer: {
+              source: {
+                url: 'http://maps.omniscale.net/wms/demo/grayscale/service?',
+                params: {
+                  'LAYERS': 'osm',
+                  'SRS': 'EPSG:3857'
+                }
+              }
+            }
+          });
+
+          var feature = new ol.Feature({
+            geometry: new ol.geom.Point([914764, 7011016])
+          });
+
+          var otherFeature = new ol.Feature({
+            geometry: new ol.geom.Point([914754, 7011026])
+          });
+
+          var featureLayer = new anol.layer.Feature({
+            name: 'featureLayer',
+            title: 'Feature Layer',
+            attribution: '© 2015 Omniscale',
+            olLayer: {
+              source: {
+                features: [feature, otherFeature]
+              }
+            }
+          });
+          var otherFeatureLayer = new anol.layer.Feature({
+            name: 'otherFeatureLayer',
+            title: 'Other Feature Layer',
+            attribution: '© 2015 Omniscale',
+            olLayer: {
+              source: {
+                features: [feature, otherFeature]
+              }
+            }
+          });
+          LayersServiceProvider.setLayers([wms, wmsGray, featureLayer, otherFeatureLayer]);
       }]);
     </script>
   </body>

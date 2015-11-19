@@ -245,14 +245,27 @@ canvas.anol-legend-item-image
 /**
  * attributions
  */
-.ol-attribution
-  button
-    &:before
-      content: '»'
-  &.ol-collapsed
-    button
-      &:before
-        content: 'i'
+.anol-attribution
+  right: 0.5em
+  bottom: 0.5em
+  button.anol-info-white
+    background-image: url('/static/img/anol-info-white.svg')
+    background-size: 0.4em 0.8em
+    background-repeat: no-repeat
+    background-position: center center
+  button.glyphicon
+    top: inherit
+  ul:not(.ng-hide) + button
+    position: absolute
+    bottom: 2px
+    right: 2px
+  ul
+    display: inline-block
+    margin-right: 1.8em
+    margin-bottom: 0
+    li
+      font-size: 0.8em
+      line-height: 1.25em
 
 /**
  * common
