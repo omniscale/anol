@@ -122,27 +122,21 @@ angular.module('anol.featureproperties')
                 var propertiesByExtent = function(evt) {
                     var extent = calculateExtent(evt.coordinate);
                     var propertiesCollection = [];
-                    angular.forEach(LayersService.layers, function(layer) {
-                        var anolLayers = [layer];
-                        if(layer instanceof anol.layer.Group) {
-                            anolLayers = layer.layers;
+                    angular.forEach(LayersService.flattedLayers, function(anolLayer) {
+                        if(!anolLayer.olLayer instanceof ol.layer.Vector) {
+                            return;
                         }
-                        angular.forEach(anolLayers, function(anolLayer) {
-                            if(!anolLayer.olLayer instanceof ol.layer.Vector) {
-                                return;
-                            }
-                            if(!anolLayer.featureinfo) {
-                                return;
-                            }
-                            var features = anolLayer.olLayer.getSource().getFeaturesInExtent(extent);
-                            scope.hasFeature = features.length > 0;
-                            propertiesCollection = propertiesCollection.concat(
-                                extractProperties(
-                                    features,
-                                    anolLayer
-                                )
-                            );
-                        });
+                        if(!anolLayer.featureinfo) {
+                            return;
+                        }
+                        var features = anolLayer.olLayer.getSource().getFeaturesInExtent(extent);
+                        scope.hasFeature = features.length > 0;
+                        propertiesCollection = propertiesCollection.concat(
+                            extractProperties(
+                                features,
+                                anolLayer
+                            )
+                        );
                     });
                     return propertiesCollection;
                 };

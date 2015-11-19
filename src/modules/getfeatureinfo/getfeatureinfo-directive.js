@@ -78,78 +78,72 @@ angular.module('anol.getfeatureinfo')
                         scope.beforeRequest();
                     }
 
-                    angular.forEach(LayersService.layers, function(layer) {
-                        var layers = [layer];
-                        if(layer instanceof anol.layer.Group) {
-                            layers = layer.layers;
+                    angular.forEach(LayersService.flattedLayers, function(layer) {
+                        if(!layer.getVisible()) {
+                            return;
                         }
-                        angular.forEach(layers, function(layer) {
-                            if(!layer.getVisible()) {
-                                return;
-                            }
-                            if(layer.olLayer instanceof ol.layer.Vector) {
-                                return;
-                            }
-                            if(!layer.featureinfo) {
-                                return;
-                            }
+                        if(layer.olLayer instanceof ol.layer.Vector) {
+                            return;
+                        }
+                        if(!layer.featureinfo) {
+                            return;
+                        }
 
-                            // TODO do not request each layer seperate
-                            var params = layer.olLayer.getSource().getParams();
-                            var queryLayers = params.layers || params.LAYERS;
-                            queryLayers = queryLayers.split(',');
+                        // TODO do not request each layer seperate
+                        var params = layer.olLayer.getSource().getParams();
+                        var queryLayers = params.layers || params.LAYERS;
+                        queryLayers = queryLayers.split(',');
 
-                            var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
-                                coordinate, viewResolution, view.getProjection(),
-                                {
-                                    'INFO_FORMAT': 'text/html',
-                                    'QUERY_LAYERS': queryLayers
-                                }
-                            );
-                            if(angular.isDefined(scope.proxyUrl)) {
-                                url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
+                        var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
+                            coordinate, viewResolution, view.getProjection(),
+                            {
+                                'INFO_FORMAT': 'text/html',
+                                'QUERY_LAYERS': queryLayers
                             }
-                            if(angular.isDefined(url)) {
-                                $http.get(url).success(function(response) {
-                                    if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
-                                        var iframe;
-                                        if(layer.featureinfo.target === '_popup') {
-                                            iframe = $('<iframe seamless src="' + url + '"></iframe>');
-                                        }
-                                        switch(layer.featureinfo.target) {
-                                            case '_blank':
-                                                $window.open(url, '_blank');
-                                            break;
-                                            case '_popup':
-                                                popupContent.append(iframe);
-                                                if(element.css('display') === 'none') {
-                                                    element.css('display', '');
-                                                    popupOverlay.setPosition(coordinate);
-                                                }
-                                            break;
-                                            default:
-                                                var temp = $('<div></div>');
-                                                var target = angular.element(layer.featureinfo.target);
-                                                if(divTargetCleared === false) {
-                                                    target.empty();
-                                                    divTargetCleared = true;
-                                                }
-                                                var content = angular.element(response);
-                                                temp.append(content);
-                                                temp.find('meta').remove();
-                                                temp.find('link').remove();
-                                                temp.find('title').remove();
-                                                temp.find('script').remove();
-                                                target.append(temp.children());
-                                                if(angular.isFunction(scope.customTargetCallback)) {
-                                                    scope.customTargetCallback();
-                                                }
-                                            break;
-                                        }
+                        );
+                        if(angular.isDefined(scope.proxyUrl)) {
+                            url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
+                        }
+                        if(angular.isDefined(url)) {
+                            $http.get(url).success(function(response) {
+                                if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
+                                    var iframe;
+                                    if(layer.featureinfo.target === '_popup') {
+                                        iframe = $('<iframe seamless src="' + url + '"></iframe>');
                                     }
-                                });
-                            }
-                        });
+                                    switch(layer.featureinfo.target) {
+                                        case '_blank':
+                                            $window.open(url, '_blank');
+                                        break;
+                                        case '_popup':
+                                            popupContent.append(iframe);
+                                            if(element.css('display') === 'none') {
+                                                element.css('display', '');
+                                                popupOverlay.setPosition(coordinate);
+                                            }
+                                        break;
+                                        default:
+                                            var temp = $('<div></div>');
+                                            var target = angular.element(layer.featureinfo.target);
+                                            if(divTargetCleared === false) {
+                                                target.empty();
+                                                divTargetCleared = true;
+                                            }
+                                            var content = angular.element(response);
+                                            temp.append(content);
+                                            temp.find('meta').remove();
+                                            temp.find('link').remove();
+                                            temp.find('title').remove();
+                                            temp.find('script').remove();
+                                            target.append(temp.children());
+                                            if(angular.isFunction(scope.customTargetCallback)) {
+                                                scope.customTargetCallback();
+                                            }
+                                        break;
+                                    }
+                                }
+                            });
+                        }
                     });
                 };
             },

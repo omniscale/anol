@@ -65,7 +65,7 @@ angular.module('anol.attribution')
                 scope.tooltipDelay : 500;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
                 scope.tooltipEnable : !ol.has.TOUCH;
-            scope.layers = LayersService.layers;
+            scope.layers = LayersService.flattedLayers;
 
             ControlsService.addControl(
                 new anol.control.Control({

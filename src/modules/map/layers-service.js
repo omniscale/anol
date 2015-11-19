@@ -28,6 +28,7 @@ angular.module('anol.map')
         var Layers = function(layers) {
             this.map = undefined;
             this.layers = [];
+            this.flattedLayers = [];
             this.olLayers = [];
             this.backgroundLayers = [];
             this.overlayLayers = [];
@@ -104,6 +105,7 @@ angular.module('anol.map')
                 layers = _layer.layers;
             }
             angular.forEach(layers, function(layer) {
+                self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
             });
         };

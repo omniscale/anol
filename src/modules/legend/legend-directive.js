@@ -67,17 +67,11 @@ angular.module('anol.legend')
             post: function(scope, element, attrs) {
                 scope.legendLayers = [];
 
-                angular.forEach(LayersService.layers, function(_layer) {
-                    var layers = [_layer];
-                    if(_layer instanceof anol.layer.Group) {
-                        layers = _layer.layers;
+                angular.forEach(LayersService.flattedLayers, function(layer) {
+                    if(layer.legend === false) {
+                        return;
                     }
-                    angular.forEach(layers, function(layer) {
-                        if(layer.legend === false) {
-                            return;
-                        }
-                        scope.legendLayers.push(layer);
-                    });
+                    scope.legendLayers.push(layer);
                 });
             }
         }

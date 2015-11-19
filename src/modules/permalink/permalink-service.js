@@ -110,16 +110,10 @@ angular.module('anol.permalink')
                     });
                 }
             } else {
-                angular.forEach(LayersService.layers, function(_layer) {
-                    var layers = [_layer];
-                    if(_layer instanceof anol.layer.Group) {
-                        layers = _layer.layers;
+                angular.forEach(LayersService.flattedLayers, function(layer) {
+                    if(layer.getVisible()) {
+                        self.visibleLayerNames.push(layer.name);
                     }
-                    angular.forEach(layers, function(layer) {
-                        if(layer.getVisible()) {
-                            self.visibleLayerNames.push(layer.name);
-                        }
-                    });
                 });
             }
 
