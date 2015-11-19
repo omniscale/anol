@@ -98,7 +98,12 @@
               }
             }
           });
-          LayersServiceProvider.setLayers([wms, wmsGray, featureLayer, otherFeatureLayer]);
+          var group = new anol.layer.Group({
+            name: 'features',
+            title: 'Features',
+            layers: [featureLayer, otherFeatureLayer]
+          });
+          LayersServiceProvider.setLayers([wms, wmsGray, group]);
       }]);
     </script>
   </body>
