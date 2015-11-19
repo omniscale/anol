@@ -1,11 +1,25 @@
-<div class="ol-control ol-unselectable anol-searchbox dropdown">
-    <input class="form-control" ng-model="searchString" ng-keydown="handleInputKeypress($event)" placeholder="{{ 'anol.geocoder.PLACEHOLDER' | translate }}">
-    <ul class="dropdown-menu">
-        <li ng-repeat="result in searchResults" ng-click="showResult(result)" >
-            <a href="javascript:;" ng-keydown="handleDropdownKeypress($event)" ng-mouseover="handleMouseover($event)">{{ result.displayText }}</a>
+<div class="ol-control ol-unselectable anol-searchbox dropdown"
+     ng-init="showResultList=false">
+    <input class="form-control"
+           ng-model="searchString"
+           ng-keydown="handleInputKeypress($event)"
+           placeholder="{{ 'anol.geocoder.PLACEHOLDER' | translate }}"
+           ng-focus="showResultList=true"
+           ng-blur="showResultList=false">
+    <ul class="dropdown-menu" ng-show="showResultList">
+        <li ng-repeat="result in searchResults"
+            ng-click="showResult(result)">
+            <a href="javascript:;"
+               ng-keydown="handleDropdownKeypress($event)"
+               ng-mouseover="handleMouseover($event)"
+               ng-focus="$parent.showResultList=true"
+               ng-blur="$parent.showResultList=false">
+               {{ result.displayText }}
+            </a>
         </li>
     </ul>
-    <div class="open no-results" ng-show="noResults">
+    <div class="open no-results"
+         ng-show="noResults">
         <ul class="dropdown-menu">
             <li>{{ 'anol.geocoder.NO_RESULTS' | translate }}</li>
         </ul>
