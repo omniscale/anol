@@ -8,6 +8,7 @@ angular.module('anol.overviewmap')
  * @requries anol.map.LayersService
  * @requries anol.map.MapService
  *
+ * @param {boolean} anolOverviewMap Wheather start collapsed or not. Default true.
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -19,10 +20,12 @@ angular.module('anol.overviewmap')
     return {
         restrict: 'A',
         scope: {
+            collapsed: '@anolOverviewMap',
             tooltipPlacement: '@',
             tooltipDelay: '@'
         },
         link: function(scope, element, attrs) {
+            scope.collapsed = scope.collapsed !== false;
             var backgroundLayers = [];
             angular.forEach(LayersService.backgroundLayers, function(layer) {
                 backgroundLayers.push(layer.olLayer);
@@ -31,6 +34,7 @@ angular.module('anol.overviewmap')
                 layers: backgroundLayers,
                 label: document.createTextNode(''),
                 collapseLabel: document.createTextNode(''),
+                collapsed: scope.collapsed,
                 view: new ol.View({
                     projection: MapService.getMap().getView().getProjection()
                 })
@@ -38,6 +42,7 @@ angular.module('anol.overviewmap')
             var control = new anol.control.Control({
                 olControl: olControl
             });
+
             // disable nativ tooltip
             var overviewmapButton = angular.element(olControl.element).find('button');
             overviewmapButton.removeAttr('title');
@@ -48,9 +53,19 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
             overviewmapButton.attr('tooltip-trigger', 'mouseenter click');
+            // add icon
+            // cannot use ng-class, because icon change comes to late after click
+            overviewmapButton.addClass('glyphicon glyphicon-chevron-' + (scope.collapsed ? 'right' : 'left'));
+            overviewmapButton.attr('ng-click', 'updateIcon()');
 
             $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);
+
+            scope.updateIcon = function() {
+                var collapsed = olControl.getCollapsed();
+                overviewmapButton.removeClass('glyphicon-chevron-' + (collapsed ? 'left' : 'right'));
+                overviewmapButton.addClass('glyphicon-chevron-' + (collapsed ? 'right' : 'left'));
+            };
         }
     };
 }]);

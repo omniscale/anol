@@ -222,15 +222,15 @@ canvas.anol-legend-item-image
  * anol-overview-map
  */
 .ol-overviewmap
+  padding-bottom: 0
   button
-    &:before
-      content: '»'
-
-  &:not(.ol-collapsed)
-    button
-      &:before
-        content: '«'
-
+    bottom: 2px
+    right: 2px
+  button.glyphicon
+    top: inherit
+  button.glyphicon-chevron-right
+    bottom: 0
+    right: 0
 /**
  * anol-zoom
  */
