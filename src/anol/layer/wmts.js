@@ -47,7 +47,7 @@ anol.layer.WMTS = function(_options) {
     options.olLayer = olLayer;
     anol.layer.Layer.call(this, options);
 };
-anol.layer.WMTS.prototype = new anol.layer.Layer();
+anol.layer.WMTS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.WMTS.prototype, {
     CLASS_NAME: 'anol.layer.WMTS',
     _createResolution: function(levels, minRes) {

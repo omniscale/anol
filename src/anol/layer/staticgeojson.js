@@ -12,19 +12,16 @@
  */
 anol.layer.StaticGeoJSON = function(_options) {
     if(_options === false) {
-        anol.layer.Layer.call(this);
+        anol.layer.Feature.call(this, _options);
         return;
     }
     var self = this;
-    var defaults = {};
+    var defaults = {
+        olLayer: {}
+    };
     var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
         defaults,
         _options
-    );
-
-    options.olLayer.source = new ol.source.Vector(
-        this._createSourceOptions(options.olLayer.source)
     );
 
     this.defaultStyle = options.olLayer.style || ol.style.defaultStyleFunction;
@@ -33,12 +30,9 @@ anol.layer.StaticGeoJSON = function(_options) {
         return [self.createStyle(feature)];
     };
 
-    options.olLayer = new ol.layer.Vector(options.olLayer);
-    anol.layer.Layer.call(this, options);
-    this.isVector = true;
-
+    anol.layer.Feature.call(this, options);
 };
-anol.layer.StaticGeoJSON.prototype = new anol.layer.Layer();
+anol.layer.StaticGeoJSON.prototype = new anol.layer.Feature(false);
 $.extend(anol.layer.StaticGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.StaticGeoJSON',
     /**
@@ -46,7 +40,7 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
      * - url
      */
     _createSourceOptions: function(srcOptions) {
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions(
+        srcOptions = anol.layer.Feature.prototype._createSourceOptions(
             srcOptions
         );
 

@@ -36,7 +36,7 @@
 
     anol.layer.Layer.call(this, options);
 };
-anol.layer.TMS.prototype = new anol.layer.Layer();
+anol.layer.TMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.TMS.prototype, {
     CLASS_NAME: 'anol.layer.TMS',
     /**

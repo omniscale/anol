@@ -30,7 +30,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
      */
     _createSourceOptions: function(srcOptions) {
         var self = this;
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions(
+        srcOptions = anol.layer.StaticGeoJSON.prototype._createSourceOptions(
             srcOptions
         );
 

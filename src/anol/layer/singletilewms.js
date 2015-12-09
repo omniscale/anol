@@ -25,7 +25,7 @@
 
     anol.layer.Layer.call(this, options);
 };
-anol.layer.SingleTileWMS.prototype = new anol.layer.Layer();
+anol.layer.SingleTileWMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.SingleTileWMS.prototype, {
     CLASS_NAME: 'anol.layer.SingleTileWMS'
 });

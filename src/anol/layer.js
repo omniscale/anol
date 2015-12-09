@@ -40,7 +40,7 @@
  * ```
  */
 anol.layer.Layer = function(options) {
-    if(options === undefined) {
+    if(options === false) {
         return;
     }
 
