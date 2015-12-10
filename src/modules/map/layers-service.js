@@ -27,10 +27,16 @@ angular.module('anol.map')
          */
         var Layers = function(layers) {
             this.map = undefined;
+
+            // contains anol layers and groups
             this.layers = [];
+            // contains all anol layers (grouped layers extracted from their groups)
             this.flattedLayers = [];
+            // contains all olLayers like (grouped layers extracted from their groups)
             this.olLayers = [];
+            // contains all anol background layers
             this.backgroundLayers = [];
+            // contains all anol overlay layers or groups
             this.overlayLayers = [];
             this.addLayers(layers);
 
@@ -105,6 +111,9 @@ angular.module('anol.map')
                 layers = _layer.layers;
             }
             angular.forEach(layers, function(layer) {
+                $(layer).on('anol.layer.loaded', function() {
+                    $rootScope.$digest();
+                });
                 self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
             });

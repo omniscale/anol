@@ -52,13 +52,16 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
                 srcOptions.url,
                 srcOptions.format,
                 function(features) {
+                    // "this" in this context is the ol source
                     this.addFeatures(features);
                     self.loaded = true;
+                    $(self).triggerHandler('anol.layer.loaded');
                 }
             );
 
         } else {
-            this.loaded = true;
+            self.loaded = true;
+            $(self).triggerHandler('anol.layer.loaded');
         }
 
 
