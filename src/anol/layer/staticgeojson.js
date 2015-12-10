@@ -30,6 +30,7 @@ anol.layer.StaticGeoJSON = function(_options) {
         return [self.createStyle(feature)];
     };
 
+    this.loaded = false;
     anol.layer.Feature.call(this, options);
 };
 anol.layer.StaticGeoJSON.prototype = new anol.layer.Feature(false);
@@ -40,11 +41,26 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
      * - url
      */
     _createSourceOptions: function(srcOptions) {
+        var self = this;
         srcOptions = anol.layer.Feature.prototype._createSourceOptions(
             srcOptions
         );
 
         srcOptions.format = new ol.format.GeoJSON();
+        if(srcOptions.url !== undefined) {
+            srcOptions.loader = ol.featureloader.loadFeaturesXhr(
+                srcOptions.url,
+                srcOptions.format,
+                function(features) {
+                    this.addFeatures(features);
+                    self.loaded = true;
+                }
+            );
+
+        } else {
+            this.loaded = true;
+        }
+
 
         return srcOptions;
     },
