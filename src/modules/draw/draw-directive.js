@@ -29,6 +29,7 @@ angular.module('anol.draw')
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
             style: '=?',
+            // TODO what happens when draw layer changes?
             drawLayer: '=?',
             tooltipDelay: '@',
             tooltipEnable: '@',
@@ -57,7 +58,8 @@ angular.module('anol.draw')
             scope.polygonTooltipPlacement = angular.isDefined(scope.polygonTooltipPlacement) ?
                 scope.polygonTooltipPlacement : 'right';
 
-            var drawPointControl, drawLineControl, drawPolygonControl;
+            var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
+            var modifyInteraction;
 
             if(angular.isUndefined(scope.drawLayer)) {
                 scope.drawLayer = new anol.layer.Feature({
@@ -86,6 +88,7 @@ angular.module('anol.draw')
                     type: drawType
                 });
 
+                // TODO how to use both?
                 if(angular.isObject(AnolFeaturePropertiesEditor)) {
                     draw.on('drawend', function(evt) {
                         var feature = evt.feature;
@@ -101,6 +104,13 @@ angular.module('anol.draw')
                 return draw;
             };
 
+            var createMofifyInteraction = function() {
+                var modify = new ol.interaction.Modify({
+                    features: new ol.Collection(scope.drawSource.getFeatures())
+                });
+                return modify;
+            };
+
             var createDrawControl = function(controlElement, controlTarget, interaction) {
                 var drawControl = new anol.control.Control({
                     element: controlElement,
@@ -111,6 +121,23 @@ angular.module('anol.draw')
                 drawControl.onDeactivate(deactivate, scope);
                 drawControl.onActivate(activate, scope);
                 return drawControl;
+            };
+
+            var createModifyControl = function(controlElement, controlTarget) {
+                var _modifyControl = new anol.control.Control({
+                    element: controlElement,
+                    target: controlTarget,
+                    exclusive: true
+                });
+                _modifyControl.onActivate(function() {
+                    modifyInteraction = createMofifyInteraction();
+                    scope.map.addInteraction(modifyInteraction);
+                });
+                _modifyControl.onDeactivate(function() {
+                    scope.map.removeInteraction(modifyInteraction);
+                    modifyInteraction = undefined;
+                });
+                return _modifyControl;
             };
 
             var deactivate = function(targetControl, context) {
@@ -145,6 +172,14 @@ angular.module('anol.draw')
                 }
             };
 
+            scope.modify = function() {
+                if(modifyControl.active) {
+                    modifyControl.deactivate();
+                } else {
+                    modifyControl.activate();
+                }
+            };
+
             scope.map = MapService.getMap();
 
             element.addClass('ol-control');
@@ -171,6 +206,27 @@ angular.module('anol.draw')
                 element,
                 createDrawInteraction('Polygon')
             );
+
+            scope.$watch(function() {
+                return scope.drawLayer.loaded;
+            }, function(loaded) {
+                if(loaded) {
+                    modifyControl = createModifyControl(
+                        element.find('.anol-draw-modify'),
+                        element,
+                        createMofifyInteraction()
+                    );
+                    ControlsService.addControl(modifyControl);
+                } else {
+                    if(modifyControl === undefined) {
+                        return;
+                    }
+                    if(modifyControl.active) {
+                        // TODO how to reactivate modify control after load finished?
+                        modifyControl.deactivate();
+                    }
+                }
+            });
 
             ControlsService.addControls([drawControl, drawPointControl, drawLineControl, drawPolygonControl]);
         }
