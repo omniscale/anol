@@ -6,6 +6,7 @@
  * @param {Object} options.olLayer Options for ol.layer.Vector
  * @param {Object} options.olLayer.source Options for ol.source.Vector
  * @param {Object} options.olLayer.source.url Url to GeoJSON
+ * @param {String} options.olLayer.source.dataProjection Projection if GeoJSON
  *
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
@@ -39,14 +40,15 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
     /**
      * Additional source options
      * - url
+     * - dataProjection
      */
     _createSourceOptions: function(srcOptions) {
         var self = this;
         srcOptions = anol.layer.Feature.prototype._createSourceOptions(
             srcOptions
         );
-
-        srcOptions.format = new ol.format.GeoJSON();
+        // TODO load dataProjection from received GeoJSON
+        srcOptions.format = new ol.format.GeoJSON({defaultDataProjection: srcOptions.dataProjection});
         if(srcOptions.url !== undefined) {
             srcOptions.loader = ol.featureloader.loadFeaturesXhr(
                 srcOptions.url,
