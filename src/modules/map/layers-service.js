@@ -6,7 +6,7 @@ angular.module('anol.map')
  */
 .provider('LayersService', [function() {
     var _layers = [];
-
+    var SaveManagerService;
     /**
      * @ngdoc method
      * @name setLayers
@@ -17,7 +17,11 @@ angular.module('anol.map')
         _layers = _layers.concat(layers);
     };
 
-    this.$get = [function() {
+    this.$get = ['$injector', '$rootScope', function($injector, $rootScope) {
+        if($injector.has('SaveManagerService')) {
+            // inject SaveManagerService when available
+            SaveManagerService = $injector.get('SaveManagerService');
+        }
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -116,6 +120,9 @@ angular.module('anol.map')
                 });
                 self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
+                if(SaveManagerService !== undefined && layer.saveable === true) {
+                    SaveManagerService.addLayer(layer);
+                }
             });
         };
         /**

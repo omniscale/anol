@@ -1,0 +1,9 @@
+<div class="anol-savemanager">
+    <h4>Save Manager</h4>
+    <ul>
+        <li ng-repeat="layer in unsavedLayers">
+            {{ layer.title }}
+            <button ng-click="save(layer)">Save</button>
+        </li>
+    </ul>
+</div>
