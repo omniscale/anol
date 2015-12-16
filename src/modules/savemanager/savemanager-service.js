@@ -127,7 +127,11 @@ angular.module('anol.savemanager')
         return this.format.writeFeaturesObject(this.changed);
     };
     FeatureStore.prototype.removedFeatures = function() {
-        return this.format.writeFeaturesObject(this.removed);
+        var ids = [];
+        angular.forEach(this.removed, function(feature) {
+            ids.push(feature.get('_id'));
+        });
+        return ids;
     };
     FeatureStore.prototype.ADDED = 1;
     FeatureStore.prototype.CHANGED = 2;
@@ -211,7 +215,7 @@ angular.module('anol.savemanager')
                 promises.push($http.post(targetUrl, featureStore.changedFeatures()));
             }
             if(featureStore.hasRemovedFeatures()) {
-                promises.push($http.delete(targetUrl, featureStore.removedFeatures()));
+                promises.push($http.delete(targetUrl, {params: {'ids': featureStore.removedFeatures()}}));
             }
             return $q.all(promises);
         };
