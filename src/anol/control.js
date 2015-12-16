@@ -25,7 +25,7 @@ anol.control.Control = function(options) {
     this.exclusive = options.exclusive || false;
     this.subordinate = options.subordinate || false;
     this.element = options.element;
-    this.interaction = options.interaction;
+    this.interactions = options.interactions;
 
     if(options.olControl === undefined) {
         var controlElement;
