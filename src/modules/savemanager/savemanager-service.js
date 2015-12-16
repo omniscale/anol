@@ -139,7 +139,7 @@ angular.module('anol.savemanager')
         _saveUrl = saveUrl;
     };
 
-    this.$get = ['$rootScope', '$q', '$http', function($rootScope, $q, $http) {
+    this.$get = ['$rootScope', '$q', '$http', '$timeout', function($rootScope, $q, $http, $timeout) {
         var SaveManager = function(saveUrl) {
             this.saveUrl = saveUrl;
             this.changedLayers = {};
@@ -193,8 +193,11 @@ angular.module('anol.savemanager')
         SaveManager.prototype.addChangedLayer = function(layer) {
             var self = this;
             if(!(layer.name in self.changedLayers)) {
-                $rootScope.$apply(function() {
-                    self.changedLayers[layer.name] = layer;
+                // TODO find out why $apply already in progress
+                $timeout(function() {
+                    $rootScope.$apply(function() {
+                        self.changedLayers[layer.name] = layer;
+                    });
                 });
             }
         };
