@@ -71,6 +71,27 @@ angular.module('anol.savemanager')
         this.removed = [];
     };
     FeatureStore.prototype.add = function(feature, action) {
+        var addIdx = -1;
+        var changeIdx = -1;
+        switch(action) {
+            case this.CHANGED:
+                if(this.added.indexOf(feature) !== -1) {
+                    return;
+                }
+            break;
+            case this.REMOVED:
+                changeIdx = this.changed.indexOf(feature);
+                addIdx = this.added.indexOf(feature);
+            break;
+        }
+        if(addIdx !== -1) {
+            this.added.splice(addIdx, 1);
+            return;
+        }
+        if(changeIdx !== -1) {
+            this.changed.splice(changeIdx, 1);
+        }
+
         var list;
         switch(action) {
             case this.ADDED:
@@ -85,25 +106,6 @@ angular.module('anol.savemanager')
         }
         if(list.indexOf(feature) === -1) {
             list.push(feature);
-        }
-
-
-        var addIdx = -1;
-        var changeIdx = -1;
-        switch(action) {
-            case this.REMOVED:
-                changeIdx = this.changed.indexOf(feature);
-                addIdx = this.added.indexOf(feature);
-            break;
-            case this.CHANGED:
-                addIdx = this.added.indexOf(feature);
-            break;
-        }
-        if(addIdx !== -1) {
-            this.added.splice(addIdx, 1);
-        }
-        if(changeIdx !== -1) {
-            this.changed.splice(changeIdx, 1);
         }
     };
     FeatureStore.prototype.append = function(featureStore) {
