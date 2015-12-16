@@ -108,6 +108,19 @@ angular.module('anol.savemanager')
             list.push(feature);
         }
     };
+    FeatureStore.prototype.clear = function(listType) {
+        switch(listType) {
+            case this.ADDED:
+                this.added.length = 0;
+            break;
+            case this.CHANGED:
+                this.changed.length = 0;
+            break;
+            case this.REMOVED:
+                this.removed.length = 0;
+            break;
+        }
+    };
     FeatureStore.prototype.append = function(featureStore) {
         this.added = this.added.concat(featureStore.added);
         this.changed = this.changed.concat(featureStore.changed);
