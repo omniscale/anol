@@ -223,14 +223,43 @@ angular.module('anol.savemanager')
         SaveManager.prototype.commitFeatures = function(featureStore, layerName, targetUrl) {
             var promises = [];
             if(featureStore.hasAddedFeatures()) {
+                var addDeferred = $q.defer();
+                promises.push(addDeferred.promise);
+
                 var data = featureStore.addedFeatures();
                 data.layername = layerName;
-                promises.push($http.put(targetUrl, data));            }
+
+                $http.put(targetUrl, data).then(function() {
+                    featureStore.clear(featureStore.ADDED);
+                    addDeferred.resolve();
+                }, function(reason) {
+                    addDeferred.reject(reason);
+                });
+            }
             if(featureStore.hasChangedFeatures()) {
-                promises.push($http.post(targetUrl, featureStore.changedFeatures()));
+                var changeDeferred = $q.defer();
+                promises.push(changeDeferred.promise);
+
+                $http.post(targetUrl, featureStore.changedFeatures()).then(function() {
+                    featureStore.clear(featureStore.CHANGED);
+                    changeDeferred.resolve();
+                }, function(reason) {
+                    changeDeferred.reject(reason);
+                });
             }
             if(featureStore.hasRemovedFeatures()) {
-                promises.push($http.delete(targetUrl, {params: {'ids': featureStore.removedFeatures()}}));
+                var removeDeferred = $q.defer();
+                promises.push(removeDeferred.promise);
+                $http.delete(targetUrl, {
+                    params: {
+                        'ids': featureStore.removedFeatures().join(',')
+                    }
+                }).then(function() {
+                    featureStore.clear(featureStore.REMOVED);
+                    removeDeferred.resolve();
+                }, function(reason) {
+                    removeDeferred.reject(reason);
+                });
             }
             return $q.all(promises);
         };
@@ -242,6 +271,7 @@ angular.module('anol.savemanager')
                 var featureStore = self.featureStoreByLayer(layer);
                 var promise = self.commitFeatures(featureStore, layer.name, layer.saveUrl || self.saveUrl);
                 promise.then(function() {
+                    delete self.changedLayers[layer.name];
                     deferred.resolve();
                 }, function(reason) {
                     deferred.reject(reason);
