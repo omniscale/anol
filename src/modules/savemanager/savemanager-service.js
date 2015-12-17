@@ -1,5 +1,9 @@
 angular.module('anol.savemanager')
 
+/**
+ * @ngdoc object
+ * @name anol.savemanager.SaveManagerServiceProvider
+ */
 .provider('SaveManagerService', [function() {
     // handles layer source change events and store listener keys for removing
     // listeners nicely
@@ -129,16 +133,35 @@ angular.module('anol.savemanager')
     };
 
     var _saveUrl;
+    /**
+     * @ngdoc method
+     * @name setSaveUrl
+     * @methodOf anol.savemanager.SaveManagerServiceProvider
+     * @param {String} saveUrl url to save changes to. Might be overwritten by layer.saveUrl
+     */
     this.setSaveUrl = function(saveUrl) {
         _saveUrl = saveUrl;
     };
 
     this.$get = ['$rootScope', '$q', '$http', '$timeout', function($rootScope, $q, $http, $timeout) {
+        /**
+         * @ngdoc service
+         * @name anol.savemanager.SaveManagerService
+         *
+         * @description
+         * Collects changes in saveable layers and send them to given saveUrl
+         */
         var SaveManager = function(saveUrl) {
             this.saveUrl = saveUrl;
             this.changedLayers = {};
             this.changedFeatures = {};
         };
+        /**
+         * @ngdoc method
+         * @name addLayer
+         * @methodOd anol.savemanager.SaveManagerService
+         * @param {anol.layer.Feature} layer layer to watch for changes
+         */
         SaveManager.prototype.addLayer = function(layer) {
             var self = this;
             var layerListener = new LayerListener(layer, self);
@@ -156,6 +179,11 @@ angular.module('anol.savemanager')
                 }
             });
         };
+        /**
+         * private function
+         *
+         * handler for ol3 feature added event
+         */
         SaveManager.prototype.featureAddedHandler = function(evt, layer) {
             var self = this;
             var feature = evt.feature;
@@ -163,6 +191,11 @@ angular.module('anol.savemanager')
             featureStore.pushAdded(feature);
             self.addChangedLayer(layer);
         };
+        /**
+         * private function
+         *
+         * handler for ol3 feature changed event
+         */
         SaveManager.prototype.featureChangedHandler = function(evt, layer) {
             var self = this;
             var feature = evt.feature;
@@ -170,6 +203,11 @@ angular.module('anol.savemanager')
             featureStore.pushChanged(feature);
             self.addChangedLayer(layer);
         };
+        /**
+         * private function
+         *
+         * handler for ol3 feature removed event
+         */
         SaveManager.prototype.featureRemovedHandler = function(evt, layer) {
             var self = this;
             var feature = evt.feature;
@@ -177,6 +215,11 @@ angular.module('anol.savemanager')
             featureStore.pushRemoved(feature);
             self.addChangedLayer(layer);
         };
+        /**
+         * private function
+         *
+         * returns corresponding feature store for given layer
+         */
         SaveManager.prototype.featureStoreByLayer = function(layer) {
             var self = this;
             if(self.changedFeatures[layer.name] === undefined) {
@@ -184,6 +227,11 @@ angular.module('anol.savemanager')
             }
             return self.changedFeatures[layer.name];
         };
+        /**
+         * private function
+         *
+         * adds a layer to list of layers with changes
+         */
         SaveManager.prototype.addChangedLayer = function(layer) {
             var self = this;
             if(!(layer.name in self.changedLayers)) {
@@ -195,10 +243,20 @@ angular.module('anol.savemanager')
                 });
             }
         };
+        /**
+         * private function
+         *
+         * cleans up after changes done
+         */
         SaveManager.prototype.changesDone = function(layerName) {
             delete this.changedLayers[layerName];
             delete this.changedFeatures[layerName];
         };
+        /**
+         * private function
+         *
+         * sends changes to saveUrl or layer.saveUrl
+         */
         SaveManager.prototype.commitFeatures = function(featureStore, layerName, targetUrl) {
             var promises = [];
             if(featureStore.hasAddedFeatures()) {
@@ -242,6 +300,14 @@ angular.module('anol.savemanager')
             }
             return $q.all(promises);
         };
+        /**
+         * @ngdoc method
+         * @name commit
+         * @methodOd anol.savemanager.SaveManagerService
+         * @param {anol.layer.Feature} layer
+         * @description
+         * Commits changes for given layer
+         */
         SaveManager.prototype.commit = function(layer) {
             var self = this;
             var deferred = $q.defer();
