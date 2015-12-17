@@ -8,10 +8,8 @@ angular.module('anol.draw')
  * @requires $translate
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
- * @requries anol.map.LayersService
+ * @requries anol.map.DrawService
  *
- * @param {ol.style.Style} style Default style
- * @param {anol.layer.Layer} drawLayer Target layer to draw in. Must be a feature layer.
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
@@ -20,17 +18,14 @@ angular.module('anol.draw')
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
- * Provides controls to draw points, lines and polygons
+ * Provides controls to draw points, lines and polygons, modify and remove them
  */
-.directive('anolDraw', ['$compile', '$rootScope', '$translate', 'ControlsService', 'LayersService', 'MapService',
-    function($compile, $rootScope, $translate, ControlsService, LayersService, MapService) {
+.directive('anolDraw', ['$compile', '$rootScope', '$translate', 'ControlsService', 'MapService', 'DrawService',
+    function($compile, $rootScope, $translate, ControlsService, MapService, DrawService) {
     return {
         restrict: 'A',
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
-            style: '=?',
-            // TODO what happens when draw layer changes?
-            drawLayer: '=?',
             tooltipDelay: '@',
             tooltipEnable: '@',
             pointTooltipPlacement: '@',
@@ -58,32 +53,14 @@ angular.module('anol.draw')
             scope.polygonTooltipPlacement = angular.isDefined(scope.polygonTooltipPlacement) ?
                 scope.polygonTooltipPlacement : 'right';
 
+            var activeLayer;
+            var selectedFeature;
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
 
-            if(angular.isUndefined(scope.drawLayer)) {
-                scope.drawLayer = new anol.layer.Feature({
-                    name: 'draw_layer'
-                });
-                if(angular.isDefined(scope.style)) {
-                    scope.drawLayer.olLayer.setStyle(scope.style);
-                }
-
-                // TODO take a look at when layerswitcher can handle
-                // add layer
-                $rootScope.$on('$translateChangeSuccess', function () {
-                    $translate('anol.draw.LAYER_TITLE').then(function(title) {
-                        scope.drawLayer.title = title;
-                    });
-                });
-                LayersService.addLayer(scope.drawLayer);
-            }
-
-            scope.drawSource = scope.drawLayer.olLayer.getSource();
-
-            var createDrawInteraction = function(drawType) {
+            var createDrawInteractions = function(drawType, source) {
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
-                    source: scope.drawSource,
+                    source: source,
                     type: drawType
                 });
 
@@ -99,27 +76,13 @@ angular.module('anol.draw')
                         AnolFeatureStyleEditor.editFeature(feature);
                     });
                 }
-
-                return draw;
+                return [draw];
             };
 
-            var createDrawControl = function(controlElement, controlTarget, interaction) {
-                var drawControl = new anol.control.Control({
-                    element: controlElement,
-                    target: controlTarget,
-                    interactions: [interaction],
-                    exclusive: true
-                });
-                drawControl.onDeactivate(deactivate, scope);
-                drawControl.onActivate(activate, scope);
-                return drawControl;
-            };
-
-            var createModifyControl = function(controlElement, controlTarget) {
-                var selectedFeature;
+            var createModifyInteractions = function(layer) {
                 var selectInteraction = new ol.interaction.Select({
                     toggleCondition: ol.events.condition.never,
-                    layers: [scope.drawLayer.olLayer]
+                    layers: [layer]
                 });
                 selectInteraction.on('select', function(evt) {
                     if(evt.selected.length === 0) {
@@ -131,40 +94,47 @@ angular.module('anol.draw')
                 var modifyInteraction = new ol.interaction.Modify({
                     features: selectInteraction.getFeatures()
                 });
+                return [selectInteraction, modifyInteraction];
+            };
+
+            var createDrawControl = function(controlElement, controlTarget) {
+                var drawControl = new anol.control.Control({
+                    element: controlElement,
+                    target: controlTarget,
+                    exclusive: true
+                });
+                drawControl.onDeactivate(deactivate, scope);
+                drawControl.onActivate(activate, scope);
+                return drawControl;
+            };
+
+            var createModifyControl = function(controlElement, controlTarget) {
                 var _modifyControl = new anol.control.Control({
                     element: controlElement,
                     target: controlTarget,
-                    interactions: [selectInteraction, modifyInteraction],
                     exclusive: true
                 });
-                _modifyControl.onDeactivate(deactivate, scope);
-                _modifyControl.onActivate(activate, scope);
+                _modifyControl.onDeactivate(deactivate);
+                _modifyControl.onActivate(activate);
                 _modifyControl.onDeactivate(function() {
                     selectedFeature = undefined;
                 });
-
-                scope.remove = function() {
-                    if(selectedFeature !== undefined) {
-                        scope.drawSource.removeFeature(selectedFeature);
-                        selectInteraction.getFeatures().clear();
-                        selectedFeature = undefined;
-                    }
-                };
                 return _modifyControl;
             };
 
-            var deactivate = function(targetControl, context) {
+            var deactivate = function(targetControl) {
                 angular.forEach(targetControl.interactions, function(interaction) {
-                    context.map.removeInteraction(interaction);
+                    interaction.setActive(false);
                 });
             };
 
-            var activate = function(targetControl, context) {
+            var activate = function(targetControl) {
                 angular.forEach(targetControl.interactions, function(interaction) {
-                    context.map.addInteraction(interaction);
+                    interaction.setActive(true);
                 });
             };
 
+            // Button binds
             scope.drawPoint = function() {
                 if(drawPointControl.active) {
                     drawPointControl.deactivate();
@@ -197,6 +167,14 @@ angular.module('anol.draw')
                 }
             };
 
+            scope.remove = function() {
+                if(selectedFeature !== undefined) {
+                    activeLayer.olLayer.getSource().removeFeature(selectedFeature);
+                    modifyControl.interactions[0].getFeatures().clear();
+                    selectedFeature = undefined;
+                }
+            };
+
             scope.map = MapService.getMap();
 
             element.addClass('ol-control');
@@ -208,23 +186,19 @@ angular.module('anol.draw')
 
             drawPointControl = createDrawControl(
                 element.find('.anol-draw-point'),
-                element,
-                createDrawInteraction('Point')
+                element
             );
 
             drawLineControl = createDrawControl(
                 element.find('.anol-draw-line'),
-                element,
-                createDrawInteraction('LineString')
+                element
             );
 
             drawPolygonControl = createDrawControl(
                 element.find('.anol-draw-polygon'),
-                element,
-                createDrawInteraction('Polygon')
+                element
             );
 
-            // modify control contains also delete
             modifyControl = createModifyControl(
                 element.find('.anol-draw-modify'),
                 element
@@ -234,6 +208,55 @@ angular.module('anol.draw')
                 drawControl, drawPointControl, drawLineControl,
                 drawPolygonControl, modifyControl
             ]);
+
+            var allInteractions = function() {
+                return drawPointControl.interactions
+                    .concat(drawLineControl.interactions)
+                    .concat(drawPolygonControl.interactions)
+                    .concat(modifyControl.interactions);
+            };
+
+            var bindActiveLayer = function(layer) {
+                drawPointControl.interactions = createDrawInteractions('Point', layer.olLayer.getSource());
+                drawLineControl.interactions = createDrawInteractions('LineString', layer.olLayer.getSource());
+                drawPolygonControl.interactions = createDrawInteractions('Polygon', layer.olLayer.getSource());
+                modifyControl.interactions = createModifyInteractions(layer.olLayer);
+
+                angular.forEach(allInteractions(), function(interaction) {
+                    interaction.setActive(false);
+                    scope.map.addInteraction(interaction);
+                });
+
+                activeLayer = layer;
+            };
+
+            var unbindActiveLayer = function() {
+                angular.forEach(allInteractions(), function(interaction) {
+                    interaction.setActive(false);
+                    scope.map.removeInteraction(interaction);
+                });
+
+                drawPointControl.interactions = [];
+                drawLineControl.interactions = [];
+                drawPolygonControl.interactions = [];
+                modifyControl.interactions = [];
+
+                activeLayer = undefined;
+            };
+
+            scope.$watch(function() {
+                return DrawService.activeLayer;
+            }, function(newActiveLayer, oldActiveLayer) {
+                if(newActiveLayer === activeLayer) {
+                    return;
+                }
+                if(oldActiveLayer !== undefined) {
+                    unbindActiveLayer();
+                }
+                if(newActiveLayer !== undefined) {
+                    bindActiveLayer(newActiveLayer);
+                }
+            });
         }
     };
 }]);

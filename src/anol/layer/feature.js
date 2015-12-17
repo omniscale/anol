@@ -29,6 +29,7 @@
     anol.layer.Layer.call(this, options);
     this.isVector = true;
     this.saveable = options.saveable || false;
+    this.editable = options.editable || false;
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
