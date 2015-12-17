@@ -70,61 +70,40 @@ angular.module('anol.savemanager')
         this.changed = [];
         this.removed = [];
     };
-    FeatureStore.prototype.add = function(feature, action) {
-        var addIdx = -1;
-        var changeIdx = -1;
-        switch(action) {
-            case this.CHANGED:
-                if(this.added.indexOf(feature) !== -1) {
-                    return;
-                }
-            break;
-            case this.REMOVED:
-                changeIdx = this.changed.indexOf(feature);
-                addIdx = this.added.indexOf(feature);
-            break;
-        }
-        if(addIdx !== -1) {
-            this.added.splice(addIdx, 1);
-            return;
-        }
-        if(changeIdx !== -1) {
-            this.changed.splice(changeIdx, 1);
-        }
-
-        var list;
-        switch(action) {
-            case this.ADDED:
-                list = this.added;
-            break;
-            case this.CHANGED:
-                list = this.changed;
-            break;
-            case this.REMOVED:
-                list = this.removed;
-            break;
-        }
+    FeatureStore.prototype.pushInto = function(list, feature) {
         if(list.indexOf(feature) === -1) {
             list.push(feature);
         }
     };
-    FeatureStore.prototype.clear = function(listType) {
-        switch(listType) {
-            case this.ADDED:
-                this.added.length = 0;
-            break;
-            case this.CHANGED:
-                this.changed.length = 0;
-            break;
-            case this.REMOVED:
-                this.removed.length = 0;
-            break;
-        }
+    FeatureStore.prototype.pushAdded = function(feature) {
+        this.pushInto(this.added, feature);
     };
-    FeatureStore.prototype.append = function(featureStore) {
-        this.added = this.added.concat(featureStore.added);
-        this.changed = this.changed.concat(featureStore.changed);
-        this.removed = this.removed.concat(featureStore.removed);
+    FeatureStore.prototype.pushChanged = function(feature) {
+        if(this.added.indexOf(feature) !== -1) {
+            return;
+        }
+        this.pushInto(this.changed, feature);
+    };
+    FeatureStore.prototype.pushRemoved = function(feature) {
+        var addIdx = this.added.indexOf(feature);
+        if(addIdx !== -1) {
+            this.added.splice(addIdx, 1);
+            return;
+        }
+        var changedIdx = this.changed.indexOf(feature);
+        if(changedIdx !== -1) {
+            this.changed.splice(changedIdx, 1);
+        }
+        this.pushInto(this.removed, feature);
+    };
+    FeatureStore.prototype.clearAdded = function() {
+        this.added.length = 0;
+    };
+    FeatureStore.prototype.clearChanged = function() {
+        this.changed.length = 0;
+    };
+    FeatureStore.prototype.clearRemoved = function() {
+        this.removed.length = 0;
     };
     FeatureStore.prototype.hasAddedFeatures = function() {
         return this.added.length > 0;
@@ -148,10 +127,6 @@ angular.module('anol.savemanager')
         });
         return ids;
     };
-    FeatureStore.prototype.ADDED = 1;
-    FeatureStore.prototype.CHANGED = 2;
-    FeatureStore.prototype.REMOVED = 3;
-
 
     var _saveUrl;
     this.setSaveUrl = function(saveUrl) {
@@ -185,21 +160,21 @@ angular.module('anol.savemanager')
             var self = this;
             var feature = evt.feature;
             var featureStore = self.featureStoreByLayer(layer);
-            featureStore.add(feature, featureStore.ADDED);
+            featureStore.pushAdded(feature);
             self.addChangedLayer(layer);
         };
         SaveManager.prototype.featureChangedHandler = function(evt, layer) {
             var self = this;
             var feature = evt.feature;
             var featureStore = self.featureStoreByLayer(layer);
-            featureStore.add(feature, featureStore.CHANGED);
+            featureStore.pushChanged(feature);
             self.addChangedLayer(layer);
         };
         SaveManager.prototype.featureRemovedHandler = function(evt, layer) {
             var self = this;
             var feature = evt.feature;
             var featureStore = self.featureStoreByLayer(layer);
-            featureStore.add(feature, featureStore.REMOVED);
+            featureStore.pushRemoved(feature);
             self.addChangedLayer(layer);
         };
         SaveManager.prototype.featureStoreByLayer = function(layer) {
@@ -220,6 +195,10 @@ angular.module('anol.savemanager')
                 });
             }
         };
+        SaveManager.prototype.changesDone = function(layerName) {
+            delete this.changedLayers[layerName];
+            delete this.changedFeatures[layerName];
+        };
         SaveManager.prototype.commitFeatures = function(featureStore, layerName, targetUrl) {
             var promises = [];
             if(featureStore.hasAddedFeatures()) {
@@ -230,7 +209,7 @@ angular.module('anol.savemanager')
                 data.layername = layerName;
 
                 $http.put(targetUrl, data).then(function() {
-                    featureStore.clear(featureStore.ADDED);
+                    featureStore.clearAdded();
                     addDeferred.resolve();
                 }, function(reason) {
                     addDeferred.reject(reason);
@@ -241,7 +220,7 @@ angular.module('anol.savemanager')
                 promises.push(changeDeferred.promise);
 
                 $http.post(targetUrl, featureStore.changedFeatures()).then(function() {
-                    featureStore.clear(featureStore.CHANGED);
+                    featureStore.clearChanged();
                     changeDeferred.resolve();
                 }, function(reason) {
                     changeDeferred.reject(reason);
@@ -255,7 +234,7 @@ angular.module('anol.savemanager')
                         'ids': featureStore.removedFeatures().join(',')
                     }
                 }).then(function() {
-                    featureStore.clear(featureStore.REMOVED);
+                    featureStore.clearRemoved();
                     removeDeferred.resolve();
                 }, function(reason) {
                     removeDeferred.reject(reason);
@@ -271,7 +250,7 @@ angular.module('anol.savemanager')
                 var featureStore = self.featureStoreByLayer(layer);
                 var promise = self.commitFeatures(featureStore, layer.name, layer.saveUrl || self.saveUrl);
                 promise.then(function() {
-                    delete self.changedLayers[layer.name];
+                    self.changesDone(layer.name);
                     deferred.resolve();
                 }, function(reason) {
                     deferred.reject(reason);
