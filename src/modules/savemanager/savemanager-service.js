@@ -263,10 +263,10 @@ angular.module('anol.savemanager')
                 var addDeferred = $q.defer();
                 promises.push(addDeferred.promise);
 
-                var data = featureStore.addedFeatures();
-                data.layername = layerName;
+                var addData = featureStore.addedFeatures();
+                addData.name = layerName;
 
-                $http.put(targetUrl, data).then(function() {
+                $http.put(targetUrl, addData).then(function() {
                     featureStore.clearAdded();
                     addDeferred.resolve();
                 }, function(reason) {
@@ -277,7 +277,10 @@ angular.module('anol.savemanager')
                 var changeDeferred = $q.defer();
                 promises.push(changeDeferred.promise);
 
-                $http.post(targetUrl, featureStore.changedFeatures()).then(function() {
+                var changeData = featureStore.addedFeatures();
+                changeData.name = layerName;
+
+                $http.post(targetUrl, changeData).then(function() {
                     featureStore.clearChanged();
                     changeDeferred.resolve();
                 }, function(reason) {
