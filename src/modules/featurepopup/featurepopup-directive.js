@@ -1,21 +1,23 @@
 angular.module('anol.featurepopup')
 /**
  * @ngdoc directive
- * @name anol.featurepopup.directive:anolFeaturePopip
+ * @name anol.featurepopup.directive:anolFeaturePopup
  *
  * @restrict A
  *
  * @param {string} templateUrl Url to template to use instead of default one
- * @param {function} openCallback Function to run before popup is opened. If function returns false, no popup is shown
+ * @param {anol.layer.Feature} layers Layers to show popup for
+ * @param {number} tolerance Click tolerance in pixel
  *
  * @description
- * Shows a modal for editing feature properties
+ * Shows a popup for selected feature
  */
 .directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', 'ControlsService', function($timeout, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
-            'openCallback': '='
+            'layers': '=',
+            'tolerance': '='
         },
         replace: true,
         transclude: true,
@@ -23,83 +25,121 @@ angular.module('anol.featurepopup')
             var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        link: {
-            pre: function(scope, element, attrs) {
-                scope.map = MapService.getMap();
-                scope.popupVisible = false;
-                scope.feature = undefined;
-                scope.layer = undefined;
-                scope.overlayOptions = {
-                    element: element[0],
-                    autoPan: true,
-                    autoPanAnimation: {
-                        duration: 250
-                    }
+        link: function(scope, element, attrs) {
+            scope.map = MapService.getMap();
+            scope.popupVisible = false;
+            scope.feature = undefined;
+            scope.layer = undefined;
+            scope.overlayOptions = {
+                element: element[0],
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250
+                }
 
-                };
+            };
 
-                var featureAtPixel = function(evt) {
-                    scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                        if(!layer instanceof ol.layer.Vector) {
-                            return;
-                        }
-                        scope.layer = layer.get('anolLayer');
-                        if(angular.isObject(feature)) {
-                            scope.feature = feature;
-                        }
+            scope.popup = new ol.Overlay(scope.overlayOptions);
+            scope.map.addOverlay(scope.popup);
 
-                    });
-                };
+            var selectInteraction;
+            var interactions = [];
 
-                scope.handleClick = function(evt) {
-                    scope.$apply(function() {
-                        scope.popupVisible = false;
-                    });
+            var handleSelect = function(evt) {
+                scope.$apply(function() {
+                    scope.popupVisible = false;
+                });
+
+                if(evt.selected.length === 0) {
                     scope.feature = undefined;
                     scope.layer = undefined;
-                    featureAtPixel(evt);
-                    if(scope.feature === undefined) {
-                        return;
+                    return;
+                } else {
+                    scope.feature = evt.selected[0];
+                    // this === selectInteraction
+                    scope.layer = this.getLayer(scope.feature).get('anolLayer');
+                }
+
+                scope.$apply(function() {
+                    scope.popupVisible = true;
+                });
+                // wait until scope changes applied ($digest cycle completed) before set popup position
+                // otherwise Overlay.autoPan is not work correctly
+                $timeout(function() {
+                    scope.popup.setPosition(evt.mapBrowserEvent.coordinate);
+                });
+            };
+
+            var recreateInteractions = function() {
+                scope.popupVisible = false;
+
+                angular.forEach(interactions, function(interaction) {
+                    interaction.setActive(false);
+                    scope.map.removeInteraction(interaction);
+                });
+
+                var olLayers = [];
+                var snapInteractions = [];
+                angular.forEach(scope.layers, function(layer) {
+                    olLayers.push(layer.olLayer);
+                    snapInteractions.push(new ol.interaction.Snap({
+                        source: layer.olLayer.getSource(),
+                        pixelTolerance: scope.tolerance
+                    }));
+                });
+
+                selectInteraction = new ol.interaction.Select({
+                    toggleCondition: ol.events.condition.never,
+                    layers: olLayers,
+                    style: function(feature) {
+                        // prevents changing feature style
+                        // TODO find better solution
+                        var style = feature.getStyle() || selectInteraction.getLayer(feature).getStyle();
+                        if(angular.isFunction(style)) {
+                            return style(feature);
+                        }
+                        return style;
                     }
-                    if(angular.isFunction(scope.openCallback) && scope.openCallback(scope.feature, scope.layer) === false) {
-                        return;
-                    }
-                    scope.$apply(function() {
-                        scope.popupVisible = true;
-                    });
-
-                    // wait until scope changes applied ($digest cycle completed) before set popup position
-                    // otherwise Overlay.autoPan is not work correctly
-                    $timeout(function() {
-                        scope.popup.setPosition(evt.coordinate);
-                    });
-                };
-            },
-            post: function(scope, element, attrs) {
-                var handlerKey;
-
-                scope.popup = new ol.Overlay(scope.overlayOptions);
-                scope.map.addOverlay(scope.popup);
-
-                scope.close = function() {
-                    scope.popupVisible = false;
-                };
-
-                var control = new anol.control.Control({
-                    subordinate: true,
-                    olControl: null
                 });
-                control.onDeactivate(function() {
-                    scope.map.unByKey(handlerKey);
-                });
-                control.onActivate(function() {
-                    handlerKey = scope.map.on('singleclick', scope.handleClick, this);
-                });
+                selectInteraction.on('select', handleSelect);
 
-                control.activate();
+                interactions = [selectInteraction].concat(snapInteractions);
+                angular.forEach(interactions, function(interaction) {
+                    scope.map.addInteraction(interaction);
+                });
+            };
 
-                ControlsService.addControl(control);
-            }
+            var control = new anol.control.Control({
+                subordinate: true,
+                olControl: null
+            });
+            control.onDeactivate(function() {
+                angular.forEach(interactions, function(interaction) {
+                    interaction.setActive(false);
+                });
+            });
+            control.onActivate(function() {
+                angular.forEach(interactions, function(interaction) {
+                    interaction.setActive(true);
+                });
+            });
+
+            recreateInteractions();
+
+            control.activate();
+
+            ControlsService.addControl(control);
+
+            scope.close = function() {
+                scope.popupVisible = false;
+            };
+
+            scope.$watch('layers', recreateInteractions);
+            scope.$watch('popupVisible', function(visible) {
+                if(!visible) {
+                    selectInteraction.getFeatures().clear();
+                }
+            });
         }
     };
 }]);
