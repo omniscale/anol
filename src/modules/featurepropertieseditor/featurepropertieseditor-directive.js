@@ -69,6 +69,12 @@ angular.module('anol.featurepropertieseditor')
                 return result;
             };
 
+            scope.handleAddPropertyKeydown = function(event) {
+                if(event.key === 'Enter' || event.keyCode === 13) {
+                    scope.addProperty();
+                }
+            };
+
             scope.addProperty = function() {
                 if(scope.newKey) {
                     scope.properties[scope.newKey] = '';

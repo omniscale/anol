@@ -15,7 +15,7 @@
   <div class="form-group">
     <label>{{ 'anol.featurepropertieseditor.NEW_PROPERTY' | translate }}</label>
     <div class="input-group">
-      <input class="form-control input-sm" ng-model="newKey" />
+      <input class="form-control input-sm" ng-model="newKey" ng-keydown="handleAddPropertyKeydown($event)"/>
       <span class="input-group-addon pointer" ng-click="addProperty()">
         <span class="glyphicon glyphicon-plus"></span>
       </span>
