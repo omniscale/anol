@@ -29,6 +29,7 @@ angular.module('anol.legend')
         },
         scope: {
             anolLegend: '@',
+            // TODO compare with featurepopup openCallback. Why a callback wrapper is added here?
             customTargetFilled: '&',
             tooltipPlacement: '@',
             tooltipDelay: '@',
