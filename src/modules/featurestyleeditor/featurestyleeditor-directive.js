@@ -31,6 +31,17 @@ angular.module('anol.featurestyleeditor')
         return style;
     };
 
+    var purgeStyle = function(_style) {
+        var style = {};
+        angular.forEach(_style, function(value, key) {
+            if(value === undefined || value === '') {
+                return;
+            }
+            style[key] = value;
+        });
+        return style;
+    };
+
     return {
         restrict: 'A',
         scope: {
@@ -52,8 +63,15 @@ angular.module('anol.featurestyleeditor')
                         feature.get('style') || {}
                     );
                     scope.geometryType = feature.getGeometry().getType();
-                    styleWatcher = scope.$watchCollection('style', function(style) {
-                        feature.set('style', style);
+                    styleWatcher = scope.$watchCollection('style', function(_style) {
+                        var style = purgeStyle(_style);
+                        if(!angular.equals(style, feature.get('style'))) {
+                            if(angular.equals(style, {})) {
+                                feature.unset('style');
+                            } else {
+                                feature.set('style', style);
+                            }
+                        }
                     });
                 }
             });
