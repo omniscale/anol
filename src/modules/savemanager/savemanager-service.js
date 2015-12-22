@@ -77,7 +77,7 @@ angular.module('anol.savemanager')
         _saveUrl = saveUrl;
     };
 
-    this.$get = ['$rootScope', '$q', '$http', '$timeout', function($rootScope, $q, $http, $timeout) {
+    this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', function($rootScope, $q, $http, $timeout, $translate) {
         /**
          * @ngdoc service
          * @name anol.savemanager.SaveManagerService
@@ -86,9 +86,19 @@ angular.module('anol.savemanager')
          * Collects changes in saveable layers and send them to given saveUrl
          */
         var SaveManager = function(saveUrl) {
+            var self = this;
             this.saveUrl = saveUrl;
             this.changedLayers = {};
             this.changedFeatures = {};
+
+            var translate = function() {
+                $translate('anol.savemanager.SERVICE_UNAVAILABLE').then(
+                    function(translation) {
+                    self.serviceUnavailableMessage = translation;
+                });
+            };
+            $rootScope.$on('$translateChangeSuccess', translate);
+            translate();
         };
         /**
          * @ngdoc method
@@ -185,11 +195,15 @@ angular.module('anol.savemanager')
                     )
                 };
                 var promise = $http.post(self.saveUrl, data);
-                promise.then(function() {
+                promise.then(function(response) {
                     self.changesDone(layer.name);
-                    deferred.resolve();
-                }, function(reason) {
-                    deferred.reject(reason);
+                    deferred.resolve(response.data);
+                }, function(response) {
+                    if(response.status === -1) {
+                        deferred.reject({'message': self.serviceUnavailableMessage});
+                    } else {
+                        deferred.reject(response.data);
+                    }
                 });
             } else {
                 deferred.reject('No changes for layer ' + layer.name + ' present');

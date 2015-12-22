@@ -85,6 +85,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'DOWNLOAD': 'Download it',
                 'ERROR': 'Sorry! An error occured.\nPleace try again later.'
             },
+            'savemanager': {
+                'SERVICE_UNAVAILABLE': 'Service unavailable'
+            },
             'zoom': {
                 'TOOLTIP_ZOOM_IN': 'Zoom in',
                 'TOOLTIP_ZOOM_OUT': 'Zoom out'
