@@ -53,6 +53,9 @@ angular.module('anol.featurestyleeditor')
         },
         link: function(scope, element, attrs) {
             var styleWatcher;
+            // stores last feature style to compare
+            // feature.get('style') contains only string values, but lastStyle contains right type for each property
+            var lastStyle;
             scope.$watch('feature', function(feature) {
                 if(styleWatcher !== undefined) {
                     styleWatcher();
@@ -62,15 +65,17 @@ angular.module('anol.featurestyleeditor')
                     scope.style = prepareStyleProperties(
                         feature.get('style') || {}
                     );
+                    lastStyle = angular.copy(scope.style);
                     scope.geometryType = feature.getGeometry().getType();
                     styleWatcher = scope.$watchCollection('style', function(_style) {
                         var style = purgeStyle(_style);
-                        if(!angular.equals(style, feature.get('style'))) {
+                        if(!angular.equals(style, lastStyle)) {
                             if(angular.equals(style, {})) {
                                 feature.unset('style');
                             } else {
                                 feature.set('style', style);
                             }
+                            lastStyle = angular.copy(style);
                         }
                     });
                 }
