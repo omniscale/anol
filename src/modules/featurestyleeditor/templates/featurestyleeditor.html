@@ -1,1 +1,67 @@
-<ng-transclude></ng-transclude>
+<div class="form-horizontal">
+  <div ng-switch on="geometryType">
+    <div ng-switch-when="Point">
+      <div ng-include="'point-style-inputs.html'"></div>
+      <div ng-include="'stroke-style-inputs.html'"></div>
+      <div ng-include="'fill-style-inputs.html'"></div>
+    </div>
+    <div ng-switch-when="LineString">
+      <div ng-include="'stroke-style-inputs.html'"></div>
+    </div>
+    <div ng-switch-when="Polygon">
+      <div ng-include="'stroke-style-inputs.html'"></div>
+      <div ng-include="'fill-style-inputs.html'"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="point-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.RADIUS' | translate }}</label>
+    <div class="col-sm-7">
+      <input type="number" class="form-control input-sm" ng-model="style.radius" />
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="stroke-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.LINE_COLOR' | translate }}</label>
+    <div class="col-sm-7">
+      <input class="form-control input-sm" ng-model="style.strokeColor" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.LINE_WIDTH' | translate }}</label>
+    <div class="col-sm-7">
+      <input type="number" class="form-control input-sm" ng-model="style.strokeWidth" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.LINE_OPACITY' | translate }}</label>
+    <div class="col-sm-7">
+      <input type="number" class="form-control input-sm" ng-model="style.strokeOpacity" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.LINE_DASHSTYLE' | translate }}</label>
+    <div class="col-sm-7">
+      <select class="form-control input-sm" ng-model="style.strokeDashstyle" ng-options="dashStyle.value as dashStyle.label for dashStyle in strokeDashStyles"></select>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="fill-style-inputs.html">
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.FILL_COLOR' | translate }}</label>
+    <div class="col-sm-7">
+      <input class="form-control input-sm" ng-model="style.fillColor" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-sm-5">{{ 'anol.featurestyleeditor.FILL_OPACITY' | translate }}</label>
+    <div class="col-sm-7">
+      <input type="number" class="form-control input-sm" ng-model="style.fillOpacity" />
+    </div>
+  </div>
+</script>
