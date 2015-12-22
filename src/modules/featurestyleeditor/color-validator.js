@@ -7,7 +7,7 @@ angular.module('anol.featurestyleeditor')
         link: function(scope, elem, attrs, ctrl) {
             ctrl.$validators.color = function(modelValue, viewValue) {
                 if(ctrl.$isEmpty(modelValue)) {
-                    return false;
+                    return true;
                 }
                 if(ctrl.$isEmpty(viewValue)) {
                     return false;
