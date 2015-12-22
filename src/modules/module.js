@@ -34,16 +34,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'LAYER_TITLE': 'Draw layer'
             },
             'featurepropertieseditor': {
-                'TITLE': 'Edit feature properties',
-                'NEW': 'New property',
-                'ADD': 'Add',
-                'OK': 'OK',
-                'CANCEL': 'Cancel'
+                'NEW': 'New property'
             },
             'featurestyleeditor': {
-                'TITLE': 'Edit feature style',
-                'OK': 'OK',
-                'CANCEL': 'Cancel',
                 'RADIUS': 'Radius',
                 'LINE_COLOR': 'Line color',
                 'LINE_WIDTH': 'Line width',
@@ -95,6 +88,12 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
             'zoom': {
                 'TOOLTIP_ZOOM_IN': 'Zoom in',
                 'TOOLTIP_ZOOM_OUT': 'Zoom out'
+            },
+            'validationErrors': {
+                'min': 'Value must be greater than {{ min }}',
+                'max': 'Value must be lower than {{ max }}',
+                'color': 'Invalid color format',
+                'number': 'Value is not a number'
             }
         }
     });
