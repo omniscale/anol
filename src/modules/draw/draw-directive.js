@@ -94,7 +94,10 @@ angular.module('anol.draw')
                 var modifyInteraction = new ol.interaction.Modify({
                     features: selectInteraction.getFeatures()
                 });
-                return [selectInteraction, modifyInteraction];
+                var snapInteraction = new ol.interaction.Snap({
+                    source: layer.getSource()
+                });
+                return [selectInteraction, modifyInteraction, snapInteraction];
             };
 
             var createDrawControl = function(controlElement, controlTarget) {
