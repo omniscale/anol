@@ -80,7 +80,7 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         var geometryType = feature.getGeometry().getType();
         var geojsonStyle = feature.get('style');
 
-        if(geojsonStyle === undefined) {
+        if(geojsonStyle === undefined || geojsonStyle === {}) {
             return defaultStyle;
         }
         if(geometryType === 'Point') {
