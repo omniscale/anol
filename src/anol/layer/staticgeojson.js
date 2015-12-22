@@ -158,7 +158,7 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         return iconStyle;
     },
     createFillStyle: function(style, defaultFillStyle) {
-        var color = ol.color.asArray(defaultFillStyle.getColor());
+        var color = ol.color.asArray(defaultFillStyle.getColor()).slice();
         if (style.fillColor !== undefined) {
             var fillColor = ol.color.asArray(style.fillColor);
             color[0] = fillColor[0];
@@ -173,7 +173,7 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         });
     },
     createStrokeStyle: function(style, defaultStrokeStyle) {
-        var color = ol.color.asArray(defaultStrokeStyle.getColor());
+        var color = ol.color.asArray(defaultStrokeStyle.getColor()).slice();
         var strokeWidth = defaultStrokeStyle.getWidth();
         var strokeDashstyle = defaultStrokeStyle.getLineDash();
 
