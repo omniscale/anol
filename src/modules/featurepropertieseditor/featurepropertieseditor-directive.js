@@ -4,85 +4,91 @@ angular.module('anol.featurepropertieseditor')
  * @name anol.featurepropertieseditor.directive:anolFeaturePropertiesEditor
  *
  * @restrict A
- * @requires $modal
  *
  * @param {string} templateUrl Url to template to use instead of default one
- * @param {string} modalTemplateUrl Url to modal template to use instead of default one
+ * @param {ol.Feature} anolFeaturePropertiesEditor Feature to edit
  *
  * @description
- * Shows a modal for editing feature properties
+ * Shows a form for editing feature properties
  */
-.directive('anolFeaturePropertiesEditor', ['$modal', function($modal) {
+.directive('anolFeaturePropertiesEditor', [function() {
     return {
         restrict: 'A',
         scope: {
-            modalTemplateUrl: '@'
+            feature: '=anolFeaturePropertiesEditor'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        transclude: true,
-        link: {
-            pre: function(scope, element, attrs) {
-                scope.openEditor = function() {
-                    var defaultModalUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor-modal.html';
-                    var modalInstance = $modal.open({
-                        templateUrl: scope.modalTemplateUrl || defaultModalUrl,
-                        controller: 'FeaturePropertiesEditorModalController',
-                        resolve: {
-                            properties: function () {
-                                return scope.feature.getProperties();
-                            }
-                        }
-                    });
-                    modalInstance.result.then(function(properties) {
-                        angular.forEach(properties, function(value, key) {
-                            scope.feature.set(key, value);
-                        });
-                        scope.feature = undefined;
-                    });
-                };
-            },
-            post: function(scope, element, attrs) {
-            }
-        },
-        controller: function($scope, $element, $attrs) {
-            this.editFeature = function(feature) {
-                $scope.feature = feature;
-                $scope.openEditor();
-            };
-        }
-    };
-}])
-/**
- * @ngdoc controller
- * @name anol.featurepropertieseditor.controller:anolFeaturePropertiesEditorModalController
- *
- * @restrict A
- * @requires $scope
- * @requires $modalInstance
- * @requiresd properties
- *
- * @description
- * Controller for properties editor modal
- */
-.controller('FeaturePropertiesEditorModalController', ['$scope', '$modalInstance', 'properties', function($scope, $modalInstance, properties) {
-    delete properties.geometry;
-    delete properties.style;
-    $scope.properties = properties;
+        link: function(scope, element, attrs) {
+            scope.properties = {};
+            var propertyWatchers = [];
 
-    $scope.ok = function () {
-        $modalInstance.close($scope.properties);
-    };
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
-    $scope.addProperty = function() {
-        $scope.properties[$scope.newKey] = undefined;
-        $scope.newKey = undefined;
-    };
-    $scope.removeProperty = function(key) {
-        delete $scope.properties[key];
+            var ignoreProperty = function(key) {
+                if(key === 'geometry') {
+                    return true;
+                }
+                if(key === 'style') {
+                    return true;
+                }
+                if(key.startsWith('_')) {
+                    return true;
+                }
+                return false;
+            };
+
+            var registerPropertyWatcher = function(key) {
+                var watcher = scope.$watch(function() {
+                    return scope.properties[key];
+                }, function(n) {
+                    if(n === undefined) {
+                        scope.feature.unset(key);
+                    } else if(n !== scope.feature.get(key)) {
+                        scope.feature.set(key, n);
+                    }
+                });
+                propertyWatchers.push(watcher);
+            };
+
+            var clearPropertyWatchers = function() {
+                while(propertyWatchers.length > 0) {
+                    var dewatch = propertyWatchers.pop();
+                    dewatch();
+                }
+            };
+
+            scope.propertiesNames = function() {
+                var result = [];
+                angular.forEach(scope.properties, function(value, key) {
+                    if(ignoreProperty(key)) {
+                        return;
+                    }
+                    result.push(key);
+                });
+                return result;
+            };
+
+            scope.addProperty = function() {
+                if(scope.newKey) {
+                    scope.properties[scope.newKey] = '';
+                    scope.feature.set(scope.newKey, '');
+                    scope.newKey = '';
+                }
+            };
+            scope.removeProperty = function(key) {
+                delete scope.properties[key];
+                scope.feature.unset(key);
+            };
+
+            scope.$watch('feature', function(feature) {
+                clearPropertyWatchers();
+                scope.properties = {};
+                if(feature !== undefined) {
+                    scope.properties = feature.getProperties();
+                    angular.forEach(scope.propertiesNames(), registerPropertyWatcher);
+                }
+            });
+        }
     };
 }]);

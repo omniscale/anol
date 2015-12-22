@@ -1,1 +1,26 @@
-<ng-transclude></ng-transclude>
+<div class="form-horizontal">
+  <div ng-repeat="key in propertiesNames(properties)" class="form-group">
+    <label class="control-label col-sm-3" for="input-{{key}}">{{ key }}</label>
+    <div class="col-sm-7">
+      <input class="form-control input-sm" ng-model="properties[key]" id="input-{{key}}"/>
+    </div>
+    <div class="col-sm-2">
+      <button type="button" class="btn btn-danger btn-sm" ng-click="removeProperty(key)">
+        <span class="glyphicon glyphicon-remove"</span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="form-horizontal">
+  <div class="form-group">
+    <label>{{ 'anol.featurepropertieseditor.NEW_PROPERTY' | translate }}</label>
+    <div class="input-group">
+      <input class="form-control input-sm" ng-model="newKey" />
+      <span class="input-group-addon pointer" ng-click="addProperty()">
+        <span class="glyphicon glyphicon-plus"></span>
+      </span>
+    </div>
+  </div>
+</div>
+<button type="button" class="btn btn-primary" ng-click="apply()">{{ 'anol.featurepropertieseditor.APPLY' | translate }}</button>
+<button type="button" class="btn btn-danger" ng-click="reset()">{{ 'anol.featurepropertieseditor.RESET' | translate }}</button>
