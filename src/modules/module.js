@@ -34,7 +34,7 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'LAYER_TITLE': 'Draw layer'
             },
             'featurepropertieseditor': {
-                'NEW': 'New property'
+                'NEW_PROPERTY': 'New property'
             },
             'featurestyleeditor': {
                 'RADIUS': 'Radius',
