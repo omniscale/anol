@@ -25,7 +25,7 @@ angular.module('anol.map')
                     .attr('id', scope.mapName)
                     .addClass(scope.mapName);
 
-                scope.map.setTarget(scope.mapName);
+                scope.map.setTarget(document.getElementById(scope.mapName));
             },
             post: function(scope, element, attrs) {
                 $timeout(function() {
