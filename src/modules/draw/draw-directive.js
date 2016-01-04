@@ -188,22 +188,22 @@ angular.module('anol.draw')
             });
 
             drawPointControl = createDrawControl(
-                element.find('.anol-draw-point'),
+                element.find('.draw-point'),
                 element
             );
 
             drawLineControl = createDrawControl(
-                element.find('.anol-draw-line'),
+                element.find('.draw-line'),
                 element
             );
 
             drawPolygonControl = createDrawControl(
-                element.find('.anol-draw-polygon'),
+                element.find('.draw-polygon'),
                 element
             );
 
             modifyControl = createModifyControl(
-                element.find('.anol-draw-modify'),
+                element.find('.draw-modify'),
                 element
             );
 
