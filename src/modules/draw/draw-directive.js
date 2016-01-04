@@ -57,6 +57,10 @@ angular.module('anol.draw')
             var selectedFeature;
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
 
+            // disabled by default. Will be enabled, when feature selected
+            var removeButtonElement = element.find('.draw-remove');
+            removeButtonElement.addClass('disabled');
+
             var createDrawInteractions = function(drawType, source) {
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
@@ -87,8 +91,10 @@ angular.module('anol.draw')
                 selectInteraction.on('select', function(evt) {
                     if(evt.selected.length === 0) {
                         selectedFeature = undefined;
+                        removeButtonElement.addClass('disabled');
                     } else {
                         selectedFeature = evt.selected[0];
+                        removeButtonElement.removeClass('disabled');
                     }
                 });
                 var modifyInteraction = new ol.interaction.Modify({
@@ -104,7 +110,8 @@ angular.module('anol.draw')
                 var drawControl = new anol.control.Control({
                     element: controlElement,
                     target: controlTarget,
-                    exclusive: true
+                    exclusive: true,
+                    disabled: true
                 });
                 drawControl.onDeactivate(deactivate, scope);
                 drawControl.onActivate(activate, scope);
@@ -115,7 +122,8 @@ angular.module('anol.draw')
                 var _modifyControl = new anol.control.Control({
                     element: controlElement,
                     target: controlTarget,
-                    exclusive: true
+                    exclusive: true,
+                    disabled: true
                 });
                 _modifyControl.onDeactivate(deactivate);
                 _modifyControl.onActivate(activate);
@@ -139,6 +147,9 @@ angular.module('anol.draw')
 
             // Button binds
             scope.drawPoint = function() {
+                if(drawPointControl.disabled === true) {
+                    return;
+                }
                 if(drawPointControl.active) {
                     drawPointControl.deactivate();
                 } else {
@@ -147,6 +158,9 @@ angular.module('anol.draw')
             };
 
             scope.drawLine = function() {
+                if(drawLineControl.disabled === true) {
+                    return;
+                }
                 if(drawLineControl.active) {
                     drawLineControl.deactivate();
                 } else {
@@ -155,6 +169,9 @@ angular.module('anol.draw')
             };
 
             scope.drawPolygon = function() {
+                if(drawPolygonControl.disabled === true) {
+                    return;
+                }
                 if(drawPolygonControl.active) {
                     drawPolygonControl.deactivate();
                 } else {
@@ -163,6 +180,9 @@ angular.module('anol.draw')
             };
 
             scope.modify = function() {
+                if(modifyControl.disabled === true) {
+                    return;
+                }
                 if(modifyControl.active) {
                     modifyControl.deactivate();
                 } else {
@@ -175,6 +195,7 @@ angular.module('anol.draw')
                     activeLayer.olLayer.getSource().removeFeature(selectedFeature);
                     modifyControl.interactions[0].getFeatures().clear();
                     selectedFeature = undefined;
+                    removeButtonElement.addClass('disabled');
                 }
             };
 
@@ -221,9 +242,13 @@ angular.module('anol.draw')
 
             var bindActiveLayer = function(layer) {
                 drawPointControl.interactions = createDrawInteractions('Point', layer.olLayer.getSource());
+                drawPointControl.enable();
                 drawLineControl.interactions = createDrawInteractions('LineString', layer.olLayer.getSource());
+                drawLineControl.enable();
                 drawPolygonControl.interactions = createDrawInteractions('Polygon', layer.olLayer.getSource());
+                drawPolygonControl.enable();
                 modifyControl.interactions = createModifyInteractions(layer.olLayer);
+                modifyControl.enable();
 
                 angular.forEach(allInteractions(), function(interaction) {
                     interaction.setActive(false);
@@ -240,9 +265,13 @@ angular.module('anol.draw')
                 });
 
                 drawPointControl.interactions = [];
+                drawPointControl.disable();
                 drawLineControl.interactions = [];
+                drawLineControl.disable();
                 drawPolygonControl.interactions = [];
+                drawPolygonControl.disable();
                 modifyControl.interactions = [];
+                modifyControl.disable();
 
                 activeLayer = undefined;
             };

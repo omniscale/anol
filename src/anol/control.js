@@ -22,6 +22,7 @@ anol.control.Control = function(options) {
     }
 
     this.active = options.active || false;
+    this.disabled = options.disabled || false;
     this.exclusive = options.exclusive || false;
     this.subordinate = options.subordinate || false;
     this.element = options.element;
@@ -31,6 +32,9 @@ anol.control.Control = function(options) {
         var controlElement;
         if(this.element !== undefined) {
             controlElement = this.element[0];
+            if(this.disabled) {
+                this.element.addClass('disabled');
+            }
         }
         var target;
         if(options.target !== undefined) {
@@ -50,6 +54,9 @@ anol.control.Control.prototype = {
     CLASS_NAME: 'anol.control.Control',
     DEFAULT_OPTIONS: {},
     activate: function() {
+        if(this.active === true) {
+            return;
+        }
         this.active = true;
         this.element.addClass('active');
         $(this).triggerHandler('anol.control.activate');
@@ -67,6 +74,9 @@ anol.control.Control.prototype = {
         });
     },
     deactivate: function() {
+        if(this.active === false) {
+            return;
+        }
         this.active = false;
         this.element.removeClass('active');
         $(this).triggerHandler('anol.control.deactivate');
@@ -82,5 +92,14 @@ anol.control.Control.prototype = {
         $(this).one('anol.control.deactivate', function() {
             func(targetControl, context);
         });
+    },
+    disable: function() {
+        this.deactivate();
+        this.disabled = true;
+        this.element.addClass('disabled');
+    },
+    enable: function() {
+        this.disabled = false;
+        this.element.removeClass('disabled');
     }
 };
