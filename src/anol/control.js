@@ -32,9 +32,6 @@ anol.control.Control = function(options) {
         var controlElement;
         if(this.element !== undefined) {
             controlElement = this.element[0];
-            if(this.disabled) {
-                this.element.addClass('disabled');
-            }
         }
         var target;
         if(options.target !== undefined) {
@@ -48,6 +45,10 @@ anol.control.Control = function(options) {
     } else {
         this.olControl = options.olControl;
     }
+
+    if(this.disabled) {
+        this.addClass('disabled');
+    }
 };
 
 anol.control.Control.prototype = {
@@ -58,7 +59,7 @@ anol.control.Control.prototype = {
             return;
         }
         this.active = true;
-        this.element.addClass('active');
+        this.addClass('active');
         $(this).triggerHandler('anol.control.activate');
     },
     onActivate: function(func, context) {
@@ -78,7 +79,7 @@ anol.control.Control.prototype = {
             return;
         }
         this.active = false;
-        this.element.removeClass('active');
+        this.removeClass('active');
         $(this).triggerHandler('anol.control.deactivate');
     },
     onDeactivate: function(func, context) {
@@ -96,10 +97,20 @@ anol.control.Control.prototype = {
     disable: function() {
         this.deactivate();
         this.disabled = true;
-        this.element.addClass('disabled');
+        this.addClass('disabled');
     },
     enable: function() {
         this.disabled = false;
-        this.element.removeClass('disabled');
+        this.removeClass('disabled');
+    },
+    addClass: function(className) {
+        if(this.element !== undefined) {
+            this.element.addClass(className);
+        }
+    },
+    removeClass: function(className) {
+        if(this.element !== undefined) {
+            this.element.removeClass(className);
+        }
     }
 };
