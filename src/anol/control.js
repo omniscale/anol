@@ -51,6 +51,7 @@ anol.control.Control.prototype = {
     DEFAULT_OPTIONS: {},
     activate: function() {
         this.active = true;
+        this.element.addClass('active');
         $(this).triggerHandler('anol.control.activate');
     },
     onActivate: function(func, context) {
@@ -67,6 +68,7 @@ anol.control.Control.prototype = {
     },
     deactivate: function() {
         this.active = false;
+        this.element.removeClass('active');
         $(this).triggerHandler('anol.control.deactivate');
     },
     onDeactivate: function(func, context) {

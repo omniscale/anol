@@ -204,26 +204,33 @@ canvas.anol-legend-item-image
   top: 7px
   left: 40px
 
-  .draw-point
-    &:before
-      content: 'P'
+  .draw-button
+    background-color: rgba(0, 60, 136, 0.5)
+    &:focus
+      background-color: rgba(0, 60, 136, 0.5)
 
-  .draw-line
-    &:before
-      content: 'L'
+    &.active
+      background-color: rgba(0, 100, 240, 0.5)
 
+    &.draw-point
+      &:before
+        content: 'P'
 
-  .draw-polygon
-    &:before
-      content: 'A'
+    &.draw-line
+      &:before
+        content: 'L'
 
-  .draw-modify
-    &:before
-      content: 'E'
+    &.draw-polygon
+      &:before
+        content: 'A'
 
-  .draw-remove
-    &:before
-      content: 'R'
+    &.draw-modify
+      &:before
+        content: 'E'
+
+    &.draw-remove
+      &:before
+        content: 'R'
 
 /**
  * anol-overview-map
