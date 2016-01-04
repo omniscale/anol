@@ -1,3 +1,16 @@
+.ol-control
+  button, button:focus
+    background-color: rgba(0, 60, 136, 0.5)
+
+    &:hover
+      background-color: rgba(0, 60, 136, 0.7)
+
+    &.disabled
+      background-color: rgba(60, 60, 60, 0.5)
+
+    &.active
+      background-color: rgba(0, 60, 136, 0.9)
+
 /**
  * anol-layerswitcher
  */
@@ -205,15 +218,6 @@ canvas.anol-legend-item-image
   left: 40px
 
   .draw-button
-    background-color: rgba(0, 60, 136, 0.5)
-    &:focus
-      background-color: rgba(0, 60, 136, 0.5)
-
-    &.active
-      background-color: rgba(0, 100, 240, 0.5)
-
-    &.disabled
-      background-color: rgba(60, 60, 60, 0.5)
 
     &.draw-point
       &:before
