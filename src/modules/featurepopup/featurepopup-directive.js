@@ -109,6 +109,25 @@ angular.module('anol.featurepopup')
                 });
             };
 
+            var changeCursor = function(evt) {
+                var pixel = scope.map.getEventPixel(evt.originalEvent);
+
+                var hit = scope.map.hasFeatureAtPixel(pixel, function(layer) {
+                    return scope.layers.indexOf(layer.get('anolLayer')) !== -1;
+                });
+
+                scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
+            };
+            var changeCursorEvtKey;
+
+            var bindCursorChange = function() {
+                if(scope.layers.length === 0 && changeCursorEvtKey !== undefined) {
+                    scope.map.unByKey(changeCursorEvtKey);
+                } else if(scope.layers.length !== 0) {
+                    changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
+                }
+            };
+
             var control = new anol.control.Control({
                 subordinate: true,
                 olControl: null
@@ -117,11 +136,13 @@ angular.module('anol.featurepopup')
                 angular.forEach(interactions, function(interaction) {
                     interaction.setActive(false);
                 });
+                scope.map.unByKey(changeCursorEvtKey);
             });
             control.onActivate(function() {
                 angular.forEach(interactions, function(interaction) {
                     interaction.setActive(true);
                 });
+                changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
             });
 
             recreateInteractions();
@@ -135,6 +156,7 @@ angular.module('anol.featurepopup')
             };
 
             scope.$watch('layers', recreateInteractions);
+            scope.$watch('layers', bindCursorChange);
             scope.$watch('popupVisible', function(visible) {
                 if(!visible) {
                     selectInteraction.getFeatures().clear();
