@@ -79,6 +79,7 @@ angular.module('anol.featurepropertieseditor')
                 if(scope.newKey) {
                     scope.properties[scope.newKey] = '';
                     scope.feature.set(scope.newKey, '');
+                    registerPropertyWatcher(scope.newKey);
                     scope.newKey = '';
                 }
             };
