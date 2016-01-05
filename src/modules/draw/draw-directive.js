@@ -206,6 +206,7 @@ angular.module('anol.draw')
                     return;
                 }
                 if(modifyControl.active) {
+                    modifyControl.interactions[0].getFeatures().clear();
                     modifyControl.deactivate();
                 } else {
                     modifyControl.activate();
