@@ -167,6 +167,17 @@ angular.module('anol.draw')
                 });
             };
 
+            var changeCursor = function(evt) {
+                var pixel = scope.map.getEventPixel(evt.originalEvent);
+
+                var hit = scope.map.hasFeatureAtPixel(pixel, function(layer) {
+                    return layer === activeLayer.olLayer;
+                });
+
+                scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
+            };
+            var changeCursorEventKey;
+
             // Button binds
             scope.drawPoint = function() {
                 if(drawPointControl.disabled === true) {
@@ -208,8 +219,12 @@ angular.module('anol.draw')
                 if(modifyControl.active) {
                     modifyControl.interactions[0].getFeatures().clear();
                     modifyControl.deactivate();
+                    if(changeCursorEventKey !== undefined) {
+                        scope.map.unByKey(changeCursorEventKey);
+                    }
                 } else {
                     modifyControl.activate();
+                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
                 }
             };
 
