@@ -121,9 +121,9 @@ angular.module('anol.featurepopup')
             var changeCursorEvtKey;
 
             var bindCursorChange = function() {
-                if(scope.layers.length === 0 && changeCursorEvtKey !== undefined) {
+                if((scope.layers === undefined || scope.layers.length === 0) && changeCursorEvtKey !== undefined) {
                     scope.map.unByKey(changeCursorEvtKey);
-                } else if(scope.layers.length !== 0) {
+                } else if(scope.layers !== undefined && scope.layers.length !== 0) {
                     changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
                 }
             };
