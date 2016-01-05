@@ -10,6 +10,7 @@ angular.module('anol.draw')
  * @requires anol.map.ControlsSerivce
  * @requries anol.map.DrawService
  *
+ * @param {boolean} continueDrawing Don't deactivate drawing after feature is added
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
@@ -20,18 +21,18 @@ angular.module('anol.draw')
  * @description
  * Provides controls to draw points, lines and polygons, modify and remove them
  */
-.directive('anolDraw', ['$compile', '$rootScope', '$translate', 'ControlsService', 'MapService', 'DrawService',
-    function($compile, $rootScope, $translate, ControlsService, MapService, DrawService) {
+.directive('anolDraw', ['$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'MapService', 'DrawService',
+    function($compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
     return {
         restrict: 'A',
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
+            continueDrawing: '@',
             tooltipDelay: '@',
             tooltipEnable: '@',
             pointTooltipPlacement: '@',
             lineTooltipPlacement: '@',
-            polygonTooltipPlacement: '@',
-
+            polygonTooltipPlacement: '@'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/draw/templates/draw.html';
@@ -42,6 +43,8 @@ angular.module('anol.draw')
             var AnolFeatureStyleEditor = controllers[1];
 
             // attribute defaults
+            scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
+                scope.continueDrawing : false;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
                 scope.tooltipEnable : !ol.has.TOUCH;
             scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
@@ -61,14 +64,22 @@ angular.module('anol.draw')
             var removeButtonElement = element.find('.draw-remove');
             removeButtonElement.addClass('disabled');
 
-            var createDrawInteractions = function(drawType, source) {
+            var createDrawInteractions = function(drawType, source, control) {
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
                     source: source,
                     type: drawType
                 });
 
+                if(scope.continueDrawing === false) {
+                    draw.on('drawend', function() {
+                        // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
+                        $timeout(function() { control.deactivate(); }, 275);
+                    });
+                }
+
                 // TODO how to use both?
+                // TODO check if we can remove this!
                 if(angular.isObject(AnolFeaturePropertiesEditor)) {
                     draw.on('drawend', function(evt) {
                         var feature = evt.feature;
@@ -241,11 +252,11 @@ angular.module('anol.draw')
             };
 
             var bindActiveLayer = function(layer) {
-                drawPointControl.interactions = createDrawInteractions('Point', layer.olLayer.getSource());
+                drawPointControl.interactions = createDrawInteractions('Point', layer.olLayer.getSource(), drawPointControl);
                 drawPointControl.enable();
-                drawLineControl.interactions = createDrawInteractions('LineString', layer.olLayer.getSource());
+                drawLineControl.interactions = createDrawInteractions('LineString', layer.olLayer.getSource(), drawLineControl);
                 drawLineControl.enable();
-                drawPolygonControl.interactions = createDrawInteractions('Polygon', layer.olLayer.getSource());
+                drawPolygonControl.interactions = createDrawInteractions('Polygon', layer.olLayer.getSource(), drawPolygonControl);
                 drawPolygonControl.enable();
                 modifyControl.interactions = createModifyInteractions(layer.olLayer);
                 modifyControl.enable();
