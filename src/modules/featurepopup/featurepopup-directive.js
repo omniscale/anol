@@ -160,6 +160,8 @@ angular.module('anol.featurepopup')
             scope.$watch('popupVisible', function(visible) {
                 if(!visible) {
                     selectInteraction.getFeatures().clear();
+                    scope.layer = undefined;
+                    scope.feature = undefined;
                 }
             });
         }
