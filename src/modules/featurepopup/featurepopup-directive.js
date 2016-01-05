@@ -137,6 +137,7 @@ angular.module('anol.featurepopup')
                     interaction.setActive(false);
                 });
                 scope.map.unByKey(changeCursorEvtKey);
+                scope.map.getTarget().style.cursor = '';
             });
             control.onActivate(function() {
                 angular.forEach(interactions, function(interaction) {
