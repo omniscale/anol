@@ -11,6 +11,7 @@ angular.module('anol.draw')
  * @requries anol.map.DrawService
  *
  * @param {boolean} continueDrawing Don't deactivate drawing after feature is added
+ * @param {boolean} freeDrawing Deactivate snapped drawing
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
@@ -28,6 +29,7 @@ angular.module('anol.draw')
         require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
             continueDrawing: '@',
+            freeDrawing: '@',
             tooltipDelay: '@',
             tooltipEnable: '@',
             pointTooltipPlacement: '@',
@@ -45,6 +47,8 @@ angular.module('anol.draw')
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
                 scope.continueDrawing : false;
+            scope.freeDrawing = angular.isDefined(scope.freeDrawing) ?
+                scope.freeDrawing : false;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
                 scope.tooltipEnable : !ol.has.TOUCH;
             scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
@@ -64,7 +68,7 @@ angular.module('anol.draw')
             var removeButtonElement = element.find('.draw-remove');
             removeButtonElement.addClass('disabled');
 
-            var createDrawInteractions = function(drawType, source, control) {
+            var createDrawInteractions = function(drawType, source, control, layer) {
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
                     source: source,
@@ -91,7 +95,14 @@ angular.module('anol.draw')
                         AnolFeatureStyleEditor.editFeature(feature);
                     });
                 }
-                return [draw];
+                var interactions = [draw];
+                if(scope.freeDrawing !== false) {
+                    var snapInteraction = new ol.interaction.Snap({
+                        source: layer.getSource()
+                    });
+                    interactions.push(snapInteraction);
+                }
+                return interactions;
             };
 
             var createModifyInteractions = function(layer) {
@@ -252,11 +263,14 @@ angular.module('anol.draw')
             };
 
             var bindActiveLayer = function(layer) {
-                drawPointControl.interactions = createDrawInteractions('Point', layer.olLayer.getSource(), drawPointControl);
+                drawPointControl.interactions = createDrawInteractions(
+                    'Point', layer.olLayer.getSource(), drawPointControl, layer.olLayer);
                 drawPointControl.enable();
-                drawLineControl.interactions = createDrawInteractions('LineString', layer.olLayer.getSource(), drawLineControl);
+                drawLineControl.interactions = createDrawInteractions(
+                    'LineString', layer.olLayer.getSource(), drawLineControl, layer.olLayer);
                 drawLineControl.enable();
-                drawPolygonControl.interactions = createDrawInteractions('Polygon', layer.olLayer.getSource(), drawPolygonControl);
+                drawPolygonControl.interactions = createDrawInteractions(
+                    'Polygon', layer.olLayer.getSource(), drawPolygonControl, layer.olLayer);
                 drawPolygonControl.enable();
                 modifyControl.interactions = createModifyInteractions(layer.olLayer);
                 modifyControl.enable();
