@@ -25,7 +25,7 @@ angular.module('anol.featurepropertieseditor')
         },
         link: function(scope, element, attrs) {
             scope.properties = {};
-            var propertyWatchers = [];
+            var propertyWatchers = {};
 
             var ignoreProperty = function(key) {
                 if(key === 'geometry') {
@@ -41,6 +41,9 @@ angular.module('anol.featurepropertieseditor')
             };
 
             var registerPropertyWatcher = function(key) {
+                if(ignoreProperty(key) || propertyWatchers[key] !== undefined) {
+                    return;
+                }
                 var watcher = scope.$watch(function() {
                     return scope.properties[key];
                 }, function(n) {
@@ -50,14 +53,14 @@ angular.module('anol.featurepropertieseditor')
                         scope.feature.set(key, n);
                     }
                 });
-                propertyWatchers.push(watcher);
+                propertyWatchers[key] = watcher;
             };
 
             var clearPropertyWatchers = function() {
-                while(propertyWatchers.length > 0) {
-                    var dewatch = propertyWatchers.pop();
+                angular.forEach(propertyWatchers, function(dewatch) {
                     dewatch();
-                }
+                });
+                propertyWatchers = {};
             };
 
             scope.propertiesNames = function() {
@@ -81,7 +84,6 @@ angular.module('anol.featurepropertieseditor')
                 if(scope.newKey) {
                     scope.properties[scope.newKey] = '';
                     scope.feature.set(scope.newKey, '');
-                    registerPropertyWatcher(scope.newKey);
                     scope.newKey = '';
                 }
             };
@@ -95,8 +97,12 @@ angular.module('anol.featurepropertieseditor')
                 scope.properties = {};
                 if(feature !== undefined) {
                     scope.properties = feature.getProperties();
-                    angular.forEach(scope.propertiesNames(), registerPropertyWatcher);
                 }
+            });
+            scope.$watchCollection('properties', function(properties) {
+                angular.forEach(properties, function(value, key) {
+                    registerPropertyWatcher(key);
+                });
             });
         }
     };
