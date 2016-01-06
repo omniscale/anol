@@ -52,6 +52,7 @@ anol.layer.Layer = function(options) {
     this.legend = options.legend || false;
     this.attribution = options.attribution || undefined;
     this.isVector = false;
+    this.options = options;
 
     this.olLayer = options.olLayer;
     if(!(this.olLayer instanceof ol.layer.Base)) {
