@@ -7,6 +7,7 @@ angular.module('anol.featurepropertieseditor')
  *
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {ol.Feature} anolFeaturePropertiesEditor Feature to edit
+ * @param {anol.layer.Feature} layer Layer of feature
  *
  * @description
  * Shows a form for editing feature properties
@@ -15,7 +16,8 @@ angular.module('anol.featurepropertieseditor')
     return {
         restrict: 'A',
         scope: {
-            feature: '=anolFeaturePropertiesEditor'
+            feature: '=anolFeaturePropertiesEditor',
+            layer: '='
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
