@@ -26,7 +26,6 @@ angular.module('anol.draw')
     function($compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
     return {
         restrict: 'A',
-        require: ['?^anolFeaturePropertiesEditor', '?^anolFeatureStyleEditor'],
         scope: {
             continueDrawing: '@',
             freeDrawing: '@',
@@ -40,10 +39,7 @@ angular.module('anol.draw')
             var defaultUrl = 'src/modules/draw/templates/draw.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        link: function(scope, element, attrs, controllers) {
-            var AnolFeaturePropertiesEditor = controllers[0];
-            var AnolFeatureStyleEditor = controllers[1];
-
+        link: function(scope, element, attrs) {
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
                 scope.continueDrawing : false;
@@ -82,19 +78,6 @@ angular.module('anol.draw')
                     });
                 }
 
-                // TODO how to use both?
-                // TODO check if we can remove this!
-                if(angular.isObject(AnolFeaturePropertiesEditor)) {
-                    draw.on('drawend', function(evt) {
-                        var feature = evt.feature;
-                        AnolFeaturePropertiesEditor.editFeature(feature);
-                    });
-                } else if (angular.isObject(AnolFeatureStyleEditor)) {
-                    draw.on('drawend', function(evt) {
-                        var feature = evt.feature;
-                        AnolFeatureStyleEditor.editFeature(feature);
-                    });
-                }
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
                     var snapInteraction = new ol.interaction.Snap({
