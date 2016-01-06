@@ -19,15 +19,15 @@
     <![endif]-->
   </head>
 
-  <body ng-app="example" ng-controller="DrawExampleController">
+  <body ng-app="example" ng-controller="ExampleController">
     <div class="container" style="width: 100%">
       <div class="row">
         <div class="col-md-4">
           <!-- map -->
           <div anol-map style="border: 1px solid black;">
             <div anol-zoom></div>
-            <div anol-feature-properties-editor>
-              <div anol-draw draw-layer='drawLayer'></div>
+            <div anol-feature-popup layers="popupLayers">
+              <div anol-feature-properties-editor="$parent.feature" style="width: 200px; margin: 15px;"></div>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
     <script type="text/javascript" src="../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.draw', 'anol.featurepropertieseditor', 'anol.zoom'])
+      angular.module('example', ['anol.featurepopup', 'anol.featurepropertieseditor', 'anol.zoom'])
       .config(['MapServiceProvider', 'LayersServiceProvider',
         function(MapServiceProvider, LayersServiceProvider) {
           MapServiceProvider.addView(new ol.View({
@@ -68,13 +68,23 @@
           });
           LayersServiceProvider.setLayers([wms]);
       }])
-      .controller('DrawExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
+      .controller('ExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
         var geojsonFormat = new ol.format.GeoJSON();
-        $scope.drawLayer = new anol.layer.Feature();
-        LayersService.addLayer($scope.drawLayer);
-        $scope.drawLayer.olLayer.getSource().on('change', function() {
-          $scope.features = geojsonFormat.writeFeaturesObject($scope.drawLayer.olLayer.getSource().getFeatures());
+        var featureLayer = new anol.layer.StaticGeoJSON({
+          name: 'feature_layer',
+          title: 'Feature Layer',
+          editable: true,
+          olLayer: {
+            source: {
+              url: 'data/example.geojson'
+            }
+          }
         });
+        LayersService.addLayer(featureLayer);
+        featureLayer.olLayer.getSource().on('change', function() {
+          $scope.features = geojsonFormat.writeFeaturesObject(featureLayer.olLayer.getSource().getFeatures());
+        });
+        $scope.popupLayers = [featureLayer];
       }]);
     </script>
   </body>
