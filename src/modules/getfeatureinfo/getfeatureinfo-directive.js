@@ -89,7 +89,6 @@ angular.module('anol.getfeatureinfo')
                             return;
                         }
 
-                        // TODO do not request each layer seperate
                         var params = layer.olLayer.getSource().getParams();
                         var queryLayers = params.layers || params.LAYERS;
                         queryLayers = queryLayers.split(',');
