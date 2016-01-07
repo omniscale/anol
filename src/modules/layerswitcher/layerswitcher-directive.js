@@ -19,7 +19,7 @@ angular.module('anol.layerswitcher')
  */
  // TODO handle add / remove layer
  // TODO handle edit layers title
-.directive('anolLayerswitcher', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
+.directive('anolLayerswitcher', ['LayersService', 'ControlsService', 'MapService', function(LayersService, ControlsService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -82,6 +82,17 @@ angular.module('anol.layerswitcher')
             $scope.isGroup = function(toTest) {
                 var result = toTest instanceof anol.layer.Group;
                 return result;
+            };
+            $scope.zoomToLayerExtent = function(layer) {
+                if(!layer instanceof anol.layer.Feature) {
+                    return;
+                }
+                var extent = layer.extent();
+                if(extent === false) {
+                    return;
+                }
+                var map = MapService.getMap();
+                map.getView().fit(extent, map.getSize());
             };
         }
     };
