@@ -265,6 +265,8 @@ angular.module('anol.draw')
                     .concat(modifyControl.interactions);
             };
 
+            var visibleDewatcher;
+
             var bindActiveLayer = function(layer) {
                 drawPointControl.interactions = createDrawInteractions(
                     'Point', layer.olLayer.getSource(), drawPointControl, layer.olLayer);
@@ -284,6 +286,14 @@ angular.module('anol.draw')
                 });
 
                 activeLayer = layer;
+
+                visibleDewatcher = scope.$watch(function() {
+                    return activeLayer.getVisible();
+                }, function(n) {
+                    if(n === false) {
+                        DrawService.changeLayer(undefined);
+                    }
+                });
             };
 
             var unbindActiveLayer = function() {
@@ -300,6 +310,10 @@ angular.module('anol.draw')
                 drawPolygonControl.interactions = [];
                 modifyControl.disable();
                 modifyControl.interactions = [];
+
+                if(visibleDewatcher !== undefined) {
+                    visibleDewatcher();
+                }
 
                 activeLayer = undefined;
             };
