@@ -200,14 +200,9 @@ angular.module('anol.draw')
                     return;
                 }
                 if(modifyControl.active) {
-                    modifyControl.interactions[0].getFeatures().clear();
                     modifyControl.deactivate();
-                    if(changeCursorEventKey !== undefined) {
-                        scope.map.unByKey(changeCursorEventKey);
-                    }
                 } else {
                     modifyControl.activate();
-                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
                 }
             };
 
@@ -216,7 +211,6 @@ angular.module('anol.draw')
                     activeLayer.olLayer.getSource().removeFeature(selectedFeature);
                     modifyControl.interactions[0].getFeatures().clear();
                     selectedFeature = undefined;
-                    removeButtonElement.addClass('disabled');
                 }
             };
 
@@ -248,6 +242,16 @@ angular.module('anol.draw')
                 element.find('.draw-modify'),
                 element
             );
+            modifyControl.onActivate(function() {
+                changeCursorEventKey = scope.map.on('pointermove', changeCursor);
+            });
+            modifyControl.onDeactivate(function(control) {
+                control.interactions[0].getFeatures().clear();
+                removeButtonElement.addClass('disabled');
+                if(changeCursorEventKey !== undefined) {
+                    scope.map.unByKey(changeCursorEventKey);
+                }
+            });
 
             ControlsService.addControls([
                 drawControl, drawPointControl, drawLineControl,
