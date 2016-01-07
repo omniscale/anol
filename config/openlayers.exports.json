@@ -36,6 +36,7 @@
     "ol.control.ZoomSlider#*",
     "ol.extent.containsCoordinate",
     "ol.extent.intersects",
+    "ol.extent.isEmpty",
     "ol.format.GeoJSON",
     "ol.format.GeoJSON#*",
     "ol.format.WMTSCapabilities",

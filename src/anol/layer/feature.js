@@ -33,5 +33,12 @@
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
-    CLASS_NAME: 'anol.layer.Feature'
+    CLASS_NAME: 'anol.layer.Feature',
+    extent: function() {
+        var extent = this.olLayer.getSource().getExtent();
+        if(ol.extent.isEmpty(extent)) {
+            return false;
+        }
+        return extent;
+    }
 });
