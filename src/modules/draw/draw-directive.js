@@ -288,14 +288,14 @@ angular.module('anol.draw')
                     scope.map.removeInteraction(interaction);
                 });
 
-                drawPointControl.interactions = [];
                 drawPointControl.disable();
-                drawLineControl.interactions = [];
+                drawPointControl.interactions = [];
                 drawLineControl.disable();
-                drawPolygonControl.interactions = [];
+                drawLineControl.interactions = [];
                 drawPolygonControl.disable();
-                modifyControl.interactions = [];
+                drawPolygonControl.interactions = [];
                 modifyControl.disable();
+                modifyControl.interactions = [];
 
                 activeLayer = undefined;
             };
