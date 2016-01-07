@@ -41,4 +41,6 @@ $.extend(anol.layer.Feature.prototype, {
         }
         return extent;
     }
+    // TODO add getProperties method including handling of hidden properties like style
+    // TODO add hasProperty method
 });

@@ -27,6 +27,7 @@ angular.module('anol.featurepropertieseditor')
             scope.properties = {};
             var propertyWatchers = {};
 
+            // TODO move into anol.layer.Feature
             var ignoreProperty = function(key) {
                 if(key === 'geometry') {
                     return true;
