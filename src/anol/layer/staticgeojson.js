@@ -49,7 +49,9 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         );
         // TODO load dataProjection from received GeoJSON
         srcOptions.format = new ol.format.GeoJSON({defaultDataProjection: srcOptions.dataProjection});
-        if(srcOptions.url !== undefined) {
+        // TODO rewrite when need loaded event otherwise remove.
+        // Keep in mind that ol.featureloader.loadFeaturesXhr is not flagged as stable or api in ol3.
+        /*if(srcOptions.url !== undefined) {
             srcOptions.loader = ol.featureloader.loadFeaturesXhr(
                 srcOptions.url,
                 srcOptions.format,
@@ -64,7 +66,7 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         } else {
             self.loaded = true;
             $(self).triggerHandler('anol.layer.loaded');
-        }
+        }*/
 
 
         return srcOptions;
