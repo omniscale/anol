@@ -119,12 +119,6 @@ angular.module('anol.map')
                 layers = _layer.layers;
             }
             angular.forEach(layers, function(layer) {
-                // TODO readd when need start $digest on layer loaded.
-                // "anol.layer.loaded" only rised by anol.layer.StaticGeoJSON after all features added to layer
-                // corresponds with todo in anol.layer.StaticGeoJSON._createSourceOptions
-                /* $(layer).on('anol.layer.loaded', function() {
-                    $rootScope.$digest();
-                });*/
                 self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
                 if(SaveManagerService !== undefined && layer.saveable === true) {

@@ -28,6 +28,7 @@
 
     anol.layer.Layer.call(this, options);
     this.isVector = true;
+    this.loaded = true;
     this.saveable = options.saveable || false;
     this.editable = options.editable || false;
 };

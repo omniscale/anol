@@ -25,8 +25,12 @@ anol.layer.StaticGeoJSON = function(_options) {
         _options
     );
 
-    this.loaded = false;
     anol.layer.Feature.call(this, options);
+    this.loaded = false;
+
+    this.olLayer.getSource().once('change', function() {
+        self.loaded = true;
+    });
 
     this.defaultStyle = this.olLayer.getStyle();
     this.olLayer.setStyle(function(feature) {
@@ -42,32 +46,13 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
      * - dataProjection
      */
     _createSourceOptions: function(srcOptions) {
-        var self = this;
         srcOptions = anol.layer.Feature.prototype._createSourceOptions(
             srcOptions
         );
         // TODO load dataProjection from received GeoJSON
-        srcOptions.format = new ol.format.GeoJSON({defaultDataProjection: srcOptions.dataProjection});
-        // TODO rewrite when need loaded event otherwise remove.
-        // Keep in mind that ol.featureloader.loadFeaturesXhr is not flagged as stable or api in ol3.
-        /*if(srcOptions.url !== undefined) {
-            srcOptions.loader = ol.featureloader.loadFeaturesXhr(
-                srcOptions.url,
-                srcOptions.format,
-                function(features) {
-                    // "this" in this context is the ol source
-                    this.addFeatures(features);
-                    self.loaded = true;
-                    $(self).triggerHandler('anol.layer.loaded');
-                }
-            );
-
-        } else {
-            self.loaded = true;
-            $(self).triggerHandler('anol.layer.loaded');
-        }*/
-
-
+        srcOptions.format = new ol.format.GeoJSON({
+            defaultDataProjection: srcOptions.dataProjection
+        });
         return srcOptions;
     },
     createStyle: function(feature, resolution) {
