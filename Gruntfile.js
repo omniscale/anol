@@ -84,6 +84,7 @@ module.exports = function(grunt) {
         ],
         dest: 'build/<%= pkg.name %>.min.js'
       },
+      // TODO find a way to concat bootstrap.css.map and anol.css.map also (including right paths)
       distCSS: {
         src: [
           'node_modules/bootstrap/dist/css/bootstrap.css',
@@ -104,6 +105,7 @@ module.exports = function(grunt) {
           'build/templates.js',
         ]
       },
+      // TODO remove when bootstrap.css.map and anol.css.map concated
       dist: {
         src: [
           'build/css/<%= pkg.name %>.css.map'
