@@ -83,6 +83,14 @@ module.exports = function(grunt) {
           'build/<%= pkg.name %>.ugly.js'
         ],
         dest: 'build/<%= pkg.name %>.min.js'
+      },
+      distCSS: {
+        src: [
+          'node_modules/bootstrap/dist/css/bootstrap.css',
+          'node_modules/openlayers/dist/ol.css',
+          'build/css/anol.css'
+        ],
+        dest: 'build/css/<%= pkg.name %>.css'
       }
     },
     clean: {
@@ -149,15 +157,6 @@ module.exports = function(grunt) {
       },
       full: {
         files: [
-          {
-            flatten: true,
-            expand: true,
-            src: [
-              'node_modules/bootstrap/dist/css/bootstrap.css',
-              'node_modules/openlayers/dist/ol.css'
-            ],
-            dest: 'build/css/'
-          },
           {
             flatten: true,
             expand: true,
@@ -348,6 +347,7 @@ module.exports = function(grunt) {
     'uglify',
     'build-ol3',
     'concat:dist',
+    'concat:distCSS',
     'clean:postbuild',
     'copy:full'
   ]);
