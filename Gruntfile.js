@@ -104,6 +104,11 @@ module.exports = function(grunt) {
           'build/templates.js',
         ]
       },
+      dist: {
+        src: [
+          'build/css/<%= pkg.name %>.css.map'
+        ]
+      },
       docs: {
         src: [ 'docs' ]
       },
@@ -349,6 +354,7 @@ module.exports = function(grunt) {
     'concat:dist',
     'concat:distCSS',
     'clean:postbuild',
+    'clean:dist',
     'copy:full'
   ]);
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
