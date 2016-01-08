@@ -25,14 +25,13 @@ anol.layer.StaticGeoJSON = function(_options) {
         _options
     );
 
-    this.defaultStyle = options.olLayer.style || ol.style.defaultStyleFunction;
-
-    options.olLayer.style = function(feature) {
-        return [self.createStyle(feature)];
-    };
-
     this.loaded = false;
     anol.layer.Feature.call(this, options);
+
+    this.defaultStyle = this.olLayer.getStyle();
+    this.olLayer.setStyle(function(feature) {
+        return [self.createStyle(feature)];
+    });
 };
 anol.layer.StaticGeoJSON.prototype = new anol.layer.Feature(false);
 $.extend(anol.layer.StaticGeoJSON.prototype, {
