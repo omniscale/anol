@@ -29,6 +29,7 @@
 
     anol.layer.Layer.call(this, options);
 
+    this.style = options.style || {};
     this.defaultStyle = this.olLayer.getStyle();
     this.olLayer.setStyle(function(feature) {
         return [self.createStyle(feature)];
@@ -58,9 +59,8 @@ $.extend(anol.layer.Feature.prototype, {
         }
 
         var geometryType = feature.getGeometry().getType();
-        var geojsonStyle = feature.get('style');
-
-        if(geojsonStyle === undefined || geojsonStyle === {}) {
+        var geojsonStyle = feature.get('style') || {};
+        if(geojsonStyle === {} && this.style === {}) {
             return defaultStyle;
         }
         if(geometryType === 'Point') {
@@ -76,8 +76,11 @@ $.extend(anol.layer.Feature.prototype, {
         }
     },
     createImageStyle: function(style, defaultImageStyle) {
-        var isCircle = style.radius !== undefined;
-        var isIcon = style.externalGraphic !== undefined;
+        var radius = style.radius || this.style.radius;
+        var externalGraphic = style.externalGraphic || this.style.externalGraphic;
+
+        var isCircle = radius !== undefined;
+        var isIcon = externalGraphic !== undefined;
         var isDefaultCircle = defaultImageStyle instanceof ol.style.Circle;
         var isDefaultIcon = defaultImageStyle instanceof ol.style.Icon;
 
@@ -96,8 +99,10 @@ $.extend(anol.layer.Feature.prototype, {
             defaultFillStyle = defaultCircleStyle.getFill();
         }
         var radius = defaultCircleStyle.getRadius();
-        if(style.radius !== undefined) {
-            radius = parseFloat(style.radius);
+
+        var _radius = style.radius || this.style.radius;
+        if(_radius !== undefined) {
+            radius = parseFloat(_radius);
         }
         return new ol.style.Circle({
             radius: radius,
@@ -111,27 +116,32 @@ $.extend(anol.layer.Feature.prototype, {
             defaultIconStyle = _defaultIconStyle;
         }
         var src = defaultIconStyle.getSrc();
-        if(style.externalGraphic !== undefined) {
-            src = style.externalGraphic;
+
+        var externalGraphic = style.externalGraphic || this.style.externalGraphic;
+        if(externalGraphic !== undefined) {
+            src = externalGraphic;
         }
         var rotation = defaultIconStyle.getRotation();
-        if(style.rotation !== undefined) {
-            rotation = parseFloat(style.rotation);
+        var _rotation = style.rotation || this.style.rotation;
+        if(_rotation !== undefined) {
+            rotation = parseFloat(_rotation);
         }
         var scale = defaultIconStyle.getScale();
-        if(style.scale !== undefined) {
-            scale = parseFloat(style.scale);
+        var _scale = style.scale || this.style.scale;
+        if(_scale !== undefined) {
+            scale = parseFloat(_scale);
         }
 
         var iconStyle = new ol.style.Icon(({
             src: src,
             rotation: rotation
         }));
-        if(scale === undefined && style.graphicWidth !== undefined) {
+        var graphicWidth = style.graphicWidth || this.style.graphicWidth;
+        if(scale === undefined && graphicWidth !== undefined) {
             // get original image size
             var size = iconStyle.getSize();
             if (size !== null) {
-                scale = parseInt(style.graphicWidth) / size[0];
+                scale = parseInt(graphicWidth) / size[0];
             }
         }
         iconStyle.setScale(scale);
@@ -139,14 +149,16 @@ $.extend(anol.layer.Feature.prototype, {
     },
     createFillStyle: function(style, defaultFillStyle) {
         var color = ol.color.asArray(defaultFillStyle.getColor()).slice();
-        if (style.fillColor !== undefined) {
-            var fillColor = ol.color.asArray(style.fillColor);
+        var fillColor = style.fillColor || this.style.fillColor;
+        if (fillColor !== undefined) {
+            fillColor = ol.color.asArray(fillColor);
             color[0] = fillColor[0];
             color[1] = fillColor[1];
             color[2] = fillColor[2];
         }
-        if(style.fillOpacity !== undefined) {
-            color[3] = parseFloat(style.fillOpacity);
+        var fillOpacity = style.fillOpacity || this.style.fillOpacity;
+        if(fillOpacity !== undefined) {
+            color[3] = parseFloat(fillOpacity);
         }
         return new ol.style.Fill({
             color: color
@@ -157,20 +169,24 @@ $.extend(anol.layer.Feature.prototype, {
         var strokeWidth = defaultStrokeStyle.getWidth();
         var strokeDashstyle = defaultStrokeStyle.getLineDash();
 
-        if(style.strokeColor !== undefined) {
-            var strokeColor = ol.color.asArray(style.strokeColor);
+        var strokeColor = style.strokeColor || this.style.strokeColor;
+        if(strokeColor !== undefined) {
+            strokeColor = ol.color.asArray(strokeColor);
             color[0] = strokeColor[0];
             color[1] = strokeColor[1];
             color[2] = strokeColor[2];
         }
-        if(style.strokeOpacity !== undefined) {
-            color[3] = parseFloat(style.strokeOpacity);
+        var strokeOpacity = style.strokeOpacity || this.style.strokeOpacity;
+        if(strokeOpacity !== undefined) {
+            color[3] = parseFloat(strokeOpacity);
         }
-        if(style.strokeWidth !== undefined) {
-            strokeWidth = parseFloat(style.strokeWidth);
+        var _strokeWidth = style.strokeWidth || this.style.strokeWidth;
+        if(_strokeWidth !== undefined) {
+            strokeWidth = parseFloat(_strokeWidth);
         }
-        if(style.strokeDashstyle !== undefined) {
-            strokeDashstyle = this.createDashStyle(strokeWidth, style.strokeDashstyle);
+        var _strokeDashstyle = style.strokeDashstyle || this.style.strokeDashstyle;
+        if(_strokeDashstyle !== undefined) {
+            strokeDashstyle = this.createDashStyle(strokeWidth, _strokeDashstyle);
         }
 
         return new ol.style.Stroke({
