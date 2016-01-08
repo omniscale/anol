@@ -79,7 +79,7 @@ module.exports = function(grunt) {
           'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
           'node_modules/angular-translate/dist/angular-translate.min.js',
           'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
-          'node_modules/openlayers/build/ol-custom.js',
+          'node_modules/openlayers/build/ol-custom.min.js',
           'build/<%= pkg.name %>.ugly.js'
         ],
         dest: 'build/<%= pkg.name %>.min.js'
