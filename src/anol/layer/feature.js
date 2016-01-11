@@ -84,9 +84,10 @@ $.extend(anol.layer.Feature.prototype, {
         var isDefaultCircle = defaultImageStyle instanceof ol.style.Circle;
         var isDefaultIcon = defaultImageStyle instanceof ol.style.Icon;
 
-        if(isCircle || !(isIcon && isDefaultCircle)) {
+
+        if(isCircle || (!isIcon && isDefaultCircle)) {
             return this.createCircleStyle(style, defaultImageStyle);
-        } else if (isIcon || !(isCircle && isDefaultIcon)) {
+        } else if (isIcon || (!isCircle && isDefaultIcon)) {
             return this.createIconStyle(style, defaultImageStyle);
         }
         return defaultImageStyle;
