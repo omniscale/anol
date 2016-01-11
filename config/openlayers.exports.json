@@ -43,6 +43,8 @@
     "ol.format.GeoJSON#*",
     "ol.format.WMTSCapabilities",
     "ol.format.WMTSCapabilities#*",
+    "ol.geom.Circle",
+    "ol.geom.Circle#*",
     "ol.geom.LineString",
     "ol.geom.LineString#*",
     "ol.geom.Point",
