@@ -1,0 +1,3 @@
+<div ng-if="propertiesCollection.length > 0" ng-repeat="properties in propertiesCollection">
+    <div ng-repeat="(key, value) in properties">{{ value.key }}: {{ value.value }}</div>
+</div>

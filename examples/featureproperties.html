@@ -19,12 +19,14 @@
     <![endif]-->
   </head>
 
-  <body ng-app="example">
+  <body ng-app="example" ng-controller="ExampleController">
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-zoom></div>
       <!-- popup -->
-      <div anol-feature-properties></div>
+      <div anol-feature-popup layers="popupLayers">
+        <div anol-feature-properties feature="$parent.feature" layer="$parent.layer"></div>
+      </div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -37,7 +39,7 @@
     <script type="text/javascript" src="../build/templates.js"></script>
 
     <script type="text/javascript">
-      angular.module('example', ['anol.featureproperties', 'anol.zoom'])
+      angular.module('example', ['anol.featurepopup', 'anol.featureproperties', 'anol.zoom'])
       .config(['$translateProvider', function($translateProvider) {
         $translateProvider.translations('en_US', {
           'featureproperties': {
@@ -50,12 +52,13 @@
           }
         });
       }])
-      .config(['MapServiceProvider', 'LayersServiceProvider',
-        function(MapServiceProvider, LayersServiceProvider) {
-          MapServiceProvider.addView(new ol.View({
-            center: [0, 0],
-            zoom: 18
-          }));
+      .config(['MapServiceProvider',function(MapServiceProvider) {
+        MapServiceProvider.addView(new ol.View({
+          center: [0, 0],
+          zoom: 18
+        }));
+      }])
+      .controller('ExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
 
           var feature = new ol.Feature({
             geometry: new ol.geom.Point([0, 0]),
@@ -87,7 +90,9 @@
             }
           });
 
-          LayersServiceProvider.setLayers([featureLayer]);
+          LayersService.addLayer(featureLayer);
+
+          $scope.popupLayers = [featureLayer];
       }]);
     </script>
   </body>
