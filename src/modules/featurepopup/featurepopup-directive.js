@@ -152,10 +152,6 @@ angular.module('anol.featurepopup')
 
             ControlsService.addControl(control);
 
-            scope.close = function() {
-                scope.popupVisible = false;
-            };
-
             scope.$watch('layers', recreateInteractions);
             scope.$watch('layers', bindCursorChange);
             scope.$watch('popupVisible', function(visible) {
@@ -165,6 +161,12 @@ angular.module('anol.featurepopup')
                     scope.feature = undefined;
                 }
             });
+        },
+        controller: function($scope, $element, $attrs) {
+            this.close = function() {
+                $scope.popupVisible = false;
+            };
+            $scope.close = this.close;
         }
     };
 }]);

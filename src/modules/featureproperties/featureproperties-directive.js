@@ -37,6 +37,7 @@ angular.module('anol.featureproperties')
 .directive('anolFeatureProperties', ['$translate', function($translate) {
     return {
         restrict: 'A',
+        require: '?^anolFeaturePopup',
         scope: {
             'feature': '=',
             'layer': '=',
@@ -46,7 +47,7 @@ angular.module('anol.featureproperties')
             var defaultUrl = 'src/modules/featureproperties/templates/featureproperties.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        link: function(scope, element, attrs) {
+        link: function(scope, element, attrs, FeaturePopupController) {
             scope.translationNamespace = angular.isDefined(scope.translationNamespace) ?
                 scope.translationNamespace : 'featureproperties';
 
@@ -96,6 +97,9 @@ angular.module('anol.featureproperties')
                     }
                 }
                 scope.propertiesCollection = propertiesCollection;
+                if(FeaturePopupController !== undefined && scope.propertiesCollection.length === 0) {
+                    FeaturePopupController.close();
+                }
             };
 
             scope.$watch('feature', featureChangeHandler);
