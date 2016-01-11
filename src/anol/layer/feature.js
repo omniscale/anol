@@ -95,11 +95,12 @@ $.extend(anol.layer.Feature.prototype, {
     createCircleStyle: function(style, defaultCircleStyle) {
         var defaultStrokeStyle = new ol.style.Stroke();
         var defaultFillStyle = new ol.style.Fill();
+        var radius;
         if(defaultCircleStyle instanceof ol.style.Circle) {
             defaultStrokeStyle = defaultCircleStyle.getStroke();
             defaultFillStyle = defaultCircleStyle.getFill();
+            radius = defaultCircleStyle.getRadius();
         }
-        var radius = defaultCircleStyle.getRadius();
 
         var _radius = style.radius || this.style.radius;
         if(_radius !== undefined) {
@@ -132,7 +133,6 @@ $.extend(anol.layer.Feature.prototype, {
         if(_scale !== undefined) {
             scale = parseFloat(_scale);
         }
-
         var iconStyle = new ol.style.Icon(({
             src: src,
             rotation: rotation
