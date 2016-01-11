@@ -277,7 +277,8 @@ module.exports = function(grunt) {
     },
     sass: {
         options: {
-            sourceMap: true
+          // TODO readd when bootstrap.css.map and anol.css.map can be combined in full build
+            sourceMap: false
         },
         dist: {
             files: {
