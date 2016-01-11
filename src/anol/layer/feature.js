@@ -111,23 +111,23 @@ $.extend(anol.layer.Feature.prototype, {
             fill: this.createFillStyle(style, defaultFillStyle)
         });
     },
-    createIconStyle: function(style, _defaultIconStyle) {
-        var defaultIconStyle = new ol.style.Icon();
-        if(_defaultIconStyle instanceof ol.style.Icon) {
-            defaultIconStyle = _defaultIconStyle;
+    createIconStyle: function(style, defaultIconStyle) {
+        var src;
+        var rotation;
+        var scale;
+        if(defaultIconStyle instanceof ol.style.Icon) {
+            src = defaultIconStyle.getSrc();
+            rotation = defaultIconStyle.getRotation();
+            scale = defaultIconStyle.getScale();
         }
-        var src = defaultIconStyle.getSrc();
-
         var externalGraphic = style.externalGraphic || this.style.externalGraphic;
         if(externalGraphic !== undefined) {
             src = externalGraphic;
         }
-        var rotation = defaultIconStyle.getRotation();
         var _rotation = style.rotation || this.style.rotation;
         if(_rotation !== undefined) {
             rotation = parseFloat(_rotation);
         }
-        var scale = defaultIconStyle.getScale();
         var _scale = style.scale || this.style.scale;
         if(_scale !== undefined) {
             scale = parseFloat(_scale);
