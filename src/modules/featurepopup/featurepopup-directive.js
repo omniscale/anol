@@ -27,6 +27,7 @@ angular.module('anol.featurepopup')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
+            // TODO find solution for multiple directives in one page
             var multiselect = angular.isDefined(scope.multiselect);
             scope.map = MapService.getMap();
             scope.popupVisible = false;
