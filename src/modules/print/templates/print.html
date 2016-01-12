@@ -9,7 +9,7 @@
               class="btn btn-default btn-sm"
               ng-repeat="(layout, definedPageLayout) in definedPageLayouts"
               ng-class="{'active': layout === printAttributes.layout}"
-              ng-click="setPageLayout(definedPageLayout.value, layout)">
+              ng-click="setPageLayout(definedPageLayout.value, definedPageLayout.layout)">
         {{ definedPageLayout.label }}
         <span ng-if="definedPageLayout.icon"
               class="glyphicon"
