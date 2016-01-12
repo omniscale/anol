@@ -201,11 +201,12 @@ angular.module('anol.legend')
             };
 
             var RasterLegend = {
+                DEFAULT_WMS_VERSION: '1.3.0',
                 createGetLegendGraphicUrl: function(source, params) {
                     var urls = [];
                     var baseParams = {
                         'SERVICE': 'WMS',
-                        'VERSION': ol.DEFAULT_WMS_VERSION,
+                        'VERSION': RasterLegend.DEFAULT_WMS_VERSION,
                         'SLD_VERSION': '1.1.0',
                         'REQUEST': 'GetLegendGraphic',
                         'FORMAT': 'image/png',
