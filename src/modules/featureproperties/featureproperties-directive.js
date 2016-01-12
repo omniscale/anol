@@ -98,7 +98,6 @@ angular.module('anol.featureproperties')
                 var propertiesCollection = [];
                 if(scope.layer === undefined || !angular.isObject(scope.layer.featureinfo)) {
                     scope.propertiesCollection = propertiesCollection;
-                    FeaturePopupController.close();
                 } else {
                     var properties = propertiesFromFeature(feature, scope.layer.name, scope.layer.featureinfo.properties);
                     if(!angular.equals(properties, {})) {
