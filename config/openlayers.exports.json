@@ -54,6 +54,7 @@
     "ol.geom.Polygon",
     "ol.geom.Polygon#*",
     "ol.geom.SimpleGeometry#getExtent",
+    "ol.geom.SimpleGeometry#translate",
     "ol.has.TOUCH",
     "ol.inherits",
     "ol.interaction.defaults",
