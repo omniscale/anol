@@ -96,7 +96,6 @@ angular.module('anol.featureproperties')
 
             var featureChangeHandler = function(feature) {
                 var propertiesCollection = [];
-                console.log('featureChangeHandler', feature);
                 if(scope.layer === undefined || !angular.isObject(scope.layer.featureinfo)) {
                     scope.propertiesCollection = propertiesCollection;
                     FeaturePopupController.close();
@@ -113,7 +112,6 @@ angular.module('anol.featureproperties')
             };
 
             var selectsChangeHandler = function(selects) {
-                console.log('selectsChangeHandler', selects);
                 var propertiesCollection = [];
                 angular.forEach(selects, function(selectObj) {
                     var layer = selectObj.layer;
