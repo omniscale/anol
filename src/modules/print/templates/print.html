@@ -1,19 +1,19 @@
 <div class="anol-print">
   <div class="form-group">
     <label class="control-label"
-           for="definedPageSizes">
-      {{ 'anol.print.PAGE_SIZES' | translate }}
+           for="definedPageLayouts">
+      {{ 'anol.print.PAGE_LAYOUTS' | translate }}
     </label>
     <div class="btn-group">
       <button type="button"
               class="btn btn-default btn-sm"
-              ng-repeat="(layout, definedPageSize) in definedPageSizes"
+              ng-repeat="(layout, definedPageLayout) in definedPageLayouts"
               ng-class="{'active': layout === printAttributes.layout}"
-              ng-click="setPageSize(definedPageSize.value, layout)">
-        {{ definedPageSize.label }}
-        <span ng-if="definedPageSize.icon"
+              ng-click="setPageLayout(definedPageLayout.value, layout)">
+        {{ definedPageLayout.label }}
+        <span ng-if="definedPageLayout.icon"
               class="glyphicon"
-              ng-class="definedPageSize.icon">
+              ng-class="definedPageLayout.icon">
         </span>
       </button>
     </div>

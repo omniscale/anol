@@ -40,7 +40,7 @@ angular.module('anol.print')
               scale: angular.copy(PrintPageService.defaultScale)
             };
             scope.availableScales = PrintPageService.availableScales;
-            scope.definedPageSizes = PrintPageService.pageSizes;
+            scope.definedPageLayouts = PrintPageService.pageLayouts;
             scope.outputFormats = PrintPageService.outputFormats;
             if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
               scope.printAttributes.outputFormat = scope.outputFormats[0];
@@ -96,7 +96,7 @@ angular.module('anol.print')
             // if we assign pageSize = value in template angular put only a reverence
             // into scope.pageSize and typing somethink into width/height input fields
             // will result in modifying selected availablePageSize value
-            scope.setPageSize = function(size, layout) {
+            scope.setPageLayout = function(size, layout) {
                 scope.printAttributes.pageSize = angular.copy(size);
                 scope.printAttributes.layout = angular.copy(layout);
                 scope.updatePrintPage();

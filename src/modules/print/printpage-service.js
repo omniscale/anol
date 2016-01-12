@@ -7,22 +7,22 @@ angular.module('anol.print')
 .provider('PrintPageService', [function() {
     // Better move directive configuration in directive so
     // direcitve can be replaced by custom one?
-    var _pageSizes, _outputFormats, _defaultScale, _style, _availableScales;
+    var _pageLayouts, _outputFormats, _defaultScale, _style, _availableScales;
     var _allowPageResize = true;
 
     /**
      * @ngdoc method
      * @name setPageSizes
      * @methodOf anol.print.PrintPageServiceProvider
-     * @param {Array.<Object>} pageSizes List of page sizes.
+     * @param {Array.<Object>} pageLayouts List of page sizes.
      * Each page size is an object, containing the following elements
      * - **id** - {string} - Unique page size id
      * - **label** - {string} - Label of defined page size. Will be displayed in html
      * - **icon** - {string} - Icon of defined page size
      * - **value** - {Array.<number>} - Height, width of defined page size
      */
-    this.setPageSizes = function(pageSizes) {
-        _pageSizes = pageSizes;
+    this.setPageLayouts = function(pageLayouts) {
+        _pageLayouts = pageLayouts;
     };
     /**
      * @ngdoc method
@@ -224,8 +224,8 @@ angular.module('anol.print')
          * paper size for selected area is calculated.
          *
          */
-        var PrintPage = function(pageSizes, outputFormats, defaultScale, availableScales, allowPageResize) {
-            this.pageSizes = pageSizes;
+        var PrintPage = function(pageLayouts, outputFormats, defaultScale, availableScales, allowPageResize) {
+            this.pageLayouts = pageLayouts;
             this.outputFormats = outputFormats;
             this.defaultScale = defaultScale;
             this.availableScales = availableScales;
@@ -615,6 +615,6 @@ angular.module('anol.print')
             _printLayer.setVisible(visibility);
         };
 
-        return new PrintPage(_pageSizes, _outputFormats, _defaultScale, _availableScales, _allowPageResize);
+        return new PrintPage(_pageLayouts, _outputFormats, _defaultScale, _availableScales, _allowPageResize);
     }];
 }]);

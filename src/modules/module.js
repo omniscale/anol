@@ -75,7 +75,7 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'TOOLTIP': 'Toggle overview map'
             },
             'print': {
-                'PAGE_SIZES': 'Page sizes',
+                'PAGE_LAYOUTS': 'Page sizes',
                 'SCALE': 'Scale',
                 'OUTPUT_FORMAT': 'Output format',
                 'REMOVE_PRINT_AREA': 'Remove print area',
