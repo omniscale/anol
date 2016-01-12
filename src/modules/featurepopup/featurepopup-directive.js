@@ -17,7 +17,8 @@ angular.module('anol.featurepopup')
         restrict: 'A',
         scope: {
             'layers': '=',
-            'tolerance': '='
+            'tolerance': '=',
+            'multiselect': '@'
         },
         replace: true,
         transclude: true,
@@ -26,10 +27,14 @@ angular.module('anol.featurepopup')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
+            var multiselect = angular.isDefined(scope.multiselect);
             scope.map = MapService.getMap();
             scope.popupVisible = false;
+
             scope.feature = undefined;
             scope.layer = undefined;
+            scope.selectes = {};
+
             scope.overlayOptions = {
                 element: element[0],
                 autoPan: true,
@@ -45,29 +50,51 @@ angular.module('anol.featurepopup')
             var selectInteraction;
             var interactions = [];
 
+            var handleMultiSelect = function(evt) {
+                scope.selects = {};
+                if(evt.selected.length === 0) {
+                    return false;
+                }
+                angular.forEach(evt.selected, function(feature) {
+                    var layer = selectInteraction.getLayer(feature).get('anolLayer');
+                    if(scope.selects[layer.name] === undefined) {
+                        scope.selects[layer.name] = {
+                            layer: layer,
+                            features: [feature]
+                        };
+                    } else {
+                        scope.selects[layer.name].features.push(feature);
+                    }
+                });
+                return true;
+            };
+            var handleSingleSelect = function(evt) {
+                scope.feature = undefined;
+                scope.layer = undefined;
+                if(evt.selected.length === 0) {
+                    return false;
+                }
+                scope.feature = evt.selected[0];
+                scope.layer = selectInteraction.getLayer(scope.feature).get('anolLayer');
+                return true;
+            };
+
             var handleSelect = function(evt) {
                 scope.$apply(function() {
                     scope.popupVisible = false;
                 });
+                var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
 
-                if(evt.selected.length === 0) {
-                    scope.feature = undefined;
-                    scope.layer = undefined;
-                    return;
-                } else {
-                    scope.feature = evt.selected[0];
-                    // this === selectInteraction
-                    scope.layer = this.getLayer(scope.feature).get('anolLayer');
+                if(_handleSelect(evt) === true) {
+                    scope.$apply(function() {
+                        scope.popupVisible = true;
+                    });
+                    // wait until scope changes applied ($digest cycle completed) before set popup position
+                    // otherwise Overlay.autoPan is not work correctly
+                    $timeout(function() {
+                        scope.popup.setPosition(evt.mapBrowserEvent.coordinate);
+                    });
                 }
-
-                scope.$apply(function() {
-                    scope.popupVisible = true;
-                });
-                // wait until scope changes applied ($digest cycle completed) before set popup position
-                // otherwise Overlay.autoPan is not work correctly
-                $timeout(function() {
-                    scope.popup.setPosition(evt.mapBrowserEvent.coordinate);
-                });
             };
 
             var recreateInteractions = function() {
@@ -87,9 +114,9 @@ angular.module('anol.featurepopup')
                         pixelTolerance: scope.tolerance
                     }));
                 });
-
                 selectInteraction = new ol.interaction.Select({
                     toggleCondition: ol.events.condition.never,
+                    multi: multiselect,
                     layers: olLayers,
                     style: function(feature) {
                         // prevents changing feature style
