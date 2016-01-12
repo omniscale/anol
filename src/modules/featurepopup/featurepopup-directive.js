@@ -35,6 +35,21 @@ angular.module('anol.featurepopup')
             scope.layer = undefined;
             scope.selectes = {};
 
+            if(angular.isUndefined(scope.layers)) {
+                scope.layers = [];
+                scope.$watch(function() {
+                    return LayersService.flattedLayers;
+                }, function(layers) {
+                    scope.layers.length = 0;
+                    angular.forEach(layers, function(layer) {
+                        if(!(layer instanceof anol.layer.Feature)) {
+                            return;
+                        }
+                        scope.layers.push(layer);
+                    });
+                });
+            }
+
             scope.overlayOptions = {
                 element: element[0],
                 autoPan: true,
