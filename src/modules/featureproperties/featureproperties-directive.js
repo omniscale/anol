@@ -105,7 +105,7 @@ angular.module('anol.featureproperties')
                     }
                     scope.propertiesCollection = propertiesCollection;
                 }
-                if(FeaturePopupController !== undefined && scope.propertiesCollection.length === 0) {
+                if(FeaturePopupController !== null && scope.propertiesCollection.length === 0) {
                     FeaturePopupController.close();
                 }
             };
@@ -126,7 +126,7 @@ angular.module('anol.featureproperties')
                     });
                 });
                 scope.propertiesCollection = propertiesCollection;
-                if(FeaturePopupController !== undefined && scope.propertiesCollection.length === 0) {
+                if(FeaturePopupController !== null && scope.propertiesCollection.length === 0) {
                     FeaturePopupController.close();
                 }
             };
