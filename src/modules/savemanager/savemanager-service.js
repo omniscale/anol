@@ -35,17 +35,17 @@ angular.module('anol.savemanager')
         };
 
         self.addListenerKey = _register(
-            ol.source.VectorEventType.ADDFEATURE,
+            'addfeature',
             addHandler,
             self.addListenerKey
         );
         self.changeListenerKey = _register(
-            ol.source.VectorEventType.CHANGEFEATURE,
+            'changefeature',
             changeHandler,
             self.changeListenerKey
         );
         self.removeListenerKey = _register(
-            ol.source.VectorEventType.REMOVEFEATURE,
+            'removefeature',
             removeHandler,
             self.removeListenerKey
         );
