@@ -25,7 +25,7 @@
       <div anol-zoom></div>
       <!-- popup -->
       <div anol-feature-popup layers="popupLayers">
-        <div anol-feature-properties feature="$parent.feature" layer="$parent.layer"></div>
+        <div anol-feature-properties selects="$parent.selects" feature="$parent.feature" layer="$parent.layer"></div>
       </div>
     </div>
 
@@ -72,6 +72,12 @@
             description: 'I am a feature'
           });
 
+          var overlappingFeature = new ol.Feature({
+            geometry: new ol.geom.Point([10, 10]),
+            name: '',
+            description: 'I am overlapping'
+          });
+
           var oneFeatureMore = new ol.Feature({
             geometry: new ol.geom.Point([-10, 10]),
             name: '',
@@ -85,14 +91,39 @@
             },
             olLayer: {
               source: {
-                features: [feature, anotherFeature, oneFeatureMore]
+                features: [feature, anotherFeature, overlappingFeature, oneFeatureMore]
               }
             }
           });
 
+          var polygon = new ol.Feature({
+            name: 'Polygon',
+            geometry: new ol.geom.Polygon([[
+              [-15, -15],
+              [-15, 15],
+              [15, 15],
+              [15, -15],
+              [-15, -15]
+            ]])
+          });
+
+          var featureLayer2 = new anol.layer.Feature({
+            name: 'featureLayer2',
+            featureinfo: {
+              properties: ['name']
+            },
+            olLayer: {
+              source: {
+                features: [polygon]
+              }
+            }
+          });
+
+          LayersService.addLayer(featureLayer2);
           LayersService.addLayer(featureLayer);
 
-          $scope.popupLayers = [featureLayer];
+
+          $scope.popupLayers = [featureLayer, featureLayer2];
       }]);
     </script>
   </body>

@@ -41,6 +41,7 @@ angular.module('anol.featureproperties')
         scope: {
             'feature': '=',
             'layer': '=',
+            'selects': '=',
             'translationNamespace': '@'
         },
         templateUrl: function(tElement, tAttrs) {
@@ -53,49 +54,80 @@ angular.module('anol.featureproperties')
 
             scope.propertiesCollection = [];
 
+            var propertiesFromFeature = function(feature, layerName, displayProperties) {
+                var properties = {};
+                angular.forEach(feature.getProperties(), function(value, key) {
+                    if(
+                        $.inArray(key, displayProperties) > -1 &&
+                        angular.isString(value) &&
+                        value !== ''
+                    ) {
+                        properties[key] = {
+                            key: key,
+                            value: value
+                        };
+                        var translateKey = [scope.translationNamespace, layerName, key.toUpperCase()].join('.');
+                        var translateValue = [scope.translationNamespace, layerName, key, value].join('.');
+                        // this get never rejected cause of array usage
+                        // see https://github.com/angular-translate/angular-translate/issues/960
+                        $translate([
+                            translateKey,
+                            translateValue
+                        ]).then(
+                            function(translations) {
+                                var translatedKey = translations[translateKey];
+                                var translatedValue = translations[translateValue];
+                                if(translatedKey === translateKey) {
+                                    translatedKey = key;
+                                }
+                                if(translatedValue === translateValue) {
+                                    translatedValue = value;
+                                }
+                                properties[key] = {
+                                    key: translatedKey,
+                                    value: translatedValue
+                                };
+                            }
+                        );
+                    }
+                });
+                return properties;
+            };
+
             var featureChangeHandler = function(feature) {
                 var propertiesCollection = [];
-                if(scope.layer !== undefined && angular.isObject(scope.layer.featureinfo) && feature !== undefined) {
-                    var properties = {};
-                    angular.forEach(feature.getProperties(), function(value, key) {
-                        if(
-                            $.inArray(key, scope.layer.featureinfo.properties) > -1 &&
-                            angular.isString(value) &&
-                            value !== ''
-                        ) {
-                            properties[key] = {
-                                key: key,
-                                value: value
-                            };
-                            var translateKey = [scope.translationNamespace, scope.layer.name, key.toUpperCase()].join('.');
-                            var translateValue = [scope.translationNamespace, scope.layer.name, key, value].join('.');
-                            // this get never rejected cause of array usage
-                            // see https://github.com/angular-translate/angular-translate/issues/960
-                            $translate([
-                                translateKey,
-                                translateValue
-                            ]).then(
-                                function(translations) {
-                                    var translatedKey = translations[translateKey];
-                                    var translatedValue = translations[translateValue];
-                                    if(translatedKey === translateKey) {
-                                        translatedKey = key;
-                                    }
-                                    if(translatedValue === translateValue) {
-                                        translatedValue = value;
-                                    }
-                                    properties[key] = {
-                                        key: translatedKey,
-                                        value: translatedValue
-                                    };
-                                }
-                            );
-                        }
-                    });
+                console.log('featureChangeHandler', feature);
+                if(scope.layer === undefined || !angular.isObject(scope.layer.featureinfo)) {
+                    scope.propertiesCollection = propertiesCollection;
+                    FeaturePopupController.close();
+                } else {
+                    var properties = propertiesFromFeature(feature, scope.layer.name, scope.layer.featureinfo.properties);
                     if(!angular.equals(properties, {})) {
                         propertiesCollection.push(properties);
                     }
+                    scope.propertiesCollection = propertiesCollection;
                 }
+                if(FeaturePopupController !== undefined && scope.propertiesCollection.length === 0) {
+                    FeaturePopupController.close();
+                }
+            };
+
+            var selectsChangeHandler = function(selects) {
+                console.log('selectsChangeHandler', selects);
+                var propertiesCollection = [];
+                angular.forEach(selects, function(selectObj) {
+                    var layer = selectObj.layer;
+                    var features = selectObj.features;
+                    if(!angular.isObject(layer.featureinfo) || features.length === 0) {
+                        return;
+                    }
+                    angular.forEach(features, function(feature) {
+                        var properties = propertiesFromFeature(feature, layer.name, layer.featureinfo.properties);
+                        if(!angular.equals(properties, {})) {
+                            propertiesCollection.push(properties);
+                        }
+                    });
+                });
                 scope.propertiesCollection = propertiesCollection;
                 if(FeaturePopupController !== undefined && scope.propertiesCollection.length === 0) {
                     FeaturePopupController.close();
@@ -103,6 +135,7 @@ angular.module('anol.featureproperties')
             };
 
             scope.$watch('feature', featureChangeHandler);
+            scope.$watch('selects', selectsChangeHandler);
         }
     };
 }]);
