@@ -45,6 +45,8 @@
     "ol.format.WMTSCapabilities#*",
     "ol.geom.Circle",
     "ol.geom.Circle#*",
+    "ol.geom.LinearRing",
+    "ol.geom.LinearRing#*",
     "ol.geom.LineString",
     "ol.geom.LineString#*",
     "ol.geom.Point",
