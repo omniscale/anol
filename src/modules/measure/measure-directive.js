@@ -191,7 +191,8 @@ angular.module('anol.measure')
                         var coord = evt.coordinate;
                         scope.measureOverlay.setPosition(coord);
 
-                        scope.listener = sketch.getGeometry().on('change', function(evt) {
+                        scope.currentGeometry = sketch.getGeometry();
+                        scope.listener = scope.currentGeometry.on('change', function(evt) {
                             var geom = evt.target;
                             var output = scope.measureType === 'area' ? formatArea(geom) : formatLength(geom);
                             coord = geom.getLastCoordinate();
@@ -210,7 +211,7 @@ angular.module('anol.measure')
                         measureOverlayElement.addClass('anol-measure-line-static-overlay');
 
                         // unset tooltip so that a new one can be created
-                        ol.Observable.unByKey(scope.listener);
+                        scope.currentGeometry.unByKey(scope.listener);
                         if(scope.autoDisable) {
                             $timeout(function() {
                                 control.deactivate();
@@ -233,7 +234,9 @@ angular.module('anol.measure')
             var deactivate = function(targetControl, context) {
                 context.map.removeInteraction(draw);
                 context._measureSource.clear();
-                ol.Observable.unByKey(context.listener);
+                if(context.currentGeometry !== undefined) {
+                    context.currentGeometry.unByKey(context.listener);
+                }
                 context.map.removeOverlay(context.measureOverlay);
                 context.measureOverlay = undefined;
             };
