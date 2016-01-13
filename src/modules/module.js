@@ -53,7 +53,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
             },
             'geocoder': {
                 'PLACEHOLDER': 'Street, City',
-                'NO_RESULTS': 'No results found'
+                'NO_RESULTS': 'No results found',
+                'SEARCH_IN_PROGRESS': 'Search in progress'
             },
             'geolocation': {
                 'TOOLTIP': 'Start geolocation'

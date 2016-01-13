@@ -45,6 +45,7 @@ angular.module('anol.geocoder')
         var geocoder = new anol.geocoder[scope.geocoder](scope.geocoderOptions);
         scope.searchResults = [];
         scope.noResults = false;
+        scope.searchInProgress = false;
 
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
@@ -55,9 +56,11 @@ angular.module('anol.geocoder')
           if(event.key === 'Enter' || event.keyCode === 13) {
             scope.searchResults = [];
             scope.noResults = false;
+            scope.searchInProgress = true;
             element.find('.anol-searchbox').removeClass('open');
             geocoder.request(scope.searchString)
               .then(function(results) {
+                scope.searchInProgress = false;
                 if(results.length === 0) {
                   scope.$apply(function() {
                     scope.noResults = true;
