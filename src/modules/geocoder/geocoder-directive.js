@@ -36,7 +36,7 @@ angular.module('anol.geocoder')
       },
       link: function(scope, element, attrs) {
         if(angular.isDefined(scope.proxyUrl)) {
-          if(!scope.proxyUrl.endsWith('/')) {
+          if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
             scope.proxyUrl += '/';
           }
           scope.geocoderOptions.url = scope.proxyUrl + scope.geocoderOptions.url;

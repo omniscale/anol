@@ -35,9 +35,6 @@ angular.module('anol.featurepropertieseditor')
                 if(key === 'style') {
                     return true;
                 }
-                if(key.startsWith('_')) {
-                    return true;
-                }
                 return false;
             };
 

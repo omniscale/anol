@@ -56,8 +56,10 @@ angular.module('anol.getfeatureinfo')
                     }
                 });
 
-                if(angular.isDefined(scope.proxyUrl) && !scope.proxyUrl.endsWith('/')) {
-                    scope.proxyUrl += '/';
+                if(angular.isDefined(scope.proxyUrl)) {
+                    if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
+                        scope.proxyUrl += '/';
+                    }
                 }
 
                 scope.map.addOverlay(popupOverlay);
@@ -105,7 +107,7 @@ angular.module('anol.getfeatureinfo')
                         }
                         if(angular.isDefined(url)) {
                             $http.get(url).success(function(response) {
-                                if(angular.isString(response) && response !== '' && !response.startsWith('<?xml')) {
+                                if(angular.isString(response) && response !== '' && response.search('<?xml') === -1) {
                                     var iframe;
                                     if(layer.featureinfo.target === '_popup') {
                                         iframe = $('<iframe seamless src="' + url + '"></iframe>');
