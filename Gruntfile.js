@@ -19,19 +19,12 @@ module.exports = function(grunt) {
         ' * Revision <%= meta.revision %>\n' +
         ' */\n'
     },
-    uglify: {
-      options: {
-        banner: '<%= meta.banner %>',
-        mangle: true
-      },
-      build: {
-        files: {
-          'build/<%= pkg.name %>.ugly.js': ['build/<%= pkg.name %>.ngmin.js', 'build/templates.js']
-        }
-      }
-    },
     jshint: {
-      files: [ 'Gruntfile.js', 'src/modules/**/*.js' ],
+      files: [
+        'Gruntfile.js',
+        'src/anol/**/*.js',
+        'src/modules/**/*.js'
+      ],
       options: {
         globals: {
           jQuery: true,
@@ -40,23 +33,9 @@ module.exports = function(grunt) {
         }
       }
     },
-    ngmin: {
-      dist: {
-        src: [
-          'src/anol/anol.js',
-          'src/anol/layer.js',
-          'src/anol/layer/feature.js',
-          'src/anol/layer/staticgeojson.js',
-          'src/anol/**/*.js',
-          'src/modules/module.js',
-          'src/modules/**/module.js',
-          'src/modules/**/*.js'
-        ],
-        dest: 'build/<%= pkg.name %>.ngmin.js'
-      }
-    },
     concat: {
       options: {
+        banner: '<%= meta.banner %>',
         separator: ';\n'
       },
       dev: {
@@ -68,30 +47,10 @@ module.exports = function(grunt) {
           'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
-          'src/modules/**/*.js'
+          'src/modules/**/*.js',
+          'build/templates.js'
         ],
         dest: 'build/<%= pkg.name %>.js'
-      },
-      dist: {
-        src: [
-          'node_modules/jquery/dist/jquery.min.js',
-          'node_modules/angular/angular.min.js',
-          'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
-          'node_modules/angular-translate/dist/angular-translate.min.js',
-          'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
-          'node_modules/openlayers/build/ol-custom.min.js',
-          'build/<%= pkg.name %>.ugly.js'
-        ],
-        dest: 'build/<%= pkg.name %>.min.js'
-      },
-      // TODO find a way to concat bootstrap.css.map and anol.css.map also (including right paths)
-      distCSS: {
-        src: [
-          'node_modules/bootstrap/dist/css/bootstrap.css',
-          'node_modules/openlayers/dist/ol.css',
-          'build/css/anol.css'
-        ],
-        dest: 'build/css/<%= pkg.name %>.css'
       }
     },
     clean: {
@@ -100,15 +59,7 @@ module.exports = function(grunt) {
       },
       postbuild: {
         src: [
-          'build/<%= pkg.name %>.ngmin.js',
-          'build/<%= pkg.name %>.ugly.js',
           'build/templates.js',
-        ]
-      },
-      // TODO remove when bootstrap.css.map and anol.css.map concated
-      dist: {
-        src: [
-          'build/css/<%= pkg.name %>.css.map'
         ]
       },
       docs: {
@@ -122,7 +73,7 @@ module.exports = function(grunt) {
       }
     },
     copy: {
-      debug: {
+      dev: {
         files: [
           {
             flatten: true,
@@ -133,7 +84,7 @@ module.exports = function(grunt) {
               'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
               'node_modules/angular-translate/dist/angular-translate.js',
               'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
-              'node_modules/openlayers/build/ol-custom.debug.js',
+              'node_modules/openlayers/build/ol-custom.js',
             ],
             dest: 'build'
           },
@@ -142,6 +93,7 @@ module.exports = function(grunt) {
             expand: true,
             src: [
               'node_modules/bootstrap/dist/css/bootstrap.css',
+              'node_modules/bootstrap/dist/css/bootstrap.css.map',
               'node_modules/openlayers/dist/ol.css'
             ],
             dest: 'build/css/'
@@ -161,31 +113,9 @@ module.exports = function(grunt) {
             dest: 'build/img'
           }
         ]
-      },
-      full: {
-        files: [
-          {
-            flatten: true,
-            expand: true,
-            src: [
-              'node_modules/bootstrap/dist/fonts/*'
-            ],
-            dest: 'build/fonts'
-          },
-          {
-            flatten: true,
-            expand: true,
-            src: 'static/img/*',
-            dest: 'build/img'
-          }
-        ]
       }
     },
     'merge-json': {
-        'openlayers-build-debug': {
-            src: ['config/openlayers.exports.json'],
-            dest: 'build/openlayers.build.debug.json'
-        },
         'openlayers-build': {
             src: ['config/openlayers.exports.json', 'config/openlayers.compile.json'],
             dest: 'build/openlayers.build.json'
@@ -196,15 +126,7 @@ module.exports = function(grunt) {
         command: [
           'cd node_modules/openlayers',
           'make build',
-          'node tasks/build.js ../../build/openlayers.build.json build/ol-custom.min.js',
-          'cd -'
-        ].join('&&')
-      },
-      'build-ol3-debug' :{
-        command: [
-          'cd node_modules/openlayers',
-          'make build',
-          'node tasks/build.js ../../build/openlayers.build.debug.json build/ol-custom.debug.js',
+          'node tasks/build.js ../../build/openlayers.build.json build/ol-custom.js',
           'cd -'
         ].join('&&')
       }
@@ -227,12 +149,18 @@ module.exports = function(grunt) {
       },
       sass: {
         files: ['static/css/*.sass'],
-        tasks: ['sass', 'copy:debug'],
+        tasks: ['sass'],
         options: {
           spawn: false,
         },
       },
-
+      ol: {
+        files: [
+          'config/openlayers.exports.json',
+          'config/openlayers.compile.json'
+        ],
+        tasks: ['build-ol3', 'copy:dev']
+      }
     },
     karma: {
         unit: {
@@ -277,8 +205,7 @@ module.exports = function(grunt) {
     },
     sass: {
         options: {
-          // TODO readd when bootstrap.css.map and anol.css.map can be combined in full build
-            sourceMap: false
+            sourceMap: true
         },
         dist: {
             files: {
@@ -291,7 +218,7 @@ module.exports = function(grunt) {
         logConcurrentOutput: true
       },
       dev: {
-        tasks: ['watch:scripts', 'watch:sass']
+        tasks: ['watch:scripts', 'watch:sass', 'watch:ol']
       }
     }
   });
@@ -301,12 +228,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  //grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-git-revision');
   grunt.loadNpmTasks('grunt-angular-templates');
-  grunt.loadNpmTasks('grunt-ngmin');
+  //grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-shell');
@@ -319,11 +246,6 @@ module.exports = function(grunt) {
     'shell:build-ol3',
     'clean:openlayers-build-config'
   ]);
-  grunt.registerTask('build-ol3-debug', [
-    'merge-json:openlayers-build-debug',
-    'shell:build-ol3-debug',
-    'clean:openlayers-build-config'
-  ]);
 
   grunt.registerTask('test', ['karma:unit']);
   grunt.registerTask('dev', [
@@ -331,34 +253,23 @@ module.exports = function(grunt) {
     'sass:dist',
     'ngtemplates',
     'concat:dev',
-    'build-ol3-debug',
-    'copy:debug',
+    'build-ol3',
+    'copy:dev',
+    'clean:postbuild',
     'connect:server',
     'concurrent:dev'
   ]);
 
-  grunt.registerTask('build-debug', [
+  grunt.registerTask('build-dev', [
     'clean:prebuild',
     'jshint',
-    'sass',
+    'sass:dist',
     'ngtemplates',
     'concat:dev',
-    'build-ol3-debug',
-    'copy:debug'
-  ]);
-  grunt.registerTask('build-full', [
-    'clean:prebuild',
-    'jshint',
-    'sass',
-    'ngtemplates',
-    'ngmin:dist',
-    'uglify',
     'build-ol3',
-    'concat:dist',
-    'concat:distCSS',
-    'clean:postbuild',
-    'clean:dist',
-    'copy:full'
+    'copy:dev',
+    'clean:postbuild'
   ]);
+
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
 };
