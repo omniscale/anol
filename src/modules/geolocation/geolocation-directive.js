@@ -35,8 +35,6 @@ angular.module('anol.geolocation')
           return tAttrs.templateUrl || defaultUrl;
       },
       link: function(scope, element) {
-        scope.maxExtent = MapService.getMap().getView().get('extent');
-
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
 
         // attribute defaults
@@ -62,8 +60,8 @@ angular.module('anol.geolocation')
         geolocation.on('change:position', function() {
           geolocation.setTracking(false);
           var position = geolocation.getPosition();
-          if(angular.isDefined(scope.maxExtent) && !ol.extent.containsXY(scope.maxExtent, position)) {
-            // TODO add ability to tell user, why position not changed
+          var constrainedPosition = view.constrainCenter(position);
+          if(position[0] !== constrainedPosition[0] || position[1] !== constrainedPosition[1]) {
             return;
           }
           view.setCenter(position);
