@@ -30,6 +30,8 @@ angular.module('anol.overviewmap')
             angular.forEach(LayersService.backgroundLayers, function(layer) {
                 backgroundLayers.push(layer.olLayer);
             });
+            // TODO use when resolved
+            // https://github.com/openlayers/ol3/issues/3753
             var olControl = new ol.control.OverviewMap({
                 layers: backgroundLayers,
                 label: document.createTextNode(''),
