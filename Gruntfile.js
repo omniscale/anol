@@ -47,8 +47,7 @@ module.exports = function(grunt) {
           'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
-          'src/modules/**/*.js',
-          'build/templates.js'
+          'src/modules/**/*.js'
         ],
         dest: 'build/<%= pkg.name %>.js'
       }
@@ -56,11 +55,6 @@ module.exports = function(grunt) {
     clean: {
       prebuild: {
         src: [ 'build' ]
-      },
-      postbuild: {
-        src: [
-          'build/templates.js',
-        ]
       },
       docs: {
         src: [ 'docs' ]
@@ -255,7 +249,6 @@ module.exports = function(grunt) {
     'concat:dev',
     'build-ol3',
     'copy:dev',
-    'clean:postbuild',
     'connect:server',
     'concurrent:dev'
   ]);
@@ -267,8 +260,7 @@ module.exports = function(grunt) {
     'ngtemplates',
     'concat:dev',
     'build-ol3',
-    'copy:dev',
-    'clean:postbuild'
+    'copy:dev'
   ]);
 
   grunt.registerTask('build-doc', ['clean:docs', 'ngdocs']);
