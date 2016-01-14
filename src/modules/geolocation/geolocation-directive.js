@@ -19,8 +19,8 @@ angular.module('anol.geolocation')
  * @description
  * Get current position and center map on it.
  */
-.directive('anolGeolocation', ['$compile', 'MapService', 'ControlsService',
-  function($compile, MapService, ControlsService) {
+.directive('anolGeolocation', ['$compile', '$translate', 'MapService', 'ControlsService',
+  function($compile, $translate, MapService, ControlsService) {
     return {
       scope: {
         anolGeolocation: '@',
@@ -62,6 +62,9 @@ angular.module('anol.geolocation')
           var position = geolocation.getPosition();
           var constrainedPosition = view.constrainCenter(position);
           if(position[0] !== constrainedPosition[0] || position[1] !== constrainedPosition[1]) {
+            $translate('anol.geolocation.POSITION_OUT_OF_MAX_EXTENT').then(function(translation) {
+              scope.$emit('anol.geolocation', {'message': translation, 'type': 'error'});
+            });
             return;
           }
           view.setCenter(position);

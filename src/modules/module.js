@@ -57,7 +57,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
                 'SEARCH_IN_PROGRESS': 'Search in progress'
             },
             'geolocation': {
-                'TOOLTIP': 'Start geolocation'
+                'TOOLTIP': 'Start geolocation',
+                'POSITION_OUT_OF_MAX_EXTENT': 'Your position is not in map extent'
             },
             'layerswitcher': {
                 'TOOLTIP': 'Toggle layerswitcher',
