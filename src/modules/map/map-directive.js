@@ -28,8 +28,19 @@ angular.module('anol.map')
                 scope.map.setTarget(document.getElementById(scope.mapName));
             },
             post: function(scope, element, attrs) {
-                $timeout(function() {
+                // found at http://stackoverflow.com/a/19049083
+                scope.$watch(function() {
+                    scope._height = element.height();
+                    scope._width = element.width();
+                });
+                scope.$watch('_width', function() {
                     scope.map.updateSize();
+                });
+                scope.$watch('_height', function() {
+                    scope.map.updateSize();
+                });
+
+                $timeout(function() {
                     // add layers after map has correct size to prevent
                     // loading layer twice (before and after resize)
                     angular.forEach(LayersService.olLayers, function(layer) {
