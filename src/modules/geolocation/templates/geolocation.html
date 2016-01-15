@@ -1,1 +1,9 @@
-<button class="anol-geolocate" tooltip="{{ 'anol.geolocation.TOOLTIP' | translate }}" tooltip-placement="{{ tooltipPlacement }}" tooltip-append-to-body="true" ng-click="locate()" tooltip-popup-delay="{{ tooltipDelay }}" tooltip-enable="{{ tooltipEnable }}" tooltip-trigger="mouseenter click"></button>
+<button class="anol-geolocate"
+        tooltip="{{ 'anol.geolocation.TOOLTIP' | translate }}"
+        tooltip-placement="{{ ::tooltipPlacement }}"
+        tooltip-append-to-body="true"
+        ng-click="locate()"
+        tooltip-popup-delay="{{ ::tooltipDelay }}"
+        tooltip-enable="{{ ::tooltipEnable }}"
+        tooltip-trigger="mouseenter click">
+</button>

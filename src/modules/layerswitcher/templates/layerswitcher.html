@@ -1,7 +1,16 @@
 <div class="anol-layerswitcher ol-unselectable ol-control"
      ng-show="showToggle"
      ng-show="backgroundLayers.length > 1 || overlayLayers.length > 0">
-    <button class="glyphicon" ng-class="{'glyphicon-chevron-left': collapsed, 'glyphicon-chevron-right': !collapsed}" ng-click="collapsed=!collapsed" tooltip="{{ 'anol.layerswitcher.TOOLTIP' | translate }}" tooltip-placement="{{ tooltipPlacement }}" tooltip-append-to-body="true" tooltip-popup-delay="{{ tooltipDelay }}" tooltip-enable="{{ tooltipEnable }}" tooltip-trigger="mouseenter click"></button>
+    <button class="glyphicon"
+            ng-class="{'glyphicon-chevron-left': collapsed, 'glyphicon-chevron-right': !collapsed}"
+            ng-click="collapsed=!collapsed"
+            tooltip="{{ 'anol.layerswitcher.TOOLTIP' | translate }}"
+            tooltip-placement="{{ ::tooltipPlacement }}"
+            tooltip-append-to-body="true"
+            tooltip-popup-delay="{{ ::tooltipDelay }}"
+            tooltip-enable="{{ ::tooltipEnable }}"
+            tooltip-trigger="mouseenter click">
+    </button>
 </div>
 <div class="anol-layerswitcher-container" ng-show="!collapsed">
     <div ng-show="backgroundLayers.length > 1">
