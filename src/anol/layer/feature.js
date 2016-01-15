@@ -116,10 +116,12 @@ $.extend(anol.layer.Feature.prototype, {
         var src;
         var rotation;
         var scale;
+        var size;
         if(defaultIconStyle instanceof ol.style.Icon) {
             src = defaultIconStyle.getSrc();
             rotation = defaultIconStyle.getRotation();
             scale = defaultIconStyle.getScale();
+            size = defaultIconStyle.getSize();
         }
         var externalGraphic = style.externalGraphic || this.style.externalGraphic;
         if(externalGraphic !== undefined) {
@@ -129,23 +131,36 @@ $.extend(anol.layer.Feature.prototype, {
         if(_rotation !== undefined) {
             rotation = parseFloat(_rotation);
         }
+
+        var graphicWidth = style.graphicWidth || this.style.graphicWidth;
+        var graphicHeight = style.graphicHeight || this.style.graphicHeight;
+        if(graphicWidth !== undefined && graphicHeight !== undefined) {
+            size = [
+                parseInt(graphicWidth),
+                parseInt(graphicHeight)
+            ];
+        }
+
+        var iconStyleConf = {
+            src: src,
+            rotation: rotation,
+            size: size
+        };
+
+        var iconStyle = new ol.style.Icon(iconStyleConf);
+
         var _scale = style.scale || this.style.scale;
         if(_scale !== undefined) {
             scale = parseFloat(_scale);
         }
-        var iconStyle = new ol.style.Icon(({
-            src: src,
-            rotation: rotation
-        }));
-        var graphicWidth = style.graphicWidth || this.style.graphicWidth;
         if(scale === undefined && graphicWidth !== undefined) {
-            // get original image size
-            var size = iconStyle.getSize();
             if (size !== null) {
                 scale = parseInt(graphicWidth) / size[0];
             }
         }
-        iconStyle.setScale(scale);
+        if(scale !== undefined && scale !== 1) {
+            iconStyle.setScale(scale);
+        }
         return iconStyle;
     },
     createFillStyle: function(style, defaultFillStyle) {
