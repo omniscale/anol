@@ -10,10 +10,9 @@
       "goog.dom.ASSUME_STANDARDS_MODE=true",
       "goog.DEBUG=false"
     ],
-    "compilation_level": "SIMPLE",
+    "compilation_level": "ADVANCED",
     "output_wrapper": "(function(){%output%})();",
     "use_types_for_optimization": true,
-    "manage_closure_dependencies": true,
-    "formatting": "PRETTY_PRINT"
+    "manage_closure_dependencies": true
   }
 }
