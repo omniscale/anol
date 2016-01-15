@@ -43,8 +43,8 @@ angular.module('anol.attribution')
  * @description
  * Provides attribution buttons
  */
-.directive('anolAttribution', ['$compile', 'ControlsService', 'LayersService',
-    function($compile, ControlsService, LayersService) {
+.directive('anolAttribution', ['ControlsService', 'LayersService',
+    function(ControlsService, LayersService) {
     return {
         restrict: 'A',
         scope: {
