@@ -96,15 +96,13 @@ angular.module('anol.featurepopup')
             };
 
             var handleSelect = function(evt) {
-                scope.$apply(function() {
-                    scope.popupVisible = false;
-                });
+                scope.popupVisible = false;
+                scope.$digest();
                 var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
 
                 if(_handleSelect(evt) === true) {
-                    scope.$apply(function() {
-                        scope.popupVisible = true;
-                    });
+                    scope.popupVisible = true;
+                    scope.$digest();
                     // wait until scope changes applied ($digest cycle completed) before set popup position
                     // otherwise Overlay.autoPan is not work correctly
                     $timeout(function() {

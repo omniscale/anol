@@ -62,15 +62,12 @@ angular.module('anol.geocoder')
               .then(function(results) {
                 scope.searchInProgress = false;
                 if(results.length === 0) {
-                  scope.$apply(function() {
-                    scope.noResults = true;
-                  });
+                  scope.noResults = true;
                 } else {
-                  scope.$apply(function() {
-                    scope.searchResults = results;
-                    element.find('.anol-searchbox').addClass('open');
-                  });
+                  scope.searchResults = results;
+                  element.find('.anol-searchbox').addClass('open');
                 }
+                scope.$digest();
               });
           }
           return false;

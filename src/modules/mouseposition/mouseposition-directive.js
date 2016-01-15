@@ -52,10 +52,9 @@ angular.module('anol.mouseposition')
                 var inMap = angular.isObject(AnolMapController);
                 var olControl = new ol.control.MousePosition({
                     coordinateFormat: function(coordinate) {
-                        scope.$apply(function() {
-                            scope.x = coordinate[0].toFixed(scope.precision);
-                            scope.y = coordinate[1].toFixed(scope.precision);
-                        });
+                        scope.x = coordinate[0].toFixed(scope.precision);
+                        scope.y = coordinate[1].toFixed(scope.precision);
+                        scope.$digest();
                         return inMap ? element.html() : '';
                     }
                 });
