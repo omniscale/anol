@@ -60,7 +60,7 @@ $.extend(anol.layer.Feature.prototype, {
 
         var geometryType = feature.getGeometry().getType();
         var geojsonStyle = feature.get('style') || {};
-        if(geojsonStyle === {} && this.style === {}) {
+        if(angular.equals(geojsonStyle, {}) && angular.equals(this.style, {})) {
             return defaultStyle;
         }
         if(geometryType === 'Point') {
