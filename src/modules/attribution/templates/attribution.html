@@ -6,10 +6,10 @@
     <button ng-class="{'anol-info-white': !attributionVisible, 'glyphicon glyphicon-chevron-right': attributionVisible}"
             ng-click="attributionVisible=!attributionVisible"
             tooltip="{{ 'anol.attribution.TOOLTIP' | translate }}"
-            tooltip-placement="{{ ::tooltipPlacement }}"
+            tooltip-placement="{{ tooltipPlacement }}"
             tooltip-append-to-body="true"
-            tooltip-popup-delay="{{ ::tooltipDelay }}"
-            tooltip-enable="{{ ::tooltipEnable }}"
+            tooltip-popup-delay="{{ tooltipDelay }}"
+            tooltip-enable="{{ tooltipEnable }}"
             tooltip-trigger="mouseenter click">
     </button>
 </div>

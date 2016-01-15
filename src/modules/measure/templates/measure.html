@@ -1,8 +1,8 @@
 <button ng-click="measure()"
         tooltip="{{ (measureType === 'area' ? 'anol.measure.TOOLTIP_MEASURE_AREA' : 'anol.measure.TOOLTIP_MEASURE_LINE') | translate }}"
-        tooltip-placement="{{ ::tooltipPlacement }}"
+        tooltip-placement="{{ tooltipPlacement }}"
         tooltip-append-to-body="true"
-        tooltip-popup-delay="{{ ::tooltipDelay }}"
-        tooltip-enable="{{ ::tooltipEnable }}"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
         tooltip-trigger="mouseenter click">
 </button>
