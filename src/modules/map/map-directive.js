@@ -33,10 +33,7 @@ angular.module('anol.map')
                     scope._height = element.height();
                     scope._width = element.width();
                 });
-                scope.$watch('_width', function() {
-                    scope.map.updateSize();
-                });
-                scope.$watch('_height', function() {
+                scope.$watch('[_width,_height]', function(a, b) {
                     scope.map.updateSize();
                 });
 
