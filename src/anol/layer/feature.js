@@ -59,19 +59,19 @@ $.extend(anol.layer.Feature.prototype, {
         }
 
         var geometryType = feature.getGeometry().getType();
-        var geojsonStyle = feature.get('style') || {};
-        if(angular.equals(geojsonStyle, {}) && angular.equals(this.style, {})) {
+        var featureStyle = feature.get('style') || {};
+        if(angular.equals(featureStyle, {}) && angular.equals(this.style, {})) {
             return defaultStyle;
         }
         if(geometryType === 'Point') {
             return new ol.style.Style({
-                image: this.createImageStyle(geojsonStyle, defaultStyle.getImage())
+                image: this.createImageStyle(featureStyle, defaultStyle.getImage())
             });
         } else {
             // line features ignores fill style
             return new ol.style.Style({
-                fill: this.createFillStyle(geojsonStyle, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(geojsonStyle, defaultStyle.getStroke())
+                fill: this.createFillStyle(featureStyle, defaultStyle.getFill()),
+                stroke: this.createStrokeStyle(featureStyle, defaultStyle.getStroke())
             });
         }
     },
