@@ -30,10 +30,10 @@ angular.module('anol.map')
             post: function(scope, element, attrs) {
                 // found at http://stackoverflow.com/a/19049083
                 scope.$watch(function() {
-                    scope._height = element.height();
-                    scope._width = element.width();
+                    scope._height = element.context.offsetHeight;
+                    scope._width = element.context.offsetWidth;
                 });
-                scope.$watch('[_width,_height]', function(a, b) {
+                scope.$watch('[_width,_height]', function() {
                     scope.map.updateSize();
                 });
 
