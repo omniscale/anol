@@ -59,6 +59,7 @@
     "ol.geom.SimpleGeometry#getExtent",
     "ol.geom.SimpleGeometry#translate",
     "ol.has.TOUCH",
+    "ol.has.DEVICE_PIXEL_RATIO",
     "ol.inherits",
     "ol.interaction.defaults",
     "ol.interaction.DragZoom",

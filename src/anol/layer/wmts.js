@@ -30,6 +30,33 @@ anol.layer.WMTS = function(_options) {
         defaults,
         _options
     );
+
+    var hqUrl = options.olLayer.source.hqUrl || false;
+    delete options.olLayer.source.hqUrl;
+    var hqLayer = options.olLayer.source.hqLayer || false;
+    delete options.olLayer.source.hqLayer;
+    var hqMatrixSet = options.olLayer.source.hqMatrixSet || false;
+    delete options.olLayer.source.hqMatrixSet;
+
+    if(ol.has.DEVICE_PIXEL_RATIO > 1) {
+        var useHq = false;
+        if(hqUrl !== false) {
+            options.olLayer.source.url = hqUrl;
+            useHq = true;
+        }
+        if(hqLayer !== false) {
+            options.olLayer.source.layer = hqLayer;
+            useHq = true;
+        }
+        if(hqMatrixSet !== false) {
+            options.olLayer.source.matrixSet = hqMatrixSet;
+            useHq = true;
+        }
+        if(useHq) {
+            options.olLayer.source.tilePixelRatio = 2;
+         }
+    }
+
     // copy layer options without source. it will be added later
     var layerOpts = $.extend({}, options.olLayer, {source: null});
     var olLayer = new ol.layer.Tile(layerOpts);
