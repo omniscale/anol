@@ -11,6 +11,16 @@
     <link href="../build/css/bootstrap.css" rel="stylesheet">
     <link href="../build/css/ol.css" rel="stylesheet">
     <link href="../build/css/anol.css" rel="stylesheet">
+    <style>
+      .geocoder-result-marker {
+        width: 15px;
+        height: 15px;
+        border: 1px solid #088;
+        border-radius: 10px;
+        background-color: #0FF;
+        opacity: 0.5;
+      }
+    </style>
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -23,7 +33,7 @@
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
       <div anol-zoom></div>
-      <div anol-geocoder-searchbox="Nominatim" geocoder-options="nominatimOptions"></div>
+      <div anol-geocoder-searchbox="Nominatim" geocoder-options="nominatimOptions" highlight="0"></div>
     </div>
 
     <!-- Remove libs when build dist -->
@@ -58,9 +68,7 @@
           LayersServiceProvider.setLayers([wms]);
       }])
       .controller('ExampleController', function($scope) {
-        $scope.nominatimOptions = {
-          viewbox: [8, 52, 9, 53]
-        };
+        $scope.nominatimOptions = {};
       });
     </script>
   </body>

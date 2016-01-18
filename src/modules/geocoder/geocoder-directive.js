@@ -12,15 +12,14 @@ angular.module('anol.geocoder')
  * @param {string} zoomLevel Level to show result in
  * @param {object} geocoderOptions Options for selected geocoder
  * @param {string} proxyUrl Proxy to use
+ * @param {number} highlight Time result marker is visible. Use 0 for invinitiv visibility (removeable by click)
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Search for a location string on given geocoder, display and select results
  */
- // TODO add text when no result found
- // TODO show user search is in progress
-.directive('anolGeocoderSearchbox', ['MapService', 'ControlsService',
-  function(MapService, ControlsService) {
+.directive('anolGeocoderSearchbox', ['$timeout', 'MapService', 'ControlsService',
+  function($timeout, MapService, ControlsService) {
     return {
       restrict: 'A',
       transclude: true,
@@ -32,9 +31,12 @@ angular.module('anol.geocoder')
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',
         geocoderOptions: '=',
-        proxyUrl: '@'
+        proxyUrl: '@',
+        highlight: '@'
       },
       link: function(scope, element, attrs) {
+        var markerOverlay;
+
         if(angular.isDefined(scope.proxyUrl)) {
           if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
             scope.proxyUrl += '/';
@@ -46,6 +48,34 @@ angular.module('anol.geocoder')
         scope.searchResults = [];
         scope.noResults = false;
         scope.searchInProgress = false;
+        scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
+
+        var addMarkerOverlay = function(position) {
+          var markerElement = angular.element('<div class="geocoder-result-marker"></div>')[0];
+          markerOverlay = new ol.Overlay({
+            position: position,
+            positioning: 'center-center',
+            element: markerElement,
+            stopEvent: false
+          });
+          MapService.getMap().addOverlay(markerOverlay);
+          if(scope.highlight > 0) {
+            $timeout(function() {
+              removeMarkerOverlay();
+            }, scope.highlight);
+          } else {
+            angular.element(markerOverlay.getElement()).click(function() {
+              removeMarkerOverlay();
+            });
+          }
+        };
+
+        var removeMarkerOverlay = function() {
+          if(angular.isDefined(markerOverlay)) {
+            MapService.getMap().removeOverlay(markerOverlay);
+            markerOverlay = undefined;
+          }
+        };
 
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
@@ -57,6 +87,9 @@ angular.module('anol.geocoder')
             scope.searchResults = [];
             scope.noResults = false;
             scope.searchInProgress = true;
+
+            removeMarkerOverlay();
+
             element.find('.anol-searchbox').removeClass('open');
             geocoder.request(scope.searchString)
               .then(function(results) {
@@ -98,15 +131,17 @@ angular.module('anol.geocoder')
 
         scope.showResult = function(result) {
           var view = MapService.getMap().getView();
-          view.setCenter(
-            ol.proj.transform(
-              result.coordinate,
-              result.projectionCode,
-              view.getProjection()
-            )
+          var position = ol.proj.transform(
+            result.coordinate,
+            result.projectionCode,
+            view.getProjection()
           );
+          view.setCenter(position);
           if(angular.isDefined(scope.zoomLevel)) {
             view.setZoom(parseInt(scope.zoomLevel));
+          }
+          if(scope.highlight !== false) {
+            addMarkerOverlay(position);
           }
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
