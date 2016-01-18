@@ -51,7 +51,7 @@ angular.module('anol.geocoder')
         scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
 
         var addMarkerOverlay = function(position) {
-          var markerElement = angular.element('<div class="geocoder-result-marker"></div>')[0];
+          var markerElement = angular.element('<div class="anol-geocoder-result-marker"></div>')[0];
           markerOverlay = new ol.Overlay({
             position: position,
             positioning: 'center-center',
