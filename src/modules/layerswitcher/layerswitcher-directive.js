@@ -100,10 +100,26 @@ angular.module('anol.layerswitcher')
             $scope.removeBackgroundLayer = function() {
                 $scope.backgroundLayer = undefined;
             };
+            $scope.layerByName = function(name) {
+                return LayersService.layerByName(name);
+            };
             $scope.layerIsVisibleByName = function(name) {
                 var layer = LayersService.layerByName(name);
                 if(layer !== undefined) {
                     return layer.getVisible();
+                }
+                return false;
+            };
+            $scope.toggleLayerVisibleByName = function(name) {
+                var layer = LayersService.layerByName(name);
+                if(layer !== undefined) {
+                    layer.setVisible(!layer.getVisible());
+                }
+            };
+            $scope.groupIsVisibleByName = function(name) {
+                var group = LayersService.groupByName(name);
+                if(group !== undefined) {
+                    return group.getVisible();
                 }
                 return false;
             };
