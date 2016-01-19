@@ -116,6 +116,12 @@ angular.module('anol.layerswitcher')
                     layer.setVisible(!layer.getVisible());
                 }
             };
+            $scope.toggleGroupVisibleByName = function(name) {
+                var group = LayersService.groupByName(name);
+                if(group !== undefined) {
+                    group.setVisible(!group.getVisible());
+                }
+            };
             $scope.groupIsVisibleByName = function(name) {
                 var group = LayersService.groupByName(name);
                 if(group !== undefined) {
