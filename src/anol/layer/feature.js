@@ -29,21 +29,20 @@
 
     anol.layer.Layer.call(this, options);
 
-    this.defaultStyle = this.olLayer.getStyle();
+    var defaultStyle = angular.isFunction(this.olLayer.getStyle()) ?
+        this.olLayer.getStyle()()[0] : this.olLayer.getStyle();
 
     if(options.style !== undefined) {
-        var defaultStyle = angular.isFunction(this.defaultStyle) ?
-            this.defaultStyle()[0] : this.defaultStyle;
-        if(options.style.externalGraphic !== undefined || options.style.radius !== undefined) {
-            this.defaultStyle = new ol.style.Style({
-                image: this.createImageStyle(options.style, defaultStyle.getImage())
-            });
-        } else {
-            this.defaultStyle = new ol.style.Style({
-                fill: this.createFillStyle(options.style, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
-            });
-        }
+        var createImageStyleFunction = options.style.externalGraphic !== undefined ?
+            this.createIconStyle : this.createCircleStyle;
+
+        this.defaultStyle = new ol.style.Style({
+            image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
+            fill: this.createFillStyle(options.style, defaultStyle.getFill()),
+            stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
+        });
+    } else {
+        this.defaultStyle = defaultStyle;
     }
 
     this.olLayer.setStyle(function(feature) {
