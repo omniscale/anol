@@ -34,30 +34,34 @@ angular.module('anol.map')
          * Stores ol3 layerss and add them to map, if map present
          */
         var Layers = function(layers) {
-            this.map = undefined;
+            var self = this;
+            self.map = undefined;
 
             // contains anol layers and groups
-            this.layers = [];
+            self.layers = [];
             // contains all anol layers (grouped layers extracted from their groups)
-            this.flattedLayers = [];
+            self.flattedLayers = [];
             // contains all olLayers like (grouped layers extracted from their groups)
-            this.olLayers = [];
+            self.olLayers = [];
             // contains all anol background layers
-            this.backgroundLayers = [];
+            self.backgroundLayers = [];
             // contains all anol overlay layers or groups
-            this.overlayLayers = [];
-            this.addLayers(layers);
+            self.overlayLayers = [];
+            self.nameLayersMap = {};
+            self.nameGroupsMap = {};
+            self.addLayers(layers);
 
             var activeBackgroundLayer;
-            angular.forEach(this.backgroundLayers, function(backgroundLayer) {
+            angular.forEach(self.backgroundLayers, function(backgroundLayer) {
                 if(angular.isUndefined(activeBackgroundLayer) && backgroundLayer.getVisible()) {
                     activeBackgroundLayer = backgroundLayer;
                 }
+                self.nameLayersMap[backgroundLayer.name] = backgroundLayer;
             });
-            if(angular.isUndefined(activeBackgroundLayer) && this.backgroundLayers.length > 0) {
-                activeBackgroundLayer = this.backgroundLayers[0];
+            if(angular.isUndefined(activeBackgroundLayer) && self.backgroundLayers.length > 0) {
+                activeBackgroundLayer = self.backgroundLayers[0];
             }
-            angular.forEach(this.backgroundLayers, function(backgroundLayer) {
+            angular.forEach(self.backgroundLayers, function(backgroundLayer) {
                 backgroundLayer.setVisible(angular.equals(activeBackgroundLayer, backgroundLayer));
             });
         };
@@ -116,11 +120,13 @@ angular.module('anol.map')
             self.prepareLayer(_layer);
             self.layers.push(_layer);
             if(_layer instanceof anol.layer.Group) {
+                self.nameGroupsMap[_layer.name] = _layer;
                 layers = _layer.layers;
             }
             angular.forEach(layers, function(layer) {
                 self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
+                self.nameLayersMap[layer.name] = layer;
                 if(SaveManagerService !== undefined && layer.saveable === true) {
                     SaveManagerService.addLayer(layer);
                 }
@@ -160,6 +166,14 @@ angular.module('anol.map')
                 }
             });
             return backgroundLayer;
+        };
+
+        Layers.prototype.layerByName = function(name) {
+            return this.nameLayersMap[name];
+        };
+
+        Layers.prototype.groupByName = function(name) {
+            return this.nameGroupsMap[name];
         };
         return new Layers(_layers);
     }];
