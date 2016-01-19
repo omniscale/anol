@@ -94,6 +94,19 @@ angular.module('anol.layerswitcher')
                 var map = MapService.getMap();
                 map.getView().fit(extent, map.getSize());
             };
+            $scope.setBackgroundLayerByName = function(name) {
+                $scope.backgroundLayer = LayersService.layerByName(name);
+            };
+            $scope.removeBackgroundLayer = function() {
+                $scope.backgroundLayer = undefined;
+            };
+            $scope.layerIsVisibleByName = function(name) {
+                var layer = LayersService.layerByName(name);
+                if(layer !== undefined) {
+                    return layer.getVisible();
+                }
+                return false;
+            };
         }
     };
 }]);
