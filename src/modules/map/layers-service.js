@@ -120,13 +120,17 @@ angular.module('anol.map')
             self.prepareLayer(_layer);
             self.layers.push(_layer);
             if(_layer instanceof anol.layer.Group) {
-                self.nameGroupsMap[_layer.name] = _layer;
+                if(_layer.name !== undefined) {
+                    self.nameGroupsMap[_layer.name] = _layer;
+                }
                 layers = _layer.layers;
             }
             angular.forEach(layers, function(layer) {
                 self.flattedLayers.push(layer);
                 self.olLayers.push(layer.olLayer);
-                self.nameLayersMap[layer.name] = layer;
+                if(layer.name !== undefined) {
+                    self.nameLayersMap[layer.name] = layer;
+                }
                 if(SaveManagerService !== undefined && layer.saveable === true) {
                     SaveManagerService.addLayer(layer);
                 }
