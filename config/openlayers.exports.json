@@ -18,6 +18,7 @@
     "ol.View",
     "ol.View#*",
     "ol.color.asArray",
+    "ol.color.asString",
     "ol.control.Attribution",
     "ol.control.Attribution#*",
     "ol.control.Control",

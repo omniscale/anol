@@ -156,13 +156,12 @@ angular.module('anol.legend')
                 drawLineLegend: function(style) {
                     var canvas = VectorLegend.createCanvas();
                     var ctx = canvas[0].getContext('2d');
-
                     var minX = 2;
                     var maxX = scope.width - 2;
                     var y = scope.height / 2;
                     ctx.moveTo(minX, y);
                     ctx.lineTo(maxX, y);
-                    ctx.strokeStyle = style.getStroke().getColor();
+                    ctx.strokeStyle = ol.color.asString(style.getStroke().getColor());
                     ctx.lineWidth = style.getStroke().getWidth();
                     ctx.stroke();
                     return canvas;
@@ -176,8 +175,8 @@ angular.module('anol.legend')
                     var maxX = scope.width - 2;
                     var maxY = scope.height - 2;
                     ctx.rect(minX, minY, maxX, maxY);
-                    ctx.fillStyle = style.getFill().getColor();
-                    ctx.strokeStyle = style.getStroke().getColor();
+                    ctx.fillStyle = ol.color.asString(style.getFill().getColor());
+                    ctx.strokeStyle = ol.color.asString(style.getStroke().getColor());
                     ctx.lineWidth = style.getStroke().getWidth();
                     ctx.fill();
                     ctx.stroke();
