@@ -57,16 +57,17 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip-trigger', 'mouseenter click');
             // add icon
             // cannot use ng-class, because icon change comes to late after click
-            overviewmapButton.addClass('glyphicon glyphicon-chevron-' + (scope.collapsed ? 'right' : 'left'));
             overviewmapButton.attr('ng-click', 'updateIcon()');
+            var overviewmapButtonIcon = angular.element('<span class="glyphicon glyphicon-chevron-' + (scope.collapsed ? 'right' : 'left') + '"></span>');
+            overviewmapButton.append(overviewmapButtonIcon);
 
             $compile(overviewmapButton)(scope);
             ControlsService.addControl(control);
 
             scope.updateIcon = function() {
                 var collapsed = olControl.getCollapsed();
-                overviewmapButton.removeClass('glyphicon-chevron-' + (collapsed ? 'left' : 'right'));
-                overviewmapButton.addClass('glyphicon-chevron-' + (collapsed ? 'right' : 'left'));
+                overviewmapButtonIcon.removeClass('glyphicon-chevron-' + (collapsed ? 'left' : 'right'));
+                overviewmapButtonIcon.addClass('glyphicon-chevron-' + (collapsed ? 'right' : 'left'));
             };
         }
     };
