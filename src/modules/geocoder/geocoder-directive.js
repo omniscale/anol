@@ -84,6 +84,7 @@ angular.module('anol.geocoder')
             element.find('.dropdown-menu li a:first').focus();
           }
           if(event.key === 'Enter' || event.keyCode === 13) {
+            event.preventDefault();
             scope.searchResults = [];
             scope.noResults = false;
             scope.searchInProgress = true;
