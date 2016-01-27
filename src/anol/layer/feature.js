@@ -32,7 +32,7 @@
     var defaultStyle = angular.isFunction(this.olLayer.getStyle()) ?
         this.olLayer.getStyle()()[0] : this.olLayer.getStyle();
 
-    if(options.style !== undefined) {
+    if(options.style !== undefined && !angular.equals(options.style, {})) {
         var createImageStyleFunction = (options.style.externalGraphic !== undefined && options.style.externalGraphic !== null) ?
             this.createIconStyle : this.createCircleStyle;
 
