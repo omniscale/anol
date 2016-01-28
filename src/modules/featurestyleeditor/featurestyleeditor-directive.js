@@ -34,7 +34,7 @@ angular.module('anol.featurestyleeditor')
     var purgeStyle = function(_style) {
         var style = {};
         angular.forEach(_style, function(value, key) {
-            if(value === undefined || value === '') {
+            if(value === undefined || value === '' || value === null) {
                 return;
             }
             style[key] = value;
