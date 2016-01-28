@@ -28,6 +28,9 @@ angular.module('anol.featurestyleeditor')
         if(style.fillOpacity !== undefined) {
             style.fillOpacity = parseFloat(style.fillOpacity);
         }
+        if(style.strokeDashstyle === undefined) {
+            style.strokeDashstyle = null;
+        }
         return style;
     };
 
@@ -66,8 +69,9 @@ angular.module('anol.featurestyleeditor')
                     scope.style = prepareStyleProperties(
                         feature.get('style') || {}
                     );
-                    lastStyle = angular.copy(scope.style);
+                    lastStyle = purgeStyle(angular.copy(scope.style));
                     scope.geometryType = feature.getGeometry().getType();
+
                     styleWatcher = scope.$watchCollection('style', function(_style) {
                         var style = purgeStyle(_style);
                         if(!angular.equals(style, lastStyle)) {
