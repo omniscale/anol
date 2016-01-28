@@ -45,7 +45,8 @@ angular.module('anol.featurestyleeditor')
     return {
         restrict: 'A',
         scope: {
-            feature: '=anolFeatureStyleEditor'
+            feature: '=anolFeatureStyleEditor',
+            layer: '='
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
