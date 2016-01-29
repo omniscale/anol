@@ -17,8 +17,7 @@ angular.module('anol.featurepopup')
         restrict: 'A',
         scope: {
             'layers': '=',
-            'tolerance': '=',
-            'multiselect': '@'
+            'tolerance': '='
         },
         replace: true,
         transclude: true,
@@ -28,7 +27,8 @@ angular.module('anol.featurepopup')
         },
         link: function(scope, element, attrs) {
             // TODO find solution for multiple directives in one page
-            var multiselect = angular.isDefined(scope.multiselect);
+            var multiselect = angular.isDefined(attrs.multiselect);
+            var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
             scope.map = MapService.getMap();
             scope.popupVisible = false;
 
@@ -114,6 +114,42 @@ angular.module('anol.featurepopup')
                 }
             };
 
+            var handleClick = function(evt) {
+                scope.popupVisible = false;
+                scope.$digest();
+                var features = [];
+                var extent = [
+                    evt.coordinate[0] - (scope.tolerance || 0),
+                    evt.coordinate[1] - (scope.tolerance || 0),
+                    evt.coordinate[0] + (scope.tolerance || 0),
+                    evt.coordinate[1] + (scope.tolerance || 0)
+                ];
+                scope.selects = {};
+                var found = false;
+                angular.forEach(scope.layers, function(layer) {
+                    var _features = layer.olLayer.getSource().getFeaturesInExtent(extent);
+                    if(_features.length > 0) {
+                        found = true;
+                        scope.selects[layer.name] = {
+                            layer: layer,
+                            features: _features
+                        };
+                    }
+                });
+                if(found === true) {
+                    scope.popupVisible = true;
+                    scope.$digest();
+                    // wait until scope changes applied ($digest cycle completed) before set popup position
+                    // otherwise Overlay.autoPan is not work correctly
+                    $timeout(function() {
+                        // popup could have been closed by $scope.close()
+                        if(scope.popupVisible === true) {
+                            scope.popup.setPosition(evt.coordinate);
+                        }
+                    });
+                }
+            };
+
             var recreateInteractions = function() {
                 scope.popupVisible = false;
 
@@ -190,17 +226,24 @@ angular.module('anol.featurepopup')
                 changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
             });
 
-            recreateInteractions();
+            if(clickPointSelect === true) {
+                scope.map.on('singleclick', handleClick, this);
+            } else {
+                recreateInteractions();
+                scope.$watch('layers', recreateInteractions);
+            }
 
             control.activate();
 
             ControlsService.addControl(control);
 
-            scope.$watch('layers', recreateInteractions);
+
             scope.$watch('layers', bindCursorChange);
             scope.$watch('popupVisible', function(visible) {
                 if(!visible) {
-                    selectInteraction.getFeatures().clear();
+                    if(selectInteraction !== undefined) {
+                        selectInteraction.getFeatures().clear();
+                    }
                     scope.layer = undefined;
                     scope.feature = undefined;
                 }
