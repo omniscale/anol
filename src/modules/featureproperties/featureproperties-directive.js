@@ -59,8 +59,7 @@ angular.module('anol.featureproperties')
                 angular.forEach(feature.getProperties(), function(value, key) {
                     if(
                         $.inArray(key, displayProperties) > -1 &&
-                        angular.isString(value) &&
-                        value !== ''
+                        value.length > 0
                     ) {
                         properties[key] = {
                             key: key,
