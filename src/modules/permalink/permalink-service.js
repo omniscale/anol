@@ -126,14 +126,12 @@ angular.module('anol.permalink')
                     angular.forEach(newVal, function(layer) {
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
-                                groupLayer.olLayer.on('change:visible', function(evt) {
-                                    self.handleVisibleChange(evt);
-                                });
+                                groupLayer.olLayer.un('change:visible', self.handleVisibleChange, self);
+                                groupLayer.olLayer.on('change:visible', self.handleVisibleChange, self);
                             });
                         } else {
-                            layer.olLayer.on('change:visible', function(evt) {
-                                self.handleVisibleChange(evt);
-                            });
+                            layer.olLayer.un('change:visible', self.handleVisibleChange, self);
+                            layer.olLayer.on('change:visible', self.handleVisibleChange, self);
                         }
                     });
                 }
