@@ -26,6 +26,7 @@ angular.module('anol.draw')
     function($compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
     return {
         restrict: 'A',
+        require: '?^anolMap',
         scope: {
             continueDrawing: '@',
             freeDrawing: '@',
@@ -39,7 +40,7 @@ angular.module('anol.draw')
             var defaultUrl = 'src/modules/draw/templates/draw.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        link: function(scope, element, attrs) {
+        link: function(scope, element, attrs, AnolMapController) {
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
                 scope.continueDrawing : false;
@@ -112,24 +113,32 @@ angular.module('anol.draw')
             };
 
             var createDrawControl = function(controlElement, controlTarget) {
-                var drawControl = new anol.control.Control({
+                var controlOptions = {
                     element: controlElement,
                     target: controlTarget,
                     exclusive: true,
                     disabled: true
-                });
+                };
+                if(AnolMapController === null) {
+                    controlOptions.olControl = null;
+                }
+                var drawControl = new anol.control.Control(controlOptions);
                 drawControl.onDeactivate(deactivate, scope);
                 drawControl.onActivate(activate, scope);
                 return drawControl;
             };
 
             var createModifyControl = function(controlElement, controlTarget) {
-                var _modifyControl = new anol.control.Control({
+                var controlOptions = {
                     element: controlElement,
                     target: controlTarget,
                     exclusive: true,
                     disabled: true
-                });
+                };
+                if(AnolMapController === null) {
+                    controlOptions.olControl = null;
+                }
+                var _modifyControl = new anol.control.Control(controlOptions);
                 _modifyControl.onDeactivate(deactivate);
                 _modifyControl.onActivate(activate);
                 _modifyControl.onDeactivate(function() {
@@ -216,27 +225,35 @@ angular.module('anol.draw')
 
             scope.map = MapService.getMap();
 
-            element.addClass('ol-control');
             element.addClass('anol-draw');
 
-            var drawControl = new anol.control.Control({
-                element: element
-            });
+            var controls = [];
+
+            if(AnolMapController !== null) {
+                element.addClass('ol-control');
+                var drawControl = new anol.control.Control({
+                    element: element
+                });
+                controls.push(drawControl);
+            }
 
             drawPointControl = createDrawControl(
                 element.find('.draw-point'),
                 element
             );
+            controls.push(drawPointControl);
 
             drawLineControl = createDrawControl(
                 element.find('.draw-line'),
                 element
             );
+            controls.push(drawLineControl);
 
             drawPolygonControl = createDrawControl(
                 element.find('.draw-polygon'),
                 element
             );
+            controls.push(drawPolygonControl);
 
             modifyControl = createModifyControl(
                 element.find('.draw-modify'),
@@ -252,11 +269,9 @@ angular.module('anol.draw')
                     scope.map.unByKey(changeCursorEventKey);
                 }
             });
+            controls.push(modifyControl);
 
-            ControlsService.addControls([
-                drawControl, drawPointControl, drawLineControl,
-                drawPolygonControl, modifyControl
-            ]);
+            ControlsService.addControls(controls);
 
             var allInteractions = function() {
                 return drawPointControl.interactions
