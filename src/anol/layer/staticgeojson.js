@@ -49,5 +49,18 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
             defaultDataProjection: srcOptions.dataProjection
         });
         return srcOptions;
+    },
+    /**
+     * Replaces source by new one with given url
+     * - url
+     */
+    changeUrl: function(url) {
+        this.loaded = false;
+        this.sourceOptions.url = url;
+        var newSource = new ol.source.Vector(this.sourceOptions);
+        newSource.once('change', function() {
+            self.loaded = true;
+        });
+        this.olLayer.setSource(newSource);
     }
 });
