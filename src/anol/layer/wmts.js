@@ -17,6 +17,7 @@
  * The default value is 22.
  */
 anol.layer.WMTS = function(_options) {
+    var self = this;
     var defaults = {
         olLayer: {
             source: {
@@ -68,7 +69,8 @@ anol.layer.WMTS = function(_options) {
         promise = this._createSourceOptions(options.olLayer.source);
     }
     promise.then(function(sourceOpts) {
-        olLayer.setSource(new ol.source.WMTS(sourceOpts));
+        self.sourceOptions = sourceOpts;
+        olLayer.setSource(new ol.source.WMTS(self.sourceOptions));
     });
 
     options.olLayer = olLayer;

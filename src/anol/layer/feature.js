@@ -21,9 +21,8 @@
         defaults,
         _options
     );
-    options.olLayer.source = new ol.source.Vector(
-        this._createSourceOptions(options.olLayer.source)
-    );
+    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
+    options.olLayer.source = new ol.source.Vector(this.sourceOptions);
 
     options.olLayer = new ol.layer.Vector(options.olLayer);
 

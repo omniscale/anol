@@ -28,9 +28,8 @@
         _options
     );
 
-    options.olLayer.source = new ol.source.XYZ(
-        this._createSourceOptions(options.olLayer.source)
-    );
+    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
+    options.olLayer.source = new ol.source.XYZ(this.sourceOptions);
 
     options.olLayer = new ol.layer.Tile(options.olLayer);
 
