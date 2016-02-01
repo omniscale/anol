@@ -18,7 +18,7 @@
     );
 
     this.sourceOptions = this._createSourceOptions(options.olLayer.source);
-    options.olLayer.source = new ol.source.ImageWMS(sourceOptions);
+    options.olLayer.source = new ol.source.ImageWMS(this.sourceOptions);
 
     options.olLayer = new ol.layer.Image(options.olLayer);
 
