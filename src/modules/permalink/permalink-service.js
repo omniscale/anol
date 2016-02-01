@@ -89,6 +89,9 @@ angular.module('anol.permalink')
                     self.visibleLayerNames = mapParams.layers;
                     var backgroundLayerAdded = false;
                     angular.forEach(LayersService.layers, function(layer) {
+                        if(layer.permalink !== true) {
+                            return;
+                        }
                         // only overlay layers are grouped
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
@@ -111,8 +114,10 @@ angular.module('anol.permalink')
                 }
             } else {
                 angular.forEach(LayersService.flattedLayers, function(layer) {
-                    if(layer.getVisible()) {
-                        self.visibleLayerNames.push(layer.name);
+                    if(layer.permalink === true) {
+                        if(layer.getVisible()) {
+                            self.visibleLayerNames.push(layer.name);
+                        }
                     }
                 });
             }
@@ -126,12 +131,16 @@ angular.module('anol.permalink')
                     angular.forEach(newVal, function(layer) {
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
-                                groupLayer.olLayer.un('change:visible', self.handleVisibleChange, self);
-                                groupLayer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                                if(groupLayer.permalink === true) {
+                                    groupLayer.olLayer.un('change:visible', self.handleVisibleChange, self);
+                                    groupLayer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                                }
                             });
                         } else {
-                            layer.olLayer.un('change:visible', self.handleVisibleChange, self);
-                            layer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                            if(layer.permalink === true) {
+                                layer.olLayer.un('change:visible', self.handleVisibleChange, self);
+                                layer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                            }
                         }
                     });
                 }
@@ -143,16 +152,18 @@ angular.module('anol.permalink')
         Permalink.prototype.handleVisibleChange = function(evt) {
             var self = this;
             var layer = evt.target;
-            var layerName = layer.get('anolLayer').name;
-            if(angular.isDefined(layerName) && layer.getVisible()) {
-                self.visibleLayerNames.push(layerName);
-            } else {
-                var layerNameIdx = $.inArray(layerName, self.visibleLayerNames);
-                if(layerNameIdx > -1) {
-                    self.visibleLayerNames.splice(layerNameIdx, 1);
+            if(layer.get('anolLayer').permalink === true) {
+                var layerName = layer.get('anolLayer').name;
+                if(angular.isDefined(layerName) && layer.getVisible()) {
+                    self.visibleLayerNames.push(layerName);
+                } else {
+                    var layerNameIdx = $.inArray(layerName, self.visibleLayerNames);
+                    if(layerNameIdx > -1) {
+                        self.visibleLayerNames.splice(layerNameIdx, 1);
+                    }
                 }
+                self.generatePermalink();
             }
-            self.generatePermalink();
         };
         /**
          * @private
