@@ -11,6 +11,7 @@ angular.module('anol.draw')
  * @requries anol.map.DrawService
  *
  * @param {boolean} continueDrawing Don't deactivate drawing after feature is added
+ * @param {function} postDrawAction Action to call after feature is drawn. Draw control will be deactivated when postDrawAction defined.
  * @param {boolean} freeDrawing Deactivate snapped drawing
  * @param {string} pointTooltipPlacement Position of point tooltip
  * @param {string} lineTooltipPlacement Position of line tooltip
@@ -29,6 +30,7 @@ angular.module('anol.draw')
         require: '?^anolMap',
         scope: {
             continueDrawing: '@',
+            postDrawAction: '&',
             freeDrawing: '@',
             tooltipDelay: '@',
             tooltipEnable: '@',
@@ -72,8 +74,11 @@ angular.module('anol.draw')
                     type: drawType
                 });
 
-                if(scope.continueDrawing === false) {
-                    draw.on('drawend', function() {
+                if(scope.continueDrawing === false || angular.isFunction(scope.postDrawAction)) {
+                    draw.on('drawend', function(evt) {
+                        if(angular.isFunction(scope.postDrawAction)) {
+                            scope.postDrawAction()(activeLayer, evt.feature);
+                        }
                         // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                         $timeout(function() { control.deactivate(); }, 275);
                     });
