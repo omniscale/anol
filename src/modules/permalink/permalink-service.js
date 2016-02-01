@@ -89,15 +89,19 @@ angular.module('anol.permalink')
                     self.visibleLayerNames = mapParams.layers;
                     var backgroundLayerAdded = false;
                     angular.forEach(LayersService.layers, function(layer) {
-                        if(layer.permalink !== true) {
-                            return;
-                        }
                         // only overlay layers are grouped
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
-                                groupLayer.setVisible(mapParams.layers.indexOf(groupLayer.name) !== -1);
+                                if(groupLayer.permalink !== true) {
+                                    return;
+                                }
+                                var visible = mapParams.layers.indexOf(groupLayer.name) !== -1;
+                                groupLayer.setVisible(visible);
                             });
                         } else {
+                            if(layer.permalink !== true) {
+                                return;
+                            }
                             var visible = mapParams.layers.indexOf(layer.name) > -1;
 
                             if(layer.isBackground && visible) {
@@ -107,7 +111,6 @@ angular.module('anol.permalink')
                                     visible = false;
                                 }
                             }
-
                             layer.setVisible(visible);
                         }
                     });
