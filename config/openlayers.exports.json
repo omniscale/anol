@@ -53,6 +53,8 @@
     "ol.geom.LinearRing#*",
     "ol.geom.LineString",
     "ol.geom.LineString#*",
+    "ol.geom.MultiLineString",
+    "ol.geom.MultiLineString#*",
     "ol.geom.Point",
     "ol.geom.Point#*",
     "ol.geom.Polygon",
