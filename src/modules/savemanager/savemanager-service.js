@@ -228,6 +228,22 @@ angular.module('anol.savemanager')
 
             return deferred.promise;
         };
+        /**
+         * @ngdoc method
+         * @name commitAll
+         * @methodOf anol.savemanager.SaveManagerService
+         *
+         * @description
+         * Commit all changed layers
+         */
+        SaveManager.prototype.commitAll = function() {
+            var self = this;
+            var promises = [];
+            angular.forEach(self.changedLayers, function(layer) {
+                promises.push(self.commit(layer));
+            });
+            return $q.all(promises);
+        };
         _saveManagerInstance = new SaveManager(_saveUrl, _saveableLayers);
         return _saveManagerInstance;
     }];
