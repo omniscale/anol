@@ -8,7 +8,7 @@
     "url": "git://github.com/omniscale/anol.git"
   },
   "readme": "README.md",
-  "devDependencies": {
+  "dependencies": {
     "canonical-path": "0.0.2",
     "grunt": "^0.4.5",
     "grunt-cli": "^0.1.13",
@@ -36,13 +36,13 @@
     "karma-phantomjs-launcher": "0.1.4",
     "karma-safari-launcher": "latest",
     "karma-script-launcher": "~0.1.0",
-    "jquery": "~2.1.1",
-    "angular": "~1.4.0",
+    "jquery": "2.1.4",
+    "angular": "1.4.9",
     "angular-animate": "~1.3.0",
     "angular-translate": "~2.8.1",
     "angular-translate-loader-static-files": "~2.8.1",
     "angular-ui-bootstrap": "~0.13.4",
-    "bootstrap": "~3.3.5",
-    "openlayers": "~3.10.0"
+    "bootstrap": "3.3.6",
+    "openlayers": "3.10.1"
   }
 }
