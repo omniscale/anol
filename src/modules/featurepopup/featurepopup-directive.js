@@ -17,9 +17,9 @@ angular.module('anol.featurepopup')
     return {
         restrict: 'A',
         scope: {
-            'layers': '=',
-            'tolerance': '=',
-            'openFor': '='
+            'layers': '=?',
+            'tolerance': '=?',
+            'openFor': '=?'
         },
         replace: true,
         transclude: true,
