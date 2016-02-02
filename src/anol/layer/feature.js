@@ -21,6 +21,8 @@
         defaults,
         _options
     );
+    var hasStyleFunction = angular.isFunction(options.olLayer.style);
+
     this.sourceOptions = this._createSourceOptions(options.olLayer.source);
     options.olLayer.source = new ol.source.Vector(this.sourceOptions);
 
@@ -28,25 +30,29 @@
 
     anol.layer.Layer.call(this, options);
 
-    var defaultStyle = angular.isFunction(this.olLayer.getStyle()) ?
-        this.olLayer.getStyle()()[0] : this.olLayer.getStyle();
+    // if the layer has an own style function we don't create an style object
+    if (!hasStyleFunction) {
 
-    if(options.style !== undefined) {
-        var createImageStyleFunction = options.style.externalGraphic !== undefined ?
-            this.createIconStyle : this.createCircleStyle;
+        var defaultStyle = angular.isFunction(this.olLayer.getStyle()) ?
+            this.olLayer.getStyle()()[0] : this.olLayer.getStyle();
 
-        this.defaultStyle = new ol.style.Style({
-            image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
-            fill: this.createFillStyle(options.style, defaultStyle.getFill()),
-            stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
+        if(options.style !== undefined) {
+            var createImageStyleFunction = options.style.externalGraphic !== undefined ?
+                this.createIconStyle : this.createCircleStyle;
+
+            this.defaultStyle = new ol.style.Style({
+                image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
+                fill: this.createFillStyle(options.style, defaultStyle.getFill()),
+                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
+            });
+        } else {
+            this.defaultStyle = defaultStyle;
+        }
+
+        this.olLayer.setStyle(function(feature) {
+            return [self.createStyle(feature)];
         });
-    } else {
-        this.defaultStyle = defaultStyle;
     }
-
-    this.olLayer.setStyle(function(feature) {
-        return [self.createStyle(feature)];
-    });
 
     this.isVector = true;
     this.loaded = true;
