@@ -8,6 +8,7 @@ angular.module('anol.featurepopup')
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {anol.layer.Feature} layers Layers to show popup for
  * @param {number} tolerance Click tolerance in pixel
+ * @param {object} openFor Accepts an object with layer and feature property. If changed, a popup is shown for given value
  *
  * @description
  * Shows a popup for selected feature
@@ -17,7 +18,8 @@ angular.module('anol.featurepopup')
         restrict: 'A',
         scope: {
             'layers': '=',
-            'tolerance': '='
+            'tolerance': '=',
+            'openFor': '='
         },
         replace: true,
         transclude: true,
@@ -246,6 +248,21 @@ angular.module('anol.featurepopup')
                     }
                     scope.layer = undefined;
                     scope.feature = undefined;
+                }
+            });
+            scope.$watch('openFor', function(openFor) {
+                if(angular.isDefined(openFor)) {
+                    scope.popupVisible = false;
+                    // wait until digest cycle complete
+                    $timeout(function() {
+                        scope.layer = openFor.layer;
+                        scope.feature = openFor.feature;
+                        scope.openFor = undefined;
+                        scope.popupVisible = true;
+                        $timeout(function() {
+                            scope.popup.setPosition(scope.feature.getGeometry().getLastCoordinate());
+                        });
+                    });
                 }
             });
         },
