@@ -6,8 +6,7 @@ angular.module('anol.map')
  */
 .provider('LayersService', [function() {
     var _layers = [];
-    var SaveManagerService;
-    var DrawService;
+    var _addLayerHandlers = [];
     /**
      * @ngdoc method
      * @name setLayers
@@ -17,15 +16,11 @@ angular.module('anol.map')
     this.setLayers = function(layers) {
         _layers = _layers.concat(layers);
     };
+    this.registerAddLayerHandler = function(handler) {
+        _addLayerHandlers.push(handler);
+    };
 
-    this.$get = ['$injector', '$rootScope', function($injector, $rootScope) {
-        // inject Services when available
-        if($injector.has('SaveManagerService')) {
-            SaveManagerService = $injector.get('SaveManagerService');
-        }
-        if($injector.has('DrawService')) {
-            DrawService = $injector.get('DrawService');
-        }
+    this.$get = ['$rootScope', function($rootScope) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -33,9 +28,10 @@ angular.module('anol.map')
          * @description
          * Stores ol3 layerss and add them to map, if map present
          */
-        var Layers = function(layers) {
+        var Layers = function(layers, addLayerHandlers) {
             var self = this;
             self.map = undefined;
+            self.addLayerHandlers = addLayerHandlers;
 
             // contains anol layers and groups
             self.layers = [];
@@ -131,12 +127,9 @@ angular.module('anol.map')
                 if(layer.name !== undefined) {
                     self.nameLayersMap[layer.name] = layer;
                 }
-                if(SaveManagerService !== undefined && layer.saveable === true) {
-                    SaveManagerService.addLayer(layer);
-                }
-                if(DrawService !== undefined && layer.editable === true) {
-                    DrawService.addLayer(layer);
-                }
+                angular.forEach(self.addLayerHandlers, function(handler) {
+                    handler(layer);
+                });
             });
         };
         /**
@@ -179,6 +172,6 @@ angular.module('anol.map')
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };
-        return new Layers(_layers);
+        return new Layers(_layers, _addLayerHandlers);
     }];
 }]);

@@ -4,7 +4,7 @@ angular.module('anol.savemanager')
  * @ngdoc object
  * @name anol.savemanager.SaveManagerServiceProvider
  */
-.provider('SaveManagerService', [function() {
+.provider('SaveManagerService', ['LayersServiceProvider', function(LayersServiceProvider) {
     // handles layer source change events and store listener keys for removing
     // listeners nicely
     var LayerListener = function(layer, saveManager) {
@@ -66,7 +66,9 @@ angular.module('anol.savemanager')
         }
     };
 
+    var _saveManagerInstance;
     var _saveUrl;
+    var _saveableLayers = [];
     /**
      * @ngdoc method
      * @name setSaveUrl
@@ -77,6 +79,17 @@ angular.module('anol.savemanager')
         _saveUrl = saveUrl;
     };
 
+    LayersServiceProvider.registerAddLayerHandler(function(layer) {
+        if(layer.saveable !== true) {
+            return;
+        }
+        if(_saveManagerInstance !== undefined) {
+            _saveManagerInstance.addLayer(layer);
+        } else {
+            _saveableLayers.push(layer);
+        }
+    });
+
     this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', function($rootScope, $q, $http, $timeout, $translate) {
         /**
          * @ngdoc service
@@ -85,11 +98,15 @@ angular.module('anol.savemanager')
          * @description
          * Collects changes in saveable layers and send them to given saveUrl
          */
-        var SaveManager = function(saveUrl) {
+        var SaveManager = function(saveUrl, saveableLayers) {
             var self = this;
             this.saveUrl = saveUrl;
             this.changedLayers = {};
             this.changedFeatures = {};
+
+            angular.forEach(saveableLayers, function(layer) {
+                self.addLayer(layer);
+            });
 
             var translate = function() {
                 $translate('anol.savemanager.SERVICE_UNAVAILABLE').then(
@@ -211,7 +228,7 @@ angular.module('anol.savemanager')
 
             return deferred.promise;
         };
-
-        return new SaveManager(_saveUrl);
+        _saveManagerInstance = new SaveManager(_saveUrl, _saveableLayers);
+        return _saveManagerInstance;
     }];
 }]);

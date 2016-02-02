@@ -4,7 +4,20 @@ angular.module('anol.draw')
  * @ngdoc object
  * @name anol.draw.DrawServiceProvider
  */
-.provider('DrawService', [function() {
+.provider('DrawService', ['LayersServiceProvider', function(LayersServiceProvider) {
+    var _drawServiceInstance;
+    var _editableLayers = [];
+
+    LayersServiceProvider.registerAddLayerHandler(function(layer) {
+        if(layer.editable !== true) {
+            return;
+        }
+        if(_drawServiceInstance !== undefined) {
+            _drawServiceInstance.addLayer(layer);
+        } else {
+            _editableLayers.push(layer);
+        }
+    });
     this.$get = [function() {
         /**
          * @ngdoc service
@@ -13,9 +26,13 @@ angular.module('anol.draw')
          * @description
          * Handles current draw layer
          */
-        var DrawService = function() {
+        var DrawService = function(editableLayers) {
+            var self = this;
             this.layers = [];
             this.activeLayer = undefined;
+            angular.forEach(editableLayers, function(layer) {
+                self.addLayer(layer);
+            });
         };
         /**
          * @ngdoc method
@@ -41,7 +58,6 @@ angular.module('anol.draw')
                 this.activeLayer = layer;
             }
         };
-
-        return new DrawService();
+        return new DrawService(_editableLayers);
     }];
 }]);
