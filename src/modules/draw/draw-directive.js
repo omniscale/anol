@@ -59,7 +59,7 @@ angular.module('anol.draw')
             scope.polygonTooltipPlacement = angular.isDefined(scope.polygonTooltipPlacement) ?
                 scope.polygonTooltipPlacement : 'right';
 
-            var activeLayer;
+            scope.activeLayer = undefined;
             var selectedFeature;
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
 
@@ -77,7 +77,7 @@ angular.module('anol.draw')
                 if(scope.continueDrawing === false || angular.isFunction(scope.postDrawAction)) {
                     draw.on('drawend', function(evt) {
                         if(angular.isFunction(scope.postDrawAction)) {
-                            scope.postDrawAction()(activeLayer, evt.feature);
+                            scope.postDrawAction()(scope.activeLayer, evt.feature);
                         }
                         // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                         $timeout(function() { control.deactivate(); }, 275);
@@ -168,7 +168,7 @@ angular.module('anol.draw')
                 var pixel = scope.map.getEventPixel(evt.originalEvent);
 
                 var hit = scope.map.hasFeatureAtPixel(pixel, function(layer) {
-                    return layer === activeLayer.olLayer;
+                    return layer === scope.activeLayer.olLayer;
                 });
 
                 scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
@@ -222,7 +222,7 @@ angular.module('anol.draw')
 
             scope.remove = function() {
                 if(selectedFeature !== undefined) {
-                    activeLayer.olLayer.getSource().removeFeature(selectedFeature);
+                    scope.activeLayer.olLayer.getSource().removeFeature(selectedFeature);
                     modifyControl.interactions[0].getFeatures().clear();
                     selectedFeature = undefined;
                 }
@@ -305,10 +305,10 @@ angular.module('anol.draw')
                     scope.map.addInteraction(interaction);
                 });
 
-                activeLayer = layer;
+                scope.activeLayer = layer;
 
                 visibleDewatcher = scope.$watch(function() {
-                    return activeLayer.getVisible();
+                    return scope.activeLayer.getVisible();
                 }, function(n) {
                     if(n === false) {
                         DrawService.changeLayer(undefined);
@@ -335,13 +335,13 @@ angular.module('anol.draw')
                     visibleDewatcher();
                 }
 
-                activeLayer = undefined;
+                scope.activeLayer = undefined;
             };
 
             scope.$watch(function() {
                 return DrawService.activeLayer;
             }, function(newActiveLayer, oldActiveLayer) {
-                if(newActiveLayer === activeLayer) {
+                if(newActiveLayer === scope.activeLayer) {
                     return;
                 }
                 if(oldActiveLayer !== undefined) {
