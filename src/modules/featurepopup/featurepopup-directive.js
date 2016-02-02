@@ -103,16 +103,9 @@ angular.module('anol.featurepopup')
                 var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
 
                 if(_handleSelect(evt) === true) {
+                    scope.coordinate = evt.mapBrowserEvent.coordinate;
                     scope.popupVisible = true;
                     scope.$digest();
-                    // wait until scope changes applied ($digest cycle completed) before set popup position
-                    // otherwise Overlay.autoPan is not work correctly
-                    $timeout(function() {
-                        // popup could have been closed by $scope.close()
-                        if(scope.popupVisible === true) {
-                            scope.popup.setPosition(evt.mapBrowserEvent.coordinate);
-                        }
-                    });
                 }
             };
 
@@ -139,16 +132,9 @@ angular.module('anol.featurepopup')
                     }
                 });
                 if(found === true) {
+                    scope.coordinate = evt.coordinate;
                     scope.popupVisible = true;
                     scope.$digest();
-                    // wait until scope changes applied ($digest cycle completed) before set popup position
-                    // otherwise Overlay.autoPan is not work correctly
-                    $timeout(function() {
-                        // popup could have been closed by $scope.close()
-                        if(scope.popupVisible === true) {
-                            scope.popup.setPosition(evt.coordinate);
-                        }
-                    });
                 }
             };
 
@@ -242,12 +228,19 @@ angular.module('anol.featurepopup')
 
             scope.$watch('layers', bindCursorChange);
             scope.$watch('popupVisible', function(visible) {
-                if(!visible) {
+                if(visible === false) {
                     if(selectInteraction !== undefined) {
                         selectInteraction.getFeatures().clear();
                     }
                     scope.layer = undefined;
                     scope.feature = undefined;
+                    scope.coordinate = undefined;
+                } else if(scope.coordinate !== undefined) {
+                    // wait until scope changes applied ($digest cycle completed) before set popup position
+                    // otherwise Overlay.autoPan is not work correctly
+                    $timeout(function() {
+                        scope.popup.setPosition(scope.coordinate);
+                    });
                 }
             });
             scope.$watch('openFor', function(openFor) {
@@ -258,10 +251,8 @@ angular.module('anol.featurepopup')
                         scope.layer = openFor.layer;
                         scope.feature = openFor.feature;
                         scope.openFor = undefined;
+                        scope.coordinate = scope.feature.getGeometry().getLastCoordinate();
                         scope.popupVisible = true;
-                        $timeout(function() {
-                            scope.popup.setPosition(scope.feature.getGeometry().getLastCoordinate());
-                        });
                     });
                 }
             });
