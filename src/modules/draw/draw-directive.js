@@ -83,6 +83,14 @@ angular.module('anol.draw')
                         $timeout(function() { control.deactivate(); }, 275);
                     });
                 }
+                draw.on('drawstart', function() {
+                    if(changeCursorEventKey !== undefined) {
+                        scope.map.unByKey(changeCursorEventKey);
+                    }
+                });
+                draw.on('drawend', function() {
+                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
+                });
 
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
@@ -110,6 +118,14 @@ angular.module('anol.draw')
                 });
                 var modifyInteraction = new ol.interaction.Modify({
                     features: selectInteraction.getFeatures()
+                });
+                modifyInteraction.on('modifystart', function() {
+                    if(changeCursorEventKey !== undefined) {
+                        scope.map.unByKey(changeCursorEventKey);
+                    }
+                });
+                modifyInteraction.on('modifyend', function() {
+                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
                 });
                 var snapInteraction = new ol.interaction.Snap({
                     source: layer.getSource()
