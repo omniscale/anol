@@ -216,6 +216,9 @@ angular.module('anol.featurepopup')
 
             if(clickPointSelect === true) {
                 scope.map.on('singleclick', handleClick, this);
+                scope.$watch('layers', function() {
+                    scope.popupVisible = false;
+                });
             } else {
                 recreateInteractions();
                 scope.$watch('layers', recreateInteractions);
