@@ -43,7 +43,8 @@
             this.defaultStyle = new ol.style.Style({
                 image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
                 fill: this.createFillStyle(options.style, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
+                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke()),
+                text: this.createTextStyle(options.style, defaultStyle.getText())
             });
         } else {
             this.defaultStyle = defaultStyle;
@@ -62,6 +63,9 @@
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
     CLASS_NAME: 'anol.layer.Feature',
+    DEFAULT_FONT_FACE: 'Helvetica',
+    DEFAULT_FONT_SIZE: '10px',
+    DEFAULT_FONT_WEIGHT: 'normal',
     extent: function() {
         var extent = this.olLayer.getSource().getExtent();
         if(ol.extent.isEmpty(extent)) {
@@ -72,27 +76,26 @@ $.extend(anol.layer.Feature.prototype, {
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
-
+        var hasTextStyle = defaultStyle.getText() !== null;
         if(feature === undefined) {
             return defaultStyle;
         }
 
         var geometryType = feature.getGeometry().getType();
         var featureStyle = feature.get('style') || {};
-        if(angular.equals(featureStyle, {})) {
+        if(angular.equals(featureStyle, {}) && !hasTextStyle) {
             return defaultStyle;
         }
+        var styleOptions = {};
         if(geometryType === 'Point') {
-            return new ol.style.Style({
-                image: this.createImageStyle(featureStyle, defaultStyle.getImage())
-            });
+            styleOptions.image = this.createImageStyle(featureStyle, defaultStyle.getImage());
         } else {
             // line features ignores fill style
-            return new ol.style.Style({
-                fill: this.createFillStyle(featureStyle, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(featureStyle, defaultStyle.getStroke())
-            });
+            styleOptions.fill = this.createFillStyle(featureStyle, defaultStyle.getFill());
+            styleOptions.stroke = this.createStrokeStyle(featureStyle, defaultStyle.getStroke());
         }
+        styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
+        return new ol.style.Style(styleOptions);
     },
     createImageStyle: function(style, defaultImageStyle) {
         var radius = style.radius;
@@ -251,6 +254,44 @@ $.extend(anol.layer.Feature.prototype, {
             default:
                 return undefined;
           }
+    },
+    getLabel: function(feature, labelKey) {
+        if(feature === undefined) {
+            return '';
+        }
+        return feature.get(labelKey);
+    },
+    createTextStyle: function(style, defaultTextStyle, feature) {
+        var fontWeight = this.DEFAULT_FONT_WEIGHT;
+        var fontFace = this.DEFAULT_FONT_FACE;
+        var fontSize = this.DEFAULT_FONT_SIZE;
+
+        // atm defaultTextStyle is null
+        if(defaultTextStyle !== null) {
+            var splittedFont = defaultTextStyle.getFont().split(' ');
+            fontWeight = splittedFont[0];
+            fontSize = splittedFont[1];
+            fontFace = splittedFont[2];
+        }
+        var styleOptions = {};
+        if(style.label !== undefined) {
+            styleOptions.text = this.getLabel(feature, style.label);
+        }
+        if(style.fontWeight !== undefined) {
+            fontWeight = style.fontWeight;
+        }
+        if(style.fontSize !== undefined) {
+            fontSize = style.fontSize;
+        }
+        if(style.fontFace !== undefined) {
+            fontFace = style.fontFace;
+        }
+        styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
+
+        if(Object.keys(style).length > 0) {
+            return new ol.style.Text(styleOptions);
+        }
+        return undefined;
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method
