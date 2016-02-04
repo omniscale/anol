@@ -30,6 +30,7 @@
 
     anol.layer.Layer.call(this, options);
 
+    this.hasPropertyLabel = false;
     // if the layer has an own style function we don't create an style object
     if (!hasStyleFunction) {
 
@@ -40,10 +41,13 @@
             var createImageStyleFunction = options.style.externalGraphic !== undefined ?
                 this.createIconStyle : this.createCircleStyle;
 
+            this.hasPropertyLabel = options.style.propertyLabel !== undefined;
+
             this.defaultStyle = new ol.style.Style({
                 image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
                 fill: this.createFillStyle(options.style, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke())
+                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke()),
+                text: this.createTextStyle(options.style, defaultStyle.getText())
             });
         } else {
             this.defaultStyle = defaultStyle;
@@ -62,6 +66,9 @@
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
     CLASS_NAME: 'anol.layer.Feature',
+    DEFAULT_FONT_FACE: 'Helvetica',
+    DEFAULT_FONT_SIZE: '10px',
+    DEFAULT_FONT_WEIGHT: 'normal',
     extent: function() {
         var extent = this.olLayer.getSource().getExtent();
         if(ol.extent.isEmpty(extent)) {
@@ -72,27 +79,24 @@ $.extend(anol.layer.Feature.prototype, {
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
-
         if(feature === undefined) {
             return defaultStyle;
         }
-
         var geometryType = feature.getGeometry().getType();
         var featureStyle = feature.get('style') || {};
-        if(angular.equals(featureStyle, {})) {
+        if(angular.equals(featureStyle, {}) && !this.hasPropertyLabel) {
             return defaultStyle;
         }
+        var styleOptions = {};
         if(geometryType === 'Point') {
-            return new ol.style.Style({
-                image: this.createImageStyle(featureStyle, defaultStyle.getImage())
-            });
+            styleOptions.image = this.createImageStyle(featureStyle, defaultStyle.getImage());
         } else {
             // line features ignores fill style
-            return new ol.style.Style({
-                fill: this.createFillStyle(featureStyle, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(featureStyle, defaultStyle.getStroke())
-            });
+            styleOptions.fill = this.createFillStyle(featureStyle, defaultStyle.getFill());
+            styleOptions.stroke = this.createStrokeStyle(featureStyle, defaultStyle.getStroke());
         }
+        styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
+        return new ol.style.Style(styleOptions);
     },
     createImageStyle: function(style, defaultImageStyle) {
         var radius = style.radius;
@@ -251,6 +255,88 @@ $.extend(anol.layer.Feature.prototype, {
             default:
                 return undefined;
           }
+    },
+    // return function for labelKey from feature if feature is undefined
+    // used for default layer style
+    getLabel: function(feature, labelKey) {
+        if(feature === undefined) {
+            return function(_feature) {
+                if(_feature === undefined) {
+                    return '';
+                }
+                return _feature.get(labelKey);
+            };
+        }
+        return feature.get(labelKey);
+    },
+    createTextStyle: function(style, defaultTextStyle, feature) {
+        var fontWeight = this.DEFAULT_FONT_WEIGHT;
+        var fontFace = this.DEFAULT_FONT_FACE;
+        var fontSize = this.DEFAULT_FONT_SIZE;
+        var defaultText;
+        var defaultTextFillStyle;
+
+        // atm defaultTextStyle is null
+        if(defaultTextStyle !== null) {
+            var splittedFont = defaultTextStyle.getFont().split(' ');
+            fontWeight = splittedFont[0];
+            fontSize = splittedFont[1];
+            fontFace = splittedFont[2];
+            defaultTextFillStyle = defaultTextStyle.getFill();
+            defaultText = defaultTextStyle.getText();
+            if(angular.isFunction(defaultText) && feature !== undefined) {
+                defaultText = defaultText.call(this, feature);
+            }
+        }
+        var styleOptions = {};
+        if(style.text !== undefined) {
+            styleOptions.text = style.text;
+        } else if(style.propertyLabel !== undefined) {
+            styleOptions.text = this.getLabel(feature, style.propertyLabel);
+        } else if(defaultText !== undefined) {
+            styleOptions.text = defaultText;
+        }
+        if(styleOptions.text === undefined) {
+            return;
+        }
+        if(style.fontWeight !== undefined) {
+            fontWeight = style.fontWeight;
+        }
+        if(style.fontSize !== undefined) {
+            fontSize = style.fontSize;
+        }
+        if(style.fontFace !== undefined) {
+            fontFace = style.fontFace;
+        }
+        styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
+
+        var fontColor = [];
+        if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
+            fontColor = defaultTextFillStyle.getColor();
+            if(fontColor !== undefined) {
+                fontColor = ol.color.asArray(fontColor).slice();
+            }
+        }
+        if(style.fontColor !== undefined) {
+            var _fontColor = ol.color.asArray(style.fontColor);
+            if(_fontColor !== undefined) {
+                fontColor[0] = _fontColor[0];
+                fontColor[1] = _fontColor[1];
+                fontColor[2] = _fontColor[2];
+                fontColor[3] = _fontColor[3] || fontColor[3] || 1;
+            }
+        }
+
+        if(fontColor !== undefined) {
+            styleOptions.fill = new ol.style.Fill({
+                color: fontColor
+            });
+        }
+
+        if(Object.keys(styleOptions).length > 0) {
+            return new ol.style.Text(styleOptions);
+        }
+        return undefined;
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method

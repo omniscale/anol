@@ -118,6 +118,8 @@
     "ol.style.Stroke#*",
     "ol.style.Style",
     "ol.style.Style#*",
+    "ol.style.Text",
+    "ol.style.Text#*",
     "ol.tilegrid.TileGrid",
     "ol.tilegrid.TileGrid#*",
     "ol.tilegrid.WMTS",

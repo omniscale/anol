@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Labeling Example</title>
+
+    <!-- Core CSS -->
+    <link href="../build/css/bootstrap.css" rel="stylesheet">
+    <link href="../build/css/ol.css" rel="stylesheet">
+    <link href="../build/css/anol.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body ng-app="example" ng-controller="ExampleController">
+    <!-- map -->
+    <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
+      <div anol-zoom></div>
+    </div>
+    <!-- Remove libs when build dist -->
+    <script type="text/javascript" src="../build/jquery.js"></script>
+    <script type="text/javascript" src="../build/angular.js"></script>
+    <script type="text/javascript" src="../build/ui-bootstrap-tpls.js"></script>
+    <script type="text/javascript" src="../build/angular-translate.js"></script>
+    <script type="text/javascript" src="../build/ol-custom.js"></script>
+    <script type="text/javascript" src="../build/anol.js"></script>
+    <script type="text/javascript" src="../build/templates.js"></script>
+
+    <script type="text/javascript">
+      angular.module('example', ['anol.featurepopup', 'anol.featureproperties', 'anol.zoom'])
+      .config(['$translateProvider', function($translateProvider) {
+        $translateProvider.translations('en_US', {
+          'featureproperties': {
+            'featureLayer': {
+              'DESCRIPTION': 'Beschreibung',
+              'description': {
+                'I am a feature': 'Ich bin ein Feature'
+              }
+            }
+          }
+        });
+      }])
+      .config(['MapServiceProvider',function(MapServiceProvider) {
+        MapServiceProvider.addView(new ol.View({
+          center: [0, 0],
+          zoom: 18
+        }));
+      }])
+      .controller('ExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
+
+          var propertyLabelFeature1 = new ol.Feature({
+            geometry: new ol.geom.Point([-40, 0]),
+            name: 'Feature 1',
+            other: 'other label',
+            style: {
+              propertyLabel: 'other'
+            }
+          });
+
+          var propertyLabelFeature2 = new ol.Feature({
+            geometry: new ol.geom.Point([0, 0]),
+            name: 'Feature 2',
+            style: {
+              text: 'Overwritten',
+              fontColor: 'rgba(0, 255, 0, 0.1)'
+            }
+          });
+
+          var propertyLabelFeature3 = new ol.Feature({
+            geometry: new ol.geom.Point([40, 0]),
+            name: 'Feature 3',
+            style: {
+              fontColor: '#00f'
+            }
+          });
+
+          propertyLabelFeatureLayer = new anol.layer.Feature({
+            name: 'featureLayer',
+            style: {
+              radius: 0,
+              propertyLabel: 'name',
+              fontColor: '#f00'
+            },
+            olLayer: {
+              source: {
+                features: [propertyLabelFeature1, propertyLabelFeature2, propertyLabelFeature3]
+              }
+            }
+          });
+
+          LayersService.addLayer(propertyLabelFeatureLayer);
+      }]);
+    </script>
+  </body>
+</html>
