@@ -28,9 +28,9 @@ angular.module('anol.measure')
         scope: {
             measureType: '@anolMeasure',
             geodesic: '@',
-            drawStyle: '=',
-            style: '=',
-            autoDisable: '=',
+            drawStyle: '=?',
+            style: '=?',
+            autoDisable: '=?',
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@'
