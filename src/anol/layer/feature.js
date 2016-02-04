@@ -332,7 +332,7 @@ $.extend(anol.layer.Feature.prototype, {
             });
         }
 
-        if(Object.keys(style).length > 0) {
+        if(Object.keys(styleOptions).length > 0) {
             return new ol.style.Text(styleOptions);
         }
         return undefined;
