@@ -43,6 +43,6 @@
     "angular-translate-loader-static-files": "~2.8.1",
     "angular-ui-bootstrap": "~0.13.4",
     "bootstrap": "3.3.6",
-    "openlayers": "3.10.1"
+    "openlayers": "3.13.1"
   }
 }
