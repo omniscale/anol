@@ -30,6 +30,7 @@
 
     anol.layer.Layer.call(this, options);
 
+    this.hasPropertyLabel = false;
     // if the layer has an own style function we don't create an style object
     if (!hasStyleFunction) {
 
@@ -39,6 +40,8 @@
         if(options.style !== undefined) {
             var createImageStyleFunction = options.style.externalGraphic !== undefined ?
                 this.createIconStyle : this.createCircleStyle;
+
+            this.hasPropertyLabel = options.style.propertyLabel !== undefined;
 
             this.defaultStyle = new ol.style.Style({
                 image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
@@ -76,14 +79,12 @@ $.extend(anol.layer.Feature.prototype, {
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
-        var hasTextStyle = defaultStyle.getText() !== null;
         if(feature === undefined) {
             return defaultStyle;
         }
-
         var geometryType = feature.getGeometry().getType();
         var featureStyle = feature.get('style') || {};
-        if(angular.equals(featureStyle, {}) && !hasTextStyle) {
+        if(angular.equals(featureStyle, {}) && !this.hasPropertyLabel) {
             return defaultStyle;
         }
         var styleOptions = {};
@@ -276,8 +277,10 @@ $.extend(anol.layer.Feature.prototype, {
             defaultTextFillStyle = defaultTextStyle.getFill();
         }
         var styleOptions = {};
-        if(style.label !== undefined) {
-            styleOptions.text = this.getLabel(feature, style.label);
+        if(style.text !== undefined) {
+            styleOptions.text = style.text;
+        } else if(style.propertyLabel !== undefined) {
+            styleOptions.text = this.getLabel(feature, style.propertyLabel);
         }
         if(style.fontWeight !== undefined) {
             fontWeight = style.fontWeight;
