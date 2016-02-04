@@ -318,7 +318,7 @@ $.extend(anol.layer.Feature.prototype, {
             }
         }
         if(style.fontColor !== undefined) {
-            var _fontColor = ol.color.asArray(style.fontColor);
+            var _fontColor = ol.color.asArray(style.fontColor).slice();
             if(_fontColor !== undefined) {
                 fontColor[0] = _fontColor[0];
                 fontColor[1] = _fontColor[1];
