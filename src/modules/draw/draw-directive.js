@@ -74,9 +74,9 @@ angular.module('anol.draw')
                     type: drawType
                 });
 
-                if(scope.continueDrawing === false || angular.isFunction(scope.postDrawAction)) {
+                if(scope.continueDrawing === false || angular.isFunction(scope.postDrawAction())) {
                     draw.on('drawend', function(evt) {
-                        if(angular.isFunction(scope.postDrawAction)) {
+                        if(angular.isFunction(scope.postDrawAction())) {
                             scope.postDrawAction()(scope.activeLayer, evt.feature);
                         }
                         // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
