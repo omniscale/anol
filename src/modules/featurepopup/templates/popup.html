@@ -1,4 +1,7 @@
-<div class="anol-popup" ng-show="popupVisible">
+<div class="anol-popup"
+    opening-direction="{{ openingDirection }}"
+	ng-show="popupVisible"
+	ng-class="openingDirection">
     <span class="anol-popup-closer glyphicon glyphicon-remove" ng-click="close()"></span>
     <div class="anol-popup-content">
         <ng-transclude></ng-transclude>
