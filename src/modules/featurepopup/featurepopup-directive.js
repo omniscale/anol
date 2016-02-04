@@ -21,7 +21,8 @@ angular.module('anol.featurepopup')
             'layers': '=?',
             'tolerance': '=?',
             'openFor': '=?',
-            'openingDirection': '@'
+            'openingDirection': '@',
+            'onClose': '&?'
         },
         replace: true,
         transclude: true,
@@ -244,6 +245,9 @@ angular.module('anol.featurepopup')
                     scope.layer = undefined;
                     scope.feature = undefined;
                     scope.coordinate = undefined;
+                    if(angular.isFunction(scope.onClose())) {
+                        scope.onClose()();
+                    }
                 } else if(scope.coordinate !== undefined) {
                     // wait until scope changes applied ($digest cycle completed) before set popup position
                     // otherwise Overlay.autoPan is not work correctly
