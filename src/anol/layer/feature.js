@@ -312,9 +312,9 @@ $.extend(anol.layer.Feature.prototype, {
 
         var fontColor = [];
         if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
-            fontColor = defaultTextFillStyle.getColor();
-            if(fontColor !== undefined) {
-                fontColor = ol.color.asArray(fontColor).slice();
+            var defaultFontColor = defaultTextFillStyle.getColor();
+            if(defaultFontColor !== undefined) {
+                fontColor = ol.color.asArray(defaultFontColor).slice();
             }
         }
         if(style.fontColor !== undefined) {
