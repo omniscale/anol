@@ -77,16 +77,19 @@ canvas.anol-legend-item-image
  * anol-popup
  * for featurepopup- and featureinfo-directive
  */
+
+$popup-border-color: gray
+$popup-arrow-size: 10px
+$popup-click-gap: 15px
+
 .anol-popup
   position: absolute
-  background-color: white
+  background: #d5d5d5;
   padding: 10px 20px 10px 15px
-  border: 1px solid #cccccc
-  bottom: 12px
-  left: -50px
+  border: 1px solid $popup-border-color;
 
+  // on default open to top so arrow is on the bottom
   &:after, &:before
-    top: 100%
     border: solid transparent
     content: " "
     height: 0
@@ -95,10 +98,49 @@ canvas.anol-legend-item-image
     pointer-events: none
 
   &:after
-    border-top-color: white
-    border-width: 10px
-    left: 48px
-    margin-left: -10px
+    border-color: transparent
+    border-width: $popup-arrow-size
+
+  &:before
+    border-color: transparent
+    border-width: $popup-arrow-size
+
+  &.top, &.bottom
+      left: -50px
+      &:after, &:before
+        left: 50px
+        margin-left: -$popup-arrow-size
+
+  &.top
+    bottom: $popup-click-gap
+    &:after, &:before
+      border-top-color: $popup-border-color
+      top: 100%
+
+  // open to bottom so arrow is on the top
+  &.bottom
+    top: $popup-click-gap
+    &:after, &:before
+      border-bottom-color: $popup-border-color
+      bottom: 100%
+
+  // open to left so arrow is on the right
+  &.left
+    right: $popup-click-gap
+    top: -$popup-arrow-size
+    &:after, &:before
+      border-left-color: $popup-border-color
+      left: 100%
+      top: 0
+
+  // open to right so arrow is on the right
+  &.right
+    left: $popup-arrow-size
+    top: -$popup-arrow-size
+    &:after, &:before
+      border-right-color: $popup-border-color
+      right: 100%
+      top: 0
 
   .anol-popup-content
     white-space: nowrap

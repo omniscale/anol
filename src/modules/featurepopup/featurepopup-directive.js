@@ -9,6 +9,7 @@ angular.module('anol.featurepopup')
  * @param {anol.layer.Feature} layers Layers to show popup for
  * @param {number} tolerance Click tolerance in pixel
  * @param {object} openFor Accepts an object with layer and feature property. If changed, a popup is shown for given value
+ * @param {string} openingDirection Direction where the popup open. Default is top. Also the values left, bottom and right are possible
  *
  * @description
  * Shows a popup for selected feature
@@ -19,7 +20,8 @@ angular.module('anol.featurepopup')
         scope: {
             'layers': '=?',
             'tolerance': '=?',
-            'openFor': '=?'
+            'openFor': '=?',
+            'openingDirection': '@'
         },
         replace: true,
         transclude: true,
@@ -37,6 +39,10 @@ angular.module('anol.featurepopup')
             scope.feature = undefined;
             scope.layer = undefined;
             scope.selectes = {};
+
+            $timeout(function() {
+                scope.openingDirection = scope.openingDirection || 'top';
+            });
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
