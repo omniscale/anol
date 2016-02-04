@@ -68,6 +68,7 @@ angular.module('anol.featurestyleeditor')
             // feature.get('style') contains only string values, but lastStyle contains right type for each property
             var lastStyle;
             scope.$watch('feature', function(feature) {
+                lastStyle = undefined;
                 if(styleWatcher !== undefined) {
                     styleWatcher();
                     styleWatcher = undefined;
