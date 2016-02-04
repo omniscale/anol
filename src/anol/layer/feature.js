@@ -256,9 +256,16 @@ $.extend(anol.layer.Feature.prototype, {
                 return undefined;
           }
     },
+    // return function for labelKey from feature if feature is undefined
+    // used for default layer style
     getLabel: function(feature, labelKey) {
         if(feature === undefined) {
-            return '';
+            return function(_feature) {
+                if(_feature === undefined) {
+                    return '';
+                }
+                return _feature.get(labelKey);
+            }
         }
         return feature.get(labelKey);
     },
@@ -266,6 +273,7 @@ $.extend(anol.layer.Feature.prototype, {
         var fontWeight = this.DEFAULT_FONT_WEIGHT;
         var fontFace = this.DEFAULT_FONT_FACE;
         var fontSize = this.DEFAULT_FONT_SIZE;
+        var defaultText;
         var defaultTextFillStyle;
 
         // atm defaultTextStyle is null
@@ -275,12 +283,21 @@ $.extend(anol.layer.Feature.prototype, {
             fontSize = splittedFont[1];
             fontFace = splittedFont[2];
             defaultTextFillStyle = defaultTextStyle.getFill();
+            defaultText = defaultTextStyle.getText();
+            if(angular.isFunction(defaultText) && feature !== undefined) {
+                defaultText = defaultText.call(this, feature);
+            }
         }
         var styleOptions = {};
         if(style.text !== undefined) {
             styleOptions.text = style.text;
         } else if(style.propertyLabel !== undefined) {
             styleOptions.text = this.getLabel(feature, style.propertyLabel);
+        } else if(defaultText !== undefined) {
+            styleOptions.text = defaultText;
+        }
+        if(styleOptions.text === undefined) {
+            return;
         }
         if(style.fontWeight !== undefined) {
             fontWeight = style.fontWeight;
