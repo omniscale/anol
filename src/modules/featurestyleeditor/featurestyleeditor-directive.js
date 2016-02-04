@@ -38,9 +38,10 @@ angular.module('anol.featurestyleeditor')
         var style = {};
         angular.forEach(_style, function(value, key) {
             if(value === undefined || value === '' || value === null) {
-                return;
+                style[key] = undefined;
+            } else {
+                style[key] = value;
             }
-            style[key] = value;
         });
         return style;
     };
@@ -75,12 +76,14 @@ angular.module('anol.featurestyleeditor')
                     styleWatcher = scope.$watchCollection('style', function(_style) {
                         var style = purgeStyle(_style);
                         if(!angular.equals(style, lastStyle)) {
-                            if(angular.equals(style, {})) {
+                            var featureStyle = feature.get('style') || {};
+                            featureStyle = angular.extend(featureStyle, style);
+                            if(angular.equals(featureStyle, {})) {
                                 feature.unset('style');
                             } else {
-                                feature.set('style', style);
+                                feature.set('style', featureStyle);
                             }
-                            lastStyle = angular.copy(style);
+                            lastStyle = angular.copy(featureStyle);
                         }
                     });
                 }
