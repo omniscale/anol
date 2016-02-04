@@ -310,7 +310,7 @@ $.extend(anol.layer.Feature.prototype, {
         }
         styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
 
-        var fontColor;
+        var fontColor = [];
         if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
             fontColor = defaultTextFillStyle.getColor();
             if(fontColor !== undefined) {
