@@ -245,7 +245,7 @@ angular.module('anol.featurepopup')
                     scope.layer = undefined;
                     scope.feature = undefined;
                     scope.coordinate = undefined;
-                    if(angular.isFunction(scope.onClose())) {
+                    if(angular.isFunction(scope.onClose) && angular.isFunction(scope.onClose())) {
                         scope.onClose()();
                     }
                 } else if(scope.coordinate !== undefined) {
