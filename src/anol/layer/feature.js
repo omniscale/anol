@@ -265,7 +265,7 @@ $.extend(anol.layer.Feature.prototype, {
                     return '';
                 }
                 return _feature.get(labelKey);
-            }
+            };
         }
         return feature.get(labelKey);
     },
