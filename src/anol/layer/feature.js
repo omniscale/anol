@@ -265,6 +265,7 @@ $.extend(anol.layer.Feature.prototype, {
         var fontWeight = this.DEFAULT_FONT_WEIGHT;
         var fontFace = this.DEFAULT_FONT_FACE;
         var fontSize = this.DEFAULT_FONT_SIZE;
+        var defaultTextFillStyle;
 
         // atm defaultTextStyle is null
         if(defaultTextStyle !== null) {
@@ -272,6 +273,7 @@ $.extend(anol.layer.Feature.prototype, {
             fontWeight = splittedFont[0];
             fontSize = splittedFont[1];
             fontFace = splittedFont[2];
+            defaultTextFillStyle = defaultTextStyle.getFill();
         }
         var styleOptions = {};
         if(style.label !== undefined) {
@@ -287,6 +289,28 @@ $.extend(anol.layer.Feature.prototype, {
             fontFace = style.fontFace;
         }
         styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
+
+        var fontColor;
+        if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
+            fontColor = defaultTextFillStyle.getColor();
+            if(fontColor !== undefined) {
+                fontColor = ol.color.asArray(fontColor).slice();
+            }
+        }
+        if(style.fontColor !== undefined) {
+            var _fontColor = ol.color.asArray(style.fontColor);
+            if(_fontColor !== undefined) {
+                fontColor[0] = _fontColor[0];
+                fontColor[1] = _fontColor[1];
+                fontColor[2] = _fontColor[2];
+            }
+        }
+
+        if(fontColor !== undefined) {
+            styleOptions.fill = new ol.style.Fill({
+                color: fontColor
+            });
+        }
 
         if(Object.keys(style).length > 0) {
             return new ol.style.Text(styleOptions);
