@@ -326,8 +326,7 @@ $.extend(anol.layer.Feature.prototype, {
                 fontColor[3] = _fontColor[3] || fontColor[3] || 1;
             }
         }
-
-        if(fontColor !== undefined) {
+        if(fontColor !== undefined && fontColor.length === 4) {
             styleOptions.fill = new ol.style.Fill({
                 color: fontColor
             });
