@@ -84,7 +84,7 @@ angular.module('anol.featurestyleeditor')
                         var style = purgeStyle(_style);
                         if(!angular.equals(style, lastStyle)) {
                             var featureStyle = feature.get('style') || {};
-                            featureStyle = angular.extend(featureStyle, style);
+                            featureStyle = angular.extend({}, featureStyle, style);
                             if(angular.equals(featureStyle, {})) {
                                 feature.unset('style');
                             } else {
