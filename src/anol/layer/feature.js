@@ -323,6 +323,7 @@ $.extend(anol.layer.Feature.prototype, {
                 fontColor[0] = _fontColor[0];
                 fontColor[1] = _fontColor[1];
                 fontColor[2] = _fontColor[2];
+                fontColor[3] = _fontColor[3] || fontColor[3] || 1;
             }
         }
 
