@@ -60,12 +60,27 @@ angular.module('anol.draw')
                 scope.polygonTooltipPlacement : 'right';
 
             scope.activeLayer = undefined;
+            var changeCursorEventKey;
             var selectedFeature;
+            var controls = [];
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
 
             // disabled by default. Will be enabled, when feature selected
             var removeButtonElement = element.find('.draw-remove');
             removeButtonElement.addClass('disabled');
+
+            var bindCursorChange = function() {
+                changeCursorEventKey = scope.map.on('pointermove', changeCursor);
+            };
+            var unbindCursorChange = function() {
+                if(changeCursorEventKey !== undefined) {
+                    scope.map.unByKey(changeCursorEventKey);
+                    changeCursorEventKey = undefined;
+                }
+            };
+            var executePostDrawCallback = function(evt) {
+                scope.postDrawAction()(scope.activeLayer, evt.feature);
+            };
 
             var createDrawInteractions = function(drawType, source, control, layer) {
                 // create draw interaction
@@ -74,23 +89,18 @@ angular.module('anol.draw')
                     type: drawType
                 });
 
-                if(scope.continueDrawing === false || angular.isFunction(scope.postDrawAction())) {
-                    draw.on('drawend', function(evt) {
-                        if(angular.isFunction(scope.postDrawAction())) {
-                            scope.postDrawAction()(scope.activeLayer, evt.feature);
-                        }
+                if(angular.isFunction(scope.postDrawAction) && angular.isFunction(scope.postDrawAction())) {
+                    draw.on('drawend', executePostDrawCallback);
+                }
+
+                if(scope.continueDrawing === false && control !== undefined) {
+                    draw.on('drawend', function() {
                         // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                         $timeout(function() { control.deactivate(); }, 275);
                     });
                 }
-                draw.on('drawstart', function() {
-                    if(changeCursorEventKey !== undefined) {
-                        scope.map.unByKey(changeCursorEventKey);
-                    }
-                });
-                draw.on('drawend', function() {
-                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
-                });
+                draw.on('drawstart', unbindCursorChange);
+                draw.on('drawend', bindCursorChange);
 
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
@@ -189,7 +199,6 @@ angular.module('anol.draw')
 
                 scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
             };
-            var changeCursorEventKey;
 
             // Button binds
             scope.drawPoint = function() {
@@ -247,8 +256,6 @@ angular.module('anol.draw')
             scope.map = MapService.getMap();
 
             element.addClass('anol-draw');
-
-            var controls = [];
 
             if(AnolMapController !== null) {
                 element.addClass('ol-control');
