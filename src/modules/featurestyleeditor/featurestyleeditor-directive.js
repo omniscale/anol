@@ -64,11 +64,7 @@ angular.module('anol.featurestyleeditor')
         },
         link: function(scope, element, attrs) {
             var styleWatcher;
-            // stores last feature style to compare
-            // feature.get('style') contains only string values, but lastStyle contains right type for each property
-            var lastStyle;
             scope.$watch('feature', function(feature) {
-                lastStyle = undefined;
                 if(styleWatcher !== undefined) {
                     styleWatcher();
                     styleWatcher = undefined;
@@ -77,20 +73,24 @@ angular.module('anol.featurestyleeditor')
                     scope.style = prepareStyleProperties(
                         feature.get('style') || {}
                     );
-                    lastStyle = purgeStyle(angular.copy(scope.style));
                     scope.geometryType = feature.getGeometry().getType();
 
-                    styleWatcher = scope.$watchCollection('style', function(_style) {
-                        var style = purgeStyle(_style);
-                        if(!angular.equals(style, lastStyle)) {
-                            var featureStyle = feature.get('style') || {};
-                            featureStyle = angular.extend({}, featureStyle, style);
-                            if(angular.equals(featureStyle, {})) {
-                                feature.unset('style');
-                            } else {
-                                feature.set('style', featureStyle);
+                    styleWatcher = scope.$watchCollection('style', function(_newStyle, _oldStyle) {
+                        var newStyle = purgeStyle(_newStyle);
+                        var oldStyle = purgeStyle(_oldStyle);
+                        var style = {};
+                        // only add changed values
+                        angular.forEach(newStyle, function(value, key) {
+                            if(oldStyle[key] !== value) {
+                                style[key] = value;
                             }
-                            lastStyle = angular.copy(featureStyle);
+                        });
+                        var featureStyle = feature.get('style') || {};
+                        var combinedStyle = angular.extend({}, featureStyle, style);
+                        if(angular.equals(combinedStyle, {})) {
+                            feature.unset('style');
+                        } else {
+                            feature.set('style', combinedStyle);
                         }
                     });
                 }
