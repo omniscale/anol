@@ -64,15 +64,22 @@ anol.control.Control.prototype = {
     },
     onActivate: function(func, context) {
         var targetControl = this;
-        $(this).on('anol.control.activate', function() {
+        var handler = function() {
             func(targetControl, context);
-        });
+        };
+        $(this).on('anol.control.activate', handler);
+        return handler;
     },
     oneActivate: function(func, context) {
         var targetControl = this;
-        $(this).one('anol.control.activate', function() {
+        var handler = function() {
             func(targetControl, context);
-        });
+        };
+        $(this).one('anol.control.activate', handler);
+        return handler;
+    },
+    unActivate: function(handler) {
+        $(this).off('anol.control.activate', handler);
     },
     deactivate: function() {
         if(this.active === false) {
@@ -84,15 +91,22 @@ anol.control.Control.prototype = {
     },
     onDeactivate: function(func, context) {
         var targetControl = this;
-        $(this).on('anol.control.deactivate', function() {
+        var handler = function() {
             func(targetControl, context);
-        });
+        };
+        $(this).on('anol.control.deactivate', handler);
+        return handler;
     },
     oneDeactivate: function(func, context) {
         var targetControl = this;
-        $(this).one('anol.control.deactivate', function() {
+        var handler = function() {
             func(targetControl, context);
-        });
+        };
+        $(this).one('anol.control.deactivate', handler);
+        return handler;
+    },
+    unDeactivate: function(handler) {
+        $(this).off('anol.control.deactivate', handler);
     },
     disable: function() {
         this.deactivate();
