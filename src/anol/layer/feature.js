@@ -107,11 +107,10 @@ $.extend(anol.layer.Feature.prototype, {
         var isDefaultCircle = defaultImageStyle instanceof ol.style.Circle;
         var isDefaultIcon = defaultImageStyle instanceof ol.style.Icon;
 
-
-        if(isCircle || (!isIcon && isDefaultCircle)) {
-            return this.createCircleStyle(style, defaultImageStyle);
-        } else if (isIcon || (!isCircle && isDefaultIcon)) {
+        if (isIcon || (!isCircle && isDefaultIcon)) {
             return this.createIconStyle(style, defaultImageStyle);
+        } else if(isCircle || (!isIcon && isDefaultCircle)) {
+            return this.createCircleStyle(style, defaultImageStyle);
         }
         return defaultImageStyle;
     },
