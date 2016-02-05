@@ -34,16 +34,13 @@ angular.module('anol.featurepopup')
             // TODO find solution for multiple directives in one page
             var multiselect = angular.isDefined(attrs.multiselect);
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
+            scope.openingDirection = scope.openingDirection || 'top';
             scope.map = MapService.getMap();
             scope.popupVisible = false;
 
             scope.feature = undefined;
             scope.layer = undefined;
             scope.selectes = {};
-
-            $timeout(function() {
-                scope.openingDirection = scope.openingDirection || 'top';
-            });
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
