@@ -253,6 +253,69 @@ angular.module('anol.draw')
                 }
             };
 
+            // extra action for a realy custumised draw experience
+            scope.drawCustom = function(drawType, postDrawCallback) {
+                // skip when no active layer present
+                if(scope.activeLayer === undefined) {
+                    return;
+                }
+                // deactivate other controls
+                angular.forEach(controls, function(control) {
+                    control.deactivate();
+                });
+
+                var olLayer = scope.activeLayer.olLayer;
+                var source = olLayer.getSource();
+                // third param is control we don't need for this action
+                var customInteractions = createDrawInteractions(drawType, source, undefined, olLayer);
+
+                // stores control activate event handler unregistering informations
+                var unregisters = [];
+                var deregisterActiveLayerChange;
+                var removeCustomDraw = function() {
+                    // remove interactions after drawing is done
+                    angular.forEach(customInteractions, function(interaction) {
+                        interaction.setActive(false);
+                        scope.map.removeInteraction(interaction);
+                    });
+                    deregisterActiveLayerChange();
+                    angular.forEach(unregisters, function(unregister) {
+                        unregister[0].unActivate(unregister[1]);
+                    });
+                };
+
+                // first one is always the drawInteraction
+                var customDrawInteraction = customInteractions[0];
+                // remove custom draw after draw finish and call the callback
+                customDrawInteraction.on('drawend', function(evt) {
+                    removeCustomDraw();
+                    postDrawCallback(scope.activeLayer, evt.feature);
+                });
+
+                // remove custom draw when active layer changes
+                deregisterActiveLayerChange = scope.$watch(function() {
+                    return DrawService.activeLayer;
+                }, function(newActiveLayer) {
+                    if(newActiveLayer === scope.activeLayer) {
+                        return;
+                    }
+                    removeCustomDraw();
+                });
+
+                // remove custom draw when one of the other controls get active
+                angular.forEach(controls, function(control) {
+                    unregisters.push([control, control.oneActivate(function() {
+                        removeCustomDraw();
+                    })]);
+                });
+
+                // activate and add customInteractions
+                angular.forEach(customInteractions, function(interaction) {
+                    interaction.setActive(true);
+                    scope.map.addInteraction(interaction);
+                });
+            };
+
             scope.map = MapService.getMap();
 
             element.addClass('anol-draw');
