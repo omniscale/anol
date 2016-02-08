@@ -28,15 +28,6 @@ angular.module('anol.featurestyleeditor')
         if(style.fillOpacity !== undefined) {
             style.fillOpacity = parseFloat(style.fillOpacity);
         }
-        if(style.strokeDashstyle === undefined) {
-            style.strokeDashstyle = null;
-        }
-        if(style.fontSize === undefined) {
-            style.fontSize = null;
-        }
-        if(style.fontWeight === undefined) {
-            style.fontWeight = null;
-        }
         return style;
     };
 
