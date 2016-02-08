@@ -9,6 +9,7 @@ angular.module('anol.featurestyleeditor')
  *
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {ol.Feature} anolFeatureStyleEditor Feature to edit
+ * @param {anol.layer.Feature} layer Layer feature belongs to
  *
  * @description
  * Shows a form for editing feature style depending on its geometry type
@@ -61,6 +62,11 @@ angular.module('anol.featurestyleeditor')
                         unregisterStyleWatcher();
                         unregisterStyleWatcher = undefined;
                     }
+                    var layerStyle = {};
+                    if(scope.layer !== undefined && scope.layer.options !== undefined) {
+                        layerStyle = prepareStyleProperties(scope.layer.options.style || {});
+                    }
+
                     if(feature !== undefined) {
                         scope.style = prepareStyleProperties(
                             feature.get('style') || {}
@@ -73,7 +79,7 @@ angular.module('anol.featurestyleeditor')
                             var style = {};
                             // only add changed values
                             angular.forEach(newStyle, function(value, key) {
-                                if(oldStyle[key] !== value) {
+                                if(layerStyle[key] !== value && oldStyle[key] !== value) {
                                     style[key] = value;
                                 }
                             });
