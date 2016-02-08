@@ -62,61 +62,63 @@ angular.module('anol.featurestyleeditor')
             var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
             return tAttrs.templateUrl || defaultUrl;
         },
-        link: function(scope, element, attrs) {
-            var styleWatcher;
-            scope.$watch('feature', function(feature) {
-                if(styleWatcher !== undefined) {
-                    styleWatcher();
-                    styleWatcher = undefined;
-                }
-                if(feature !== undefined) {
-                    scope.style = prepareStyleProperties(
-                        feature.get('style') || {}
-                    );
-                    scope.geometryType = feature.getGeometry().getType();
+        link: {
+            pre: function(scope, element, attrs) {
+                var styleWatcher;
+                scope.$watch('feature', function(feature) {
+                    if(styleWatcher !== undefined) {
+                        styleWatcher();
+                        styleWatcher = undefined;
+                    }
+                    if(feature !== undefined) {
+                        scope.style = prepareStyleProperties(
+                            feature.get('style') || {}
+                        );
+                        scope.geometryType = feature.getGeometry().getType();
 
-                    styleWatcher = scope.$watchCollection('style', function(_newStyle, _oldStyle) {
-                        var newStyle = purgeStyle(_newStyle);
-                        var oldStyle = purgeStyle(_oldStyle);
-                        var style = {};
-                        // only add changed values
-                        angular.forEach(newStyle, function(value, key) {
-                            if(oldStyle[key] !== value) {
-                                style[key] = value;
+                        styleWatcher = scope.$watchCollection('style', function(_newStyle, _oldStyle) {
+                            var newStyle = purgeStyle(_newStyle);
+                            var oldStyle = purgeStyle(_oldStyle);
+                            var style = {};
+                            // only add changed values
+                            angular.forEach(newStyle, function(value, key) {
+                                if(oldStyle[key] !== value) {
+                                    style[key] = value;
+                                }
+                            });
+                            var featureStyle = feature.get('style') || {};
+                            var combinedStyle = angular.extend({}, featureStyle, style);
+                            if(angular.equals(combinedStyle, {})) {
+                                feature.unset('style');
+                            } else {
+                                feature.set('style', combinedStyle);
                             }
                         });
-                        var featureStyle = feature.get('style') || {};
-                        var combinedStyle = angular.extend({}, featureStyle, style);
-                        if(angular.equals(combinedStyle, {})) {
-                            feature.unset('style');
-                        } else {
-                            feature.set('style', combinedStyle);
-                        }
-                    });
-                }
-            });
-
-            var translate = function() {
-                $translate([
-                    'anol.featurestyleeditor.SOLID',
-                    'anol.featurestyleeditor.DOT',
-                    'anol.featurestyleeditor.DASH',
-                    'anol.featurestyleeditor.DASHDOT',
-                    'anol.featurestyleeditor.LONGDASH',
-                    'anol.featurestyleeditor.LONGDASHDOT'
-                ]).then(function(translations) {
-                    scope.strokeDashStyles = [
-                        {value: 'solid', label: translations['anol.featurestyleeditor.SOLID']},
-                        {value: 'dot', label: translations['anol.featurestyleeditor.DOT']},
-                        {value: 'dash', label: translations['anol.featurestyleeditor.DASH']},
-                        {value: 'dashdot', label: translations['anol.featurestyleeditor.DASHDOT']},
-                        {value: 'longdash', label: translations['anol.featurestyleeditor.LONGDASH']},
-                        {value: 'longdashdot', label: translations['anol.featurestyleeditor.LONGDASHDOT']}
-                    ];
+                    }
                 });
-            };
-            $rootScope.$on('$translateChangeSuccess', translate);
-            translate();
+
+                var translate = function() {
+                    $translate([
+                        'anol.featurestyleeditor.SOLID',
+                        'anol.featurestyleeditor.DOT',
+                        'anol.featurestyleeditor.DASH',
+                        'anol.featurestyleeditor.DASHDOT',
+                        'anol.featurestyleeditor.LONGDASH',
+                        'anol.featurestyleeditor.LONGDASHDOT'
+                    ]).then(function(translations) {
+                        scope.strokeDashStyles = [
+                            {value: 'solid', label: translations['anol.featurestyleeditor.SOLID']},
+                            {value: 'dot', label: translations['anol.featurestyleeditor.DOT']},
+                            {value: 'dash', label: translations['anol.featurestyleeditor.DASH']},
+                            {value: 'dashdot', label: translations['anol.featurestyleeditor.DASHDOT']},
+                            {value: 'longdash', label: translations['anol.featurestyleeditor.LONGDASH']},
+                            {value: 'longdashdot', label: translations['anol.featurestyleeditor.LONGDASHDOT']}
+                        ];
+                    });
+                };
+                $rootScope.$on('$translateChangeSuccess', translate);
+                translate();
+            }
         }
     };
 }]);
