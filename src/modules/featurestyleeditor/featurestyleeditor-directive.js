@@ -79,8 +79,11 @@ angular.module('anol.featurestyleeditor')
                             var style = {};
                             // only add changed values
                             angular.forEach(newStyle, function(value, key) {
-                                if(layerStyle[key] !== value && oldStyle[key] !== value) {
+                                if(oldStyle[key] !== value) {
                                     style[key] = value;
+                                }
+                                if(layerStyle[key] === value) {
+                                    style[key] = undefined;
                                 }
                             });
                             var featureStyle = feature.get('style') || {};
