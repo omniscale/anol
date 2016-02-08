@@ -116,7 +116,6 @@ angular.module('anol.featurepopup')
             var handleClick = function(evt) {
                 scope.popupVisible = false;
                 scope.$digest();
-                var features = [];
                 var extent = [
                     evt.coordinate[0] - (scope.tolerance || 0),
                     evt.coordinate[1] - (scope.tolerance || 0),
