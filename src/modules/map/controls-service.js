@@ -95,6 +95,31 @@ angular.module('anol.map')
             });
         };
         /**
+         * @ngdoc method
+         * @name removeControl
+         * @methodOf anol.map.ControlsService
+         * @param {Object} control ol3 control
+         * @description
+         * Remove a single control
+         */
+        Controls.prototype.removeControl = function(control) {
+            var controlIdx = $.inArray(this.controls, control);
+            var exclusiveIdx = $.inArray(this.exclusiveControls, control);
+            var subordinateIdx = $.inArray(this.subordinateControls, control);
+            if(controlIdx > -1) {
+                this.controls.splice(controlIdx, 1);
+            }
+            if(exclusiveIdx > -1) {
+                this.exclusiveControls.splice(exclusiveIdx, 1);
+            }
+            if(subordinateIdx > -1) {
+                this.subordinateControls.splice(subordinateIdx, 1);
+            }
+            if(this.map !== undefined && control.olControl instanceof ol.control.Control) {
+                this.map.removeControl(control.olControl);
+            }
+        };
+        /**
          * private function
          *
          * handler called on exclusiv control activate
