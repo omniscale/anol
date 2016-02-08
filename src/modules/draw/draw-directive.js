@@ -321,6 +321,7 @@ angular.module('anol.draw')
                 });
                 ControlsService.addControl(customDrawControl);
                 customDrawControl.activate();
+                return removeCustomDraw;
             };
 
             scope.map = MapService.getMap();
