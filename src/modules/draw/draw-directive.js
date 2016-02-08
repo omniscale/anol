@@ -301,7 +301,7 @@ angular.module('anol.draw')
                 deregisterActiveLayerChange = scope.$watch(function() {
                     return DrawService.activeLayer;
                 }, function(newActiveLayer) {
-                    if(newActiveLayer === scope.activeLayer) {
+                    if(newActiveLayer === scope.activeLayer && newActiveLayer !== undefined) {
                         return;
                     }
                     removeCustomDraw();
