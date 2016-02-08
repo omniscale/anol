@@ -99,8 +99,6 @@ angular.module('anol.draw')
                         $timeout(function() { control.deactivate(); }, 275);
                     });
                 }
-                draw.on('drawstart', unbindCursorChange);
-                draw.on('drawend', bindCursorChange);
 
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
