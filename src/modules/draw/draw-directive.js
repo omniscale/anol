@@ -69,15 +69,6 @@ angular.module('anol.draw')
             var removeButtonElement = element.find('.draw-remove');
             removeButtonElement.addClass('disabled');
 
-            var bindCursorChange = function() {
-                changeCursorEventKey = scope.map.on('pointermove', changeCursor);
-            };
-            var unbindCursorChange = function() {
-                if(changeCursorEventKey !== undefined) {
-                    scope.map.unByKey(changeCursorEventKey);
-                    changeCursorEventKey = undefined;
-                }
-            };
             var executePostDrawCallback = function(evt) {
                 scope.postDrawAction()(scope.activeLayer, evt.feature);
             };
