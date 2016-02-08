@@ -55,11 +55,11 @@ angular.module('anol.featurestyleeditor')
         },
         link: {
             pre: function(scope, element, attrs) {
-                var styleWatcher;
+                var unregisterStyleWatcher;
                 scope.$watch('feature', function(feature) {
-                    if(styleWatcher !== undefined) {
-                        styleWatcher();
-                        styleWatcher = undefined;
+                    if(unregisterStyleWatcher !== undefined) {
+                        unregisterStyleWatcher();
+                        unregisterStyleWatcher = undefined;
                     }
                     if(feature !== undefined) {
                         scope.style = prepareStyleProperties(
@@ -67,7 +67,7 @@ angular.module('anol.featurestyleeditor')
                         );
                         scope.geometryType = feature.getGeometry().getType();
 
-                        styleWatcher = scope.$watchCollection('style', function(_newStyle, _oldStyle) {
+                        unregisterStyleWatcher = scope.$watchCollection('style', function(_newStyle, _oldStyle) {
                             var newStyle = purgeStyle(_newStyle);
                             var oldStyle = purgeStyle(_oldStyle);
                             var style = {};
