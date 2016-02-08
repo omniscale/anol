@@ -264,14 +264,16 @@ angular.module('anol.draw')
 
                 var olLayer = scope.activeLayer.olLayer;
                 var source = olLayer.getSource();
+                var customDrawControl = new anol.control.Control({
+                    exclusive: true,
+                    olControl: null
+                });
                 // third param is control we don't need for this action
                 var customInteractions = createDrawInteractions(drawType, source, undefined, olLayer);
-
                 // stores control activate event handler unregistering informations
                 var unregisters = [];
                 var deregisterActiveLayerChange;
                 var removeCustomDraw = function() {
-                    // remove interactions after drawing is done
                     angular.forEach(customInteractions, function(interaction) {
                         interaction.setActive(false);
                         scope.map.removeInteraction(interaction);
@@ -280,6 +282,11 @@ angular.module('anol.draw')
                     angular.forEach(unregisters, function(unregister) {
                         unregister[0].unActivate(unregister[1]);
                     });
+                    // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
+                    $timeout(function() {
+                        customDrawControl.deactivate();
+                        ControlsService.removeControl(customDrawControl);
+                    }, 275);
                 };
 
                 // first one is always the drawInteraction
@@ -312,6 +319,8 @@ angular.module('anol.draw')
                     interaction.setActive(true);
                     scope.map.addInteraction(interaction);
                 });
+                ControlsService.addControl(customDrawControl);
+                customDrawControl.activate();
             };
 
             scope.map = MapService.getMap();
