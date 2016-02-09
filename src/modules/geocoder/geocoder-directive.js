@@ -22,6 +22,7 @@ angular.module('anol.geocoder')
   function($timeout, MapService, ControlsService) {
     return {
       restrict: 'A',
+      require: '?^anolMap',
       transclude: true,
       templateUrl: function(tElement, tAttrs) {
           var defaultUrl = 'src/modules/geocoder/templates/searchbox.html';
@@ -34,7 +35,7 @@ angular.module('anol.geocoder')
         proxyUrl: '@',
         highlight: '@'
       },
-      link: function(scope, element, attrs) {
+      link: function(scope, element, attrs, AnolMapController) {
         var markerOverlay;
 
         if(angular.isDefined(scope.proxyUrl)) {
@@ -148,9 +149,11 @@ angular.module('anol.geocoder')
           element.find('.anol-searchbox').removeClass('open');
         };
 
-        ControlsService.addControl(new anol.control.Control({
-          element: element
-        }));
+        if(angular.isObject(AnolMapController)) {
+           ControlsService.addControl(new anol.control.Control({
+            element: element
+          }));
+        }
       }
     };
 }]);
