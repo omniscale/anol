@@ -295,7 +295,7 @@ $.extend(anol.layer.Feature.prototype, {
         } else if(defaultText !== undefined) {
             styleOptions.text = defaultText;
         }
-        if(styleOptions.text === undefined) {
+        if(styleOptions.text === undefined && feature !== undefined) {
             return;
         }
         if(style.fontWeight !== undefined) {
@@ -330,7 +330,6 @@ $.extend(anol.layer.Feature.prototype, {
                 color: fontColor
             });
         }
-
         if(Object.keys(styleOptions).length > 0) {
             return new ol.style.Text(styleOptions);
         }
