@@ -10,6 +10,8 @@ angular.module('anol.featurestyleeditor')
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {ol.Feature} anolFeatureStyleEditor Feature to edit
  * @param {anol.layer.Feature} layer Layer feature belongs to
+ * @param {boolean} disabled Disable style editor
+ * @param {string} disabledText Text to display while styleeditor is disabled
  *
  * @description
  * Shows a form for editing feature style depending on its geometry type
@@ -48,7 +50,9 @@ angular.module('anol.featurestyleeditor')
         restrict: 'A',
         scope: {
             feature: '=anolFeatureStyleEditor',
-            layer: '='
+            layer: '=',
+            disabled: '=',
+            disabledText: '@'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
@@ -56,6 +60,7 @@ angular.module('anol.featurestyleeditor')
         },
         link: {
             pre: function(scope, element, attrs) {
+                element.addClass('anol-styleeditor');
                 var unregisterStyleWatcher;
                 scope.$watch('feature', function(feature) {
                     if(unregisterStyleWatcher !== undefined) {
@@ -94,6 +99,30 @@ angular.module('anol.featurestyleeditor')
                                 feature.set('style', combinedStyle);
                             }
                         });
+                    }
+                });
+
+                var disableOverlay;
+                var addOverlay = function() {
+                    disableOverlay = angular.element('<div class="anol-styleeditor-disabled-overlay"></div>');
+                    if(scope.disabledText !== undefined) {
+                        var disabledText = angular.element('<p class="anol-styleeditor-disabled-text">' + scope.disabledText + '</p>');
+                        disableOverlay.append(disabledText);
+                    }
+                    element.append(disableOverlay);
+                };
+
+                var removeOverlay = function() {
+                    disableOverlay.remove();
+                    disableOverlay = undefined;
+                };
+
+                scope.$watch('disabled', function(n, o) {
+                    if(o === true) {
+                        removeOverlay();
+                    }
+                    if(n === true) {
+                        addOverlay();
                     }
                 });
 
