@@ -10,6 +10,7 @@ angular.module('anol.featurepopup')
  * @param {number} tolerance Click tolerance in pixel
  * @param {object} openFor Accepts an object with layer and feature property. If changed, a popup is shown for given value
  * @param {string} openingDirection Direction where the popup open. Default is top. Also the values left, bottom and right are possible
+ * @param {number} autoPanMargin Popup margin to map border for auto pan
  *
  * @description
  * Shows a popup for selected feature
@@ -22,7 +23,8 @@ angular.module('anol.featurepopup')
             'tolerance': '=?',
             'openFor': '=?',
             'openingDirection': '@',
-            'onClose': '&?'
+            'onClose': '&?',
+            'autoPanMargin': '@'
         },
         replace: true,
         transclude: true,
@@ -62,8 +64,8 @@ angular.module('anol.featurepopup')
                 autoPan: true,
                 autoPanAnimation: {
                     duration: 250
-                }
-
+                },
+                autoPanMargin: scope.autoPanMargin
             };
 
             scope.popup = new ol.Overlay(scope.overlayOptions);
