@@ -238,13 +238,12 @@ angular.module('anol.featurepopup')
                     if(angular.isFunction(scope.onClose) && angular.isFunction(scope.onClose())) {
                         scope.onClose()();
                     }
-                } else if(scope.coordinate !== undefined) {
-                    // wait until scope changes applied ($digest cycle completed) before set popup position
-                    // otherwise Overlay.autoPan is not work correctly
-                    $timeout(function() {
-                        scope.popup.setPosition(scope.coordinate);
-                    });
                 }
+                // wait until scope changes applied ($digest cycle completed) before set popup position
+                // otherwise Overlay.autoPan is not work correctly
+                $timeout(function() {
+                    scope.popup.setPosition(scope.coordinate);
+                });
             });
             scope.$watch('openFor', function(openFor) {
                 if(angular.isDefined(openFor)) {
