@@ -24,7 +24,7 @@ angular.module('anol.featurepopup')
             'openFor': '=?',
             'openingDirection': '@',
             'onClose': '&?',
-            'autoPanMargin': '@'
+            'autoPanMargin': '='
         },
         replace: true,
         transclude: true,
