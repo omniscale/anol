@@ -111,6 +111,7 @@ angular.module('anol.featurepopup')
                 if(_handleSelect(evt) === true) {
                     scope.coordinate = evt.mapBrowserEvent.coordinate;
                     scope.popupVisible = true;
+                    selectInteraction.getFeatures().clear();
                     scope.$digest();
                 }
             };
@@ -163,16 +164,7 @@ angular.module('anol.featurepopup')
                 selectInteraction = new ol.interaction.Select({
                     toggleCondition: ol.events.condition.never,
                     multi: multiselect,
-                    layers: olLayers,
-                    style: function(feature) {
-                        // prevents changing feature style
-                        // TODO find better solution
-                        var style = feature.getStyle() || selectInteraction.getLayer(feature).getStyle();
-                        if(angular.isFunction(style)) {
-                            return style(feature);
-                        }
-                        return style;
-                    }
+                    layers: olLayers
                 });
                 selectInteraction.on('select', handleSelect);
 
