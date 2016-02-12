@@ -174,22 +174,17 @@ angular.module('anol.featurepopup')
                 });
             };
 
-            var changeCursor = function(evt) {
-                var pixel = scope.map.getEventPixel(evt.originalEvent);
-
-                var hit = scope.map.hasFeatureAtPixel(pixel, function(layer) {
+            var changeCursorCondition = function(pixel) {
+                return scope.map.hasFeatureAtPixel(pixel, function(layer) {
                     return scope.layers.indexOf(layer.get('anolLayer')) !== -1;
                 });
-
-                scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
             };
-            var changeCursorEvtKey;
 
             var bindCursorChange = function() {
-                if((scope.layers === undefined || scope.layers.length === 0) && changeCursorEvtKey !== undefined) {
-                    scope.map.unByKey(changeCursorEvtKey);
+                if(scope.layers === undefined || scope.layers.length === 0) {
+                    MapService.removeCursorPointerCondition(changeCursorCondition);
                 } else if(scope.layers !== undefined && scope.layers.length !== 0) {
-                    changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
+                    MapService.addCursorPointerCondition(changeCursorCondition);
                 }
             };
 
@@ -201,14 +196,13 @@ angular.module('anol.featurepopup')
                 angular.forEach(interactions, function(interaction) {
                     interaction.setActive(false);
                 });
-                scope.map.unByKey(changeCursorEvtKey);
-                scope.map.getTarget().style.cursor = '';
+                MapService.removeCursorPointerCondition(changeCursorCondition);
             });
             control.onActivate(function() {
                 angular.forEach(interactions, function(interaction) {
                     interaction.setActive(true);
                 });
-                changeCursorEvtKey = scope.map.on('pointermove', changeCursor);
+                MapService.addCursorPointerCondition(changeCursorCondition);
             });
 
             if(clickPointSelect === true) {
@@ -224,7 +218,6 @@ angular.module('anol.featurepopup')
             control.activate();
 
             ControlsService.addControl(control);
-
 
             scope.$watch('layers', bindCursorChange);
             scope.$watch('popupVisible', function(visible) {

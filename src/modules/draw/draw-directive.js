@@ -60,7 +60,6 @@ angular.module('anol.draw')
                 scope.polygonTooltipPlacement : 'right';
 
             scope.activeLayer = undefined;
-            var changeCursorEventKey;
             var selectedFeature;
             var controls = [];
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
@@ -119,12 +118,10 @@ angular.module('anol.draw')
                     features: selectInteraction.getFeatures()
                 });
                 modifyInteraction.on('modifystart', function() {
-                    if(changeCursorEventKey !== undefined) {
-                        scope.map.unByKey(changeCursorEventKey);
-                    }
+                    MapService.removeCursorPointerCondition(changeCursorCondition);
                 });
                 modifyInteraction.on('modifyend', function() {
-                    changeCursorEventKey = scope.map.on('pointermove', changeCursor);
+                    MapService.addCursorPointerCondition(changeCursorCondition);
                 });
                 var snapInteraction = new ol.interaction.Snap({
                     source: layer.getSource()
@@ -179,14 +176,10 @@ angular.module('anol.draw')
                 });
             };
 
-            var changeCursor = function(evt) {
-                var pixel = scope.map.getEventPixel(evt.originalEvent);
-
-                var hit = scope.map.hasFeatureAtPixel(pixel, function(layer) {
+            var changeCursorCondition = function(pixel) {
+                return scope.map.hasFeatureAtPixel(pixel, function(layer) {
                     return layer === scope.activeLayer.olLayer;
                 });
-
-                scope.map.getTarget().style.cursor = hit ? 'pointer' : '';
             };
 
             // Button binds
@@ -350,14 +343,12 @@ angular.module('anol.draw')
                 element
             );
             modifyControl.onActivate(function() {
-                changeCursorEventKey = scope.map.on('pointermove', changeCursor);
+                MapService.addCursorPointerCondition(changeCursorCondition);
             });
             modifyControl.onDeactivate(function(control) {
                 control.interactions[0].getFeatures().clear();
                 removeButtonElement.addClass('disabled');
-                if(changeCursorEventKey !== undefined) {
-                    scope.map.unByKey(changeCursorEventKey);
-                }
+                MapService.removeCursorPointerCondition(changeCursorCondition);
             });
             controls.push(modifyControl);
 

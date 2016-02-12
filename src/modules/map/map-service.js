@@ -12,22 +12,7 @@ angular.module('anol.map')
  */
 .provider('MapService', [function() {
     var _view, _bbox;
-
-    var buildMapConfig = function() {
-        var map = new ol.Map(angular.extend({}, {
-            logo: false,
-            controls: [],
-            interactions: [],
-            layers: []
-        }));
-        map.setView(_view);
-        if(angular.isDefined(_bbox)) {
-            map.once('change:target', function() {
-                map.getView().fit(_bbox, map.getSize());
-            });
-        }
-        return map;
-    };
+    var _cursorPointerConditions = [];
 
     /**
      * @ngdoc method
@@ -46,7 +31,7 @@ angular.module('anol.map')
     /**
      * @ngdoc method
      * @name setInitialBBox
-     * @methodof anol.map.MapServiceProvider
+     * @methodOf anol.map.MapServiceProvider
      *
      * @param {ol.Extent} bbox Initial bbox
      *
@@ -57,7 +42,22 @@ angular.module('anol.map')
         _bbox = bbox;
     };
 
-    this.$get = ['LayersService', 'ControlsService', 'InteractionsService', function(LayersService, ControlsService, InteractionsService) {
+    /**
+     * @ngdoc method
+     * @name addCursorPointerCondition
+     * @methodOf anol.map.MapServiceProvider
+     *
+     * @param {function} conditionFunc Function called on ol3 map pointermove event
+     *
+     * @description
+     * Adds function to list of called functions on ol3 map pointermove event.
+     * Function must return boolean. When true, cursor is changed to pointer
+     */
+    this.addCursorPointerCondition = function(conditionFunc) {
+        _cursorPointerConditions.push(conditionFunc);
+    };
+
+    this.$get = [function() {
         /**
          * @ngdoc service
          * @name anol.map.MapService
@@ -72,8 +72,10 @@ angular.module('anol.map')
          * The ol.View is added with the provider method addView
          * It will only create one instance of an ol map
          */
-        var MapService = function() {
+        var MapService = function(cursorPointerConditions) {
             this.map = undefined;
+            this.unregisterChangeCursorToPointer = undefined;
+            this.cursorPointerConditions = cursorPointerConditions;
         };
         /**
          * @ngdoc method
@@ -88,10 +90,83 @@ angular.module('anol.map')
          */
         MapService.prototype.getMap = function() {
             if(angular.isUndefined(this.map)) {
-                this.map = buildMapConfig();
+                this.map = new ol.Map(angular.extend({}, {
+                    logo: false,
+                    controls: [],
+                    interactions: [],
+                    layers: []
+                }));
+                this.map.setView(_view);
+                if(angular.isDefined(_bbox)) {
+                    this.map.once('change:target', function() {
+                        this.map.getView().fit(_bbox, this.map.getSize());
+                    });
+                }
+                if(this.cursorPointerConditions.length > 0) {
+                    this.unregisterChangeCursorToPointer = this.map.on('pointermove', this._changeCursorToPointer, this);
+                }
             }
             return this.map;
         };
-        return new MapService();
+        /**
+         * @private
+         *
+         * ol3 map pointermove event callback
+         */
+        MapService.prototype._changeCursorToPointer = function(evt) {
+            var self = this;
+            var pixel = self.map.getEventPixel(evt.originalEvent);
+            var hit = false;
+            angular.forEach(self.cursorPointerConditions, function(conditionFunc) {
+                if(hit === true) {
+                    return;
+                }
+                hit = conditionFunc(pixel);
+            });
+            self.map.getTarget().style.cursor = hit ? 'pointer' : '';
+        };
+        /**
+         * @ngdoc method
+         * @name addCursorPointerCondition
+         * @methodOf anol.map.MapService
+         *
+         * @param {function} conditionFunc Function called on ol3 map pointermove event
+         *
+         * @description
+         * Adds function to list of called functions on ol3 map pointermove event.
+         * Function must return boolean. When true, cursor is changed to pointer
+         */
+        MapService.prototype.addCursorPointerCondition = function(conditionFunc) {
+            var idx = this.cursorPointerConditions.indexOf(conditionFunc);
+            if(idx !== -1) {
+                return;
+            }
+            this.cursorPointerConditions.push(conditionFunc);
+            if(this.cursorPointerConditions.length === 1) {
+                this.unregisterChangeCursorToPointer = this.map.on('pointermove', this._changeCursorToPointer, this);
+            }
+        };
+        /**
+         * @ngdoc method
+         * @name removeCursorPointerCondition
+         * @methodOf anol.map.MapService
+         *
+         * @param {function} conditionFunc Function to remove
+         *
+         * @description
+         * Removes given function from list of called functions on ol3 map pointermove event
+         */
+        MapService.prototype.removeCursorPointerCondition = function(conditionFunc) {
+            var idx = this.cursorPointerConditions.indexOf(conditionFunc);
+            if(idx === -1) {
+                return;
+            }
+            this.cursorPointerConditions.splice(idx, 1);
+            if(this.cursorPointerConditions.length === 0) {
+                this.unregisterChangeCursorToPointer();
+                this.unregisterChangeCursorToPointer = undefined;
+            }
+        };
+        return new MapService(_cursorPointerConditions);
     }];
 }]);
