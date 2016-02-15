@@ -15,7 +15,7 @@ angular.module('anol.featurepopup')
  * @description
  * Shows a popup for selected feature
  */
-.directive('anolFeaturePopup', ['$timeout', 'MapService', 'LayersService', 'ControlsService', function($timeout, MapService, LayersService, ControlsService) {
+.directive('anolFeaturePopup', ['MapService', 'LayersService', 'ControlsService', function(MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -38,7 +38,6 @@ angular.module('anol.featurepopup')
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
             scope.openingDirection = scope.openingDirection || 'top';
             scope.map = MapService.getMap();
-            scope.popupVisible = false;
 
             scope.feature = undefined;
             scope.layer = undefined;
@@ -104,21 +103,18 @@ angular.module('anol.featurepopup')
             };
 
             var handleSelect = function(evt) {
-                scope.popupVisible = false;
-                scope.$digest();
                 var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
 
                 if(_handleSelect(evt) === true) {
                     scope.coordinate = evt.mapBrowserEvent.coordinate;
-                    scope.popupVisible = true;
                     selectInteraction.getFeatures().clear();
-                    scope.$digest();
+                } else {
+                    scope.coordinate = undefined;
                 }
+                scope.$digest();
             };
 
             var handleClick = function(evt) {
-                scope.popupVisible = false;
-                scope.$digest();
                 var extent = [
                     evt.coordinate[0] - (scope.tolerance || 0),
                     evt.coordinate[1] - (scope.tolerance || 0),
@@ -139,14 +135,13 @@ angular.module('anol.featurepopup')
                 });
                 if(found === true) {
                     scope.coordinate = evt.coordinate;
-                    scope.popupVisible = true;
-                    scope.$digest();
+                } else {
+                    scope.coordinate = undefined;
                 }
+                scope.$digest();
             };
 
             var recreateInteractions = function() {
-                scope.popupVisible = false;
-
                 angular.forEach(interactions, function(interaction) {
                     interaction.setActive(false);
                     scope.map.removeInteraction(interaction);
@@ -208,7 +203,7 @@ angular.module('anol.featurepopup')
             if(clickPointSelect === true) {
                 scope.map.on('singleclick', handleClick, this);
                 scope.$watch('layers', function() {
-                    scope.popupVisible = false;
+                    scope.coordinate = undefined;
                 });
             } else {
                 recreateInteractions();
@@ -220,37 +215,31 @@ angular.module('anol.featurepopup')
             ControlsService.addControl(control);
 
             scope.$watch('layers', bindCursorChange);
-            scope.$watch('popupVisible', function(visible) {
-                if(visible === false) {
+            scope.$watch('coordinate', function(coordinate) {
+                if(coordinate === undefined) {
                     if(selectInteraction !== undefined) {
                         selectInteraction.getFeatures().clear();
                     }
                     scope.layer = undefined;
                     scope.feature = undefined;
-                    scope.coordinate = undefined;
                     if(angular.isFunction(scope.onClose) && angular.isFunction(scope.onClose())) {
                         scope.onClose()();
                     }
                 }
-                scope.popup.setPosition(scope.coordinate);
+                scope.popup.setPosition(coordinate);
             });
             scope.$watch('openFor', function(openFor) {
                 if(angular.isDefined(openFor)) {
-                    scope.popupVisible = false;
-                    // wait until digest cycle complete
-                    $timeout(function() {
-                        scope.layer = openFor.layer;
-                        scope.feature = openFor.feature;
-                        scope.openFor = undefined;
-                        scope.coordinate = scope.feature.getGeometry().getLastCoordinate();
-                        scope.popupVisible = true;
-                    });
+                    scope.layer = openFor.layer;
+                    scope.feature = openFor.feature;
+                    scope.openFor = undefined;
+                    scope.coordinate = scope.feature.getGeometry().getLastCoordinate();
                 }
             });
         },
         controller: function($scope, $element, $attrs) {
             this.close = function() {
-                $scope.popupVisible = false;
+                $scope.coordinate = undefined;
             };
             $scope.close = this.close;
         }
