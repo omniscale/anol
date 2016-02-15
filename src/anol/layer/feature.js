@@ -135,55 +135,50 @@ $.extend(anol.layer.Feature.prototype, {
         });
     },
     createIconStyle: function(style, defaultIconStyle) {
-        var src;
-        var rotation;
-        var scale;
-        var size;
+        var styleOptions = {};
+
         if(defaultIconStyle instanceof ol.style.Icon) {
-            src = defaultIconStyle.getSrc();
-            rotation = defaultIconStyle.getRotation();
-            scale = defaultIconStyle.getScale();
-            size = defaultIconStyle.getSize();
-        }
-        var externalGraphic = style.externalGraphic;
-        if(externalGraphic !== undefined) {
-            src = externalGraphic;
-        }
-        var _rotation = style.rotation;
-        if(_rotation !== undefined) {
-            rotation = parseFloat(_rotation);
+            styleOptions.src = defaultIconStyle.getSrc();
+            styleOptions.rotation = defaultIconStyle.getRotation();
+            styleOptions.scale = defaultIconStyle.getScale();
+            styleOptions.size = defaultIconStyle.getSize();
         }
 
-        var graphicWidth = style.graphicWidth;
-        var graphicHeight = style.graphicHeight;
-        if(graphicWidth !== undefined && graphicHeight !== undefined) {
-            size = [
-                parseInt(graphicWidth),
-                parseInt(graphicHeight)
+        if(style.externalGraphic !== undefined) {
+            styleOptions.src = style.externalGraphic;
+        }
+
+        if(style.rotation !== undefined) {
+            styleOptions.rotation = parseFloat(style.rotation);
+        }
+
+        if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
+            styleOptions.size = [
+                parseInt(style.graphicWidth),
+                parseInt(style.graphicHeight)
             ];
         }
 
-        var iconStyleConf = {
-            src: src,
-            rotation: rotation,
-            size: size
-        };
+        if(style.graphicColor !== undefined) {
+            styleOptions.color = style.graphicColor;
+        }
 
-        var iconStyle = new ol.style.Icon(iconStyleConf);
+        var anchor = [0.5, 0.5];
+        if(style.graphicXAnchor !== undefined) {
+            anchor[0] = parseInt(style.graphicXAnchor);
+            styleOptions.anchorXUnits = 'pixel';
+        }
+        if(style.graphicYAnchor !== undefined) {
+            anchor[1] = parseInt(style.graphicYAnchor);
+            styleOptions.anchorYUnits = 'pixel';
+        }
+        styleOptions.anchor = anchor;
 
-        var _scale = style.scale;
-        if(_scale !== undefined) {
-            scale = parseFloat(_scale);
+        if(style.scale !== undefined) {
+            styleOptions.scale = parseFloat(style.scale);
         }
-        if(scale === undefined && graphicWidth !== undefined) {
-            if (size !== null) {
-                scale = parseInt(graphicWidth) / size[0];
-            }
-        }
-        if(scale !== undefined && scale !== 1) {
-            iconStyle.setScale(scale);
-        }
-        return iconStyle;
+
+        return new ol.style.Icon(styleOptions);
     },
     createFillStyle: function(style, defaultFillStyle) {
         var color = ol.color.asArray(defaultFillStyle.getColor()).slice();
