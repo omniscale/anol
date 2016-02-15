@@ -33,7 +33,6 @@ angular.module('anol.featurepopup')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
-            // TODO find solution for multiple directives in one page
             var multiselect = angular.isDefined(attrs.multiselect);
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
             scope.openingDirection = scope.openingDirection || 'top';
