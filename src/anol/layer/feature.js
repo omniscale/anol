@@ -148,8 +148,8 @@ $.extend(anol.layer.Feature.prototype, {
             styleOptions.src = style.externalGraphic;
         }
 
-        if(style.rotation !== undefined) {
-            styleOptions.rotation = parseFloat(style.rotation);
+        if(style.graphicRotation !== undefined) {
+            styleOptions.rotation = parseFloat(style.graphicRotation);
         }
 
         if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
@@ -174,8 +174,8 @@ $.extend(anol.layer.Feature.prototype, {
         }
         styleOptions.anchor = anchor;
 
-        if(style.scale !== undefined) {
-            styleOptions.scale = parseFloat(style.scale);
+        if(style.graphicScale !== undefined) {
+            styleOptions.scale = parseFloat(style.graphicScale);
         }
 
         return new ol.style.Icon(styleOptions);
