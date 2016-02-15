@@ -74,7 +74,6 @@ angular.module('anol.map')
          */
         var MapService = function(cursorPointerConditions) {
             this.map = undefined;
-            this.unregisterChangeCursorToPointer = undefined;
             this.cursorPointerConditions = cursorPointerConditions;
         };
         /**
@@ -103,7 +102,7 @@ angular.module('anol.map')
                     });
                 }
                 if(this.cursorPointerConditions.length > 0) {
-                    this.unregisterChangeCursorToPointer = this.map.on('pointermove', this._changeCursorToPointer, this);
+                    this.map.on('pointermove', this._changeCursorToPointer, this);
                 }
             }
             return this.map;
@@ -143,7 +142,7 @@ angular.module('anol.map')
             }
             this.cursorPointerConditions.push(conditionFunc);
             if(this.cursorPointerConditions.length === 1) {
-                this.unregisterChangeCursorToPointer = this.map.on('pointermove', this._changeCursorToPointer, this);
+                this.map.on('pointermove', this._changeCursorToPointer, this);
             }
         };
         /**
@@ -163,8 +162,7 @@ angular.module('anol.map')
             }
             this.cursorPointerConditions.splice(idx, 1);
             if(this.cursorPointerConditions.length === 0) {
-                this.unregisterChangeCursorToPointer();
-                this.unregisterChangeCursorToPointer = undefined;
+                this.map.un('pointermove', this._changeCursorToPointer, this);
             }
         };
         return new MapService(_cursorPointerConditions);
