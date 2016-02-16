@@ -14,26 +14,27 @@ angular.module('anol.scale')
 .directive('anolScaleLine', ['MapService', 'ControlsService', function(MapService, ControlsService) {
     return {
         restrict: 'A',
-        require: '?^anolMap',
+        require: '^anolMap',
+        replace: true,
+        template: '<div class="anol-scale-line ol-unselectable"><div class="anol-scale-line-inner ol-control"></div></div>',
         scope: {},
         link: {
-            pre: function(scope, element, attrs, AnolMapController) {
+            post: function(scope, element, attrs) {
                 scope.map = MapService.getMap();
-
-                var controlOptions = {};
-                if(angular.isObject(AnolMapController)) {
-                    element.addClass('ol-unselectable');
-                    element.addClass('ol-control');
-                    controlOptions = {
-                        target: element[0]
-                    };
-                }
-
+                var anolScaleLineInner = element.find('.anol-scale-line-inner');
+                var controlOptions = {
+                    target: anolScaleLineInner[0]
+                };
                 var olControl = new ol.control.ScaleLine(controlOptions);
-                var control = new anol.control.Control({
+                // For placement reason we need a container control
+                var containerControl = new anol.control.Control({
+                    element: element
+                });
+                var scaleControl = new anol.control.Control({
                     olControl: olControl
                 });
-                ControlsService.addControl(control);
+                ControlsService.addControl(containerControl);
+                ControlsService.addControl(scaleControl);
             }
         }
     };
