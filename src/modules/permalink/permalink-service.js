@@ -202,6 +202,7 @@ angular.module('anol.permalink')
             }
             $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
             $location.search('layers', self.visibleLayerNames.join(','));
+            $location.replace();
         };
         return new Permalink(_urlCrs, _precision);
     }];
