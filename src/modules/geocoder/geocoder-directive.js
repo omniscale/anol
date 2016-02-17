@@ -39,15 +39,16 @@ angular.module('anol.geocoder')
       link: function(scope, element, attrs, AnolMapController) {
         var markerLayer;
         var removeMarkerInteraction;
+        var geocoderOptions = angular.copy(scope.geocoderOptions);
 
         if(angular.isDefined(scope.proxyUrl)) {
           if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
             scope.proxyUrl += '/';
           }
-          scope.geocoderOptions.url = scope.proxyUrl + scope.geocoderOptions.url;
+          geocoderOptions.url = scope.proxyUrl + geocoderOptions.url;
         }
 
-        var geocoder = new anol.geocoder[scope.geocoder](scope.geocoderOptions);
+        var geocoder = new anol.geocoder[scope.geocoder](geocoderOptions);
         scope.searchResults = [];
         scope.noResults = false;
         scope.searchInProgress = false;

@@ -47,6 +47,7 @@ angular.module('anol.getfeatureinfo')
                 scope.customTargetCallback = scope.customTargetFilled();
                 scope.beforeRequest = scope.beforeRequest();
                 var view = scope.map.getView();
+                // TODO check if we can use featurepopup directive here
                 var popupContent = element.find('.anol-popup-content');
                 var popupOverlay = new ol.Overlay({
                     element: element.context,
