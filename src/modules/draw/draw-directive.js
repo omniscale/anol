@@ -266,19 +266,20 @@ angular.module('anol.draw')
                     angular.forEach(unregisters, function(unregister) {
                         unregister[0].unActivate(unregister[1]);
                     });
-                    // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
-                    $timeout(function() {
-                        customDrawControl.deactivate();
-                        ControlsService.removeControl(customDrawControl);
-                    }, 275);
+
+                    customDrawControl.deactivate();
+                    ControlsService.removeControl(customDrawControl);
                 };
 
                 // first one is always the drawInteraction
                 var customDrawInteraction = customInteractions[0];
                 // remove custom draw after draw finish and call the callback
                 customDrawInteraction.on('drawend', function(evt) {
-                    removeCustomDraw();
-                    postDrawCallback(scope.activeLayer, evt.feature);
+                    // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
+                    $timeout(function() {
+                        removeCustomDraw();
+                        postDrawCallback(scope.activeLayer, evt.feature);
+                    }, 275);
                 });
 
                 // remove custom draw when active layer changes
