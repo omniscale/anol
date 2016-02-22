@@ -96,12 +96,16 @@ angular.module('anol.getfeatureinfo')
                         var queryLayers = params.layers || params.LAYERS;
                         queryLayers = queryLayers.split(',');
 
+                        var requestParams ={
+                            'INFO_FORMAT': 'text/html',
+                            'QUERY_LAYERS': queryLayers
+                        };
+                        if(angular.isDefined(layer.featureinfo.featureCount)) {
+                            requestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
+                        }
+
                         var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
-                            coordinate, viewResolution, view.getProjection(),
-                            {
-                                'INFO_FORMAT': 'text/html',
-                                'QUERY_LAYERS': queryLayers
-                            }
+                            coordinate, viewResolution, view.getProjection(), requestParams
                         );
                         if(angular.isDefined(scope.proxyUrl)) {
                             url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];

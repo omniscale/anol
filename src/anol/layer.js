@@ -13,6 +13,7 @@
  * - *_blank* - Results displayed in a new window/tab
  * - *[id]* - Id of html element to display results in
  * @param {Array<string>} options.featureinfo.properties List of feature properties to show in {@link api/anol.featurepopup anol.featurepopup}.
+ * @param {nu,ber} options.featureinfo.featureCount FEATURE_COUNT parameter for getFeatureInfo requests
  * @param {Object} options.legend Stores informations for legend
  * @param {string} options.legend.type Type of legend entry. Supported values are:
  * - *point* - Extracts point style of vector layer for legend
