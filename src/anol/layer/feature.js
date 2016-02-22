@@ -41,6 +41,8 @@
             var createImageStyleFunction = options.style.externalGraphic !== undefined ?
                 this.createIconStyle : this.createCircleStyle;
 
+            this.minResolution = options.style.minResolution;
+            this.maxResolution = options.style.maxResolution;
             this.hasPropertyLabel = options.style.propertyLabel !== undefined;
 
             this.defaultStyle = new ol.style.Style({
@@ -53,8 +55,8 @@
             this.defaultStyle = defaultStyle;
         }
 
-        this.olLayer.setStyle(function(feature) {
-            return [self.createStyle(feature)];
+        this.olLayer.setStyle(function(feature, resolution) {
+            return [self.createStyle(feature, resolution)];
         });
     }
 
@@ -84,9 +86,24 @@ $.extend(anol.layer.Feature.prototype, {
         }
         var geometryType = feature.getGeometry().getType();
         var featureStyle = feature.get('style') || {};
-        if(angular.equals(featureStyle, {}) && !this.hasPropertyLabel) {
+        if(
+            angular.equals(featureStyle, {}) &&
+            !this.hasPropertyLabel &&
+            this.minResolution === undefined &&
+            this.maxResolution === undefined
+        ) {
             return defaultStyle;
         }
+
+        var minResolution = featureStyle.minResolution || this.minResolution;
+        var maxResolution = featureStyle.maxResolution || this.maxResolution;
+        if(
+            (angular.isDefined(minResolution) && minResolution > resolution) ||
+            (angular.isDefined(maxResolution) && maxResolution < resolution)
+        ) {
+            return new ol.style.Style();
+        }
+
         var styleOptions = {};
         if(geometryType === 'Point') {
             styleOptions.image = this.createImageStyle(featureStyle, defaultStyle.getImage());
