@@ -72,7 +72,8 @@ angular.module('anol.draw')
                 scope.postDrawAction()(scope.activeLayer, evt.feature);
             };
 
-            var createDrawInteractions = function(drawType, source, control, layer) {
+            var createDrawInteractions = function(drawType, source, control, layer, postDrawActions) {
+                postDrawActions = postDrawActions || [];
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
                     source: source,
@@ -80,15 +81,20 @@ angular.module('anol.draw')
                 });
 
                 if(angular.isFunction(scope.postDrawAction) && angular.isFunction(scope.postDrawAction())) {
-                    draw.on('drawend', executePostDrawCallback);
+                    postDrawActions.push(executePostDrawCallback);
                 }
 
                 if(scope.continueDrawing === false && control !== undefined) {
-                    draw.on('drawend', function() {
+                    postDrawActions.push(function() {
                         // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                         $timeout(function() { control.deactivate(); }, 275);
                     });
                 }
+
+                // bind post draw actions
+                angular.forEach(postDrawActions, function(postDrawAction) {
+                    draw.on('drawend', postDrawAction);
+                });
 
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
@@ -252,11 +258,10 @@ angular.module('anol.draw')
                     exclusive: true,
                     olControl: null
                 });
-                // third param is control we don't need for this action
-                var customInteractions = createDrawInteractions(drawType, source, undefined, olLayer);
                 // stores control activate event handler unregistering informations
                 var unregisters = [];
                 var deregisterActiveLayerChange;
+                var customInteractions;
                 var removeCustomDraw = function() {
                     angular.forEach(customInteractions, function(interaction) {
                         interaction.setActive(false);
@@ -271,16 +276,23 @@ angular.module('anol.draw')
                     ControlsService.removeControl(customDrawControl);
                 };
 
-                // first one is always the drawInteraction
-                var customDrawInteraction = customInteractions[0];
-                // remove custom draw after draw finish and call the callback
-                customDrawInteraction.on('drawend', function(evt) {
+                // call the callback function
+                var postDrawAction = function(evt) {
+                    postDrawCallback(scope.activeLayer, evt.feature);
+                };
+                // remove custom draw after draw finish
+                var postDrawRemoveCustomDraw = function(evt) {
                     // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                     $timeout(function() {
                         removeCustomDraw();
-                        postDrawCallback(scope.activeLayer, evt.feature);
                     }, 275);
-                });
+                };
+
+                // third param is control we don't need for this action
+                customInteractions = createDrawInteractions(drawType, source, undefined, olLayer, [postDrawAction, postDrawRemoveCustomDraw]);
+
+                // first one is always the drawInteraction
+                var customDrawInteraction = customInteractions[0];
 
                 // remove custom draw when active layer changes
                 deregisterActiveLayerChange = scope.$watch(function() {
