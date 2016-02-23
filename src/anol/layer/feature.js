@@ -96,7 +96,13 @@ $.extend(anol.layer.Feature.prototype, {
         }
 
         var minResolution = featureStyle.minResolution || this.minResolution;
+        if(angular.isString(minResolution)) {
+            minResolution = parseFloat(minResolution);
+        }
         var maxResolution = featureStyle.maxResolution || this.maxResolution;
+        if(angular.isString(maxResolution)) {
+            maxResolution = parseFloat((maxResolution));
+        }
         if(
             (angular.isDefined(minResolution) && minResolution > resolution) ||
             (angular.isDefined(maxResolution) && maxResolution < resolution)
