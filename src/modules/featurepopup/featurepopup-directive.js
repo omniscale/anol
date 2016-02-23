@@ -40,7 +40,7 @@ angular.module('anol.featurepopup')
 
             scope.feature = undefined;
             scope.layer = undefined;
-            scope.selectes = {};
+            scope.selects = {};
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
