@@ -136,4 +136,26 @@ angular.module('anol.featureproperties')
             scope.$watch('selects', selectsChangeHandler);
         }
     };
+}])
+
+.directive('urlOrText', [function() {
+    return {
+        restrict: 'E',
+        scope: {
+            url: '=value'
+        },
+        link: function(scope, element, attrs) {
+            var isUrl = function(s) {
+                var regexp = /(http:\/\/|https:\/\/|www\.)/;
+                return regexp.test(s);
+            };
+            scope.$watch('url', function(url) {
+                var content = url;
+                if(isUrl(url)) {
+                    content = $('<a href="' + url + '">' + url + '</a>');
+                }
+                element.html(content);
+            });
+        }
+    };
 }]);
