@@ -29,7 +29,7 @@
     options.olLayer = new ol.layer.Vector(options.olLayer);
 
     anol.layer.Layer.call(this, options);
-
+    this.externalGraphicPrefix = options.externalGraphicPrefix;
     this.hasPropertyLabel = false;
     // if the layer has an own style function we don't create an style object
     if (!hasStyleFunction) {
@@ -162,7 +162,12 @@ $.extend(anol.layer.Feature.prototype, {
         }
 
         if(style.externalGraphic !== undefined) {
-            styleOptions.src = style.externalGraphic;
+            if(this.externalGraphicPrefix !== undefined) {
+                styleOptions.src = this.externalGraphicPrefix + style.externalGraphic;
+            } else {
+                styleOptions.src = style.externalGraphic;
+            }
+
         }
 
         if(style.graphicRotation !== undefined) {
