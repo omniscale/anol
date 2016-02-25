@@ -187,7 +187,7 @@ angular.module('anol.print')
             });
             filePromise.then(
                 function(response) {
-                    var file = new Blob([response.data], {type: printArgs.mimetype});
+                    var file = new Blob([response.data]);
                     var fileUrl = URL.createObjectURL(file);
                     deferred.resolve({
                         'mode': 'direct',
