@@ -87,6 +87,8 @@ angular.module('anol.print')
             this.checkUrlAttribute = checkUrlAttribute;
             this.preparePrintArgs = preparePrintArgs;
             this.downloadReady = downloadReady;
+
+            this.stopDownloadChecker = false;
         };
         /**
          * @ngdoc method
@@ -103,12 +105,19 @@ angular.module('anol.print')
          * Requests the print endpoint and returns promise when resolved with downloadUrl
          */
         Print.prototype.startPrint = function(rawPrintArgs) {
+            var printMode = this.mode;
             var printArgs = this.preparePrintArgs(rawPrintArgs);
-            switch(this.mode) {
+            if('printMode' in printArgs) {
+                printMode = printArgs.printMode;
+                delete printArgs.printMode;
+            }
+            switch(printMode) {
                 case 'queque':
+                    this.stopDownloadChecker = false;
                     return this.printQueque(printArgs);
                 // includes case 'direct'
                 default:
+                    this.stopDownloadChecker = true;
                     return this.printDirect(printArgs);
             }
         };
@@ -124,10 +133,13 @@ angular.module('anol.print')
                     var checkPromise = self.checkDownload(checkUrl);
                     checkPromise.then(
                         function(downloadUrl) {
-                            deferred.resolve(downloadUrl);
+                            deferred.resolve({
+                                'mode': 'queque',
+                                'url': downloadUrl
+                            });
                         },
-                        function() {
-                            deferred.reject();
+                        function(reason) {
+                            deferred.reject(reason);
                     });
                 },
                 function() {
@@ -140,7 +152,15 @@ angular.module('anol.print')
         Print.prototype.checkDownload = function(url) {
             var self = this;
             var deferred = $q.defer();
+
             var checker = function() {
+                if(self.stopDownloadChecker) {
+                    self.stopDownloadChecker = false;
+                    // we pass true, so print-directive knows that
+                    // download was replaced
+                    deferred.reject('replaced');
+                    return;
+                }
                 $http.get(url).then(
                     function(response) {
                         var downloadReady = self.downloadReady(response);
@@ -156,6 +176,7 @@ angular.module('anol.print')
                 );
             };
             checker();
+
             return deferred.promise;
         };
 
@@ -168,7 +189,10 @@ angular.module('anol.print')
                 function(response) {
                     var file = new Blob([response.data], {type: printArgs.mimetype});
                     var fileUrl = URL.createObjectURL(file);
-                    deferred.resolve(fileUrl);
+                    deferred.resolve({
+                        'mode': 'direct',
+                        'url': fileUrl
+                    });
                 },
                 function() {
                     deferred.reject();

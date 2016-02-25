@@ -80,13 +80,18 @@ angular.module('anol.print')
               );
 
               downloadPromise.then(
-                function(downloadUrl) {
-                  element.find('.download-link').attr('href', downloadUrl);
+                function(response) {
+                  var downloadLink = element.find('.download-link');
+                  downloadLink.attr('target', response.mode === 'direct' ? '_blank' : '');
+                  downloadLink.attr('href', response.url);
                   scope.downloadReady = true;
                   scope.prepareDownload = false;
                   scope.removePrintArea();
                 },
-                function() {
+                function(reason) {
+                  if(reason === 'replaced') {
+                    return;
+                  }
                   scope.prepareDownload = false;
                   scope.downloadError = true;
                 }
