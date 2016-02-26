@@ -231,11 +231,13 @@ angular.module('anol.featurepopup')
                 if(angular.isDefined(openFor)) {
                     scope.layer = openFor.layer;
                     scope.feature = openFor.feature;
-                    if(openFor.coordinate !== undefined) {
+
+                    if('coordinate' in openFor) {
                         scope.coordinate = openFor.coordinate;
                     } else if(scope.feature !== undefined) {
                         scope.coordinate = scope.feature.getGeometry().getLastCoordinate();
                     }
+
                     if(openFor.content !== undefined) {
                         element.find('.anol-popup-content').empty().append(openFor.content);
                     }
