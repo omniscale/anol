@@ -112,7 +112,7 @@ angular.module('anol.getfeatureinfo')
                         }
                         if(angular.isDefined(url)) {
                             $http.get(url).success(function(response) {
-                                if(angular.isString(response) && response !== '' && response.search('<?xml') === -1) {
+                                if(angular.isString(response) && response !== '' && response.search('^\s*<\?xml') === -1) {
                                     var iframe;
                                     if(layer.featureinfo.target === '_popup') {
                                         iframe = $('<iframe seamless src="' + url + '"></iframe>');
