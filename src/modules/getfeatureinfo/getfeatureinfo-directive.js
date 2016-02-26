@@ -33,7 +33,8 @@ angular.module('anol.getfeatureinfo')
         scope: {
             customTargetFilled: '&',
             beforeRequest: '&',
-            proxyUrl: '@'
+            proxyUrl: '@',
+            popupOpeningDirection: '@'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
@@ -41,6 +42,7 @@ angular.module('anol.getfeatureinfo')
         },
         link: {
             pre: function(scope, element) {
+                scope.popupOpeningDirection = scope.popupOpeningDirection || 'top';
                 scope.map = MapService.getMap();
                 // get callback from wrapper function
                 scope.customTargetCallback = scope.customTargetFilled();
