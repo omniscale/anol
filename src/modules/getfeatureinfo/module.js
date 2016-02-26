@@ -4,4 +4,4 @@
  * @description
  * Module providing the getfeatureinfo directive
  */
-angular.module('anol.getfeatureinfo', ['anol.map']);
+angular.module('anol.getfeatureinfo', ['anol.map', 'anol.featurepopup']);

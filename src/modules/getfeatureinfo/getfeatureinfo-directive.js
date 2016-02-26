@@ -30,14 +30,13 @@ angular.module('anol.getfeatureinfo')
     function($http, $window, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
-        replace: true,
         scope: {
             customTargetFilled: '&',
             beforeRequest: '&',
             proxyUrl: '@'
         },
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/getfeatureinfo/templates/popup.html';
+            var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
             return tAttrs.templateUrl || defaultUrl;
         },
         link: {
@@ -47,15 +46,6 @@ angular.module('anol.getfeatureinfo')
                 scope.customTargetCallback = scope.customTargetFilled();
                 scope.beforeRequest = scope.beforeRequest();
                 var view = scope.map.getView();
-                // TODO check if we can use featurepopup directive here
-                var popupContent = element.find('.anol-popup-content');
-                var popupOverlay = new ol.Overlay({
-                    element: element.context,
-                    autoPan: true,
-                    autoPanAnimation: {
-                        duration: 250
-                    }
-                });
 
                 if(angular.isDefined(scope.proxyUrl)) {
                     if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
@@ -63,19 +53,10 @@ angular.module('anol.getfeatureinfo')
                     }
                 }
 
-                scope.map.addOverlay(popupOverlay);
-
-                scope.close = function() {
-                    element.css('display', 'none');
-                };
-
                 scope.handleClick = function(evt) {
                     var viewResolution = view.getResolution();
                     var coordinate = evt.coordinate;
                     var divTargetCleared = false;
-
-                    element.css('display', 'none');
-                    popupContent.empty();
 
                     if(angular.isFunction(scope.beforeRequest)) {
                         scope.beforeRequest();
@@ -122,11 +103,10 @@ angular.module('anol.getfeatureinfo')
                                             $window.open(url, '_blank');
                                         break;
                                         case '_popup':
-                                            popupContent.append(iframe);
-                                            if(element.css('display') === 'none') {
-                                                element.css('display', '');
-                                                popupOverlay.setPosition(coordinate);
-                                            }
+                                            scope.popupProperties = {
+                                                coordinate: coordinate,
+                                                content: iframe
+                                            };
                                         break;
                                         default:
                                             var temp = $('<div></div>');
