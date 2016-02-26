@@ -60,6 +60,8 @@ angular.module('anol.getfeatureinfo')
                     var coordinate = evt.coordinate;
                     var divTargetCleared = false;
 
+                    scope.popupProperties = {coordinate: undefined};
+
                     if(angular.isFunction(scope.beforeRequest)) {
                         scope.beforeRequest();
                     }
