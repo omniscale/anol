@@ -39,6 +39,7 @@ angular.module('anol.print')
               layout: undefined,
               scale: angular.copy(PrintPageService.defaultScale)
             };
+            scope.isPrintableAttributes = {};
             scope.availableScales = PrintPageService.availableScales;
             scope.definedPageLayouts = PrintPageService.pageLayouts;
             scope.outputFormats = PrintPageService.outputFormats;
@@ -128,6 +129,18 @@ angular.module('anol.print')
               }
               if(scope.printAttributes.outputFormat === undefined) {
                 return false;
+              }
+              if(!angular.equals(scope.isPrintableAttributes, {})) {
+                var reject = false;
+                angular.forEach(scope.isPrintableAttributes, function(value) {
+                  if(reject) {
+                    return;
+                  }
+                  reject = value !== true;
+                });
+                if(reject) {
+                  return false;
+                }
               }
               return scope.havePageSize();
             };
