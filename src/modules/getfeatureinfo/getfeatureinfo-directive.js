@@ -26,8 +26,8 @@ angular.module('anol.getfeatureinfo')
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
 .directive('anolGetFeatureInfo', [
-    '$http', '$window', 'MapService', 'LayersService', 'ControlsService',
-    function($http, $window, MapService, LayersService, ControlsService) {
+    '$http', '$window', '$q', 'MapService', 'LayersService', 'ControlsService',
+    function($http, $window, $q, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -55,16 +55,74 @@ angular.module('anol.getfeatureinfo')
                     }
                 }
 
+                var handleFeatureinfoResponses = function(featureInfoObjects) {
+                    var divTargetCleared = false;
+                    var popupContentTemp = $('<div></div>');
+                    var popupCoordinate;
+                    angular.forEach(featureInfoObjects, function(featureInfoObject) {
+                        if(angular.isUndefined(featureInfoObject)) {
+                            return;
+                        }
+                        var iframe;
+                        if(featureInfoObject.target === '_popup') {
+                            iframe = $('<iframe seamless src="' + featureInfoObject.url + '"></iframe>');
+                        }
+                        switch(featureInfoObject.target) {
+                            case '_blank':
+                                $window.open(featureInfoObject.url, '_blank');
+                            break;
+                            case '_popup':
+                                popupContentTemp.append(iframe);
+                                popupCoordinate = featureInfoObject.coordinate;
+                            break;
+                            default:
+                                var temp = $('<div></div>');
+                                var target = angular.element(featureInfoObject.target);
+                                if(divTargetCleared === false) {
+                                    target.empty();
+                                    divTargetCleared = true;
+                                }
+                                var content = angular.element(featureInfoObject.response);
+                                temp.append(content);
+                                temp.find('meta').remove();
+                                temp.find('link').remove();
+                                temp.find('title').remove();
+                                temp.find('script').remove();
+                                target.append(temp.children());
+                                if(angular.isFunction(scope.customTargetCallback)) {
+                                    scope.customTargetCallback();
+                                }
+                            break;
+                        }
+                    });
+                    if(angular.isDefined(popupCoordinate)) {
+                        scope.popupProperties = {
+                            coordinate: popupCoordinate,
+                            content: popupContentTemp.children()
+                        };
+                    }
+
+                };
+
                 scope.handleClick = function(evt) {
                     var viewResolution = view.getResolution();
                     var coordinate = evt.coordinate;
-                    var divTargetCleared = false;
 
                     scope.popupProperties = {coordinate: undefined};
 
                     if(angular.isFunction(scope.beforeRequest)) {
                         scope.beforeRequest();
                     }
+
+                    var requestPromises = [];
+                    // this is resolved after all requests were startet
+                    var requestsDeferred = $q.defer();
+                    requestsDeferred.promise.then(function() {
+                        // promises added before requests startet
+                        // all promises will be resolved, otherwise we can't access the data
+                        // promises that should be rejected will be resolved with undefined
+                        $q.all(requestPromises).then(handleFeatureinfoResponses);
+                    });
 
                     angular.forEach(LayersService.flattedLayers, function(layer) {
                         if(!layer.getVisible()) {
@@ -76,7 +134,6 @@ angular.module('anol.getfeatureinfo')
                         if(!layer.featureinfo) {
                             return;
                         }
-
                         var params = layer.olLayer.getSource().getParams();
                         var queryLayers = params.layers || params.LAYERS;
                         queryLayers = queryLayers.split(',');
@@ -96,45 +153,28 @@ angular.module('anol.getfeatureinfo')
                             url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
                         }
                         if(angular.isDefined(url)) {
-                            $http.get(url).success(function(response) {
-                                if(angular.isString(response) && response !== '' && response.search('^\s*<\?xml') === -1) {
-                                    var iframe;
-                                    if(layer.featureinfo.target === '_popup') {
-                                        iframe = $('<iframe seamless src="' + url + '"></iframe>');
+                            var requestDeferred = $q.defer();
+                            requestPromises.push(requestDeferred.promise);
+                            $http.get(url).then(
+                                function(response) {
+                                    if(angular.isString(response.data) && response.data !== '' && response.data.search('^\s*<\?xml') === -1) {
+                                        requestDeferred.resolve({
+                                            target: layer.featureinfo.target,
+                                            url: url,
+                                            response: response.data,
+                                            coordinate: coordinate
+                                        });
+                                    } else {
+                                        requestDeferred.resolve();
                                     }
-                                    switch(layer.featureinfo.target) {
-                                        case '_blank':
-                                            $window.open(url, '_blank');
-                                        break;
-                                        case '_popup':
-                                            scope.popupProperties = {
-                                                coordinate: coordinate,
-                                                content: iframe
-                                            };
-                                        break;
-                                        default:
-                                            var temp = $('<div></div>');
-                                            var target = angular.element(layer.featureinfo.target);
-                                            if(divTargetCleared === false) {
-                                                target.empty();
-                                                divTargetCleared = true;
-                                            }
-                                            var content = angular.element(response);
-                                            temp.append(content);
-                                            temp.find('meta').remove();
-                                            temp.find('link').remove();
-                                            temp.find('title').remove();
-                                            temp.find('script').remove();
-                                            target.append(temp.children());
-                                            if(angular.isFunction(scope.customTargetCallback)) {
-                                                scope.customTargetCallback();
-                                            }
-                                        break;
-                                    }
+                                },
+                                function(response) {
+                                    requestDeferred.resolve();
                                 }
-                            });
+                            );
                         }
                     });
+                    requestsDeferred.resolve();
                 };
             },
             post: function(scope) {
