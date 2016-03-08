@@ -41,7 +41,7 @@ angular.module('anol.map')
                                 scope.map.addLayer(grouppedLayer.olLayer);
                             });
                         } else {
-                            scope.map.addLayer(grouppedLayer.olLayer);
+                            scope.map.addLayer(layer.olLayer);
                         }
                     });
                     LayersService.registerMap(scope.map);
