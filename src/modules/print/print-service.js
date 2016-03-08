@@ -207,7 +207,8 @@ angular.module('anol.print')
                     var fileUrl = URL.createObjectURL(file);
                     deferred.resolve({
                         'mode': 'direct',
-                        'url': fileUrl
+                        'url': fileUrl,
+                        'name': printArgs.name
                     });
                 },
                 function() {
