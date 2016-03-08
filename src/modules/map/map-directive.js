@@ -32,8 +32,17 @@ angular.module('anol.map')
                     scope.map.updateSize();
                     // add layers after map has correct size to prevent
                     // loading layer twice (before and after resize)
-                    angular.forEach(LayersService.olLayers, function(layer) {
-                        scope.map.addLayer(layer);
+                    angular.forEach(LayersService.backgroundLayers, function(layer) {
+                        scope.map.addLayer(layer.olLayer);
+                    });
+                    angular.forEach(LayersService.overlayLayers.slice().reverse(), function(layer) {
+                        if(layer instanceof anol.layer.Group) {
+                            angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
+                                scope.map.addLayer(grouppedLayer.olLayer);
+                            });
+                        } else {
+                            scope.map.addLayer(grouppedLayer.olLayer);
+                        }
                     });
                     LayersService.registerMap(scope.map);
                     // add registered controls and interactions

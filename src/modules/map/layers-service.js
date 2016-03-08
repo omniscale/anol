@@ -37,8 +37,6 @@ angular.module('anol.map')
             self.layers = [];
             // contains all anol layers (grouped layers extracted from their groups)
             self.flattedLayers = [];
-            // contains all olLayers like (grouped layers extracted from their groups)
-            self.olLayers = [];
             // contains all anol background layers
             self.backgroundLayers = [];
             // contains all anol overlay layers or groups
@@ -123,7 +121,6 @@ angular.module('anol.map')
             }
             angular.forEach(layers, function(layer) {
                 self.flattedLayers.push(layer);
-                self.olLayers.push(layer.olLayer);
                 if(layer.name !== undefined) {
                     self.nameLayersMap[layer.name] = layer;
                 }
