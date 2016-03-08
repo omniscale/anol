@@ -5,6 +5,7 @@ angular.module('anol.print')
  */
 .provider('PrintService', [function() {
     var _downloadReady, _printUrl, _checkUrlAttribute;
+    var _downloadPrefix = '';
     var _preparePrintArgs = function(rawPrintArgs) {
         return rawPrintArgs;
     };
@@ -61,6 +62,16 @@ angular.module('anol.print')
     };
     /**
      * @ngdoc method
+     * @name downloadPrefix
+     * @ methodOf anol.print.PrintServiceProvider
+     *
+     * @param {string} downloadPrefix Filename of file to download will be prefixed with downloadPrefix
+     */
+    this.setDownloadPrefix = function(downloadPrefix) {
+        _downloadPrefix = downloadPrefix;
+    };
+    /**
+     * @ngdoc method
      * @name setPrintUrl
      * @methodOf anol.print.PrintServiceProvider
      *
@@ -81,12 +92,13 @@ angular.module('anol.print')
          * @description
          * Service for comunication with print backend
          */
-        var Print = function(printUrl, mode, checkUrlAttribute, preparePrintArgs, downloadReady) {
+        var Print = function(printUrl, mode, checkUrlAttribute, preparePrintArgs, downloadReady, downloadPrefix) {
             this.printUrl = printUrl;
             this.mode = mode;
             this.checkUrlAttribute = checkUrlAttribute;
             this.preparePrintArgs = preparePrintArgs;
             this.downloadReady = downloadReady;
+            this.downloadPrefix = downloadPrefix;
 
             this.stopDownloadChecker = false;
         };
@@ -111,6 +123,10 @@ angular.module('anol.print')
                 printMode = printArgs.printMode;
                 delete printArgs.printMode;
             }
+            var downloadName = this.downloadPrefix;
+            downloadName += new Date().getTime();
+            downloadName += '.' + printArgs.fileEnding;
+            printArgs.name = downloadName;
             switch(printMode) {
                 case 'queque':
                     this.stopDownloadChecker = false;
@@ -201,6 +217,6 @@ angular.module('anol.print')
             return deferred.promise;
         };
 
-        return new Print(_printUrl, _mode, _checkUrlAttribute, _preparePrintArgs, _downloadReady);
+        return new Print(_printUrl, _mode, _checkUrlAttribute, _preparePrintArgs, _downloadReady, _downloadPrefix);
     }];
 }]);

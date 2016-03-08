@@ -85,6 +85,7 @@ angular.module('anol.print')
                   var downloadLink = element.find('.download-link');
                   downloadLink.attr('target', response.mode === 'direct' ? '_blank' : '');
                   downloadLink.attr('href', response.url);
+                  downloadLink.attr('download', response.name);
                   scope.downloadReady = true;
                   scope.prepareDownload = false;
                   scope.removePrintArea();
