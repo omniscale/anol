@@ -249,7 +249,7 @@ angular.module('anol.measure')
 
             scope.map = MapService.getMap();
 
-            LayersService.addLayer(new anol.layer.Layer(layerOptions));
+            LayersService.addOverlayLayer(new anol.layer.Layer(layerOptions), 0);
 
             var draw = createDrawInteraction(drawStyle);
 

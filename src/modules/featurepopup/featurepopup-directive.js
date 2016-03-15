@@ -1,3 +1,4 @@
+// TODO rename to popup
 angular.module('anol.featurepopup')
 /**
  * @ngdoc directive
@@ -44,8 +45,8 @@ angular.module('anol.featurepopup')
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
-                scope.$watch(function() {
-                    return LayersService.flattedLayers;
+                scope.$watchCollection(function() {
+                    return LayersService.flattedLayers();
                 }, function(layers) {
                     scope.layers.length = 0;
                     angular.forEach(layers, function(layer) {

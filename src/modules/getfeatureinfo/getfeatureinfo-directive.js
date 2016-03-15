@@ -124,7 +124,7 @@ angular.module('anol.getfeatureinfo')
                         $q.all(requestPromises).then(handleFeatureinfoResponses);
                     });
 
-                    angular.forEach(LayersService.flattedLayers, function(layer) {
+                    angular.forEach(LayersService.flattedLayers(), function(layer) {
                         if(!layer.getVisible()) {
                             return;
                         }

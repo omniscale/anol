@@ -80,7 +80,7 @@
             }
           }
         });
-        LayersService.addLayer(featureLayer);
+        LayersService.addOverlayLayer(featureLayer);
         featureLayer.olLayer.getSource().on('change', function() {
           $scope.features = geojsonFormat.writeFeaturesObject(featureLayer.olLayer.getSource().getFeatures());
         });

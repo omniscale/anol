@@ -84,7 +84,7 @@
       .controller('DrawExampleController', ['$rootScope', '$scope', '$translate', 'LayersService', function($rootScope, $scope, $translate, LayersService) {
         var geojsonFormat = new ol.format.GeoJSON();
         $scope.drawLayer = new anol.layer.StaticGeoJSON();
-        LayersService.addLayer($scope.drawLayer);
+        LayersService.addOverlayLayer($scope.drawLayer);
         $scope.drawLayer.olLayer.getSource().on('change', function() {
           $scope.features = geojsonFormat.writeFeaturesObject($scope.drawLayer.olLayer.getSource().getFeatures());
         });

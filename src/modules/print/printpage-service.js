@@ -19,7 +19,7 @@ angular.module('anol.print')
      * - **id** - {string} - Unique page size id
      * - **label** - {string} - Label of defined page size. Will be displayed in html
      * - **icon** - {string} - Icon of defined page size
-     * - **value** - {Array.<number>} - Height, width of defined page size
+     * - **mapSize** - {Array.<number>} - Height, width of map to print
      */
     this.setPageLayouts = function(pageLayouts) {
         _pageLayouts = pageLayouts;
@@ -123,7 +123,7 @@ angular.module('anol.print')
             olLayer: _printLayer
         };
 
-        LayersService.addLayer(new anol.layer.Layer(layerOptions));
+        LayersService.addOverlayLayer(new anol.layer.Layer(layerOptions), 0);
 
         var CursorPointerInteraction = function(options) {
             ol.interaction.Pointer.call(this, {

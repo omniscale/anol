@@ -16,6 +16,13 @@ angular.module('anol.map')
     this.setLayers = function(layers) {
         _layers = _layers.concat(layers);
     };
+    /**
+     * @ngdoc method
+     * @name registerAddLayerHandler
+     * @methodOf anol.map.LayersServiceProvider
+     * @param {function} handler
+     * register a handler called for each added layer
+     */
     this.registerAddLayerHandler = function(handler) {
         _addLayerHandlers.push(handler);
     };
@@ -33,24 +40,26 @@ angular.module('anol.map')
             self.map = undefined;
             self.addLayerHandlers = addLayerHandlers;
 
-            // contains anol layers and groups
-            self.layers = [];
-            // contains all anol layers (grouped layers extracted from their groups)
-            self.flattedLayers = [];
             // contains all anol background layers
             self.backgroundLayers = [];
             // contains all anol overlay layers or groups
             self.overlayLayers = [];
             self.nameLayersMap = {};
             self.nameGroupsMap = {};
-            self.addLayers(layers);
+
+            angular.forEach(layers, function(layer) {
+                if(layer.isBackground) {
+                    self.addBackgroundLayer(layer);
+                } else {
+                    self.addOverlayLayer(layer);
+                }
+            });
 
             var activeBackgroundLayer;
             angular.forEach(self.backgroundLayers, function(backgroundLayer) {
                 if(angular.isUndefined(activeBackgroundLayer) && backgroundLayer.getVisible()) {
                     activeBackgroundLayer = backgroundLayer;
                 }
-                self.nameLayersMap[backgroundLayer.name] = backgroundLayer;
             });
             if(angular.isUndefined(activeBackgroundLayer) && self.backgroundLayers.length > 0) {
                 activeBackgroundLayer = self.backgroundLayers[0];
@@ -71,20 +80,44 @@ angular.module('anol.map')
             this.map = map;
         };
         /**
-         * private function
-         *
-         * stores layer into background- or overlaylayers list
-         * adds event handler to change:visible event
+         * @ngdoc method
+         * @name addBackgroundLayer
+         * @methodOf anol.map.LayersService
+         * @param {anol.layer} layer Background layer to add
+         * @param {number} idx Position to add backgorund layer at
+         * @description
+         * Adds a background layer
          */
-        Layers.prototype.prepareLayer = function(layer) {
+        Layers.prototype.addBackgroundLayer = function(layer, idx) {
             var self = this;
-
-            if(layer.isBackground) {
-                self.backgroundLayers.push(layer);
-            } else {
-                self.overlayLayers.push(layer);
-            }
-
+            // layers added reversed to map, so default idx is 0 to add layer "at top"
+            idx = idx || 0;
+            self.backgroundLayers.splice(idx, 0, layer);
+            self._prepareLayer(layer);
+        };
+        /**
+         * @ngdoc method
+         * @name addOverlayLayer
+         * @methodOf anol.map.LayersService
+         * @param {anol.layer} layer Overlay layer to add
+         * @param {number} idx Position to add overlay layer at
+         * @description
+         * Adds a overlay layer
+         */
+        Layers.prototype.addOverlayLayer = function(layer, idx) {
+            var self = this;
+            // layers added reversed to map, so default idx is 0 to add layer "at top"
+            idx = idx || 0;
+            self.overlayLayers.splice(idx, 0, layer);
+            self._prepareLayer(layer);
+        };
+        /**
+         * private function
+         * Added ol layer to map when present
+         * Executes addLayer handlers
+         */
+        Layers.prototype._prepareLayer = function(layer) {
+            var self = this;
             // while map is undefined, don't add layers to it
             // when map is created, all this.layers are added to map
             // after that, this.map is registered
@@ -99,49 +132,58 @@ angular.module('anol.map')
                     self.map.addLayer(layer.olLayer);
                 }
             }
-        };
-        /**
-         * @ngdoc method
-         * @name addLayer
-         * @methodOf anol.map.LayersService
-         * @param {Object} layer ol3 layer object
-         * @description
-         * Adds a single layer
-         */
-        Layers.prototype.addLayer = function(_layer) {
-            var self = this;
-            var layers = [_layer];
-            self.prepareLayer(_layer);
-            self.layers.push(_layer);
-            if(_layer instanceof anol.layer.Group) {
-                if(_layer.name !== undefined) {
-                    self.nameGroupsMap[_layer.name] = _layer;
-                }
-                layers = _layer.layers;
-            }
-            angular.forEach(layers, function(layer) {
-                self.flattedLayers.push(layer);
+
+            var layers = [layer];
+            if(layer instanceof anol.layer.Group) {
                 if(layer.name !== undefined) {
-                    self.nameLayersMap[layer.name] = layer;
+                    self.nameGroupsMap[layer.name] = layer;
                 }
+                layers = layer.layers;
+            }
+
+            angular.forEach(layers, function(_layer) {
+                if(_layer.name !== undefined) {
+                    self.nameLayersMap[_layer.name] = _layer;
+                }
+            });
+
+            angular.forEach(layers, function(_layer) {
                 angular.forEach(self.addLayerHandlers, function(handler) {
-                    handler(layer);
+                    handler(_layer);
                 });
             });
         };
         /**
          * @ngdoc method
-         * @name addLayers
+         * @name layers
          * @methodOf anol.map.LayersService
-         * @param {Array.<Object>} layers ol3 layers
+         * @returns {array.<anol.layer.Layer>} All layers, including groups
          * @description
-         * Adds an array of layers
+         * Get all layers managed by layers service
          */
-        Layers.prototype.addLayers = function(layers) {
+        Layers.prototype.layers = function() {
             var self = this;
-            angular.forEach(layers, function(layer) {
-                self.addLayer(layer);
+            return self.backgroundLayers.concat(self.overlayLayers);
+        };
+        /**
+         * @ngdoc method
+         * @name flattedLayers
+         * @methodOf anol.map.LayersService
+         * @returns {Array.<anol.layer.Layer>} flattedLayers
+         * @description
+         * Returns all layers except groups. Grouped layers extracted from their gropus.
+         */
+        Layers.prototype.flattedLayers = function() {
+            var self = this;
+            var flattedLayers = [];
+            angular.forEach(self.layers(), function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                    flattedLayers = flattedLayers.concat(layer.layers);
+                } else {
+                    flattedLayers.push(layer);
+                }
             });
+            return flattedLayers;
         };
         /**
          * @ngdoc method
@@ -161,11 +203,25 @@ angular.module('anol.map')
             });
             return backgroundLayer;
         };
-
+        /**
+         * @ngdoc method
+         * @name layerByName
+         * @methodOf anol.map.LayersService
+         * @param {string} name
+         * @returns {anol.layer.Layer} layer
+         * @description Gets a layer by it's name
+         */
         Layers.prototype.layerByName = function(name) {
             return this.nameLayersMap[name];
         };
-
+        /**
+         * @ngdoc method
+         * @name groupByName
+         * @methodOf anol.map.LayersService
+         * @param {string} name
+         * @returns {anol.layer.Group} group
+         * @description Gets a group by it's name
+         */
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };

@@ -68,7 +68,7 @@ angular.module('anol.legend')
             post: function(scope, element, attrs) {
                 scope.legendLayers = [];
 
-                angular.forEach(LayersService.flattedLayers, function(layer) {
+                angular.forEach(LayersService.flattedLayers(), function(layer) {
                     if(layer.legend === false) {
                         return;
                     }

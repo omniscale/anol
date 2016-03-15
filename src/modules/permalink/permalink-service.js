@@ -88,7 +88,7 @@ angular.module('anol.permalink')
                 if(mapParams.layers !== false) {
                     self.visibleLayerNames = mapParams.layers;
                     var backgroundLayerAdded = false;
-                    angular.forEach(LayersService.layers, function(layer) {
+                    angular.forEach(LayersService.layers(), function(layer) {
                         // only overlay layers are grouped
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
@@ -116,7 +116,7 @@ angular.module('anol.permalink')
                     });
                 }
             } else {
-                angular.forEach(LayersService.flattedLayers, function(layer) {
+                angular.forEach(LayersService.flattedLayers(), function(layer) {
                     if(layer.permalink === true) {
                         if(layer.getVisible()) {
                             self.visibleLayerNames.push(layer.name);
@@ -128,7 +128,7 @@ angular.module('anol.permalink')
             self.map.on('moveend', self.moveendHandler, self);
 
             $rootScope.$watchCollection(function() {
-                return LayersService.layers;
+                return LayersService.layers();
             }, function(newVal) {
                 if(angular.isDefined(newVal)) {
                     angular.forEach(newVal, function(layer) {
