@@ -165,6 +165,7 @@ $.extend(anol.layer.Feature.prototype, {
             styleOptions.rotation = defaultIconStyle.getRotation();
             styleOptions.scale = defaultIconStyle.getScale();
             styleOptions.size = defaultIconStyle.getSize();
+            styleOptions.imgSize = defaultIconStyle.getSize();
         }
 
         if(style.externalGraphic !== undefined) {
@@ -182,6 +183,10 @@ $.extend(anol.layer.Feature.prototype, {
 
         if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
             styleOptions.size = [
+                parseInt(style.graphicWidth),
+                parseInt(style.graphicHeight)
+            ];
+            styleOptions.imgSize = [
                 parseInt(style.graphicWidth),
                 parseInt(style.graphicHeight)
             ];
