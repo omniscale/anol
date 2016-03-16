@@ -90,8 +90,7 @@ angular.module('anol.map')
          */
         Layers.prototype.addBackgroundLayer = function(layer, idx) {
             var self = this;
-            // layers added reversed to map, so default idx is 0 to add layer "at top"
-            idx = idx || 0;
+            idx = idx || self.backgroundLayers.length;
             self.backgroundLayers.splice(idx, 0, layer);
             self._prepareLayer(layer);
         };

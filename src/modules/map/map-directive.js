@@ -35,7 +35,7 @@ angular.module('anol.map')
                     angular.forEach(LayersService.backgroundLayers, function(layer) {
                         scope.map.addLayer(layer.olLayer);
                     });
-                    angular.forEach(LayersService.overlayLayers.slice().reverse(), function(layer) {
+                    angular.forEach(LayersService.overlayLayers, function(layer) {
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
                                 scope.map.addLayer(grouppedLayer.olLayer);
