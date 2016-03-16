@@ -44,6 +44,8 @@ angular.module('anol.map')
             self.backgroundLayers = [];
             // contains all anol overlay layers or groups
             self.overlayLayers = [];
+            // contains all anol layers used internaly by modules
+            self.systemLayers = [];
             self.nameLayersMap = {};
             self.nameGroupsMap = {};
 
@@ -109,6 +111,11 @@ angular.module('anol.map')
             idx = idx || 0;
             self.overlayLayers.splice(idx, 0, layer);
             self._prepareLayer(layer);
+        };
+        Layers.prototype.addSystemLayer = function(layer, idx) {
+            var self = this;
+            idx = idx || 0;
+            self.systemLayers.splice(idx, 0, layer);
         };
         /**
          * private function

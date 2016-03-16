@@ -123,7 +123,7 @@ angular.module('anol.print')
             olLayer: _printLayer
         };
 
-        LayersService.addOverlayLayer(new anol.layer.Layer(layerOptions), 0);
+        LayersService.addSystemLayer(new anol.layer.Layer(layerOptions), 0);
 
         var CursorPointerInteraction = function(options) {
             ol.interaction.Pointer.call(this, {

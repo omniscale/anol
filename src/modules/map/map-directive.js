@@ -44,6 +44,9 @@ angular.module('anol.map')
                             scope.map.addLayer(layer.olLayer);
                         }
                     });
+                    angular.forEach(LayersService.systemLayers, function(layer) {
+                        scope.map.addLayer(layer.olLayer);
+                    });
                     LayersService.registerMap(scope.map);
                     // add registered controls and interactions
                     angular.forEach(ControlsService.olControls, function(control) {
