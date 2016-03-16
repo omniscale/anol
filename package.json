@@ -43,6 +43,6 @@
     "angular-translate-loader-static-files": "~2.8.1",
     "angular-ui-bootstrap": "~0.13.4",
     "bootstrap": "3.3.6",
-    "openlayers": "git+ssh://git@github.com:GeoDodo/ol3"
+    "openlayers": "git+ssh://git@github.com:openlayers/ol3"
   }
 }
