@@ -125,14 +125,15 @@ angular.module('anol.legend')
 
                     if(angular.isFunction(style.getImage().getSrc)) {
                         var width, height;
+                        var iconSize = style.getImage().getSize();
                         if(scope.width >= scope.height) {
-                            ratio = scope.width / scope.height;
-                            width = scope.width - 1;
-                            height = width * ratio;
+                            ratio = iconSize[0] / iconSize[1];
+                            width = scope.width;
+                            height = scope.height * ratio;
                         } else {
-                            ratio = scope.height / scope.width;
-                            height = scope.height - 1;
-                            width = height * ratio;
+                            ratio = iconSize[1] / iconSize[0];
+                            height = scope.height;
+                            width = scope.width * ratio;
                         }
                         var img = new Image();
                         img.src = style.getImage().getSrc();
