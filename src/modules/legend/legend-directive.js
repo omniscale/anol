@@ -128,12 +128,12 @@ angular.module('anol.legend')
                         var iconSize = style.getImage().getSize();
                         if(scope.width >= scope.height) {
                             ratio = iconSize[0] / iconSize[1];
-                            width = scope.width;
-                            height = scope.height * ratio;
+                            width = scope.width * ratio;
+                            height = scope.height;
                         } else {
                             ratio = iconSize[1] / iconSize[0];
-                            height = scope.height;
-                            width = scope.width * ratio;
+                            height = scope.height * ratio;
+                            width = scope.width;
                         }
                         var img = new Image();
                         img.src = style.getImage().getSrc();
