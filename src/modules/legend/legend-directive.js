@@ -137,8 +137,11 @@ angular.module('anol.legend')
                         }
                         var img = new Image();
                         img.src = style.getImage().getSrc();
+
+                        var positionLeft = (scope.width - width) / 2;
+                        var positionTop = (scope.height - height) / 2;
                         img.onload = function() {
-                            ctx.drawImage(img, 0, 0, width, height);
+                            ctx.drawImage(img, positionLeft, positionTop, width, height);
                         };
                     } else {
                         var x = scope.width / 2;
