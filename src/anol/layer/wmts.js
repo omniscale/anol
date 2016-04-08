@@ -26,11 +26,7 @@ anol.layer.WMTS = function(_options) {
             }
         }
     };
-    var options = $.extend(true, {},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
+    var options = $.extend(true, {}, defaults, _options );
 
     var hqUrl = options.olLayer.source.hqUrl || false;
     delete options.olLayer.source.hqUrl;
@@ -58,27 +54,13 @@ anol.layer.WMTS = function(_options) {
          }
     }
 
-    // copy layer options without source. it will be added later
-    var layerOpts = $.extend({}, options.olLayer, {source: null});
-    var olLayer = new ol.layer.Tile(layerOpts);
-
-    var promise;
-    if(options.olLayer.source.capabilitiesUrl !== undefined) {
-        promise = this._createSourceOptionsFromCapabilities(options.olLayer.source);
-    } else {
-        promise = this._createSourceOptions(options.olLayer.source);
-    }
-    promise.then(function(sourceOpts) {
-        self.sourceOptions = sourceOpts;
-        olLayer.setSource(new ol.source.WMTS(self.sourceOptions));
-    });
-
-    options.olLayer = olLayer;
     anol.layer.Layer.call(this, options);
 };
 anol.layer.WMTS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.WMTS.prototype, {
     CLASS_NAME: 'anol.layer.WMTS',
+    OL_LAYER_CLASS: ol.layer.Tile,
+    OL_SOURCE_CLASS: ol.source.WMTS,
     _createResolution: function(levels, minRes) {
         var resolutions = [];
         for(var z = 0; z < levels; ++z) {
@@ -99,20 +81,16 @@ $.extend(anol.layer.WMTS.prototype, {
                '/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.' +
                options.format.split('/')[1];
     },
-    _createSourceOptions: function(sourceOpts) {
-        var deferred = $.Deferred();
-        var levels = sourceOpts.levels;
-        var extent = sourceOpts.extent || sourceOpts.projection.getExtent();
+    _createSourceOptions: function(srcOptions) {
+        srcOptions = anol.layer.Layer.prototype._createSourceOptions(srcOptions);
+        var levels = srcOptions.levels;
+        var extent = srcOptions.extent || srcOptions.projection.getExtent();
         var w = ol.extent.getWidth(extent);
         var h = ol.extent.getHeight(extent);
-        var minRes = Math.max(w / sourceOpts.tileSize[0], h / sourceOpts.tileSize[1]);
-        var url = this._createRequestUrl(sourceOpts);
+        var minRes = Math.max(w / srcOptions.tileSize[0], h / srcOptions.tileSize[1]);
+        var url = this._createRequestUrl(srcOptions);
 
-        sourceOpts = anol.layer.Layer.prototype._createSourceOptions(
-            sourceOpts
-        );
-
-        deferred.resolve($.extend(sourceOpts, {
+        srcOptions = $.extend(true, {}, srcOptions, {
             url: url,
             tileGrid: new ol.tilegrid.WMTS({
                 extent: extent,
@@ -122,33 +100,8 @@ $.extend(anol.layer.WMTS.prototype, {
             }),
             requestEncoding: 'REST',
             style: 'default'
-        }));
-        return deferred.promise();
-    },
-    _createSourceOptionsFromCapabilities: function(sourceOpts) {
-        var deferred = $.Deferred();
-        sourceOpts = anol.layer.Layer.prototype._createSourceOptions(
-            sourceOpts
-        );
-        var parser = new ol.format.WMTSCapabilities();
-        $.ajax({
-            type: 'GET',
-            url: sourceOpts.capabilitiesUrl + 'REQUEST=GetCapabilities',
-            async: false,
-            success: function(data) {
-                var result = parser.read(data);
-                var wmtsOptions = ol.source.WMTS.optionsFromCapabilities(
-                    result,
-                    {
-                        layer: sourceOpts.layer,
-                        projection: sourceOpts.projection,
-                        matrixSet: sourceOpts.matrixSet
-                    }
-                );
-                $.extend(sourceOpts, wmtsOptions);
-                deferred.resolve(sourceOpts);
-            }
         });
-        return deferred.promise();
+
+        return srcOptions;
     }
 });

@@ -22,22 +22,15 @@
             }
         }
     };
-    var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
-
-    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
-    options.olLayer.source = new ol.source.XYZ(this.sourceOptions);
-
-    options.olLayer = new ol.layer.Tile(options.olLayer);
+    var options = $.extend(true, {}, defaults, _options);
 
     anol.layer.Layer.call(this, options);
 };
 anol.layer.TMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.TMS.prototype, {
     CLASS_NAME: 'anol.layer.TMS',
+    OL_LAYER_CLASS: ol.layer.Tile,
+    OL_SOURCE_CLASS: ol.source.XYZ,
     /**
      * Additional source options:
      * - baseUrl
@@ -47,9 +40,7 @@ $.extend(anol.layer.TMS.prototype, {
      */
     _createSourceOptions: function(srcOptions) {
         var self = this;
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions(
-            srcOptions
-        );
+        srcOptions = anol.layer.Layer.prototype._createSourceOptions(srcOptions);
 
         srcOptions.tileUrlFunction = function(tileCoord, pixelRatio, projection) {
             return self.tileUrlFunction(

@@ -16,12 +16,14 @@
  */
  anol.layer.DynamicGeoJSON = function(_options) {
     anol.layer.StaticGeoJSON.call(this, _options);
-
-    this._source = this.olLayer.getSource();
 };
 anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
 $.extend(anol.layer.DynamicGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.DynamicGeoJSON',
+    setOlLayer: function(olLayer) {
+        this._source = olLayer.getSource();
+        anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
+    },
     /**
      * Additional source options
      * - url

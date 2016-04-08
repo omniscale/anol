@@ -16,25 +16,23 @@ anol.layer.StaticGeoJSON = function(_options) {
         anol.layer.Feature.call(this, _options);
         return;
     }
-    var self = this;
-    var defaults = {
-        olLayer: {}
-    };
-    var options = $.extend({},
-        defaults,
-        _options
-    );
+    var defaults = {};
+    var options = $.extend({}, defaults, _options);
 
-    anol.layer.Feature.call(this, options);
     this.loaded = false;
 
-    this.olLayer.getSource().once('change', function() {
-        self.loaded = true;
-    });
+    anol.layer.Feature.call(this, options);
 };
 anol.layer.StaticGeoJSON.prototype = new anol.layer.Feature(false);
 $.extend(anol.layer.StaticGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.StaticGeoJSON',
+    setOlLayer: function(olLayer) {
+        var self = this;
+        olLayer.getSource().once('change', function() {
+            self.loaded = true;
+        });
+        anol.layer.Feature.prototype.setOlLayer.call(this, olLayer);
+    },
     /**
      * Additional source options
      * - url

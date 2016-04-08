@@ -11,20 +11,13 @@
  */
  anol.layer.TiledWMS = function(_options) {
     var defaults = {};
-    var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
-
-    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
-    options.olLayer.source = new ol.source.TileWMS(this.sourceOptions);
-
-    options.olLayer = new ol.layer.Tile(options.olLayer);
+    var options = $.extend(true, {}, defaults, _options );
 
     anol.layer.Layer.call(this, options);
 };
 anol.layer.TiledWMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.TiledWMS.prototype, {
-    CLASS_NAME: 'anol.layer.TiledWMS'
+    CLASS_NAME: 'anol.layer.TiledWMS',
+    OL_LAYER_CLASS: ol.layer.Tile,
+    OL_SOURCE_CLASS: ol.source.TileWMS
 });

@@ -11,20 +11,13 @@
  */
  anol.layer.SingleTileWMS = function(_options) {
     var defaults = {};
-    var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
-
-    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
-    options.olLayer.source = new ol.source.ImageWMS(this.sourceOptions);
-
-    options.olLayer = new ol.layer.Image(options.olLayer);
+    var options = $.extend(true, {}, defaults, _options);
 
     anol.layer.Layer.call(this, options);
 };
 anol.layer.SingleTileWMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.SingleTileWMS.prototype, {
-    CLASS_NAME: 'anol.layer.SingleTileWMS'
+    CLASS_NAME: 'anol.layer.SingleTileWMS',
+    OL_LAYER_CLASS: ol.layer.Image,
+    OL_SOURCE_CLASS: ol.source.ImageWMS
 });

@@ -124,20 +124,6 @@ angular.module('anol.map')
          */
         Layers.prototype._prepareLayer = function(layer) {
             var self = this;
-            // while map is undefined, don't add layers to it
-            // when map is created, all this.layers are added to map
-            // after that, this.map is registered
-            // so, when map is defined, added layers are not in map
-            // and must be added
-            if(self.map !== undefined) {
-                if(layer instanceof anol.layer.Group) {
-                    angular.forEach(layer.layers, function(_layer) {
-                        self.map.addLayer(_layer.olLayer);
-                    });
-                } else {
-                    self.map.addLayer(layer.olLayer);
-                }
-            }
 
             var layers = [layer];
             if(layer instanceof anol.layer.Group) {
@@ -154,10 +140,33 @@ angular.module('anol.map')
             });
 
             angular.forEach(layers, function(_layer) {
+                // start create olLayer / olSource
+                var olSource = new _layer.OL_SOURCE_CLASS(_layer.olSourceOptions);
+                var layerOpts = _layer.olLayerOptions;
+                layerOpts.source = olSource;
+                var olLayer = new _layer.OL_LAYER_CLASS(layerOpts);
+                _layer.setOlLayer(olLayer);
+                // end
+
                 angular.forEach(self.addLayerHandlers, function(handler) {
                     handler(_layer);
                 });
             });
+
+            // while map is undefined, don't add layers to it
+            // when map is created, all this.layers are added to map
+            // after that, this.map is registered
+            // so, when map is defined, added layers are not in map
+            // and must be added
+            if(self.map !== undefined) {
+                if(layer instanceof anol.layer.Group) {
+                    angular.forEach(layer.layers, function(_layer) {
+                        self.map.addLayer(_layer.olLayer);
+                    });
+                } else {
+                    self.map.addLayer(layer.olLayer);
+                }
+            }
         };
         /**
          * @ngdoc method

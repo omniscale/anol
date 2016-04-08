@@ -10,6 +10,7 @@
  * @description
  * Groups {@link anol.layer.Layer anol.layer.Layer}.
  */
+ // TODO think about rebasing into anol.Group
 anol.layer.Group = function(options) {
     this.name = options.name;
     this.title = options.title;

@@ -16,61 +16,59 @@
     }
     var self = this;
     var defaults = {};
-    var options = $.extend({},
-        anol.layer.Layer.prototype.DEFAULT_OPTIONS,
-        defaults,
-        _options
-    );
-    var hasStyleFunction = angular.isFunction(options.olLayer.style);
+    var options = $.extend({}, defaults, _options );
 
-    this.sourceOptions = this._createSourceOptions(options.olLayer.source);
-    options.olLayer.source = new ol.source.Vector(this.sourceOptions);
+    this.hasStyleFunction = angular.isFunction(options.olLayer.style);
 
-    options.olLayer = new ol.layer.Vector(options.olLayer);
+    this.style = options.style;
+    this.minResolution = (options.style || {}).minResolution;
+    this.maxResolution = (options.style || {}).maxResolution;
+    this.hasPropertyLabel = (options.style || {}).propertyLabel !== undefined;
 
-    anol.layer.Layer.call(this, options);
     this.externalGraphicPrefix = options.externalGraphicPrefix;
     this.hasPropertyLabel = false;
-    // if the layer has an own style function we don't create an style object
-    if (!hasStyleFunction) {
-
-        var defaultStyle = angular.isFunction(this.olLayer.getStyle()) ?
-            this.olLayer.getStyle()()[0] : this.olLayer.getStyle();
-
-        if(options.style !== undefined) {
-            var createImageStyleFunction = options.style.externalGraphic !== undefined ?
-                this.createIconStyle : this.createCircleStyle;
-
-            this.minResolution = options.style.minResolution;
-            this.maxResolution = options.style.maxResolution;
-            this.hasPropertyLabel = options.style.propertyLabel !== undefined;
-
-            this.defaultStyle = new ol.style.Style({
-                image: createImageStyleFunction.call(this, options.style, defaultStyle.getImage()),
-                fill: this.createFillStyle(options.style, defaultStyle.getFill()),
-                stroke: this.createStrokeStyle(options.style, defaultStyle.getStroke()),
-                text: this.createTextStyle(options.style, defaultStyle.getText())
-            });
-        } else {
-            this.defaultStyle = defaultStyle;
-        }
-
-        this.olLayer.setStyle(function(feature, resolution) {
-            return [self.createStyle(feature, resolution)];
-        });
-    }
 
     this.isVector = true;
     this.loaded = true;
     this.saveable = options.saveable || false;
     this.editable = options.editable || false;
+
+    anol.layer.Layer.call(this, options);
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
     CLASS_NAME: 'anol.layer.Feature',
+    OL_LAYER_CLASS: ol.layer.Vector,
+    OL_SOURCE_CLASS: ol.source.Vector,
     DEFAULT_FONT_FACE: 'Helvetica',
     DEFAULT_FONT_SIZE: '10px',
     DEFAULT_FONT_WEIGHT: 'normal',
+    setOlLayer: function(olLayer) {
+        var self = this;
+        // if the layer has an own style function we don't create an style object
+        if(!this.hasStyleFunction) {
+            var defaultStyle = angular.isFunction(olLayer.getStyle()) ? olLayer.getStyle()()[0] : olLayer.getStyle();
+
+            if(this.style !== undefined) {
+                var createImageStyleFunction = this.style.externalGraphic !== undefined ? this.createIconStyle : this.createCircleStyle;
+
+                this.defaultStyle = new ol.style.Style({
+                    image: createImageStyleFunction.call(this, this.style, defaultStyle.getImage()),
+                    fill: this.createFillStyle(this.style, defaultStyle.getFill()),
+                    stroke: this.createStrokeStyle(this.style, defaultStyle.getStroke()),
+                    text: this.createTextStyle(this.style, defaultStyle.getText())
+                });
+            } else {
+                this.defaultStyle = defaultStyle;
+            }
+
+            olLayer.setStyle(function(feature, resolution) {
+                return [self.createStyle(feature, resolution)];
+            });
+        }
+
+        anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
+    },
     extent: function() {
         var extent = this.olLayer.getSource().getExtent();
         if(ol.extent.isEmpty(extent)) {

@@ -45,35 +45,40 @@ anol.layer.Layer = function(options) {
     if(options === false) {
         return;
     }
-
+    options = $.extend(true, {}, this.DEFAULT_OPTIONS, options);
     this.name = options.name;
     this.title = options.title;
-    this.displayInLayerswitcher = options.displayInLayerswitcher === undefined ? true : options.displayInLayerswitcher;
-    if(this.displayInLayerswitcher === false) {
-        this.permalink = false;
-    } else {
-        this.permalink = options.permalink === undefined ? true : options.permalink;
-    }
     this.isBackground = options.isBackground || false;
     this.featureinfo = options.featureinfo || false;
     this.legend = options.legend || false;
     this.attribution = options.attribution || undefined;
     this.isVector = false;
-    this.options = options;
+    this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
 
-    this.olLayer = options.olLayer;
-    if(!(this.olLayer instanceof ol.layer.Base)) {
-        throw 'Cannot create object without ol layer';
+    if(this.displayInLayerswitcher === false) {
+        this.permalink = false;
+    } else {
+        this.permalink = anol.helper.getValue(options.permalink, true);
     }
-    this.olLayer.set('anolLayer', this);
+
+    this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
+    delete options.olLayer.source;
+    this.olLayerOptions = options.olLayer;
+
+    this.olLayer = undefined;
 };
 
 anol.layer.Layer.prototype = {
     CLASS_NAME: 'anol.layer.Layer',
+    OL_LAYER_CLASS: undefined,
+    OL_SOURCE_CLASS: undefined,
     DEFAULT_OPTIONS: {
         olLayer: {
-            source: undefined
+            source: {}
         }
+    },
+    setOlLayer: function(olLayer) {
+        this.olLayer = olLayer;
     },
     getVisible: function() {
         var self = this;
