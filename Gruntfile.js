@@ -41,6 +41,7 @@ module.exports = function(grunt) {
       dev: {
         src: [
           'src/anol/anol.js',
+          'src/anol/helper.js',
           'src/anol/layer.js',
           'src/anol/layer/feature.js',
           'src/anol/layer/staticgeojson.js',
