@@ -135,14 +135,14 @@ angular.module('anol.permalink')
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers, function(groupLayer) {
                                 if(groupLayer.permalink === true) {
-                                    groupLayer.olLayer.un('change:visible', self.handleVisibleChange, self);
-                                    groupLayer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                                    groupLayer.offVisibleChange(self.handleVisibleChange);
+                                    groupLayer.onVisibleChange(self.handleVisibleChange, self);
                                 }
                             });
                         } else {
                             if(layer.permalink === true) {
-                                layer.olLayer.un('change:visible', self.handleVisibleChange, self);
-                                layer.olLayer.on('change:visible', self.handleVisibleChange, self);
+                                layer.offVisibleChange(self.handleVisibleChange);
+                                layer.onVisibleChange(self.handleVisibleChange, self);
                             }
                         }
                     });
@@ -153,10 +153,11 @@ angular.module('anol.permalink')
          * @private
          */
         Permalink.prototype.handleVisibleChange = function(evt) {
-            var self = this;
-            var layer = evt.target;
-            if(layer.get('anolLayer').permalink === true) {
-                var layerName = layer.get('anolLayer').name;
+            var self = evt.data.context;
+            // this in this context is the layer, visiblie changed for
+            var layer = this;
+            if(layer.permalink === true) {
+                var layerName = layer.name;
                 if(angular.isDefined(layerName) && layer.getVisible()) {
                     self.visibleLayerNames.push(layerName);
                 } else {

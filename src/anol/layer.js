@@ -95,20 +95,17 @@ anol.layer.Layer.prototype = {
         throw "getCombinedOlLayer not implemented for " + this.CLASS_NAME;
     },
     getVisible: function() {
-        var self = this;
-        return self.olLayer.getVisible();
+        return this.olLayer.getVisible();
     },
     setVisible: function(visible)  {
-        var self = this;
-        self.olLayer.setVisible(visible);
+        this.olLayer.setVisible(visible);
+        $(this).triggerHandler('anol.layer.visible:change', [this]);
     },
-    onVisibleChange: function(func) {
-        var self = this;
-        return self.olLayer.on('change:visible', func);
+    onVisibleChange: function(func, context) {
+        $(this).on('anol.layer.visible:change', {'context': context}, func);
     },
-    offVisibleChange: function(key) {
-        var self = this;
-        self.olLayer.off(key);
+    offVisibleChange: function(func) {
+        $(this).off('anol.layer.visible:change', func);
     },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
