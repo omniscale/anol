@@ -26,6 +26,7 @@ $.extend(anol.layer.BaseWMS.prototype, {
     CLASS_NAME: 'anol.layer.BaseWMS',
     OL_LAYER_CLASS: undefined,
     OL_SOURCE_CLASS: undefined,
+
     isCombinable: function(other) {
         combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
         if(!combinable) {
@@ -70,5 +71,26 @@ $.extend(anol.layer.BaseWMS.prototype, {
         var params = this.olLayer.getSource().getParams();
         var layers = anol.helper.stringSplit(params.LAYERS, ',');
         return anol.helper.allInList(layers, this.wmsSourceLayers);
+    },
+    getLegendGraphicUrl: function() {
+        var requestParams = {
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            SLD_VERSION: '1.1.0',
+            REQUEST: 'GetLegendGraphic',
+            FORMAT: 'image/png'
+        };
+        if(this.legend.version !== undefined) {
+            requestParams.VERSION = this.legend.version;
+        }
+        if(this.legend.sldVersion !== undefined) {
+            requestParams.SLD_VERSION = this.legend.sldVersion;
+        }
+        if(this.legend.format !== undefined) {
+            requestParams.FORMAT = this.legend.format;
+        }
+        requestParams.LAYER = this.wmsSourceLayers.join(',');
+
+        return this.olLayer.getSource().getUrl() + $.param(requestParams);
     }
 });

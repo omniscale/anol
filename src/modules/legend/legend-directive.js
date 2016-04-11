@@ -204,49 +204,15 @@ angular.module('anol.legend')
             };
 
             var RasterLegend = {
-                DEFAULT_WMS_VERSION: '1.3.0',
-                createGetLegendGraphicUrl: function(source, params) {
-                    var urls = [];
-                    var baseParams = {
-                        'SERVICE': 'WMS',
-                        'VERSION': RasterLegend.DEFAULT_WMS_VERSION,
-                        'SLD_VERSION': '1.1.0',
-                        'REQUEST': 'GetLegendGraphic',
-                        'FORMAT': 'image/png',
-                        'LAYER': undefined
-                    };
-                    var url = source.getUrl();
-                    var sourceParams = source.getParams();
-                    var layers = sourceParams.layers || sourceParams.LAYERS || '';
-
-                    angular.forEach(layers.split(','), function(layer) {
-                        urls.push(url + $.param($.extend({}, baseParams, params, {
-                            'LAYER': layer
-                        })));
-                    });
-                    return urls;
-                },
                 createLegendEntry: function(layer) {
-                    var urls = [];
-                    var params = {};
-                    if(layer.legend.verison !== undefined) {
-                        params.VERSION = layer.legend.version;
-                    }
-                    if(layer.legend.sldVersion !== undefined) {
-                        params.SLD_VERSION = layer.legend.sldVersion;
-                    }
-                    if(layer.legend.format !== undefined) {
-                        params.FORMAT = layer.legend.format;
-                    }
-                    urls = RasterLegend.createGetLegendGraphicUrl(layer.olLayer.getSource(), params);
-
                     var legendImages = $('<div></div>');
-                    angular.forEach(urls, function(url) {
-                        var legendImage = $('<img>');
-                        legendImage.addClass('anol-legend-item-image');
-                        legendImage.attr('src', url);
-                        legendImages.append(legendImage);
-                    });
+                    if(layer.getLegendGraphicUrl === undefined) {
+                        return;
+                    }
+                    var legendImage = $('<img>');
+                    legendImage.addClass('anol-legend-item-image');
+                    legendImage.attr('src', layer.getLegendGraphicUrl());
+                    legendImages.append(legendImage);
 
                     // Display in element with given id
                     if (angular.isDefined(layer.legend.target)) {
