@@ -49,6 +49,8 @@ angular.module('anol.map')
             self.nameLayersMap = {};
             self.nameGroupsMap = {};
 
+            self.lastAddedLayer = undefined;
+
             angular.forEach(layers, function(layer) {
                 if(layer.isBackground) {
                     self.addBackgroundLayer(layer);
@@ -119,6 +121,25 @@ angular.module('anol.map')
         };
         /**
          * private function
+         * Creates olLayer
+         */
+        Layers.prototype.createOlLayer = function(layer) {
+            var olLayer;
+            if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
+                try {
+                    olLayer = this.lastAddedLayer.getCombinedOlLayer(layer);
+                } catch(e) {}
+            }
+            if(olLayer === undefined) {
+                var olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
+                var layerOpts = layer.olLayerOptions;
+                layerOpts.source = olSource;
+                olLayer = new layer.OL_LAYER_CLASS(layerOpts);
+            }
+            return olLayer;
+        };
+        /**
+         * private function
          * Added ol layer to map when present
          * Executes addLayer handlers
          */
@@ -140,13 +161,9 @@ angular.module('anol.map')
             });
 
             angular.forEach(layers, function(_layer) {
-                // start create olLayer / olSource
-                var olSource = new _layer.OL_SOURCE_CLASS(_layer.olSourceOptions);
-                var layerOpts = _layer.olLayerOptions;
-                layerOpts.source = olSource;
-                var olLayer = new _layer.OL_LAYER_CLASS(layerOpts);
+                var olLayer = self.createOlLayer(_layer);
                 _layer.setOlLayer(olLayer);
-                // end
+                self.lastAddedLayer = _layer;
 
                 angular.forEach(self.addLayerHandlers, function(handler) {
                     handler(_layer);
