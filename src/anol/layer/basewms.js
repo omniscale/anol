@@ -78,7 +78,8 @@ $.extend(anol.layer.BaseWMS.prototype, {
             VERSION: '1.3.0',
             SLD_VERSION: '1.1.0',
             REQUEST: 'GetLegendGraphic',
-            FORMAT: 'image/png'
+            FORMAT: 'image/png',
+            LAYER: this.wmsSourceLayers.join(',')
         };
         if(this.legend.version !== undefined) {
             requestParams.VERSION = this.legend.version;
@@ -89,7 +90,6 @@ $.extend(anol.layer.BaseWMS.prototype, {
         if(this.legend.format !== undefined) {
             requestParams.FORMAT = this.legend.format;
         }
-        requestParams.LAYER = this.wmsSourceLayers.join(',');
 
         return this.olLayer.getSource().getUrl() + $.param(requestParams);
     }
