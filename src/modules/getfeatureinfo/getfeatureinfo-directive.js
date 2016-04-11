@@ -115,10 +115,10 @@ angular.module('anol.getfeatureinfo')
                     }
 
                     var requestPromises = [];
-                    // this is resolved after all requests were startet
+                    // this is resolved after all requests started
                     var requestsDeferred = $q.defer();
                     requestsDeferred.promise.then(function() {
-                        // promises added before requests startet
+                        // promises added before requests started
                         // all promises will be resolved, otherwise we can't access the data
                         // promises that should be rejected will be resolved with undefined
                         $q.all(requestPromises).then(handleFeatureinfoResponses);
@@ -134,19 +134,15 @@ angular.module('anol.getfeatureinfo')
                         if(!layer.featureinfo) {
                             return;
                         }
-                        var params = layer.olLayer.getSource().getParams();
-                        var queryLayers = params.layers || params.LAYERS;
-                        queryLayers = queryLayers.split(',');
 
                         var requestParams ={
-                            'INFO_FORMAT': 'text/html',
-                            'QUERY_LAYERS': queryLayers
+                            'INFO_FORMAT': 'text/html'
                         };
                         if(angular.isDefined(layer.featureinfo.featureCount)) {
                             requestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
                         }
 
-                        var url = layer.olLayer.getSource().getGetFeatureInfoUrl(
+                        var url = layer.getFeatureInfoUrl(
                             coordinate, viewResolution, view.getProjection(), requestParams
                         );
                         if(angular.isDefined(scope.proxyUrl)) {

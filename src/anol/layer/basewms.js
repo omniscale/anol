@@ -92,5 +92,19 @@ $.extend(anol.layer.BaseWMS.prototype, {
         }
 
         return this.olLayer.getSource().getUrl() + $.param(requestParams);
+    },
+    getFeatureInfoUrl: function(coordinate, resolution, projection, params) {
+        var requestParams = $.extend(true,
+            {},
+            {
+                QUERY_LAYERS: this.wmsSourceLayers.join(','),
+                LAYERS: this.wmsSourceLayers.join(',')
+            },
+            params
+        );
+
+        return this.olLayer.getSource().getGetFeatureInfoUrl(
+            coordinate, resolution, projection, requestParams
+        );
     }
 });
