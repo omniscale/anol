@@ -61,11 +61,16 @@ anol.layer.Layer = function(options) {
         this.permalink = anol.helper.getValue(options.permalink, true);
     }
 
-    this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
-    delete options.olLayer.source;
-    this.olLayerOptions = options.olLayer;
-
-    this.olLayer = undefined;
+    // keep ability to create anol.layer.Layer with predefined olLayer
+    // this is needed for system layers in measure/print/etc.
+    if(options.olLayer instanceof ol.layer.Base) {
+        this.olLayer = options.olLayer;
+    } else {
+        this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
+        delete options.olLayer.source;
+        this.olLayerOptions = options.olLayer;
+        this.olLayer = undefined;
+    }
 };
 
 anol.layer.Layer.prototype = {
