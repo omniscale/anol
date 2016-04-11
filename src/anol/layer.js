@@ -85,6 +85,15 @@ anol.layer.Layer.prototype = {
     setOlLayer: function(olLayer) {
         this.olLayer = olLayer;
     },
+    isCombinable: function(other) {
+        if(other.CLASS_NAME !== this.CLASS_NAME) {
+            return false;
+        }
+        return true;
+    },
+    getCombinedOlLayer: function(other) {
+        throw "getCombinedOlLayer not implemented for " + this.CLASS_NAME;
+    },
     getVisible: function() {
         var self = this;
         return self.olLayer.getVisible();

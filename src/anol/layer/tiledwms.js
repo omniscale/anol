@@ -13,9 +13,9 @@
     var defaults = {};
     var options = $.extend(true, {}, defaults, _options );
 
-    anol.layer.Layer.call(this, options);
+    anol.layer.BaseWMS.call(this, options);
 };
-anol.layer.TiledWMS.prototype = new anol.layer.Layer(false);
+anol.layer.TiledWMS.prototype = new anol.layer.BaseWMS(false);
 $.extend(anol.layer.TiledWMS.prototype, {
     CLASS_NAME: 'anol.layer.TiledWMS',
     OL_LAYER_CLASS: ol.layer.Tile,
