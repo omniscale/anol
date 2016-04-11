@@ -51,7 +51,6 @@ angular.module('anol.map')
                         }
                     });
                     angular.forEach(LayersService.systemLayers, function(layer) {
-                        console.log(layer);
                         scope.map.addLayer(layer.olLayer);
                     });
                     LayersService.registerMap(scope.map);
