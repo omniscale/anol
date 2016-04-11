@@ -26,7 +26,6 @@ angular.module('anol.map')
                     .addClass(scope.mapName);
 
                 scope.map.setTarget(document.getElementById(scope.mapName));
-                scope.olLayers = [];
             },
             post: function(scope, element, attrs) {
                 $timeout(function() {
@@ -39,19 +38,20 @@ angular.module('anol.map')
                     angular.forEach(LayersService.overlayLayers, function(layer) {
                         if(layer instanceof anol.layer.Group) {
                             angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
-                                if(scope.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
+                                if(LayersService.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
                                     scope.map.addLayer(grouppedLayer.olLayer);
-                                    scope.olLayers.push(grouppedLayer.olLayer);
+                                    LayersService.olLayers.push(grouppedLayer.olLayer);
                                 }
                             });
                         } else {
-                            if(scope.olLayers.indexOf(layer.olLayer) < 0) {
+                            if(LayersService.olLayers.indexOf(layer.olLayer) < 0) {
                                 scope.map.addLayer(layer.olLayer);
-                                scope.olLayers.push(layer.olLayer);
+                                LayersService.olLayers.push(layer.olLayer);
                             }
                         }
                     });
                     angular.forEach(LayersService.systemLayers, function(layer) {
+                        console.log(layer);
                         scope.map.addLayer(layer.olLayer);
                     });
                     LayersService.registerMap(scope.map);

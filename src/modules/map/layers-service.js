@@ -49,6 +49,8 @@ angular.module('anol.map')
             self.nameLayersMap = {};
             self.nameGroupsMap = {};
 
+            self.olLayers = [];
+
             self.lastAddedLayer = undefined;
 
             angular.forEach(layers, function(layer) {
@@ -178,10 +180,16 @@ angular.module('anol.map')
             if(self.map !== undefined) {
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers, function(_layer) {
-                        self.map.addLayer(_layer.olLayer);
+                        if(self.olLayers.indexOf(_layer.olLayer) < 0) {
+                            self.map.addLayer(_layer.olLayer);
+                            self.olLayers.push(_layer.olLayer);
+                        }
                     });
                 } else {
-                    self.map.addLayer(layer.olLayer);
+                    if(self.olLayers.indexOf(layer.olLayer) < 0) {
+                        self.map.addLayer(layer.olLayer);
+                        self.olLayers.push(layer.olLayer);
+                    }
                 }
             }
         };
