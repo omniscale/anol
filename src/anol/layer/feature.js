@@ -76,6 +76,10 @@ $.extend(anol.layer.Feature.prototype, {
         }
         return extent;
     },
+    isCombinable: function(other) {
+        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+        return false;
+    },
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;

@@ -91,9 +91,6 @@ anol.layer.Layer.prototype = {
         }
         return true;
     },
-    getCombinedOlLayer: function(other) {
-        throw "getCombinedOlLayer not implemented for " + this.CLASS_NAME;
-    },
     getVisible: function() {
         return this.olLayer.getVisible();
     },

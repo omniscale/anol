@@ -26,9 +26,8 @@ $.extend(anol.layer.BaseWMS.prototype, {
     CLASS_NAME: 'anol.layer.BaseWMS',
     OL_LAYER_CLASS: undefined,
     OL_SOURCE_CLASS: undefined,
-
     isCombinable: function(other) {
-        combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
         if(!combinable) {
             return false;
         }
@@ -43,15 +42,6 @@ $.extend(anol.layer.BaseWMS.prototype, {
             return false;
         }
         return true;
-    },
-    getCombinedOlLayer: function(other) {
-        var source = this.olLayer.getSource();
-        var params = source.getParams();
-        var layers = params.LAYERS.split(',');
-        var otherLayers = anol.helper.stringSplit(other.olSourceOptions.params.LAYERS, ',');
-        params.LAYERS = layers.concat(otherLayers).join(',');
-        source.updateParams(params);
-        return this.olLayer;
     },
     setVisible: function(visible)  {
         var source = this.olLayer.getSource();

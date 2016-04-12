@@ -89,5 +89,9 @@ $.extend(anol.layer.TMS.prototype, {
             url += '.' + format.split('/')[1];
         }
         return url;
+    },
+    isCombinable: function(other) {
+        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+        return false;
     }
 });

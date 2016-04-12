@@ -103,5 +103,9 @@ $.extend(anol.layer.WMTS.prototype, {
         });
 
         return srcOptions;
+    },
+    isCombinable: function(other) {
+        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+        return false;
     }
 });
