@@ -61,7 +61,7 @@ $.extend(anol.layer.BaseWMS.prototype, {
         } else {
             layers = anol.helper.concat(layers, this.wmsSourceLayers, insertLayerIdx);
         }
-        this.olLayer.setVisible(layers.length !== 0);
+        this.olLayer.setVisible(visible);
         params.LAYERS = layers.join(',');
         source.updateParams(params);
         $(this).triggerHandler('anol.layer.visible:change', [this]);
