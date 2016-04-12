@@ -28,10 +28,10 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.StaticGeoJSON',
     setOlLayer: function(olLayer) {
         var self = this;
+        anol.layer.Feature.prototype.setOlLayer.call(this, olLayer);
         olLayer.getSource().once('change', function() {
             self.loaded = true;
         });
-        anol.layer.Feature.prototype.setOlLayer.call(this, olLayer);
     },
     /**
      * Additional source options

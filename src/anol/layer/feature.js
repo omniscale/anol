@@ -45,6 +45,7 @@ $.extend(anol.layer.Feature.prototype, {
     DEFAULT_FONT_WEIGHT: 'normal',
     setOlLayer: function(olLayer) {
         var self = this;
+        anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
         // if the layer has an own style function we don't create an style object
         if(!this.hasStyleFunction) {
             var defaultStyle = angular.isFunction(olLayer.getStyle()) ? olLayer.getStyle()()[0] : olLayer.getStyle();
@@ -66,8 +67,6 @@ $.extend(anol.layer.Feature.prototype, {
                 return [self.createStyle(feature, resolution)];
             });
         }
-
-        anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
     },
     extent: function() {
         var extent = this.olLayer.getSource().getExtent();
