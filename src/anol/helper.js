@@ -18,6 +18,9 @@ anol.helper = {
      * Returns true when all elements of b in a otherwise false
      */
     allInList: function(a, b) {
+        if(b.length === 0) {
+            return false;
+        }
         for(var i = 0; i < b.length; i++) {
             if(a.indexOf(b[i]) < 0) {
                 return false;
