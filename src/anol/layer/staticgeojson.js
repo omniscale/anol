@@ -54,8 +54,8 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
      */
     changeUrl: function(url) {
         this.loaded = false;
-        this.sourceOptions.url = url;
-        var newSource = new ol.source.Vector(this.sourceOptions);
+        this.olSourceOptions.url = url;
+        var newSource = new ol.source.Vector(this.olSourceOptions);
         newSource.once('change', function() {
             self.loaded = true;
         });
