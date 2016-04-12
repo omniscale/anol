@@ -135,12 +135,16 @@ angular.module('anol.map')
                 params.LAYERS = layers.join(',');
                 source.updateParams(params);
                 olLayer = this.lastAddedLayer.olLayer;
+                var anolLayers = olLayer.get('anolLayers');
+                anolLayers.push(layer);
+                olLayer.set('anolLayers', anolLayers);
             }
             if(olLayer === undefined) {
                 var olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
                 var layerOpts = layer.olLayerOptions;
                 layerOpts.source = olSource;
                 olLayer = new layer.OL_LAYER_CLASS(layerOpts);
+                olLayer.set('anolLayers', [layer]);
             }
             return olLayer;
         };

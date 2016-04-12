@@ -38,6 +38,18 @@ anol.helper = {
         return r;
     },
     /**
+     * Inserts content of array by into array a starting at position at.
+     * When at is undefined, append b to a
+     */
+    concat: function(a, b, at) {
+        if(at !== undefined) {
+            a.splice.apply(a, [at, 0].concat(b));
+        } else {
+            a = a.concat(b);
+        }
+        return a;
+    },
+    /**
      * Returns string splitted into parts but prevents list with empty string
      */
     stringSplit: function(v, s) {

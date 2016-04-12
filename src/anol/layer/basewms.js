@@ -44,13 +44,22 @@ $.extend(anol.layer.BaseWMS.prototype, {
         return true;
     },
     setVisible: function(visible)  {
+        var insertLayerIdx = 0;
+        $.each(this.olLayer.get('anolLayers'), function(idx, layer) {
+            if(layer === this) {
+                return false;
+            }
+            if(layer.getVisible()) {
+                insertLayerIdx += layer.wmsSourceLayers.length;
+            }
+        });
         var source = this.olLayer.getSource();
         var params = source.getParams();
         var layers = anol.helper.stringSplit(params.LAYERS, ',');
         if(!visible) {
             layers = anol.helper.excludeList(layers, this.wmsSourceLayers);
         } else {
-            layers = anol.helper.concatDistinct(layers, this.wmsSourceLayers);
+            layers = anol.helper.concat(layers, this.wmsSourceLayers, insertLayerIdx);
         }
         this.olLayer.setVisible(layers.length !== 0);
         params.LAYERS = layers.join(',');
