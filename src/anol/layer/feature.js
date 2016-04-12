@@ -68,6 +68,9 @@ $.extend(anol.layer.Feature.prototype, {
             });
         }
     },
+    isCombinable: function() {
+        return false;
+    },
     extent: function() {
         var extent = this.olLayer.getSource().getExtent();
         if(ol.extent.isEmpty(extent)) {

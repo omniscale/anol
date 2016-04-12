@@ -25,8 +25,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         this.olSource = olLayer.getSource();
     },
     isCombinable: function(other) {
-        var combinable = anol.layer.StaticGeoJSON.prototype.isCombinable.call(this, other);
-        if(!combinable) {
+        if(other.CLASS_NAME !== this.CLASS_NAME) {
             return false;
         }
         if(this.olSourceOptions.url !== other.olSourceOptions.url) {
