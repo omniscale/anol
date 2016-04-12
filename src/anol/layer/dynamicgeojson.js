@@ -24,6 +24,32 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
         this.olSource = olLayer.getSource();
     },
+    isCombinable: function(other) {
+        var combinable = anol.layer.StaticGeoJSON.prototype.isCombinable.call(this, other);
+        if(!combinable) {
+            return false;
+        }
+        if(this.olSourceOptions.url !== other.olSourceOptions.url) {
+            return false;
+        }
+        if(this.olSourceOptions.featureProjection !== other.olSourceOptions.featureProjection) {
+            return false;
+        }
+        return true;
+    },
+    getCombinedSource: function(other) {
+        var anolLayers = this.olSource.get('anolLayers');
+        anolLayers.push(other);
+        this.olSource.set('anolLayers', anolLayers);
+        return this.olSource;
+    },
+    setVisible: function(visible) {
+        anol.layer.StaticGeoJSON.prototype.setVisible.call(this, visible);
+        // find better solution than clear, cause it's remove all features from the source, not only
+        // features related to current layer. But we need to call clear, otherwise source extent is not
+        // resetted and it will not be reloaded with updated url params
+        this.olSource.clear(true);
+    },
     /**
      * Additional source options
      * - url
@@ -39,14 +65,20 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         srcOptions.format = new ol.format.GeoJSON();
         srcOptions.strategy = ol.loadingstrategy.bbox;
 
+        var additionalParameters = {};
         srcOptions.loader = function(extent, resolution, projection) {
+            angular.forEach(self.olSource.get('anolLayers'), function(layer) {
+                if(layer.getVisible()) {
+                    additionalParameters = anol.helper.mergeObjects(additionalParameters, layer.olSourceOptions.additionalParameters);
+                }
+            });
             self.loader(
                 srcOptions.url,
                 extent,
                 resolution,
                 projection,
                 srcOptions.featureProjection,
-                srcOptions.additionalParameters
+                additionalParameters
             );
         };
 
@@ -76,23 +108,16 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
     },
     responseHandler: function(response, featureProjection) {
         var self = this;
-        // TODO find a better solution
-        // remove all features from source.
-        // otherwise features in source might be duplicated
-        // cause source.readFeatures don't look in source for
-        // existing received features.
-        // we can't use source.clear() at this place, cause
-        // source.clear() will trigger to reload features from server
-        // and this leads to an infinite loop
-        // even with opt_fast=true
-        var sourceFeatures = self._source.getFeatures();
-        for(var i = 0; i < sourceFeatures.length; i++) {
-            self._source.removeFeature(sourceFeatures[i]);
-        }
         var format = new ol.format.GeoJSON();
         var features = format.readFeatures(response, {
             featureProjection: featureProjection
         });
-        self._source.addFeatures(features);
+        self.olSource.addFeatures(features);
+    },
+    createStyle: function(feature, resolution) {
+        if(feature !== undefined &&  feature.get('__layer__') !== this.name) {
+            return new ol.style.Style();
+        }
+        return anol.layer.StaticGeoJSON.prototype.createStyle.call(this, feature, resolution);
     }
 });
