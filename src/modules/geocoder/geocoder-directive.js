@@ -110,6 +110,27 @@ angular.module('anol.geocoder')
           }
         };
 
+        scope.startSearch = function() {
+          scope.searchResults = [];
+          scope.noResults = false;
+          scope.searchInProgress = true;
+
+          removeMarkerLayer();
+
+          element.find('.anol-searchbox').removeClass('open');
+          geocoder.request(scope.searchString)
+            .then(function(results) {
+              scope.searchInProgress = false;
+              if(results.length === 0) {
+                scope.noResults = true;
+              } else {
+                scope.searchResults = results;
+                element.find('.anol-searchbox').addClass('open');
+              }
+              scope.$digest();
+            });
+        };
+
         scope.handleInputKeypress = function(event) {
           event.stopPropagation();
           if((event.key === 'ArrowDown' || event.keyCode === 40) && scope.searchResults.length > 0) {
@@ -118,24 +139,7 @@ angular.module('anol.geocoder')
           }
           if(event.key === 'Enter' || event.keyCode === 13) {
             event.preventDefault();
-            scope.searchResults = [];
-            scope.noResults = false;
-            scope.searchInProgress = true;
-
-            removeMarkerLayer();
-
-            element.find('.anol-searchbox').removeClass('open');
-            geocoder.request(scope.searchString)
-              .then(function(results) {
-                scope.searchInProgress = false;
-                if(results.length === 0) {
-                  scope.noResults = true;
-                } else {
-                  scope.searchResults = results;
-                  element.find('.anol-searchbox').addClass('open');
-                }
-                scope.$digest();
-              });
+            scope.startSearch();
           }
           return false;
         };
