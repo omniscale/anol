@@ -126,26 +126,26 @@ angular.module('anol.map')
          * Creates olLayer
          */
         Layers.prototype.createOlLayer = function(layer) {
-            var olLayer;
+            var olSource;
             if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
-                var source = this.lastAddedLayer.olLayer.getSource();
-                var params = source.getParams();
+                olSource = this.lastAddedLayer.olLayer.getSource();
+                var params = olSource.getParams();
                 var layers = anol.helper.stringSplit(params.LAYERS, ',');
                 layers = layers.concat(layer.wmsSourceLayers);
                 params.LAYERS = layers.join(',');
-                source.updateParams(params);
-                olLayer = this.lastAddedLayer.olLayer;
-                var anolLayers = olLayer.get('anolLayers');
+                olSource.updateParams(params);
+                var anolLayers = olSource.get('anolLayers');
                 anolLayers.push(layer);
-                olLayer.set('anolLayers', anolLayers);
+                olSource.set('anolLayers', anolLayers);
             }
-            if(olLayer === undefined) {
-                var olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
-                var layerOpts = layer.olLayerOptions;
-                layerOpts.source = olSource;
-                olLayer = new layer.OL_LAYER_CLASS(layerOpts);
-                olLayer.set('anolLayers', [layer]);
+            if(olSource === undefined) {
+                olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
+                olSource.set('anolLayers', [layer]);
             }
+            var layerOpts = layer.olLayerOptions;
+            layerOpts.source = olSource;
+            var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
+            olLayer.set('anolLayer', layer);
             return olLayer;
         };
         /**

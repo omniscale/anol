@@ -45,7 +45,8 @@ $.extend(anol.layer.BaseWMS.prototype, {
     },
     setVisible: function(visible)  {
         var insertLayerIdx = 0;
-        $.each(this.olLayer.get('anolLayers'), function(idx, layer) {
+        var source = this.olLayer.getSource();
+        $.each(source.get('anolLayers'), function(idx, layer) {
             if(layer === this) {
                 return false;
             }
@@ -53,7 +54,6 @@ $.extend(anol.layer.BaseWMS.prototype, {
                 insertLayerIdx += layer.wmsSourceLayers.length;
             }
         });
-        var source = this.olLayer.getSource();
         var params = source.getParams();
         var layers = anol.helper.stringSplit(params.LAYERS, ',');
         if(!visible) {

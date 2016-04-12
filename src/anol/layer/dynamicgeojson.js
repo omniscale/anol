@@ -14,7 +14,7 @@
  *
  * Ask *url* with current projection and bbox.
  */
- anol.layer.DynamicGeoJSON = function(_options) {
+anol.layer.DynamicGeoJSON = function(_options) {
     anol.layer.StaticGeoJSON.call(this, _options);
 };
 anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
