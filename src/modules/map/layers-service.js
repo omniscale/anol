@@ -128,15 +128,7 @@ angular.module('anol.map')
         Layers.prototype.createOlLayer = function(layer) {
             var olSource;
             if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
-                olSource = this.lastAddedLayer.olLayer.getSource();
-                var params = olSource.getParams();
-                var layers = anol.helper.stringSplit(params.LAYERS, ',');
-                layers = layers.concat(layer.wmsSourceLayers);
-                params.LAYERS = layers.join(',');
-                olSource.updateParams(params);
-                var anolLayers = olSource.get('anolLayers');
-                anolLayers.push(layer);
-                olSource.set('anolLayers', anolLayers);
+                olSource = this.lastAddedLayer.getCombinedSource(layer);
             }
             if(olSource === undefined) {
                 olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);

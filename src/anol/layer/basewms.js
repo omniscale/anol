@@ -43,6 +43,18 @@ $.extend(anol.layer.BaseWMS.prototype, {
         }
         return true;
     },
+    getCombinedSource: function(other) {
+        var olSource = this.olLayer.getSource();
+        var params = olSource.getParams();
+        var layers = anol.helper.stringSplit(params.LAYERS, ',');
+        layers = layers.concat(other.wmsSourceLayers);
+        params.LAYERS = layers.join(',');
+        olSource.updateParams(params);
+        var anolLayers = olSource.get('anolLayers');
+        anolLayers.push(other);
+        olSource.set('anolLayers', anolLayers);
+        return olSource;
+    },
     setVisible: function(visible)  {
         var insertLayerIdx = 0;
         var source = this.olLayer.getSource();
@@ -61,10 +73,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
         } else {
             layers = anol.helper.concat(layers, this.wmsSourceLayers, insertLayerIdx);
         }
-        this.olLayer.setVisible(visible);
         params.LAYERS = layers.join(',');
         source.updateParams(params);
-        $(this).triggerHandler('anol.layer.visible:change', [this]);
+        anol.layer.Layer.prototype.setVisible.call(this, visible);
     },
     getVisible: function() {
         var params = this.olLayer.getSource().getParams();

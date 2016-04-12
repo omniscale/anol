@@ -91,6 +91,9 @@ anol.layer.Layer.prototype = {
         }
         return true;
     },
+    getCombinedSource: function(other) {
+        return undefined;
+    },
     getVisible: function() {
         return this.olLayer.getVisible();
     },
