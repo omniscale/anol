@@ -37,9 +37,16 @@ angular.module('anol.geocoder')
         markerStyle: '=?'
       },
       link: function(scope, element, attrs, AnolMapController) {
-        var markerLayer;
         var removeMarkerInteraction;
         var geocoderOptions = angular.copy(scope.geocoderOptions);
+        var markerLayer = new anol.layer.Feature({
+          style: scope.markerStyle
+        });
+        var markerOlLayerOptions = markerLayer.olLayerOptions;
+        markerOlLayerOptions.source = new markerLayer.OL_SOURCE_CLASS(markerLayer.olSourceOptions);
+        markerLayer.setOlLayer(new markerLayer.OL_LAYER_CLASS(markerOlLayerOptions));
+
+        LayersService.addSystemLayer(markerLayer);
 
         if(angular.isDefined(scope.proxyUrl)) {
           if(scope.proxyUrl[scope.proxyUrl.length - 1] !== '/') {
@@ -60,26 +67,15 @@ angular.module('anol.geocoder')
             });
         };
 
-        var addMarkerLayer = function(position) {
+        var addMarker = function(position) {
           var markerFeature = new ol.Feature({
             geometry: new ol.geom.Point(position)
           });
-          markerLayer = new anol.layer.Feature({
-            style: scope.markerStyle,
-            olLayer: {
-              source: {
-                features: [markerFeature]
-              }
-            }
-          });
-          // TODO: use LayersService when LayersService is able to remove layers
-          // LayersService.addLayer(markerLayer);
-          MapService.getMap().addLayer(markerLayer.olLayer);
-
-
+          var markerSource = markerLayer.olLayer.getSource();
+          markerSource.addFeature(markerFeature);
           if(scope.highlight > 0) {
             $timeout(function() {
-              removeMarkerLayer();
+              markerSource.clear();
             }, scope.highlight);
           } else {
             removeMarkerInteraction = new ol.interaction.Select({
@@ -88,25 +84,14 @@ angular.module('anol.geocoder')
             removeMarkerInteraction.on('select', function(evt) {
               if(evt.selected.length > 0) {
                 removeMarkerInteraction.getFeatures().clear();
-                removeMarkerLayer();
+                markerSource.clear();
+                InteractionsService.removeInteraction(removeMarkerInteraction);
+                MapService.removeCursorPointerCondition(changeCursorCondition);
+                removeMarkerInteraction = undefined;
               }
             });
             InteractionsService.addInteraction(removeMarkerInteraction);
             MapService.addCursorPointerCondition(changeCursorCondition);
-          }
-        };
-
-        var removeMarkerLayer = function() {
-          if(markerLayer !== undefined) {
-            // TODO: use LayersService when LayersService is able to remove layers
-            // LayersService.removeLayer(markerLayer);
-            MapService.getMap().removeLayer(markerLayer.olLayer);
-            markerLayer = undefined;
-          }
-          if(removeMarkerInteraction !== undefined) {
-            InteractionsService.removeInteraction(removeMarkerInteraction);
-            MapService.removeCursorPointerCondition(changeCursorCondition);
-            removeMarkerInteraction = undefined;
           }
         };
 
@@ -115,7 +100,7 @@ angular.module('anol.geocoder')
           scope.noResults = false;
           scope.searchInProgress = true;
 
-          removeMarkerLayer();
+          markerLayer.olLayer.getSource().clear();
 
           element.find('.anol-searchbox').removeClass('open');
           geocoder.request(scope.searchString)
@@ -179,7 +164,7 @@ angular.module('anol.geocoder')
             view.setZoom(parseInt(scope.zoomLevel));
           }
           if(scope.highlight !== false) {
-            addMarkerLayer(position);
+            addMarker(position);
           }
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
