@@ -12,6 +12,10 @@
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.StaticGeoJSON}.
  *
+ * @notice
+ * Every feature in response must have a '__layer__' property containing the layername given to this layer.
+ * Otherwise features will not be styled.
+ *
  * Ask *url* with current projection and bbox.
  */
 anol.layer.DynamicGeoJSON = function(_options) {
