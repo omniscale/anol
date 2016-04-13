@@ -18,8 +18,6 @@
     var defaults = {};
     var options = $.extend({}, defaults, _options );
 
-    this.hasStyleFunction = angular.isFunction(options.olLayer.style);
-
     this.style = options.style;
     this.minResolution = (options.style || {}).minResolution;
     this.maxResolution = (options.style || {}).maxResolution;
@@ -46,8 +44,10 @@ $.extend(anol.layer.Feature.prototype, {
     setOlLayer: function(olLayer) {
         var self = this;
         anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
+
         // if the layer has an own style function we don't create an style object
-        if(!this.hasStyleFunction) {
+        var hasStyleFunction = angular.isFunction(olLayer.style);
+        if(!hasStyleFunction) {
             var defaultStyle = angular.isFunction(olLayer.getStyle()) ? olLayer.getStyle()()[0] : olLayer.getStyle();
 
             if(this.style !== undefined) {
@@ -210,7 +210,6 @@ $.extend(anol.layer.Feature.prototype, {
         if(style.graphicScale !== undefined) {
             styleOptions.scale = parseFloat(style.graphicScale);
         }
-
         return new ol.style.Icon(styleOptions);
     },
     createFillStyle: function(style, defaultFillStyle) {
