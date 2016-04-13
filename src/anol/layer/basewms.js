@@ -18,8 +18,10 @@
     var options = $.extend(true, {}, defaults, _options);
 
     anol.layer.Layer.call(this, options);
-
     this.wmsSourceLayers = anol.helper.stringSplit(this.olSourceOptions.params.LAYERS, ',');
+    if(this.olLayerOptions.visible === false) {
+        this.olSourceOptions.params.LAYERS = '';
+    }
 };
 anol.layer.BaseWMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.BaseWMS.prototype, {
@@ -45,11 +47,13 @@ $.extend(anol.layer.BaseWMS.prototype, {
     },
     getCombinedSource: function(other) {
         var olSource = this.olLayer.getSource();
-        var params = olSource.getParams();
-        var layers = anol.helper.stringSplit(params.LAYERS, ',');
-        layers = layers.concat(other.wmsSourceLayers);
-        params.LAYERS = layers.join(',');
-        olSource.updateParams(params);
+        if(other.olLayerOptions.visible === true) {
+            var params = olSource.getParams();
+            var layers = anol.helper.stringSplit(params.LAYERS, ',');
+            layers = layers.concat(other.wmsSourceLayers);
+            params.LAYERS = layers.join(',');
+            olSource.updateParams(params);
+        }
         var anolLayers = olSource.get('anolLayers');
         anolLayers.push(other);
         olSource.set('anolLayers', anolLayers);
@@ -76,11 +80,6 @@ $.extend(anol.layer.BaseWMS.prototype, {
         params.LAYERS = layers.join(',');
         source.updateParams(params);
         anol.layer.Layer.prototype.setVisible.call(this, visible);
-    },
-    getVisible: function() {
-        var params = this.olLayer.getSource().getParams();
-        var layers = anol.helper.stringSplit(params.LAYERS, ',');
-        return anol.helper.allInList(layers, this.wmsSourceLayers);
     },
     getLegendGraphicUrl: function() {
         var requestParams = {
