@@ -40,6 +40,8 @@ angular.module('anol.geocoder')
         var removeMarkerInteraction;
         var geocoderOptions = angular.copy(scope.geocoderOptions);
         var markerLayer = new anol.layer.Feature({
+          name: 'geocoderLayer',
+          displayInLayerswitcher: false,
           style: scope.markerStyle
         });
         var markerOlLayerOptions = markerLayer.olLayerOptions;
