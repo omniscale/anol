@@ -66,6 +66,9 @@ module.exports = function(grunt) {
           'build/openlayers.build.debug.json',
           'build/openlayers.build.json'
         ]
+      },
+      'anol': {
+        src: ['build/css', 'build/fonts', 'build/img', 'build/angular*', 'build/anol.js', 'build/jquery.js', 'build/templates.js', 'build/ui-bootstrap.tpls.js']
       }
     },
     copy: {
@@ -262,6 +265,15 @@ module.exports = function(grunt) {
     'ngtemplates',
     'concat:dev',
     'build-ol3',
+    'copy:dev'
+  ]);
+
+  grunt.registerTask('build-anol-dev', [
+    'clean:anol',
+    'jshint',
+    'sass:dist',
+    'ngtemplates',
+    'concat:dev',
     'copy:dev'
   ]);
 
