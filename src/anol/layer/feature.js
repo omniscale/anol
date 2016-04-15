@@ -78,6 +78,15 @@ $.extend(anol.layer.Feature.prototype, {
         }
         return extent;
     },
+    clear: function() {
+        this.olLayer.getSource().clear();
+    },
+    addFeature: function(feature) {
+        this.olLayer.getSource().addFeature(feature);
+    },
+    addFeatures: function(features) {
+        this.olLayer.getSource().addFeatures(features);
+    },
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;

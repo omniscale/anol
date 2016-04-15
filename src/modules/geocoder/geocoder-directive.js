@@ -100,7 +100,7 @@ angular.module('anol.geocoder')
           scope.noResults = false;
           scope.searchInProgress = true;
 
-          markerLayer.olLayer.getSource().clear();
+          markerLayer.clear();
 
           element.find('.anol-searchbox').removeClass('open');
           geocoder.request(scope.searchString)
