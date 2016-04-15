@@ -19,8 +19,8 @@ angular.module('anol.geolocation')
  * @description
  * Get current position and center map on it.
  */
-.directive('anolGeolocation', ['$compile', '$translate', 'MapService', 'ControlsService',
-  function($compile, $translate, MapService, ControlsService) {
+.directive('anolGeolocation', ['$compile', '$translate', '$timeout', 'MapService', 'ControlsService', 'LayersService', 'InteractionsService',
+  function($compile, $translate, $timeout, MapService, ControlsService, LayersService, InteractionsService) {
     return {
       scope: {
         anolGeolocation: '@',
@@ -28,7 +28,10 @@ angular.module('anol.geolocation')
         zoom: '@',
         tooltipPlacement: '@',
         tooltipDelay: '@',
-        tooltipEnable: '@'
+        tooltipEnable: '@',
+        showPosition: '@',
+        highlight: '@',
+        resultStyle: '=?'
       },
       templateUrl: function(tElement, tAttrs) {
           var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
@@ -36,6 +39,8 @@ angular.module('anol.geolocation')
       },
       link: function(scope, element) {
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
+        scope.showPosition = 'false' !== scope.showPosition;
+        scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
 
         // attribute defaults
         scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
@@ -45,11 +50,68 @@ angular.module('anol.geolocation')
         scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
           scope.tooltipEnable : !ol.has.TOUCH;
 
+        if(scope.showPosition) {
+          var geolocationLayer = new anol.layer.Feature({
+            name: 'geolocationLayer',
+            displayInLayerswitcher: false,
+            style: scope.resultStyle
+          });
+          var geolocationOlLayerOptions = geolocationLayer.olLayerOptions;
+          geolocationOlLayerOptions.source = new geolocationLayer.OL_SOURCE_CLASS(geolocationLayer.olSourceOptions);
+          geolocationLayer.setOlLayer(new geolocationLayer.OL_LAYER_CLASS(geolocationOlLayerOptions));
+
+          LayersService.addSystemLayer(geolocationLayer);
+        }
+
         if('true' !== scope.disableButton) {
           var button = angular.element('');
           element.addClass('anol-geolocation');
           element.append($compile(button)(scope));
         }
+
+        var changeCursorCondition = function(pixel) {
+            return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
+                return geolocationLayer === layer.get('anolLayer');
+            });
+        };
+
+        var addGeolocationFeatures = function(accuracyGeometry, position) {
+          var features = [];
+          if(accuracyGeometry !== undefined && accuracyGeometry !== null) {
+            features.push(new ol.Feature({
+              geometry: accuracyGeometry
+            }));
+          }
+          if(position !== undefined && position !== null) {
+            features.push(new ol.Feature({
+              geometry: new ol.geom.Point(position)
+            }));
+          }
+          if(features.length > 0) {
+            geolocationLayer.addFeatures(features);
+
+            if(scope.highlight > 0) {
+              $timeout(function() {
+                geolocationLayer.clear();
+              }, scope.highlight);
+            } else {
+              removeGeolocationFeaturesInteraction = new ol.interaction.Select({
+                layers: [geolocationLayer.olLayer]
+              });
+              removeGeolocationFeaturesInteraction.on('select', function(evt) {
+                if(evt.selected.length > 0) {
+                  removeGeolocationFeaturesInteraction.getFeatures().clear();
+                  geolocationLayer.clear();
+                  InteractionsService.removeInteraction(removeGeolocationFeaturesInteraction);
+                  MapService.removeCursorPointerCondition(changeCursorCondition);
+                  removeGeolocationFeaturesInteraction = undefined;
+                }
+              });
+              InteractionsService.addInteraction(removeGeolocationFeaturesInteraction);
+              MapService.addCursorPointerCondition(changeCursorCondition);
+            }
+          }
+        };
 
         var view = MapService.getMap().getView();
         var geolocation = new ol.Geolocation({
@@ -60,12 +122,16 @@ angular.module('anol.geolocation')
         geolocation.on('change:position', function() {
           geolocation.setTracking(false);
           var position = geolocation.getPosition();
+          var accuracyGeometry = geolocation.getAccuracyGeometry();
           var constrainedPosition = view.constrainCenter(position);
           if(position[0] !== constrainedPosition[0] || position[1] !== constrainedPosition[1]) {
             $translate('anol.geolocation.POSITION_OUT_OF_MAX_EXTENT').then(function(translation) {
               scope.$emit('anol.geolocation', {'message': translation, 'type': 'error'});
             });
             return;
+          }
+          if(scope.showPosition) {
+            addGeolocationFeatures(accuracyGeometry, position);
           }
           view.setCenter(position);
           if(angular.isDefined(scope.zoom)) {
@@ -74,6 +140,9 @@ angular.module('anol.geolocation')
         });
 
         scope.locate = function() {
+          if(scope.showPosition) {
+            geolocationLayer.clear();
+          }
           geolocation.setTracking(true);
         };
 
