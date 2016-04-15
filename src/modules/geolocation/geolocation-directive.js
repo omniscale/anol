@@ -138,7 +138,8 @@ angular.module('anol.geolocation')
             addGeolocationFeatures(accuracyGeometry, position);
           }
           view.setCenter(position);
-          if(angular.isDefined(scope.zoom)) {
+          view.fit(accuracyGeometry.getExtent(), MapService.getMap().getSize());
+          if(angular.isDefined(scope.zoom) && parseInt(scope.zoom) < view.getZoom()) {
             view.setZoom(parseInt(scope.zoom));
           }
         });
