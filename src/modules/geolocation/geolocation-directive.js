@@ -123,7 +123,7 @@ angular.module('anol.geolocation')
           }
         });
 
-        geolocation.on('change:position', function() {
+        geolocation.on('change:accuracyGeometry', function() {
           geolocation.setTracking(false);
           var position = geolocation.getPosition();
           var accuracyGeometry = geolocation.getAccuracyGeometry();
