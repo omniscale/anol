@@ -116,7 +116,11 @@ angular.module('anol.geolocation')
         var view = MapService.getMap().getView();
         var geolocation = new ol.Geolocation({
           projection: view.getProjection(),
-          tracking: scope.anolGeolocation
+          tracking: scope.anolGeolocation,
+          trackingOptions: {
+            enableHighAccuracy: true,
+            maximumAge: 0
+          }
         });
 
         geolocation.on('change:position', function() {
