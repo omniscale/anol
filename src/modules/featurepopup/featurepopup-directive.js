@@ -16,7 +16,7 @@ angular.module('anol.featurepopup')
  * @description
  * Shows a popup for selected feature
  */
-.directive('anolFeaturePopup', ['MapService', 'LayersService', 'ControlsService', function(MapService, LayersService, ControlsService) {
+.directive('anolFeaturePopup', ['MapService', 'LayersService', 'ControlsService', 'PopupsService', function(MapService, LayersService, ControlsService, PopupsService) {
     return {
         restrict: 'A',
         scope: {
@@ -34,6 +34,7 @@ angular.module('anol.featurepopup')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
+            PopupsService.register(scope);
             var multiselect = angular.isDefined(attrs.multiselect);
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
             scope.openingDirection = scope.openingDirection || 'top';
@@ -248,7 +249,9 @@ angular.module('anol.featurepopup')
         },
         controller: function($scope, $element, $attrs) {
             this.close = function() {
-                $scope.coordinate = undefined;
+                if($scope.coordinate !== undefined) {
+                    $scope.coordinate = undefined;
+                }
             };
             $scope.close = this.close;
         }

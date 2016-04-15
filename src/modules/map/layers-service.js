@@ -27,7 +27,7 @@ angular.module('anol.map')
         _addLayerHandlers.push(handler);
     };
 
-    this.$get = ['$rootScope', function($rootScope) {
+    this.$get = ['$rootScope', 'PopupsService', function($rootScope, PopupsService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -115,6 +115,19 @@ angular.module('anol.map')
             idx = idx || 0;
             self.overlayLayers.splice(idx, 0, layer);
             self._prepareLayer(layer);
+
+            if(layer instanceof anol.layer.Group) {
+                angular.forEach(layer.layers, function(_layer) {
+                    _layer.onVisibleChange(function() {
+                        PopupsService.closeAll();
+                    });
+                });
+            } else {
+                layer.onVisibleChange(function() {
+                    PopupsService.closeAll();
+                });
+            }
+
         };
         Layers.prototype.addSystemLayer = function(layer, idx) {
             var self = this;
