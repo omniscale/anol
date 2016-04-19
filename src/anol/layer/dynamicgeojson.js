@@ -111,6 +111,19 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
     },
     responseHandler: function(response, featureProjection) {
         var self = this;
+        // TODO find a better solution
+        // remove all features from source.
+        // otherwise features in source might be duplicated
+        // cause source.readFeatures don't look in source for
+        // existing received features.
+        // we can't use source.clear() at this place, cause
+        // source.clear() will trigger to reload features from server
+        // and this leads to an infinite loop
+        // even with opt_fast=true
+        var sourceFeatures = self.olSource.getFeatures();
+        for(var i = 0; i < sourceFeatures.length; i++) {
+            self.olSource.removeFeature(sourceFeatures[i]);
+        }
         var format = new ol.format.GeoJSON();
         var features = format.readFeatures(response, {
             featureProjection: featureProjection
