@@ -45,10 +45,13 @@ $.extend(anol.layer.Feature.prototype, {
         var self = this;
         anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
 
-        // if the layer has an own style function we don't create an style object
-        var hasStyleFunction = angular.isFunction(olLayer.style);
-        if(!hasStyleFunction) {
-            var defaultStyle = angular.isFunction(olLayer.getStyle()) ? olLayer.getStyle()()[0] : olLayer.getStyle();
+        // if a style function is in layer config we don't create a style function here
+        if(!angular.isFunction(self.olLayerOptions.style)) {
+            var defaultStyle = olLayer.getStyle();
+
+            if(angular.isFunction(defaultStyle)) {
+                defaultStyle = defaultStyle()[0];
+            }
 
             if(this.style !== undefined) {
                 var createImageStyleFunction = this.style.externalGraphic !== undefined ? this.createIconStyle : this.createCircleStyle;
