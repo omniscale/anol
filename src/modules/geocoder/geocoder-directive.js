@@ -61,6 +61,8 @@ angular.module('anol.geocoder')
         scope.searchResults = [];
         scope.noResults = false;
         scope.searchInProgress = false;
+        scope.showResultList = false;
+        scope.isScrolling = false;
         scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
 
         var changeCursorCondition = function(pixel) {
@@ -130,8 +132,20 @@ angular.module('anol.geocoder')
           }
           return false;
         };
+        scope.handleInputFocus = function(event) {
+          scope.showResultList = true;
+        };
+        scope.handleInputBlur = function(event) {
+          scope.showResultList = false;
+        };
+        scope.handleResultListMousedown = function(event) {
+          scope.isScrolling = true;
+        };
+        scope.handleResultListMouseup = function(event) {
+          scope.isScrolling = false;
+        };
 
-        scope.handleDropdownKeypress = function(event) {
+        scope.handleResultElementKeypress = function(event) {
           event.stopPropagation();
           var targetParent = angular.element(event.currentTarget).parent();
           if(event.key === 'ArrowDown' || event.keyCode === 40) {
@@ -150,9 +164,24 @@ angular.module('anol.geocoder')
           return false;
         };
 
-        scope.handleMouseover = function(event) {
+        scope.handleResultElementMouseover = function(event) {
+          scope.isScrolling = false;
           angular.element(event.currentTarget).focus();
         };
+
+        scope.handleResultElementFocus = function(event) {
+          scope.showResultList = true;
+        };
+
+        scope.handleResultElementBlur = function(event) {
+          if(scope.isScrolling) {
+            angular.element(event.currentTarget).focus();
+          } else {
+            scope.showResultList = false;
+          }
+        };
+
+
 
         scope.showResult = function(result) {
           var view = MapService.getMap().getView();
