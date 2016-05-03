@@ -53,6 +53,7 @@ anol.layer.Layer = function(options) {
     this.legend = options.legend || false;
     this.attribution = options.attribution || undefined;
     this.isVector = false;
+    this.options = options;
     this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
 
     if(this.displayInLayerswitcher === false) {
