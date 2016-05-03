@@ -149,9 +149,9 @@ angular.module('anol.legend')
                         var r = (Math.min(scope.width, scope.height) / 2) - 2;
                         ratio = r / style.getImage().getRadius();
                         ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-                        ctx.strokeStyle = style.getImage().getStroke().getColor();
+                        ctx.strokeStyle = ol.color.asString(style.getImage().getStroke().getColor());
                         ctx.lineWidth = style.getImage().getStroke().getWidth() * ratio;
-                        ctx.fillStyle = style.getImage().getFill().getColor();
+                        ctx.fillStyle = ol.color.asString(style.getImage().getFill().getColor());
                         ctx.fill();
                         ctx.stroke();
                     }
