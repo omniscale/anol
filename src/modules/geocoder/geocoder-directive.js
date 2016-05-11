@@ -199,6 +199,7 @@ angular.module('anol.geocoder')
           }
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
+          scope.searchString = result.displayText;
         };
 
         if(angular.isObject(AnolMapController)) {
