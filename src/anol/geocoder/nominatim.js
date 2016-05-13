@@ -40,14 +40,5 @@ $.extend(anol.geocoder.Nominatim.prototype, {
             url += '&viewbox=' + this.options.viewbox.join(',');
         }
         return url + '&q=' + searchString;
-    },
-    getData: function(searchString) {
-        var data = {
-            search: searchString,
-        };
-        if(this.options.viewbox !== undefined) {
-            data.viewbox = this.options.viewbox;
-        }
-        return data;
     }
 });

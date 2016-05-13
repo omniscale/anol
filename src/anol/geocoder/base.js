@@ -53,9 +53,7 @@ anol.geocoder.Base.prototype = {
     getUrl: function() {
         throw 'Not implemented';
     },
-    getData: function(searchString) {
-        return {
-            search: searchString
-        };
+    getData: function() {
+        throw 'Not implemented';
     }
 };
