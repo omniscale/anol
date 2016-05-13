@@ -23,34 +23,24 @@ anol.geocoder.Base.prototype = {
     request: function(searchString) {
         var self = this;
         var deferred = $.Deferred();
-        if(this.options.method === 'post') {
-            $.post(self.url, self.getData(searchString))
-                .success(function(response) {
+        $.ajax({
+            url: self.url,
+            data: self.getData(searchString),
+            method: self.options.method
+        })
+        .success(function(response) {
                     var results = self.handleResponse(response);
                     deferred.resolve(results);
                 })
-                .fail(function() {
-                    deferred.resolve([]);
-                });
-        } else {
-            $.get(self.getUrl(searchString))
-                .success(function(response) {
-                    var results = self.handleResponse(response);
-                    deferred.resolve(results);
-                })
-                .fail(function() {
-                    deferred.resolve([]);
-                });
-        }
+        .fail(function() {
+            deferred.resolve([]);
+        });
         return deferred.promise();
     },
     extractDisplayText: function() {
         throw 'Not implemented';
     },
     extractCoordinate: function() {
-        throw 'Not implemented';
-    },
-    getUrl: function() {
         throw 'Not implemented';
     },
     getData: function() {

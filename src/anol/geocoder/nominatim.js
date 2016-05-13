@@ -32,13 +32,19 @@ $.extend(anol.geocoder.Nominatim.prototype, {
             parseFloat(result.lat)
         ];
     },
-    getUrl: function(searchString) {
-        var url = this.url;
-        url += 'format=json';
-        if(this.options.viewbox !== undefined) {
-            url += '&bounded=1';
-            url += '&viewbox=' + this.options.viewbox.join(',');
+    getData: function(searchString) {
+        var data = {
+            q: searchString,
+            format: 'json',
+            limit: this.options.limit !== undefined ? this.options.limit : 10
+        };
+        if(this.options.key !== undefined) {
+            data.key = this.options.key;
         }
-        return url + '&q=' + searchString;
+        if(this.options.viewbox !== undefined) {
+            data.bounded = 1;
+            data.viewbox = this.options.viewbox.join(',');
+        }
+        return data;
     }
 });
