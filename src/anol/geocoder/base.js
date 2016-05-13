@@ -28,12 +28,18 @@ anol.geocoder.Base.prototype = {
                 .success(function(response) {
                     var results = self.handleResponse(response);
                     deferred.resolve(results);
+                })
+                .fail(function() {
+                    deferred.resolve([]);
                 });
         } else {
             $.get(self.getUrl(searchString))
                 .success(function(response) {
                     var results = self.handleResponse(response);
                     deferred.resolve(results);
+                })
+                .fail(function() {
+                    deferred.resolve([]);
                 });
         }
         return deferred.promise();
