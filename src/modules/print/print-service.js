@@ -32,7 +32,7 @@ angular.module('anol.print')
      * @name setMode
      * @methodOf anol.print.PrintServiceProvider
      *
-     * @param {string} mode Mode of print backend. Valid values are 'direct' and 'queque'. If using queue, *preparePrintArgs* and *downloadReady* functions must be defined.
+     * @param {string} mode Mode of print backend. Valid values are 'direct' and 'queue'. If using queue, *preparePrintArgs* and *downloadReady* functions must be defined.
      */
     this.setMode = function(mode) {
         _mode = mode;
@@ -42,7 +42,7 @@ angular.module('anol.print')
      * @name setCheckUrlAttribute
      * @methodOf anol.print.PrintServiceProvider
 
-     * @param {string} checkUrlAttribute Attribute of print endpoint response containing the url for checking download ready when use queque mode.
+     * @param {string} checkUrlAttribute Attribute of print endpoint response containing the url for checking download ready when use queue mode.
      */
     this.setCheckUrlAttribute = function(checkUrlAttribute) {
         _checkUrlAttribute = checkUrlAttribute;
@@ -128,9 +128,9 @@ angular.module('anol.print')
             downloadName += '.' + printArgs.fileEnding;
             printArgs.name = downloadName;
             switch(printMode) {
-                case 'queque':
+                case 'queue':
                     this.stopDownloadChecker = false;
-                    return this.printQueque(printArgs);
+                    return this.printQueue(printArgs);
                 // includes case 'direct'
                 default:
                     this.stopDownloadChecker = true;
@@ -138,7 +138,7 @@ angular.module('anol.print')
             }
         };
 
-        Print.prototype.printQueque = function(printArgs) {
+        Print.prototype.printQueue = function(printArgs) {
             var self = this;
             var deferred = $q.defer();
             $http.post(this.printUrl, printArgs, {
@@ -150,7 +150,7 @@ angular.module('anol.print')
                     checkPromise.then(
                         function(downloadUrl) {
                             deferred.resolve({
-                                'mode': 'queque',
+                                'mode': 'queue',
                                 'url': downloadUrl
                             });
                         },
