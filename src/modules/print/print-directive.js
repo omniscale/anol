@@ -83,7 +83,6 @@ angular.module('anol.print')
               downloadPromise.then(
                 function(response) {
                   var downloadLink = element.find('.download-link');
-                  downloadLink.attr('target', response.mode === 'direct' ? '_blank' : '');
                   downloadLink.attr('href', response.url);
                   downloadLink.attr('download', response.name);
                   scope.downloadReady = true;
