@@ -124,6 +124,9 @@ angular.module('anol.print')
               return true;
             };
             scope.isPrintable = function() {
+              if(scope.prepareDownload === true) {
+                return false;
+              }
               if(scope.printAttributes.scale === undefined || scope.printAttributes.scale <= 0) {
                   return false;
               }
