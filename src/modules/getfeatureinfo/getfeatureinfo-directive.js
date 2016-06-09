@@ -72,6 +72,8 @@ angular.module('anol.getfeatureinfo')
                                 $window.open(featureInfoObject.url, '_blank');
                             break;
                             case '_popup':
+                                iframe.attr('width', featureInfoObject.width || 300);
+                                iframe.attr('height', featureInfoObject.height || 150);
                                 popupContentTemp.append(iframe);
                                 popupCoordinate = featureInfoObject.coordinate;
                             break;
@@ -156,6 +158,8 @@ angular.module('anol.getfeatureinfo')
                                     if(angular.isString(response.data) && response.data !== '' && response.data.search('^\s*<\?xml') === -1) {
                                         requestDeferred.resolve({
                                             target: layer.featureinfo.target,
+                                            width: layer.featureinfo.width,
+                                            height: layer.featureinfo.height,
                                             url: url,
                                             response: response.data,
                                             coordinate: coordinate
