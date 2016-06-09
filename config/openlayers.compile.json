@@ -1,6 +1,7 @@
 {
   "compile": {
     "externs": [
+      "externs/closure-compiler.js",
       "externs/geojson.js",
       "externs/oli.js",
       "externs/olx.js",
