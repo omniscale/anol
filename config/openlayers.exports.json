@@ -100,6 +100,7 @@
     "ol.proj.transformExtent",
     "ol.source.ImageWMS",
     "ol.source.ImageWMS#*",
+    "ol.source.OSM",
     "ol.source.TileImage",
     "ol.source.TileImage#*",
     "ol.source.TileWMS",
