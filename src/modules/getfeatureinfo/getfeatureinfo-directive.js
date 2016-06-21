@@ -72,8 +72,8 @@ angular.module('anol.getfeatureinfo')
                                 $window.open(featureInfoObject.url, '_blank');
                             break;
                             case '_popup':
-                                iframe.attr('width', featureInfoObject.width || 300);
-                                iframe.attr('height', featureInfoObject.height || 150);
+                                iframe.css('width', featureInfoObject.width || 300);
+                                iframe.css('height', featureInfoObject.height || 150);
                                 popupContentTemp.append(iframe);
                                 popupCoordinate = featureInfoObject.coordinate;
                             break;
