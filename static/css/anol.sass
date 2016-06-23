@@ -82,77 +82,103 @@ $popup-border-color: gray
 $popup-arrow-size: 10px
 $popup-click-gap: 15px
 
-.anol-popup
-  position: absolute
-  background: #d5d5d5;
-  padding: 10px 20px 10px 15px
-  border: 1px solid $popup-border-color;
+$screen-xs: 480px
+$screen-xs-max: $screen-xs - 1
 
-  // on default open to top so arrow is on the bottom
-  &:after, &:before
-    border: solid transparent
-    content: " "
-    height: 0
-    width: 0
+.anol-popup-container
+  @media (max-width: $screen-xs-max)
+    width: 100%
+    height: 100%
+    bottom: 0 !important
+    left: 0 !important
+    top: auto !important
+  .anol-popup
     position: absolute
-    pointer-events: none
+    background: #d5d5d5;
+    padding: 10px 20px 10px 15px
+    border: 1px solid $popup-border-color;
 
-  &:after
-    border-color: transparent
-    border-width: $popup-arrow-size
+    @media (max-width: $screen-xs-max)
+      width: 100%
+      height: 100%
+      z-index: 3
+      overflow: auto
+      padding-top: 25px
 
-  &:before
-    border-color: transparent
-    border-width: $popup-arrow-size
-
-  &.top, &.bottom
-      left: -50px
+    // on default open to top so arrow is on the bottom
+    @media (min-width: $screen-xs)
       &:after, &:before
-        left: 50px
-        margin-left: -$popup-arrow-size
+        border: solid transparent
+        content: " "
+        height: 0
+        width: 0
+        position: absolute
+        pointer-events: none
 
-  &.top
-    bottom: $popup-click-gap
-    &:after, &:before
-      border-top-color: $popup-border-color
-      top: 100%
+      &:after
+        border-color: transparent
+        border-width: $popup-arrow-size
 
-  // open to bottom so arrow is on the top
-  &.bottom
-    top: $popup-click-gap
-    &:after, &:before
-      border-bottom-color: $popup-border-color
-      bottom: 100%
+      &:before
+        border-color: transparent
+        border-width: $popup-arrow-size
 
-  // open to left so arrow is on the right
-  &.left
-    right: $popup-click-gap
-    top: -$popup-arrow-size
-    &:after, &:before
-      border-left-color: $popup-border-color
-      left: 100%
-      top: 0
+    &.top, &.bottom
+      @media (min-width: $screen-xs)
+        left: -50px
+        &:after, &:before
+          left: 50px
+          margin-left: -$popup-arrow-size
 
-  // open to right so arrow is on the right
-  &.right
-    left: $popup-arrow-size
-    top: -$popup-arrow-size
-    &:after, &:before
-      border-right-color: $popup-border-color
-      right: 100%
-      top: 0
+    &.top
+      @media (min-width: $screen-xs)
+        bottom: $popup-click-gap
+        &:after, &:before
+          border-top-color: $popup-border-color
+          top: 100%
 
-  .anol-popup-content
-    white-space: nowrap
+    // open to bottom so arrow is on the top
+    &.bottom
+      @media (min-width: $screen-xs)
+        top: $popup-click-gap
+        &:after, &:before
+          border-bottom-color: $popup-border-color
+          bottom: 100%
 
-  .anol-popup-closer
-    cursor: pointer
-    text-decoration: none
-    position: absolute
-    top: 5px
-    right: 5px
-    font-size: 12px
-    color: #aaa
+    // open to left so arrow is on the right
+    &.left
+      @media (min-width: $screen-xs)
+        right: $popup-click-gap
+        top: -$popup-arrow-size
+        &:after, &:before
+          border-left-color: $popup-border-color
+          left: 100%
+          top: 0
+
+    // open to right so arrow is on the right
+    &.right
+      @media (min-width: $screen-xs)
+        left: $popup-arrow-size
+        top: -$popup-arrow-size
+        &:after, &:before
+          border-right-color: $popup-border-color
+          right: 100%
+          top: 0
+
+    .anol-popup-content
+      white-space: nowrap
+
+    .anol-popup-closer
+      cursor: pointer
+      text-decoration: none
+      position: absolute
+      top: 5px
+      right: 5px
+      font-size: 12px
+      color: #aaa
+
+      @media (max-width: $screen-xs-max)
+        font-size: 18px
 
 /**
  * anol-feature-style-editor

@@ -70,6 +70,7 @@ angular.module('anol.featurepopup')
 
             scope.popup = new ol.Overlay(scope.overlayOptions);
             scope.map.addOverlay(scope.popup);
+            element.parent().addClass('anol-popup-container');
 
             var selectInteraction;
             var interactions = [];
