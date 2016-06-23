@@ -167,6 +167,10 @@ $screen-xs-max: $screen-xs - 1
 
     .anol-popup-content
       white-space: nowrap
+      @media (max-width: $screen-xs-max)
+        overflow: auto
+        width: 100%
+        height: 100%
 
     .anol-popup-closer
       cursor: pointer
