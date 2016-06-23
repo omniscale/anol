@@ -80,6 +80,7 @@ module.exports = function(grunt) {
             src: [
               'node_modules/jquery/dist/jquery.js',
               'node_modules/angular/angular.js',
+              'node_modules/angular-sanitize/angular-sanitize.js',
               'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
               'node_modules/angular-translate/dist/angular-translate.js',
               'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',

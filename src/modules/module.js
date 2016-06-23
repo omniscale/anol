@@ -4,7 +4,7 @@
  * @description
  * Base anol module
  */
-angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate'])
+angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
 /**
  * @ngdoc object
  * @name anol.constant:DefaultMapName

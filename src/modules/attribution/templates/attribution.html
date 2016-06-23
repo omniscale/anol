@@ -1,7 +1,7 @@
 <div class="anol-attribution ol-unselectable ol-control">
     <ul ng-show="attributionVisible"
         class="list-unstyled">
-        <li ng-repeat="layer in layers | uniqueActiveAttribution">{{ layer.attribution }}</li>
+        <li ng-repeat="layer in layers | uniqueActiveAttribution" ng-bind-html="layer.attribution"></li>
     </ul>
     <button ng-class="{'anol-info-white': !attributionVisible, 'glyphicon glyphicon-chevron-right': attributionVisible}"
             ng-click="attributionVisible=!attributionVisible"
