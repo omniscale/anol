@@ -38,6 +38,7 @@
           {{ 'anol.print.OUTPUT_FORMAT' | translate }}
         </label>
         <select class="form-control"
+                id="format"
                 ng-model="printAttributes.outputFormat"
                 ng-options="format as format.label for format in outputFormats">
         </select>
