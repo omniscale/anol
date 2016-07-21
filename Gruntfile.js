@@ -165,7 +165,7 @@ module.exports = function(grunt) {
     },
     karma: {
         unit: {
-          configFile: 'config/karma.conf.js',
+          configFile: 'config/karma.conf.js'
         }
     },
     ngdocs: {
