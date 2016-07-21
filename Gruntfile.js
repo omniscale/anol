@@ -84,6 +84,7 @@ module.exports = function(grunt) {
               'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
               'node_modules/angular-translate/dist/angular-translate.js',
               'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+              'node_modules/angular-mocks/angular-mocks.js',
               'node_modules/openlayers/build/ol-custom.js',
             ],
             dest: 'build'
