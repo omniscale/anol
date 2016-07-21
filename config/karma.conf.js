@@ -2,19 +2,33 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '../',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
 
     files: [
-      // 'libs/jquery/jquery.js',
-      'libs/angular/angular-debug.js',
-      'libs/angular/angular-mocks.js',
-      'libs/ol3/ol3.custom.min.js',
+      'node_modules/jquery/dist/jquery.js',
+      'node_modules/angular/angular.js',
+      'node_modules/angular-sanitize/angular-sanitize.js',
+      'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
+      'node_modules/angular-translate/dist/angular-translate.js',
+      'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
+      'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/openlayers/build/ol-custom.js',
+      'src/anol/anol.js',
+      'src/anol/helper.js',
+      'src/anol/layer.js',
+      'src/anol/layer/basewms.js',
+      'src/anol/layer/feature.js',
+      'src/anol/layer/staticgeojson.js',
+      'src/anol/**/*.js',
+      'src/modules/module.js',
+      'src/modules/**/module.js',
+      'src/modules/**/*.js',
       'test/spec/**/*.js',
-      'src/modules/**/*.js'
+      'src/modules/**/*.html'
     ],
 
     // list of files to exclude
@@ -25,7 +39,12 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+        "src/modules/**/*.html": ["ng-html2js"]
+    },
 
+    ngHtml2JsPreprocessor: {
+        // the name of the Angular module to create
+        moduleName: "mocked-templates"
     },
 
     // test results reporter to use
