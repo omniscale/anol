@@ -176,8 +176,30 @@ describe('Testing map module', function() {
     });
   });
 
+  describe('Testing ControlsServiceProvider', function() {
+    var controlsService, CONTROL, CONTROL_2;
+    beforeEach(function() {
+      CONTROL = new anol.control.Control({});
+      CONTROL_2 = new anol.control.Control({});
+      module(function(ControlsServiceProvider) {
+        ControlsServiceProvider.setControls([
+          CONTROL, CONTROL_2
+        ]);
+      });
+
+      inject(function($injector) {
+        controlsService = $injector.get('ControlsService');
+      });
+    });
+
+    it('should have only controls set by provider', function() {
+      // we have 2 controls because default controls not added when add controls
+      // by ControlsServiceProvider
+      expect(controlsService.controls.length).toBe(2);
+    });
+  });
+
   describe('Testing ControlsService', function() {
-    // TODO add ControlsServiceProviderTest
     var controlsService, CONTROL, EXCLUSIVE_CONTROL, SUBORDINATE_CONTROL;
 
     beforeEach(function() {
@@ -194,7 +216,7 @@ describe('Testing map module', function() {
       });
     });
 
-    it('should have rotationControl wrapped in anol.control.Control', function() {
+    it('should have default control Rotate wrapped in anol.control.Control', function() {
       expect(controlsService.controls.length).toBe(1);
       expect(controlsService.controls[0] instanceof anol.control.Control).toBe(true);
       expect(controlsService.controls[0].olControl instanceof ol.control.Rotate).toBe(true);
@@ -416,6 +438,7 @@ describe('Testing map module', function() {
       expect(layers.item(0)).toEqual(BACKGROUND_LAYER.olLayer);
       expect(layers.item(1)).toEqual(OVERLAY_LAYER.olLayer);
 
+      // we have 2 controls because we set controls with ControlsServiceProvider
       expect(addControlSpy.calls.count()).toBe(2);
     });
   });
