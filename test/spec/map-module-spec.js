@@ -44,9 +44,7 @@ describe('Testing map module', function() {
   });
 
   describe('Testing LayersService', function() {
-    // TODO test addLayerHandler
-
-    var OTHER_OVERLAY_LAYER = new anol.layer.Feature({
+    var GROUP_LAYER = new anol.layer.Feature({
       name: 'feature',
       title: 'Feature',
       olLayer: {
@@ -54,9 +52,32 @@ describe('Testing map module', function() {
       }
     });
 
-    var layersService;
+    var GROUP_LAYER_2 = new anol.layer.Feature({
+      name: 'feature_2',
+      title: 'Feature 2',
+      olLayer: {
+        source: {}
+      }
+    });
+
+    var GROUP = new anol.layer.Group({
+      name: 'group',
+      title: 'Group',
+      layers: [
+        GROUP_LAYER,
+        GROUP_LAYER_2
+      ]
+    });
+
+    var layersService, addLayerSpy;
 
     beforeEach(function () {
+      addLayerSpy = jasmine.createSpy('add');
+
+      module(function(LayersServiceProvider) {
+        LayersServiceProvider.registerAddLayerHandler(addLayerSpy);
+      });
+
       inject(function($injector) {
         layersService = $injector.get('LayersService');
       });
@@ -82,19 +103,24 @@ describe('Testing map module', function() {
     });
 
     it('should add a group of overlay layers correct', function() {
-      var GROUP = new anol.layer.Group({
-        name: 'group',
-        title: 'Group',
-        layers: [
-          OVERLAY_LAYER,
-          OTHER_OVERLAY_LAYER
-        ]
-      });
       layersService.addOverlayLayer(GROUP);
       expect(layersService.overlayLayers[0]).toEqual(GROUP);
       expect(layersService.groupByName('group')).toEqual(GROUP);
-      expect(layersService.layerByName('overlay')).toEqual(OVERLAY_LAYER);
-      expect(layersService.layerByName('feature')).toEqual(OTHER_OVERLAY_LAYER);
+      expect(layersService.layerByName('feature')).toEqual(GROUP_LAYER);
+      expect(layersService.layerByName('feature_2')).toEqual(GROUP_LAYER_2);
+    });
+
+    it('should call addLayerSpy when adding layer or group', function() {
+      layersService.addBackgroundLayer(BACKGROUND_LAYER);
+      expect(addLayerSpy).toHaveBeenCalledWith(BACKGROUND_LAYER);
+
+      layersService.addOverlayLayer(OVERLAY_LAYER);
+      expect(addLayerSpy).toHaveBeenCalledWith(OVERLAY_LAYER);
+
+      expect(addLayerSpy.calls.count()).toBe(2);
+      layersService.addOverlayLayer(GROUP);
+      expect(addLayerSpy.calls.argsFor(2)).toEqual([GROUP_LAYER]);
+      expect(addLayerSpy.calls.argsFor(3)).toEqual([GROUP_LAYER_2]);
     });
 
     it('should have same source for both layers', function() {
