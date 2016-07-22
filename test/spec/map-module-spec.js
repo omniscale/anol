@@ -171,4 +171,171 @@ describe('Testing map module', function() {
     });
   });
 
+  describe('Testing ControlsService', function() {
+    var controlsService, CONTROL, EXCLUSIVE_CONTROL, SUBORDINATE_CONTROL;
+
+    beforeEach(function() {
+      inject(function($injector) {
+        controlsService = $injector.get('ControlsService');
+      });
+
+      CONTROL = new anol.control.Control({});
+      EXCLUSIVE_CONTROL = new anol.control.Control({
+        exclusive: true
+      });
+      SUBORDINATE_CONTROL = new anol.control.Control({
+        subordinate: true
+      });
+    });
+
+    it('should have rotationControl wrapped in anol.control.Control', function() {
+      expect(controlsService.controls.length).toBe(1);
+      expect(controlsService.controls[0] instanceof anol.control.Control).toBe(true);
+      expect(controlsService.controls[0].olControl instanceof ol.control.Rotate).toBe(true);
+    });
+
+    it('should add controls', function() {
+      var addControlSpy = spyOn(controlsService, 'addControl').and.callThrough();
+      controlsService.addControls([
+        CONTROL,
+        EXCLUSIVE_CONTROL,
+        SUBORDINATE_CONTROL
+      ]);
+      expect(addControlSpy.calls.count()).toBe(3);
+      expect(controlsService.controls.length).toBe(4);
+    });
+
+    describe('Testing activate / deactivate controls', function() {
+      var CONTROL_2, EXCLUSIVE_CONTROL_2, SUBORDINATE_CONTROL_2;
+
+      beforeEach(function() {
+
+        CONTROL_2 = new anol.control.Control({});
+        EXCLUSIVE_CONTROL_2 = new anol.control.Control({
+          exclusive: true
+        });
+        SUBORDINATE_CONTROL_2 = new anol.control.Control({
+          subordinate: true
+        });
+
+        controlsService.addControls([
+          CONTROL,
+          CONTROL_2,
+          EXCLUSIVE_CONTROL,
+          EXCLUSIVE_CONTROL_2,
+          SUBORDINATE_CONTROL,
+          SUBORDINATE_CONTROL_2
+        ]);
+      });
+
+      it('should have no active non default control', function() {
+        // 0 is default control (Rotate)
+        expect(controlsService.controls[0].active).toBe(true);
+        // just added controls
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+      });
+
+      it('should activate a control', function() {
+        CONTROL.activate();
+
+        // 0 is default control (Rotate)
+        expect(controlsService.controls[0].active).toBe(true);
+        // just added controls
+        expect(CONTROL.active).toBe(true);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+      });
+
+      it('should keep normal controls active', function() {
+        CONTROL.activate();
+        CONTROL_2.activate();
+        expect(CONTROL.active).toBe(true);
+        expect(CONTROL_2.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+
+        SUBORDINATE_CONTROL.activate();
+        expect(CONTROL.active).toBe(true);
+        expect(CONTROL_2.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(true);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+
+        EXCLUSIVE_CONTROL.activate();
+        expect(CONTROL.active).toBe(true);
+        expect(CONTROL_2.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+      });
+
+      it('should have only one active exclusive control at a time', function() {
+        EXCLUSIVE_CONTROL.activate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+
+        EXCLUSIVE_CONTROL_2.activate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(true);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+      });
+
+      it('should deactivate all subordinate controls when exclusive control activated', function() {
+        SUBORDINATE_CONTROL.activate();
+        SUBORDINATE_CONTROL_2.activate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(true);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(true);
+
+        EXCLUSIVE_CONTROL.activate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+      });
+
+      it('should activate subordinate controls when exclusiv control deactivated', function() {
+        EXCLUSIVE_CONTROL.activate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(true);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(false);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(false);
+
+        EXCLUSIVE_CONTROL.deactivate();
+        expect(CONTROL.active).toBe(false);
+        expect(CONTROL_2.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL.active).toBe(false);
+        expect(EXCLUSIVE_CONTROL_2.active).toBe(false);
+        expect(SUBORDINATE_CONTROL.active).toBe(true);
+        expect(SUBORDINATE_CONTROL_2.active).toBe(true);
+      });
+    });
+  });
+
 });
