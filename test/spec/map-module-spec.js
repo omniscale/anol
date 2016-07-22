@@ -1,9 +1,11 @@
 describe('Testing map module', function() {
 
+  var BACKGROUND_LAYER, OVERLAY_LAYER, VIEW;
+
   beforeEach(module('anol.map'));
 
-  describe('Testing LayersService', function() {
-    var BACKGROUND_LAYER = new anol.layer.TiledWMS({
+  beforeEach(function() {
+    BACKGROUND_LAYER = new anol.layer.TiledWMS({
       name: 'background',
       title: 'Background',
       isBackground: true,
@@ -19,7 +21,7 @@ describe('Testing map module', function() {
       }
     });
 
-    var OVERLAY_LAYER = new anol.layer.TiledWMS({
+    OVERLAY_LAYER = new anol.layer.TiledWMS({
       name: 'overlay',
       title: 'Overlay',
       olLayer: {
@@ -33,6 +35,16 @@ describe('Testing map module', function() {
         }
       }
     });
+
+    VIEW = new ol.View({
+      projection: 'EPSG:4326',
+      center: [8.2175, 53.1512],
+      zoom: 14
+    });
+  });
+
+  describe('Testing LayersService', function() {
+    // TODO test addLayerHandler
 
     var OTHER_OVERLAY_LAYER = new anol.layer.Feature({
       name: 'feature',
@@ -104,13 +116,6 @@ describe('Testing map module', function() {
   });
 
   describe('Testing MapService', function() {
-
-    var VIEW = new ol.View({
-      projection: 'EPSG:4326',
-      center: [8.2175, 53.1512],
-      zoom: 14
-    });
-
     var mapService;
 
     beforeEach(function() {
@@ -172,6 +177,7 @@ describe('Testing map module', function() {
   });
 
   describe('Testing ControlsService', function() {
+    // TODO add ControlsServiceProviderTest
     var controlsService, CONTROL, EXCLUSIVE_CONTROL, SUBORDINATE_CONTROL;
 
     beforeEach(function() {
@@ -335,6 +341,82 @@ describe('Testing map module', function() {
         expect(SUBORDINATE_CONTROL.active).toBe(true);
         expect(SUBORDINATE_CONTROL_2.active).toBe(true);
       });
+    });
+  });
+
+  describe('Testing InteractionsService', function() {
+    var interactionsService;
+
+    beforeEach(function() {
+      inject(function($injector) {
+        interactionsService = $injector.get('InteractionsService');
+      });
+    });
+
+    // TODO write tests
+  });
+
+  describe('Testing MapDirecitve', function() {
+    var CONTROL, CONTROL_2;
+    var directiveElement, $compile, $rootScope, $scope, $timeout, mapService, olMap, addControlSpy;
+
+    beforeEach(function() {
+      module(function(LayersServiceProvider) {
+        LayersServiceProvider.setLayers([
+          BACKGROUND_LAYER,
+          OVERLAY_LAYER
+        ]);
+      });
+
+      CONTROL = new anol.control.Control({});
+      CONTROL_2 = new anol.control.Control({});
+
+      module(function(ControlsServiceProvider) {
+        ControlsServiceProvider.setControls([
+          CONTROL,
+          CONTROL_2
+        ]);
+      });
+
+      module(function(MapServiceProvider) {
+        MapServiceProvider.addView(VIEW);
+      });
+
+      inject(function($injector) {
+        $rootScope = $injector.get('$rootScope');
+        $scope = $rootScope.$new();
+        $compile = $injector.get('$compile');
+        $timeout = $injector.get('$timeout');
+        mapService = $injector.get('MapService');
+      });
+
+      var element = '<div anol-map></div>';
+      directiveElement = $compile(element)($scope);
+      $scope.$digest();
+
+      olMap = directiveElement.isolateScope().map;
+      // olMap.addControl make dom operations on not existing elements in this test
+      // so we need a spy
+      addControlSpy = spyOn(olMap, 'addControl');
+
+      $timeout.flush();
+    });
+
+    it('should have added default id and class to element', function() {
+      expect(directiveElement.attr('id')).toBe('anol-map');
+      expect(directiveElement.hasClass('anol-map')).toBe(true);
+    });
+
+    it('should have an olMap with defined layers and controls', function() {
+      expect(olMap instanceof ol.Map).toBe(true);
+      expect(mapService.getMap()).toEqual(olMap);
+
+      var layers = olMap.getLayers();
+      expect(layers.getLength()).toBe(2);
+      expect(layers.item(0)).toEqual(BACKGROUND_LAYER.olLayer);
+      expect(layers.item(1)).toEqual(OVERLAY_LAYER.olLayer);
+
+      expect(addControlSpy.calls.count()).toBe(2);
     });
   });
 
