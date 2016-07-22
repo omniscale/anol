@@ -44,7 +44,7 @@ describe('Testing map module', function() {
 
     var layersService;
 
-    beforeEach(function (){
+    beforeEach(function () {
       inject(function($injector) {
         layersService = $injector.get('LayersService');
       });
@@ -100,6 +100,74 @@ describe('Testing map module', function() {
 
       expect(layersService.backgroundLayers[0]).toEqual(layersService.layers()[0]);
       expect(layersService.overlayLayers[0]).toEqual(layersService.layers()[1]);
+    });
+  });
+
+  describe('Testing MapService', function() {
+
+    var VIEW = new ol.View({
+      projection: 'EPSG:4326',
+      center: [8.2175, 53.1512],
+      zoom: 14
+    });
+
+    var mapService;
+
+    beforeEach(function() {
+      module(function(MapServiceProvider) {
+        MapServiceProvider.addView(VIEW);
+      });
+
+      inject(function($injector) {
+        mapService = $injector.get('MapService');
+      });
+    });
+
+    it('should create a ol map without anything', function() {
+      var olMap = mapService.getMap();
+      expect(olMap instanceof ol.Map).toBe(true);
+      expect(olMap.getView()).toEqual(VIEW);
+      expect(olMap.getControls().getLength()).toBe(0);
+      expect(olMap.getInteractions().getLength()).toBe(0);
+      expect(olMap.getLayers().getLength()).toBe(0);
+      expect(olMap.getTarget()).toBe(undefined);
+    });
+
+    it('should add, execute and remove pointer condition callback', function() {
+      var targetStyle = {style: {}};
+      var olMap = mapService.getMap();
+      // mock used olMap functions
+      var getEventPixelSpy = spyOn(olMap, 'getEventPixel').and.returnValue([123, 321]);
+      var getTargetSpy = spyOn(olMap, 'getTarget').and.returnValue(targetStyle);
+      var cursorPointerConditionSpy = jasmine.createSpy('pointerCondition').and.returnValues(false, true);
+
+      mapService.addCursorPointerCondition(cursorPointerConditionSpy);
+
+      expect(getEventPixelSpy).not.toHaveBeenCalled();
+      expect(getTargetSpy).not.toHaveBeenCalled();
+      expect(cursorPointerConditionSpy).not.toHaveBeenCalled();
+
+      olMap.dispatchEvent('pointermove');
+
+      expect(getEventPixelSpy).toHaveBeenCalled();
+      expect(getTargetSpy).toHaveBeenCalled();
+      expect(cursorPointerConditionSpy).toHaveBeenCalled();
+      expect(targetStyle.style).toEqual({cursor: ''});
+
+      olMap.dispatchEvent('pointermove');
+
+      expect(getEventPixelSpy.calls.count()).toBe(2);
+      expect(getTargetSpy.calls.count()).toBe(2);
+      expect(cursorPointerConditionSpy.calls.count()).toBe(2);
+      expect(targetStyle.style).toEqual({cursor: 'pointer'});
+
+      mapService.removeCursorPointerCondition(cursorPointerConditionSpy);
+
+      olMap.dispatchEvent('pointermove');
+
+      expect(getEventPixelSpy.calls.count()).toBe(2);
+      expect(getTargetSpy.calls.count()).toBe(2);
+      expect(cursorPointerConditionSpy.calls.count()).toBe(2);
     });
   });
 
