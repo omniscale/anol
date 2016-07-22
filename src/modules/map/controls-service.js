@@ -40,7 +40,10 @@ angular.module('anol.map')
                 });
                 angular.forEach(defaultControls, function(olControl) {
                     self.olControls.push(olControl);
-                    self.controls.push(new anol.control.Control({olControl: olControl}));
+                    self.controls.push(new anol.control.Control({
+                        olControl: olControl,
+                        active: true
+                    }));
                 });
             }
             self.addControls(controls);
