@@ -25,7 +25,8 @@ angular.module('anol.featurepopup')
             'openFor': '=?',
             'openingDirection': '@',
             'onClose': '&?',
-            '_autoPanMargin': '=autoPanMargin'
+            '_autoPanMargin': '=autoPanMargin',
+            '_popupFlagSize': '=popupFlagSize'
         },
         replace: true,
         transclude: true,
@@ -45,6 +46,7 @@ angular.module('anol.featurepopup')
             scope.selects = {};
 
             scope.autoPanMargin = angular.isDefined(scope._autoPanMargin) ? scope._autoPanMargin : 20;
+            scope.popupFlagSize = angular.isDefined(scope._popupFlagSize) ? scope._popupFlagSize : 15;
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
@@ -230,9 +232,18 @@ angular.module('anol.featurepopup')
                     }
                 }
                 else if ($window.innerWidth >= 480) {
+                    var xPadding = parseInt(element.css('padding-left').replace(/[^-\d\.]/g, ''));
+                    xPadding += parseInt(element.css('padding-right').replace(/[^-\d\.]/g, ''));
+                    var yPadding = parseInt(element.css('padding-top').replace(/[^-\d\.]/g, ''));
+                    yPadding += parseInt(element.css('padding-bottom').replace(/[^-\d\.]/g, ''));
                     var mapElement = $(scope.map.getTargetElement());
-                    var maxWidth = mapElement.width() - (scope.autoPanMargin * 2);
-                    var maxHeight = mapElement.height() - (scope.autoPanMargin * 2);
+                    var maxWidth = mapElement.width() - (scope.autoPanMargin * 2) - xPadding;
+                    var maxHeight = mapElement.height() - (scope.autoPanMargin * 2) - yPadding;
+                    if(scope.openingDirection === 'top' || scope.openingDirection === 'bottom') {
+                        maxHeight -= scope.popupFlagSize;
+                    } else {
+                        maxWidth -= scope.popupFlagSize;
+                    }
                     var content = element.find('.anol-popup-content').children();
                     if(content.length > 0) {
                         var target = content.first();
