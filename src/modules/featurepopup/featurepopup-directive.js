@@ -16,7 +16,7 @@ angular.module('anol.featurepopup')
  * @description
  * Shows a popup for selected feature
  */
-.directive('anolFeaturePopup', ['MapService', 'LayersService', 'ControlsService', 'PopupsService', function(MapService, LayersService, ControlsService, PopupsService) {
+.directive('anolFeaturePopup', ['$window', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', function($window, MapService, LayersService, ControlsService, PopupsService) {
     return {
         restrict: 'A',
         scope: {
@@ -25,7 +25,7 @@ angular.module('anol.featurepopup')
             'openFor': '=?',
             'openingDirection': '@',
             'onClose': '&?',
-            'autoPanMargin': '='
+            '_autoPanMargin': '=autoPanMargin'
         },
         replace: true,
         transclude: true,
@@ -44,6 +44,8 @@ angular.module('anol.featurepopup')
             scope.layer = undefined;
             scope.selects = {};
 
+            scope.autoPanMargin = angular.isDefined(scope._autoPanMargin) ? scope._autoPanMargin : 20;
+
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
                 scope.$watchCollection(function() {
@@ -58,7 +60,6 @@ angular.module('anol.featurepopup')
                     });
                 });
             }
-
             scope.overlayOptions = {
                 element: element[0],
                 autoPan: true,
@@ -226,6 +227,17 @@ angular.module('anol.featurepopup')
                     scope.feature = undefined;
                     if(angular.isFunction(scope.onClose) && angular.isFunction(scope.onClose())) {
                         scope.onClose()();
+                    }
+                }
+                else if ($window.innerWidth >= 480) {
+                    var mapElement = $(scope.map.getTargetElement());
+                    var maxWidth = mapElement.width() - (scope.autoPanMargin * 2);
+                    var maxHeight = mapElement.height() - (scope.autoPanMargin * 2);
+                    var content = element.find('.anol-popup-content').children();
+                    if(content.length > 0) {
+                        var target = content.first();
+                        target.css('max-width', maxWidth + 'px');
+                        target.css('max-height', maxHeight + 'px');
                     }
                 }
                 scope.popup.setPosition(coordinate);
