@@ -348,6 +348,13 @@ $.extend(anol.layer.Feature.prototype, {
         }
         styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
 
+        if(style.fontOffsetX !== undefined) {
+            styleOptions.offsetX = style.fontOffsetX;
+        }
+        if(style.fontOffsetY !== undefined) {
+            styleOptions.offsetY = style.fontOffsetY;
+        }
+
         var fontColor = [];
         if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
             var defaultFontColor = defaultTextFillStyle.getColor();
