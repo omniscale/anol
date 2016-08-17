@@ -39,6 +39,7 @@ angular.module('anol.featurepopup')
             PopupsService.register(scope);
             var multiselect = angular.isDefined(attrs.multiselect);
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
+            scope.sticky = angular.isDefined(attrs.sticky);
             scope.openingDirection = scope.openingDirection || 'top';
             scope.map = MapService.getMap();
 
@@ -79,6 +80,10 @@ angular.module('anol.featurepopup')
             scope.popup = new ol.Overlay(scope.overlayOptions);
             scope.map.addOverlay(scope.popup);
             element.parent().addClass('anol-popup-container');
+
+            if(scope.sticky) {
+                return;
+            }
 
             var selectInteraction;
             var interactions = [];
