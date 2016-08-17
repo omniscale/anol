@@ -72,7 +72,8 @@ angular.module('anol.map')
          * The ol.View is added with the provider method addView
          * It will only create one instance of an ol map
          */
-        var MapService = function(cursorPointerConditions) {
+        var MapService = function(view, cursorPointerConditions) {
+            this.view = view;
             this.map = undefined;
             this.cursorPointerConditions = cursorPointerConditions;
         };
@@ -95,7 +96,7 @@ angular.module('anol.map')
                     interactions: [],
                     layers: []
                 }));
-                this.map.setView(_view);
+                this.map.setView(this.view);
                 if(angular.isDefined(_bbox)) {
                     this.map.once('change:target', function() {
                         this.map.getView().fit(_bbox, this.map.getSize());
@@ -165,6 +166,6 @@ angular.module('anol.map')
                 this.map.un('pointermove', this._changeCursorToPointer, this);
             }
         };
-        return new MapService(_cursorPointerConditions);
+        return new MapService(_view, _cursorPointerConditions);
     }];
 }]);
