@@ -7,19 +7,41 @@ angular.module('anol.permalink')
 .provider('PermalinkService', [function() {
     var _urlCrs;
     var _precision = 100000;
-    var extractMapParams = function(params) {
-        if(angular.isUndefined(params.map)) {
+
+    var getParamString = function(param, params) {
+        if(angular.isUndefined(params[param])) {
             return false;
         }
-        var layers = angular.isUndefined(params.layers) ? false : params.layers.split(',');
-        var mapParams = params.map.split(',');
+        var p = params[param];
+        if(angular.isArray(p)) {
+            p = p[p.length -1];
+        }
+        return p;
+    };
+
+    var extractMapParams = function(params) {
+        var mapParam = getParamString('map', params);
+        if(mapParam === false) {
+            return false;
+        }
+        var mapParams = mapParam.split(',');
+
+        var layersParam = getParamString('layers', params);
+        var layers;
+        if(layersParam !== false) {
+            layers = layersParam.split(',');
+        }
+
         if(mapParams !== null && mapParams.length == 4) {
-            return {
+            var result = {
                 'zoom': parseInt(mapParams[0]),
                 'center': [parseFloat(mapParams[1]), parseFloat(mapParams[2])],
-                'crs': mapParams[3],
-                'layers': layers
+                'crs': mapParams[3]
             };
+            if(layers !== undefined) {
+                result.layers = layers;
+            }
+            return result;
         }
         return false;
     };
