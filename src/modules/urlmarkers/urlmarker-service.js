@@ -1,9 +1,5 @@
 angular.module('anol.urlmarkers')
 
-/**
- * @ngdoc object
- * @name anol.permalink.PermalinkServiceProvider
- */
 .provider('UrlMarkersService', [function() {
     var _defaultSrs;
     var _propertiesDelimiter = '|';
