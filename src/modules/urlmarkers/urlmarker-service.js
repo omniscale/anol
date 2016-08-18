@@ -6,6 +6,7 @@ angular.module('anol.urlmarkers')
     var _keyValueDelimiter = ':';
     var _style = {};
     var _usePopup = true;
+    var _popupOffset = [0, 0];
 
     this.setDefaultSrs = function(srs) {
         _defaultSrs = srs;
@@ -27,8 +28,12 @@ angular.module('anol.urlmarkers')
         _usePopup = usePopup === undefined ? _usePopup : usePopup;
     };
 
+    this.setPopupOffset = function(popupOffset) {
+        _popupOffset = popupOffset === undefined ? _popupOffset : popupOffset;
+    };
+
     this.$get = ['$rootScope', '$location', '$compile', '$document', 'MapService', 'LayersService', function($rootScope, $location, $compile, $document, MapService, LayersService) {
-        var UrlMarkers = function(defaultSrs, propertiesDelimiter, keyValueDelimiter, style, usePopup) {
+        var UrlMarkers = function(defaultSrs, propertiesDelimiter, keyValueDelimiter, style, usePopup, popupOffset) {
             var self = this;
             self.features = [];
             self.defaultSrs = defaultSrs || MapService.view.getProjection();
@@ -36,6 +41,7 @@ angular.module('anol.urlmarkers')
             self.keyValueDelimiter = keyValueDelimiter;
             self.style = style;
             self.usePopup = usePopup;
+            self.popupOffset = popupOffset;
 
             self.extractFeaturesFromUrl();
 
@@ -132,17 +138,18 @@ angular.module('anol.urlmarkers')
                 if(coordinate === undefined) {
                     return;
                 }
-                var template = '<div anol-feature-popup coordinate="coordinate" layers="layers" open sticky>{{ label }}</div>';
+                var template = '<div anol-feature-popup coordinate="coordinate" layers="layers" offset="offset" open sticky>{{ label }}</div>';
                 var compiled = $compile(angular.element(template));
                 var popupScope = $rootScope.$new();
                 popupScope.coordinate = coordinate;
                 popupScope.label = label;
                 popupScope.layers = [self.layer];
+                popupScope.offset = self.popupOffset;
                 $document.find('body').append(compiled(popupScope));
             });
 
         };
 
-        return new UrlMarkers(_defaultSrs, _propertiesDelimiter, _keyValueDelimiter, _style, _usePopup);
+        return new UrlMarkers(_defaultSrs, _propertiesDelimiter, _keyValueDelimiter, _style, _usePopup, _popupOffset);
     }];
 }]);
