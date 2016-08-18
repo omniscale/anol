@@ -26,6 +26,7 @@ angular.module('anol.featurepopup')
             'openingDirection': '@',
             'onClose': '&?',
             'coordinate': '=?',
+            'offset': '=?',
             '_autoPanMargin': '=autoPanMargin',
             '_popupFlagSize': '=popupFlagSize'
         },
@@ -75,6 +76,9 @@ angular.module('anol.featurepopup')
 
             if(scope.coordinate !== undefined) {
                 scope.overlayOptions.position = scope.coordinate;
+            }
+            if(scope.offset !== undefined) {
+                scope.overlayOptions.offset = scope.offset;
             }
 
             scope.popup = new ol.Overlay(scope.overlayOptions);
