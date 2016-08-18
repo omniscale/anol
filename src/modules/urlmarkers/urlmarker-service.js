@@ -52,7 +52,7 @@ angular.module('anol.urlmarkers')
             LayersService.addSystemLayer(self.layer);
 
             if(self.usePopup) {
-                self.overlays = self.createOverlays(self.features);
+                self.overlays = self.createPopups(self.features);
             }
         };
 
@@ -125,7 +125,7 @@ angular.module('anol.urlmarkers')
             return layer;
         };
 
-        UrlMarkers.prototype.createOverlays = function(features)  {
+        UrlMarkers.prototype.createPopups = function(features)  {
             var self = this;
             angular.forEach(features, function(feature) {
                 var label = feature.get('label');
