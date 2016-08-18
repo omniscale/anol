@@ -12,7 +12,7 @@ angular.module('anol.urlmarkers')
     };
 
     this.setPropertiesDelimiter = function(delimiter) {
-        _propertiesDelimiter = delimiter;
+        _propertiesDelimiter = delimiter || _propertiesDelimiter;
     };
 
     this.setKeyValueDelimiter = function(delimiter) {
@@ -24,7 +24,7 @@ angular.module('anol.urlmarkers')
     };
 
     this.setUsePopup = function(usePopup) {
-        _usePopup = usePopup;
+        _usePopup = usePopup === undefined ? _usePopup : usePopup;
     };
 
     this.$get = ['$rootScope', '$location', '$compile', '$document', 'MapService', 'LayersService', function($rootScope, $location, $compile, $document, MapService, LayersService) {
