@@ -3,7 +3,7 @@ angular.module('anol.urlmarkers')
 .provider('UrlMarkersService', [function() {
     var _defaultSrs;
     var _propertiesDelimiter = '|';
-    var _kvDelimiter = ':';
+    var _keyValueDelimiter = ':';
     var _style = {};
     var _usePopup = true;
 
@@ -15,8 +15,8 @@ angular.module('anol.urlmarkers')
         _propertiesDelimiter = delimiter;
     };
 
-    this.setKvDelimiter = function(delimiter) {
-        _kvDelimiter = delimiter;
+    this.setKeyValueDelimiter = function(delimiter) {
+        _keyValueDelimiter = delimiter || _keyValueDelimiter;
     };
 
     this.setMarkerStyle = function(style) {
@@ -28,12 +28,12 @@ angular.module('anol.urlmarkers')
     };
 
     this.$get = ['$rootScope', '$location', '$compile', '$document', 'MapService', 'LayersService', function($rootScope, $location, $compile, $document, MapService, LayersService) {
-        var UrlMarkers = function(defaultSrs, propertiesDelimiter, kvDelimiter, style, usePopup) {
+        var UrlMarkers = function(defaultSrs, propertiesDelimiter, keyValueDelimiter, style, usePopup) {
             var self = this;
             self.features = [];
             self.defaultSrs = defaultSrs || MapService.view.getProjection();
             self.propertiesDelimiter = propertiesDelimiter;
-            self.kvDelimiter = kvDelimiter;
+            self.keyValueDelimiter = keyValueDelimiter;
             self.style = style;
             self.usePopup = usePopup;
 
@@ -70,7 +70,7 @@ angular.module('anol.urlmarkers')
                 var marker = {};
                 var style = {};
                 angular.forEach(params, function(kv) {
-                    kv = kv.split(self.kvDelimiter);
+                    kv = kv.split(self.keyValueDelimiter);
                     if(kv[0] === 'coord') {
                         var coord = kv[1].split(',');
                         coord = [parseFloat(coord[0]), parseFloat(coord[1])];
@@ -143,6 +143,6 @@ angular.module('anol.urlmarkers')
 
         };
 
-        return new UrlMarkers(_defaultSrs, _propertiesDelimiter, _kvDelimiter, _style, _usePopup);
+        return new UrlMarkers(_defaultSrs, _propertiesDelimiter, _keyValueDelimiter, _style, _usePopup);
     }];
 }]);
