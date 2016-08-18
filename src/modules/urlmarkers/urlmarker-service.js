@@ -1,5 +1,8 @@
 angular.module('anol.urlmarkers')
-
+/**
+ * @ngdoc object
+ * @name anol.urlmarkers.UrlMarkersServiceProvider
+ */
 .provider('UrlMarkersService', [function() {
     var _defaultSrs;
     var _propertiesDelimiter = '|';
@@ -8,31 +11,75 @@ angular.module('anol.urlmarkers')
     var _usePopup = true;
     var _popupOffset = [0, 0];
 
+    /**
+     * @ngdoc method
+     * @name setDefaultSrs
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {string} srs default EPSG code of marker coordinates in url
+     */
     this.setDefaultSrs = function(srs) {
         _defaultSrs = srs;
     };
 
+    /**
+     * @ngdoc method
+     * @name setPropertiesDelimiter
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {string} delimiter Delimiter separating marker properties
+     */
     this.setPropertiesDelimiter = function(delimiter) {
         _propertiesDelimiter = delimiter || _propertiesDelimiter;
     };
 
+    /**
+     * @ngdoc method
+     * @name setKeyValueDelimiter
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {string} delimiter Delimiter separating properties keys from values
+     */
     this.setKeyValueDelimiter = function(delimiter) {
         _keyValueDelimiter = delimiter || _keyValueDelimiter;
     };
 
+    /**
+     * @ngdoc method
+     * @name setMarkerStyle
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {object} style marker style
+     */
     this.setMarkerStyle = function(style) {
         _style = style;
     };
 
+    /**
+     * @ngdoc method
+     * @name setPopup
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {boolean} usePopup
+     * @description When not using popup a label text is added. This can be styled by markerStyle
+     */
     this.setUsePopup = function(usePopup) {
         _usePopup = usePopup === undefined ? _usePopup : usePopup;
     };
 
+    /**
+     * @ngdoc method
+     * @name setPopupOffset
+     * @methodOf anol.urlmarkers.UrlMarkersServiceProvider
+     * @param {Array.<number>} popupOffset Offset of placed popup. First value is x- second value is y-offset in px
+     */
     this.setPopupOffset = function(popupOffset) {
         _popupOffset = popupOffset === undefined ? _popupOffset : popupOffset;
     };
 
     this.$get = ['$rootScope', '$location', '$compile', '$document', 'MapService', 'LayersService', function($rootScope, $location, $compile, $document, MapService, LayersService) {
+        /**
+         * @ngdoc service
+         * @name anol.urlmarkers.UrlMarkersService
+         *
+         * @description
+         * Adds markers specified in url. A valid url marker looks like marker=color:ff0000|label:foobar|coord:8.21,53.15|srs:4326
+         */
         var UrlMarkers = function(defaultSrs, propertiesDelimiter, keyValueDelimiter, style, usePopup, popupOffset) {
             var self = this;
             self.features = [];
