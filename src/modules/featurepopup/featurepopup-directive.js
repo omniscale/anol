@@ -92,6 +92,43 @@ angular.module('anol.featurepopup')
             var selectInteraction;
             var interactions = [];
 
+            var updateOffset = function(evt) {
+                if(scope.offset !== undefined) {
+                    return;
+                }
+                var offset = [0, 0];
+                angular.forEach(evt.selected, function(f) {
+                    var style = f.getStyle();
+                    if(style === null) {
+                        style = evt.target.getLayer(f).getStyle();
+                    }
+                    if(angular.isFunction(style)) {
+                        style = style(f, scope.map.getView().getResolution())[0];
+                    }
+                    var image = style.getImage();
+                    // only ol.Style.Icons (subclass of ol.Style.Image) have getSize function
+                    if(image !== null && angular.isFunction(image.getSize)) {
+                        var size = image.getSize();
+                        switch(scope.openingDirection) {
+                            case 'top':
+                                offset[1] = Math.min(offset[1], size[1] / -2);
+                            break;
+                            case 'bottom':
+                                offset[1] = Math.min(offset[1], size[1] / 2);
+                            break;
+                            case 'left':
+                                offset[0] = Math.min(offset[0], size[0] / -2);
+                            break;
+                            case 'right':
+                                offset[0] = Math.min(offset[0], size[0] / 2);
+                            break;
+                        }
+
+                    }
+                });
+                scope.popup.setOffset(offset);
+            };
+
             var handleMultiSelect = function(evt) {
                 scope.selects = {};
                 if(evt.selected.length === 0) {
@@ -125,6 +162,7 @@ angular.module('anol.featurepopup')
                 var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
 
                 if(_handleSelect(evt) === true) {
+                    updateOffset(evt);
                     scope.coordinate = evt.mapBrowserEvent.coordinate;
                     selectInteraction.getFeatures().clear();
                 } else {
