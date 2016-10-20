@@ -28,7 +28,8 @@ angular.module('anol.featurepopup')
             'coordinate': '=?',
             'offset': '=?',
             '_autoPanMargin': '=autoPanMargin',
-            '_popupFlagSize': '=popupFlagSize'
+            '_popupFlagSize': '=popupFlagSize',
+            '_mobileFullscreen': '=mobileFullscreen'
         },
         replace: true,
         transclude: true,
@@ -50,6 +51,7 @@ angular.module('anol.featurepopup')
 
             scope.autoPanMargin = angular.isDefined(scope._autoPanMargin) ? scope._autoPanMargin : 20;
             scope.popupFlagSize = angular.isDefined(scope._popupFlagSize) ? scope._popupFlagSize : 15;
+            scope.mobileFullscreen = angular.isDefined(scope._mobileFullscreen) ? scope._mobileFullscreen : true;
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
@@ -84,6 +86,9 @@ angular.module('anol.featurepopup')
             scope.popup = new ol.Overlay(scope.overlayOptions);
             scope.map.addOverlay(scope.popup);
             element.parent().addClass('anol-popup-container');
+            if(scope.mobileFullscreen === true) {
+                element.parent().addClass('mobile-fullscreen');
+            }
 
             if(scope.sticky) {
                 return;
@@ -283,7 +288,7 @@ angular.module('anol.featurepopup')
                         scope.onClose()();
                     }
                 }
-                else if ($window.innerWidth >= 480) {
+                else if (scope.mobileFullscreen === true && $window.innerWidth >= 480) {
                     var xPadding = parseInt(element.css('padding-left').replace(/[^-\d\.]/g, ''));
                     xPadding += parseInt(element.css('padding-right').replace(/[^-\d\.]/g, ''));
                     var yPadding = parseInt(element.css('padding-top').replace(/[^-\d\.]/g, ''));
