@@ -16,7 +16,7 @@ angular.module('anol.featurepopup')
  * @description
  * Shows a popup for selected feature
  */
-.directive('anolFeaturePopup', ['$window', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', function($window, MapService, LayersService, ControlsService, PopupsService) {
+.directive('anolFeaturePopup', ['$window', '$timeout', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', function($window, $timeout, MapService, LayersService, ControlsService, PopupsService) {
     return {
         restrict: 'A',
         scope: {
@@ -308,7 +308,9 @@ angular.module('anol.featurepopup')
                         target.css('max-height', maxHeight + 'px');
                     }
                 }
-                scope.popup.setPosition(coordinate);
+                $timeout(function() {
+                    scope.popup.setPosition(coordinate);
+                });
             });
             scope.$watch('openFor', function(openFor) {
                 if(angular.isDefined(openFor)) {
