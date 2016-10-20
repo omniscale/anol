@@ -29,7 +29,8 @@ angular.module('anol.featurepopup')
             'offset': '=?',
             '_autoPanMargin': '=autoPanMargin',
             '_popupFlagSize': '=popupFlagSize',
-            '_mobileFullscreen': '=mobileFullscreen'
+            '_mobileFullscreen': '=mobileFullscreen',
+            '_autoPanOnSizeChange': '=autoPanOnSizeChange'
         },
         replace: true,
         transclude: true,
@@ -52,6 +53,7 @@ angular.module('anol.featurepopup')
             scope.autoPanMargin = angular.isDefined(scope._autoPanMargin) ? scope._autoPanMargin : 20;
             scope.popupFlagSize = angular.isDefined(scope._popupFlagSize) ? scope._popupFlagSize : 15;
             scope.mobileFullscreen = angular.isDefined(scope._mobileFullscreen) ? scope._mobileFullscreen : false;
+            scope.autoPanOnSizeChange = angular.isDefined(scope._autoPanOnSizeChange) ? scope._autoPanOnSizeChange : false;
 
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
@@ -329,6 +331,18 @@ angular.module('anol.featurepopup')
                     scope.openFor = undefined;
                 }
             });
+
+            if(scope.autoPanOnSizeChange === true) {
+                scope.$watchCollection(function() {
+                    return {
+                        w: element.width(),
+                        h: element.height()
+                    };
+                }, function() {
+                    scope.popup.setPosition(undefined);
+                    scope.popup.setPosition(scope.coordinate);
+                });
+            }
         },
         controller: function($scope, $element, $attrs) {
             this.close = function() {
