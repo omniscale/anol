@@ -24,11 +24,13 @@
         <label for="scale">
           {{ 'anol.print.SCALE' | translate }}
         </label>
-        <select class="form-control"
-                id="scale"
-                ng-model="printAttributes.scale"
-                ng-change="updatePrintPage()"
-                ng-options="scale as '1 : ' + scale for scale in availableScales">
+        <div class="input-group">
+          <div class="input-group-addon">1 :</div>
+          <input class="form-control"
+                 id="scale"
+                 ng-model="printAttributes.scale"
+                 ng-change="updatePrintPage()">
+        </div>
         </select>
       </div>
     </div>
