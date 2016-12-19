@@ -85,7 +85,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                 'OUTPUT_PREPARED': 'Printing in progress.\nThis may take a moment.',
                 'DOWNLOAD_READY': 'Printing finished',
                 'DOWNLOAD': 'Download it',
-                'ERROR': 'Sorry! An error occured.\nPleace try again later.'
+                'ERROR': 'Sorry! An error occured.\nPleace try again later.',
+                'INVALID_SCALE': 'No valid scale'
             },
             'savemanager': {
                 'SERVICE_UNAVAILABLE': 'Service unavailable'

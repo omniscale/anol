@@ -1,4 +1,4 @@
-<div class="anol-print">
+<form class="anol-print" name="anolPrint">
   <div class="form-group">
     <label class="control-label"
            for="definedPageLayouts">
@@ -20,18 +20,22 @@
   </div>
   <div class="row">
     <div class="col-md-6">
-      <div class="form-group">
+      <div class="form-group" ng-class="{'has-error': anolPrint.scale.$error.number || anolPrint.scale.$error.min || anolPrint.scale.$error.required}">
         <label for="scale">
           {{ 'anol.print.SCALE' | translate }}
         </label>
         <div class="input-group">
           <div class="input-group-addon">1 :</div>
           <input class="form-control"
+                 type="number"
                  id="scale"
                  ng-model="printAttributes.scale"
-                 ng-change="updatePrintPage()">
+                 ng-change="updatePrintPage()"
+                 ng-required
+                 min="1"
+                 name="scale">
         </div>
-        </select>
+        <span class="help-block" ng-show="anolPrint.scale.$error.number || anolPrint.scale.$error.min || anolPrint.scale.$error.required">{{ 'anol.print.INVALID_SCALE' | translate }}</span>
       </div>
     </div>
     <div class="col-md-6">
@@ -77,4 +81,4 @@
        ng-cloak>
     <pre>{{ 'anol.print.ERROR' | translate }}</pre>
   </div>
-</div>
+</form>
