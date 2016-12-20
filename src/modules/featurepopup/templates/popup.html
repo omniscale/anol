@@ -1,5 +1,5 @@
-<div class="anol-popup {{ openingDirection }}">
-    <span class="anol-popup-closer glyphicon glyphicon-remove" ng-click="close()" ng-if="!sticky"></span>
+<div class="anol-popup {{ openingDirection }}" ng-mousedown="makeDraggable($event)">
+    <span class="anol-popup-closer glyphicon glyphicon-remove" ng-click="close()" ng-if="!sticky" ng-mousedown="$event.stopPropagation();"></span>
     <div class="anol-popup-content">
         <ng-transclude></ng-transclude>
     </div>

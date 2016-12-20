@@ -8,6 +8,7 @@ angular.module('anol.featurepopup')
     this.$get = [function() {
         var Popups = function() {
             this.popupScopes = [];
+            this.dragPopupOptions = [];
         };
         Popups.prototype.register = function(popupScope) {
             this.popupScopes.push(popupScope);
@@ -16,6 +17,17 @@ angular.module('anol.featurepopup')
             angular.forEach(this.popupScopes, function(popupScope) {
                 popupScope.close();
             });
+        };
+        Popups.prototype.makeDraggable = function(popupScope, position, feature, layer, selects, event) {
+            var dragPopupOptions = {
+                screenPosition: position,
+                feature: feature,
+                layer: layer,
+                selects: selects,
+                event: event
+            };
+            popupScope.close();
+            this.dragPopupOptions.push(dragPopupOptions);
         };
         return new Popups();
     }];

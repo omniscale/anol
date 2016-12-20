@@ -17,6 +17,11 @@ angular.module('anol.featurepopup')
  * Shows a popup for selected feature
  */
 .directive('anolFeaturePopup', ['$window', '$timeout', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', function($window, $timeout, MapService, LayersService, ControlsService, PopupsService) {
+    // TODO use for all css values
+    var cssToFloat = function(v) {
+        return parseFloat(v.replace(/[^-\d\.]/g, ''));
+    };
+
     return {
         restrict: 'A',
         scope: {
@@ -30,7 +35,8 @@ angular.module('anol.featurepopup')
             '_autoPanMargin': '=autoPanMargin',
             '_popupFlagSize': '=popupFlagSize',
             '_mobileFullscreen': '=mobileFullscreen',
-            '_autoPanOnSizeChange': '=autoPanOnSizeChange'
+            '_autoPanOnSizeChange': '=autoPanOnSizeChange',
+            '_allowDrag': '=allowDrag'
         },
         replace: true,
         transclude: true,
@@ -54,7 +60,7 @@ angular.module('anol.featurepopup')
             scope.popupFlagSize = angular.isDefined(scope._popupFlagSize) ? scope._popupFlagSize : 15;
             scope.mobileFullscreen = angular.isDefined(scope._mobileFullscreen) ? scope._mobileFullscreen : false;
             scope.autoPanOnSizeChange = angular.isDefined(scope._autoPanOnSizeChange) ? scope._autoPanOnSizeChange : false;
-
+            scope.allowDrag = angular.isDefined(scope._allowDrag) ? scope._allowDrag : false;
             if(angular.isUndefined(scope.layers)) {
                 scope.layers = [];
                 scope.$watchCollection(function() {
@@ -343,6 +349,15 @@ angular.module('anol.featurepopup')
                     scope.popup.setPosition(scope.coordinate);
                 });
             }
+            scope.makeDraggable = function(event) {
+                if(scope.allowDrag === false) {
+                    return;
+                }
+                var y = cssToFloat(element.parent().css('top')) + cssToFloat(element.css('top'));
+                var x = cssToFloat(element.parent().css('left')) + cssToFloat(element.css('left'));
+
+                PopupsService.makeDraggable(scope, [x, y], scope.feature, scope.layer, scope.selects, event);
+            };
         },
         controller: function($scope, $element, $attrs) {
             this.close = function() {
