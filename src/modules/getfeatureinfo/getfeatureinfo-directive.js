@@ -26,15 +26,17 @@ angular.module('anol.getfeatureinfo')
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
 .directive('anolGetFeatureInfo', [
-    '$http', '$window', '$q', 'MapService', 'LayersService', 'ControlsService',
-    function($http, $window, $q, MapService, LayersService, ControlsService) {
+    '$http', '$window', '$q', '$compile', 'MapService', 'LayersService', 'ControlsService',
+    function($http, $window, $q, $compile, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
             customTargetFilled: '&',
             beforeRequest: '&',
             proxyUrl: '@',
-            popupOpeningDirection: '@'
+            popupOpeningDirection: '@',
+            waitingMarkerSrc: '@?',
+            waitingMarkerOffset: '=?'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
@@ -43,10 +45,22 @@ angular.module('anol.getfeatureinfo')
         link: {
             pre: function(scope, element) {
                 scope.popupOpeningDirection = scope.popupOpeningDirection || 'top';
+
                 scope.map = MapService.getMap();
                 // get callback from wrapper function
                 scope.customTargetCallback = scope.customTargetFilled();
                 scope.beforeRequest = scope.beforeRequest();
+
+                if(scope.waitingMarkerSrc !== undefined) {
+                    scope.waitingOverlayElement = element.find('#get-featureinfo-waiting-overlay');
+                    $compile(scope.waitingOverlayElement)(scope);
+                    scope.waitingOverlay = new ol.Overlay({
+                        element: scope.waitingOverlayElement[0],
+                        position: undefined,
+                        offset: scope.waitingMarkerOffset
+                    });
+                    scope.map.addOverlay(scope.waitingOverlay);
+                }
                 var view = scope.map.getView();
 
                 if(angular.isDefined(scope.proxyUrl)) {
@@ -103,7 +117,7 @@ angular.module('anol.getfeatureinfo')
                             content: popupContentTemp.children()
                         };
                     }
-
+                    scope.hideWaitingOverlay();
                 };
 
                 scope.handleClick = function(evt) {
@@ -115,6 +129,8 @@ angular.module('anol.getfeatureinfo')
                     if(angular.isFunction(scope.beforeRequest)) {
                         scope.beforeRequest();
                     }
+
+                    scope.showWaitingOverlay(coordinate);
 
                     var requestPromises = [];
                     // this is resolved after all requests started
@@ -175,6 +191,18 @@ angular.module('anol.getfeatureinfo')
                         }
                     });
                     requestsDeferred.resolve();
+                };
+
+                scope.hideWaitingOverlay = function() {
+                    if(scope.waitingMarkerSrc !== undefined) {
+                        scope.waitingOverlay.setPosition(undefined);
+                    }
+                };
+
+                scope.showWaitingOverlay = function(coordinate) {
+                    if(scope.waitingMarkerSrc !== undefined) {
+                        scope.waitingOverlay.setPosition(coordinate);
+                    }
                 };
             },
             post: function(scope) {
