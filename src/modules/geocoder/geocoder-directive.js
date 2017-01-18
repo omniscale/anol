@@ -18,8 +18,8 @@ angular.module('anol.geocoder')
  * @description
  * Search for a location string on given geocoder, display and select results
  */
-.directive('anolGeocoderSearchbox', ['$timeout', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService',
-  function($timeout, MapService, ControlsService, InteractionsService, LayersService) {
+.directive('anolGeocoderSearchbox', ['$timeout', '$location', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'UrlMarkersService',
+  function($timeout, $location, MapService, ControlsService, InteractionsService, LayersService, UrlMarkersService) {
     return {
       restrict: 'A',
       require: '?^anolMap',
@@ -34,7 +34,10 @@ angular.module('anol.geocoder')
         geocoderOptions: '=',
         proxyUrl: '@',
         highlight: '@',
-        markerStyle: '=?'
+        markerStyle: '=?',
+        toUrlMarker: '=?',
+        urlMarkerColor: '@?',
+        urlMarkerWithLabel: '@?'
       },
       link: function(scope, element, attrs, AnolMapController) {
         var removeMarkerInteraction;
@@ -64,11 +67,51 @@ angular.module('anol.geocoder')
         scope.showResultList = false;
         scope.isScrolling = false;
         scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
+        scope.urlMarkerAdded = false;
 
         var changeCursorCondition = function(pixel) {
             return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
                 return markerLayer === layer.get('anolLayer');
             });
+        };
+
+        var addUrlMarker = function(coordinate, projectionCode, label) {
+          var position = ol.proj.transform(
+            coordinate,
+            projectionCode,
+            'EPSG:4326'
+          );
+          var urlParams = $location.search();
+
+          var urlMarkers = [];
+
+          if(!angular.isUndefined(urlParams.marker)) {
+            if(angular.isArray(urlParams.marker)) {
+              urlMarkers = urlParams.marker;
+            } else {
+              urlMarkers.push(urlParams.marker);
+            }
+          }
+          if(scope.urlMarkerAdded === true && urlMarkers.length > 0) {
+            urlMarkers.pop();
+          }
+
+          var urlMarker = {
+            'color': scope.urlMarkerColor || 'aa0000',
+            'coord':  position.join(','),
+            'srs': '4326'
+          };
+          if(scope.urlMarkerWithLabel === 'true') {
+            urlMarker.label = label;
+          }
+          var urlMarkerParams = [];
+          angular.forEach(urlMarker, function(v, k) {
+            urlMarkerParams.push(k + UrlMarkersService.keyValueDelimiter + v);
+          });
+          var urlMarkerString = urlMarkerParams.join(UrlMarkersService.propertiesDelimiter);
+          urlMarkers.push(urlMarkerString);
+          $location.search('marker', urlMarkers);
+          scope.urlMarkerAdded = true;
         };
 
         var addMarker = function(position) {
@@ -196,6 +239,13 @@ angular.module('anol.geocoder')
           }
           if(scope.highlight !== false) {
             addMarker(position);
+          }
+          if(scope.toUrlMarker === true) {
+            addUrlMarker(
+              result.coordinate,
+              result.projectionCode,
+              result.displayText
+            );
           }
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
