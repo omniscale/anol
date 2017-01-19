@@ -7,7 +7,7 @@ angular.module('anol.print')
 .provider('PrintPageService', [function() {
     // Better move directive configuration in directive so
     // direcitve can be replaced by custom one?
-    var _pageLayouts, _outputFormats, _defaultScale, _style, _availableScales;
+    var _pageLayouts, _outputFormats, _defaultScale, _style, _availableScales, _pageMargins, _minPageSize, _maxPageSize;
     var _allowPageResize = true;
 
     /**
@@ -77,7 +77,19 @@ angular.module('anol.print')
         _allowPageResize = allowed;
      };
 
-    this.$get = ['$rootScope', 'MapService', 'LayersService', 'InteractionsService', function($rootScope, MapService, LayersService, InteractionsService) {
+    this.setPageMargins = function(margins) {
+        _pageMargins = margins || [0, 0, 0, 0];
+    };
+
+    this.setMinPageSize = function(size) {
+        _minPageSize = size;
+    };
+
+    this.setMaxPageSize = function(size) {
+        _maxPageSize = size;
+    };
+
+    this.$get = ['$rootScope', '$translate', 'MapService', 'LayersService', 'InteractionsService', function($rootScope, $translate, MapService, LayersService, InteractionsService) {
         /**
          * @ngdoc service
          * @name anol.print.PrintPageService
@@ -226,7 +238,7 @@ angular.module('anol.print')
          * paper size for selected area is calculated.
          *
          */
-        var PrintPage = function(pageLayouts, outputFormats, defaultScale, availableScales, allowPageResize) {
+        var PrintPage = function(pageLayouts, outputFormats, defaultScale, availableScales, allowPageResize, pageMargins, minPageSize, maxPageSize) {
             this.pageLayouts = pageLayouts;
             this.outputFormats = outputFormats;
             this.defaultScale = defaultScale;
@@ -234,6 +246,48 @@ angular.module('anol.print')
             this.allowPageResize = allowPageResize;
             this.currentPageSize = undefined;
             this.currentScale = undefined;
+            this.pageMargins = pageMargins;
+            this.minPageSize = minPageSize;
+            this.maxPageSize = maxPageSize;
+
+            var self = this;
+
+            var translate = function() {
+                $translate('anol.print.INVALID_WIDTH').then(
+                    function(translation) {
+                    self.invalidWidthText = translation;
+                });
+                $translate('anol.print.INVALID_HEIGHT').then(
+                    function(translation) {
+                    self.invalidHeightText = translation;
+                });
+                $translate('anol.print.WIDTH_REQUIRED').then(
+                    function(translation) {
+                    self.requiredWidthText = translation;
+                });
+                $translate('anol.print.HEIGHT_REQUIRED').then(
+                    function(translation) {
+                    self.requiredHeightText = translation;
+                });
+                $translate('anol.print.WIDTH_TOO_SMALL').then(
+                    function(translation) {
+                    self.widthTooSmallText = translation;
+                });
+                $translate('anol.print.HEIGHT_TOO_SMALL').then(
+                    function(translation) {
+                    self.heightTooSmallText = translation;
+                });
+                $translate('anol.print.WIDTH_TOO_BIG').then(
+                    function(translation) {
+                    self.widthTooBigText = translation;
+                });
+                $translate('anol.print.HEIGHT_TOO_BIG').then(
+                    function(translation) {
+                    self.heightTooBigText = translation;
+                });
+            };
+            $rootScope.$on('$translateChangeSuccess', translate);
+            translate();
         };
         /**
          * @ngdoc method
@@ -248,7 +302,9 @@ angular.module('anol.print')
          * Creates the print area geometry visible in map
          */
         PrintPage.prototype.createPrintArea = function(pageSize, scale) {
-            this.currentPageSize = pageSize;
+            var width = pageSize[0] - this.pageMargins[1] - this.pageMargins[3];
+            var height = pageSize[1] - this.pageMargins[0] - this.pageMargins[2];
+            this.currentPageSize = [width, height];
             this.currentScale = scale;
             this.mapWidth = this.currentPageSize[0] / 1000 * this.currentScale;
             this.mapHeight = this.currentPageSize[1] / 1000 * this.currentScale;
@@ -583,7 +639,7 @@ angular.module('anol.print')
          * Create or update print page geometry by given pageSize and scale
          */
         PrintPage.prototype.addFeatureFromPageSize = function(pageSize, scale) {
-            if(pageSize === undefined || pageSize.length === 0 || scale === undefined) {
+            if(!this.isValidPageSize(pageSize) || scale === undefined || isNaN(scale)) {
                 return;
             }
             this.createPrintArea(pageSize, scale);
@@ -617,6 +673,85 @@ angular.module('anol.print')
             _printLayer.setVisible(visibility);
         };
 
-        return new PrintPage(_pageLayouts, _outputFormats, _defaultScale, _availableScales, _allowPageResize);
+        PrintPage.prototype.validSize = function(size) {
+            if(size === undefined) {
+                return false;
+            }
+            if(isNaN(size)) {
+                return false;
+            }
+            if(this.minPageSize !== undefined && size < this.minPageSize) {
+                return false;
+            }
+            if(this.maxPageSize !== undefined && size > this.maxPageSize) {
+                return false;
+            }
+            return true;
+        };
+
+        PrintPage.prototype.isValidPageSize = function(pageSize) {
+            if(pageSize === undefined) {
+                return false;
+            }
+            if(pageSize.length === 0) {
+                return false;
+            }
+            if(!this.validSize(pageSize[0])) {
+                return false;
+            }
+            if(!this.validSize(pageSize[1])) {
+                return false;
+            }
+            return true;
+        };
+
+        PrintPage.prototype.mapToPageSize = function(mapSize) {
+            var width = mapSize[0] + this.pageMargins[1] + this.pageMargins[3];
+            var height = mapSize[1] + this.pageMargins[0] + this.pageMargins[2];
+            return [width, height];
+        };
+
+        PrintPage.prototype.getSizeErrors = function(pageSize) {
+            if(pageSize === undefined || pageSize.length === 0) {
+                return {
+                    'width': this.requiredWidthText,
+                    'height': this.requiredHeightText
+                };
+            }
+
+            var widthError;
+            if(pageSize[0] === undefined || pageSize[0] === null ) {
+                widthError = this.requiredWidthText;
+            }
+            if(widthError === undefined && isNaN(pageSize[0])) {
+                widthError = this.invalidWidthText;
+            }
+            if(widthError === undefined && this.minPageSize !== undefined && pageSize[0] < this.minPageSize) {
+                widthError = this.widthTooSmallText + Math.round(this.minPageSize) + 'mm';
+            }
+            if(widthError === undefined && this.maxPageSize !== undefined && pageSize[0] > this.maxPageSize) {
+                widthError = this.widthTooBigText + Math.round(this.maxPageSize) + 'mm';
+            }
+
+            var heightError;
+            if(pageSize[1] === undefined || pageSize[1] === null) {
+                heightError = this.requiredHeightText;
+            }
+            if(heightError === undefined && isNaN(pageSize[1])) {
+                heightError = this.invalidHeightText;
+            }
+            if(heightError === undefined && this.minPageSize !== undefined && pageSize[1] < this.minPageSize) {
+                heightError = this.heightTooSmallText + Math.round(this.minPageSize) + 'mm';
+            }
+            if(heightError === undefined && this.maxPageSize !== undefined && pageSize[1] > this.maxPageSize) {
+                heightError = this.heightTooBigText + Math.round(this.maxPageSize) + 'mm';
+            }
+            return {
+                'width': widthError,
+                'height': heightError
+            };
+        };
+
+        return new PrintPage(_pageLayouts, _outputFormats, _defaultScale, _availableScales, _allowPageResize, _pageMargins, _minPageSize, _maxPageSize);
     }];
 }]);

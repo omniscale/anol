@@ -18,6 +18,44 @@
       </button>
     </div>
   </div>
+  <div class="form-group" ng-class="{'has-error': anolPrint.pageWidth.$dirty && anolPrint.pageWidth.$error.printPage}">
+    <label class="control-label"
+           for="pageWidth">
+      {{ 'anol.print.PAGE_WIDTH' | translate }}
+    </label>
+    <div class="input-group">
+      <input class="form-control"
+             type="number"
+             id="pageWidth"
+             name="pageWidth"
+             ng-model="pageWidth"
+             ng-keyup="updatePageSize()"
+             ng-change="updatePageSize()">
+      <div class="input-group-addon">mm</div>
+    </div>
+    <span class="help-block" ng-show="anolPrint.pageWidth.$dirty && anolPrint.pageWidth.$error.printPage !== undefined">
+      {{ anolPrint.pageWidth.$error.printPage }}
+    </span>
+  </div>
+  <div class="form-group" ng-class="{'has-error': anolPrint.pageHeight.$dirty && anolPrint.pageHeight.$error.printPage}">
+    <label class="control-label"
+           for="pageHeight">
+      {{ 'anol.print.PAGE_HEIGHT' | translate }}
+    </label>
+    <div class="input-group">
+      <input class="form-control"
+             type="number"
+             id="pageHeight"
+             name="pageHeight"
+             ng-model="pageHeight"
+             ng-keyup="updatePageSize()"
+             ng-change="updatePageSize()">
+      <div class="input-group-addon">mm</div>
+    </div>
+    <span class="help-block" ng-show="anolPrint.pageHeight.$dirty && anolPrint.pageHeight.$error.printPage !== undefined">
+      {{ anolPrint.pageHeight.$error.printPage }}
+    </span>
+  </div>
   <div class="row">
     <div class="col-md-6">
       <div class="form-group" ng-class="{'has-error': anolPrint.scale.$error.number || anolPrint.scale.$error.min || anolPrint.scale.$error.required}">

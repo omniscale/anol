@@ -86,7 +86,17 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                 'DOWNLOAD_READY': 'Printing finished',
                 'DOWNLOAD': 'Download it',
                 'ERROR': 'Sorry! An error occured.\nPleace try again later.',
-                'INVALID_SCALE': 'No valid scale'
+                'INVALID_SCALE': 'No valid scale',
+                'PAGE_WIDTH': 'Width',
+                'PAGE_HEIGHT': 'Height',
+                'INVALID_WIDTH': 'Invalid width',
+                'INVALID_HEIGHT': 'Invalid height',
+                'WIDTH_REQUIRED': 'Width required',
+                'HEIGHT_REQUIRED': 'Height required',
+                'WIDTH_TOO_SMALL': 'Width too small. Min width: ',
+                'HEIGHT_TOO_SMALL': 'Height too small. Min height: ',
+                'WIDTH_TOO_BIG': 'Width too big. Max width: ',
+                'HEIGHT_TOO_BIG': 'Height too big. Max height: '
             },
             'savemanager': {
                 'SERVICE_UNAVAILABLE': 'Service unavailable'

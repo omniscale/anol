@@ -103,26 +103,38 @@ angular.module('anol.print')
             // into scope.pageSize and typing somethink into width/height input fields
             // will result in modifying selected availablePageSize value
             scope.setPageLayout = function(size, layout) {
-                scope.printAttributes.pageSize = angular.copy(size);
+                scope.printAttributes.pageSize = PrintPageService.mapToPageSize(angular.copy(size));
                 scope.printAttributes.layout = angular.copy(layout);
+
+                var errors = PrintPageService.getSizeErrors(scope.printAttributes.pageSize);
+                scope.anolPrint.pageWidth.$error.printPage = errors.width;
+                scope.anolPrint.pageHeight.$error.printPage = errors.height;
+
                 scope.updatePrintPage();
             };
 
             scope.updatePrintPage = function() {
-              PrintPageService.addFeatureFromPageSize(scope.printAttributes.pageSize, scope.printAttributes.scale);
+              if(scope.havePageSize()) {
+                PrintPageService.addFeatureFromPageSize(scope.printAttributes.pageSize, scope.printAttributes.scale);
+              } else {
+                PrintPageService.removePrintArea();
+              }
+
+              var errors = PrintPageService.getSizeErrors(scope.printAttributes.pageSize);
+              scope.anolPrint.pageWidth.$error.printPage = errors.width;
+              scope.anolPrint.pageHeight.$error.printPage = errors.height;
             };
+
+            scope.updatePageSize = function() {
+              scope.printAttributes.pageSize = [scope.pageWidth, scope.pageHeight];
+              scope.printAttributes.layout = undefined;
+              scope.updatePrintPage();
+            };
+
             scope.havePageSize = function() {
-              if(scope.printAttributes.pageSize === undefined) {
-                  return false;
-              }
-              if(scope.printAttributes.pageSize[0] === undefined || scope.printAttributes.pageSize[0] <= 0) {
-                  return false;
-              }
-              if(scope.printAttributes.pageSize[1] === undefined || scope.printAttributes.pageSize[1] <= 0) {
-                  return false;
-              }
-              return true;
+              return PrintPageService.isValidPageSize(scope.printAttributes.pageSize);
             };
+
             scope.isPrintable = function() {
               if(scope.prepareDownload === true) {
                 return false;
@@ -155,13 +167,16 @@ angular.module('anol.print')
             };
         },
         post: function(scope, element, attrs) {
-          scope.$watch(
-            function() {
-              return PrintPageService.currentPageSize;
-            },
+          scope.$watchCollection('printAttributes.pageSize',
             function(n) {
               if(angular.isDefined(n)) {
                 scope.printAttributes.pageSize = n;
+                if(n[0] !== null) {
+                  scope.pageWidth = Math.round(n[0]);
+                }
+                if(n[1] !== null) {
+                  scope.pageHeight = Math.round(n[1]);
+                }
               }
             }
           );
