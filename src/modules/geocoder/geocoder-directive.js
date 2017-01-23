@@ -76,6 +76,10 @@ angular.module('anol.geocoder')
         };
 
         var addUrlMarker = function(coordinate, projectionCode, label) {
+          if(scope.toUrlMarker !== true) {
+            return;
+          }
+          removeUrlMarker();
           var position = ol.proj.transform(
             coordinate,
             projectionCode,
@@ -91,9 +95,6 @@ angular.module('anol.geocoder')
             } else {
               urlMarkers.push(urlParams.marker);
             }
-          }
-          if(scope.urlMarkerAdded === true && urlMarkers.length > 0) {
-            urlMarkers.pop();
           }
 
           var urlMarker = {
@@ -112,6 +113,22 @@ angular.module('anol.geocoder')
           urlMarkers.push(urlMarkerString);
           $location.search('marker', urlMarkers);
           scope.urlMarkerAdded = true;
+        };
+
+        var removeUrlMarker = function() {
+          if(scope.toUrlMarker !== true) {
+            return;
+          }
+          if(!scope.urlMarkerAdded) {
+            return;
+          }
+          var urlParams = $location.search();
+          var urlMarkers = urlParams.marker;
+          if(urlMarkers.length > 0) {
+            urlMarkers.pop();
+          }
+          $location.search('marker', urlMarkers);
+          scope.urlMarkerAdded = false;
         };
 
         var addMarker = function(position) {
@@ -135,6 +152,7 @@ angular.module('anol.geocoder')
                 InteractionsService.removeInteraction(removeMarkerInteraction);
                 MapService.removeCursorPointerCondition(changeCursorCondition);
                 removeMarkerInteraction = undefined;
+                removeUrlMarker();
               }
             });
             InteractionsService.addInteraction(removeMarkerInteraction);
@@ -148,6 +166,7 @@ angular.module('anol.geocoder')
           scope.searchInProgress = true;
 
           markerLayer.clear();
+          removeUrlMarker();
 
           element.find('.anol-searchbox').removeClass('open');
           geocoder.request(scope.searchString)
@@ -240,13 +259,12 @@ angular.module('anol.geocoder')
           if(scope.highlight !== false) {
             addMarker(position);
           }
-          if(scope.toUrlMarker === true) {
-            addUrlMarker(
-              result.coordinate,
-              result.projectionCode,
-              result.displayText
-            );
-          }
+
+          addUrlMarker(
+            result.coordinate,
+            result.projectionCode,
+            result.displayText
+          );
           scope.searchResults = [];
           element.find('.anol-searchbox').removeClass('open');
           scope.searchString = result.displayText;
