@@ -74,7 +74,7 @@ angular.module('anol.featurestyleeditor')
 
                     if(feature !== undefined) {
                         scope.style = prepareStyleProperties(
-                            feature.get('style') || {}
+                            feature.get('style') || angular.copy(layerStyle)
                         );
                         scope.geometryType = feature.getGeometry().getType();
 
