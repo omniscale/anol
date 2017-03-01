@@ -190,7 +190,7 @@ $.extend(anol.layer.Feature.prototype, {
         }
 
         if(style.graphicRotation !== undefined) {
-            styleOptions.rotation = parseFloat(style.graphicRotation);
+            styleOptions.rotation = this._degreeToRad(parseFloat(style.graphicRotation));
         }
 
         if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
@@ -354,6 +354,9 @@ $.extend(anol.layer.Feature.prototype, {
         if(style.fontOffsetY !== undefined) {
             styleOptions.offsetY = style.fontOffsetY;
         }
+        if(style.fontRotation !== undefined) {
+            styleOptions.rotation = this._degreeToRad(parseFloat(style.fontRotation));
+        }
 
         var fontColor = [];
         if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
@@ -380,6 +383,12 @@ $.extend(anol.layer.Feature.prototype, {
             return new ol.style.Text(styleOptions);
         }
         return undefined;
+    },
+    _degreeToRad: function(degree) {
+        if(degree === 0) {
+            return 0;
+        }
+        return Math.PI * (degree / 180);
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method
