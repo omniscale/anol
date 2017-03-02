@@ -186,11 +186,12 @@ $.extend(anol.layer.Feature.prototype, {
             } else {
                 styleOptions.src = style.externalGraphic;
             }
-
         }
 
         if(style.graphicRotation !== undefined) {
             styleOptions.rotation = this._degreeToRad(parseFloat(style.graphicRotation));
+        } else if (this.style !== undefined && this.style.graphicRotation !== undefined) {
+            styleOptions.rotation = this._degreeToRad(parseFloat(this.style.graphicRotation));
         }
 
         if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
@@ -313,7 +314,7 @@ $.extend(anol.layer.Feature.prototype, {
         var fontSize = this.DEFAULT_FONT_SIZE;
         var defaultText;
         var defaultTextFillStyle;
-
+        var defaultTextRotation;
         // atm defaultTextStyle is null
         if(defaultTextStyle !== null) {
             var splittedFont = defaultTextStyle.getFont().split(' ');
@@ -322,6 +323,7 @@ $.extend(anol.layer.Feature.prototype, {
             fontFace = splittedFont[2];
             defaultTextFillStyle = defaultTextStyle.getFill();
             defaultText = defaultTextStyle.getText();
+            defaultTextRotation = defaultTextStyle.getRotation();
             if(angular.isFunction(defaultText) && feature !== undefined) {
                 defaultText = defaultText.call(this, feature);
             }
@@ -356,6 +358,8 @@ $.extend(anol.layer.Feature.prototype, {
         }
         if(style.fontRotation !== undefined) {
             styleOptions.rotation = this._degreeToRad(parseFloat(style.fontRotation));
+        } else if(defaultTextRotation !== undefined) {
+            styleOptions.rotation = defaultTextRotation;
         }
 
         var fontColor = [];
