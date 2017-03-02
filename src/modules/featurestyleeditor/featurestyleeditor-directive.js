@@ -31,6 +31,9 @@ angular.module('anol.featurestyleeditor')
         if(style.fillOpacity !== undefined) {
             style.fillOpacity = parseFloat(style.fillOpacity);
         }
+        if(style.graphicRotation !== undefined) {
+            style.graphicRotation = parseFloat(style.graphicRotation);
+        }
         return style;
     };
 
