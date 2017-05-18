@@ -22,6 +22,7 @@
     if(this.olLayerOptions.visible === false) {
         this.olSourceOptions.params.LAYERS = '';
     }
+    this.visible = this.olLayerOptions.visible !== false;
 };
 anol.layer.BaseWMS.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.BaseWMS.prototype, {
@@ -59,6 +60,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
         olSource.set('anolLayers', anolLayers);
         return olSource;
     },
+    getVisible: function() {
+        return this.visible;
+    },
     setVisible: function(visible)  {
         var insertLayerIdx = 0;
         var source = this.olLayer.getSource();
@@ -79,7 +83,8 @@ $.extend(anol.layer.BaseWMS.prototype, {
         }
         params.LAYERS = layers.join(',');
         source.updateParams(params);
-        anol.layer.Layer.prototype.setVisible.call(this, visible);
+        this.visible = visible;
+        anol.layer.Layer.prototype.setVisible.call(this, layers.length > 0);
     },
     getLegendGraphicUrl: function() {
         var requestParams = {

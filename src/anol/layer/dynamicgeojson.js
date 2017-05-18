@@ -20,6 +20,7 @@
  */
 anol.layer.DynamicGeoJSON = function(_options) {
     anol.layer.StaticGeoJSON.call(this, _options);
+    this.visible = this.olLayerOptions.visible !== false;
 };
 anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
 $.extend(anol.layer.DynamicGeoJSON.prototype, {
@@ -46,8 +47,12 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         this.olSource.set('anolLayers', anolLayers);
         return this.olSource;
     },
+    getVisible: function() {
+        return this.visible;
+    },
     setVisible: function(visible) {
-        anol.layer.StaticGeoJSON.prototype.setVisible.call(this, visible);
+        this.visible = visible;
+        // anol.layer.StaticGeoJSON.prototype.setVisible.call(this, visible);
         // find better solution than clear, cause it's remove all features from the source, not only
         // features related to current layer. But we need to call clear, otherwise source extent is not
         // resetted and it will not be reloaded with updated url params
