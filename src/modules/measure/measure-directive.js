@@ -35,7 +35,9 @@ angular.module('anol.measure')
             tooltipPlacement: '@',
             tooltipDelay: '@',
             tooltipEnable: '@',
-            addToMap: '@?'
+            addToMap: '@?',
+            measureResultCallback: '=?',
+            deactivate: '=?'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/measure/templates/measure.html';
@@ -98,32 +100,35 @@ angular.module('anol.measure')
                 olLayer: _measureLayer
             };
 
-            var formatLength = function(line) {
-              var length;
-              if (scope.geodesic) {
-                var coordinates = line.getCoordinates();
-                length = 0;
-                var sourceProj = scope.map.getView().getProjection();
-                for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-                  var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
-                  var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
-                  length += wgs84Sphere.haversineDistance(c1, c2);
+            var calculateLength = function(line) {
+                var length;
+                if (scope.geodesic) {
+                    var coordinates = line.getCoordinates();
+                    length = 0;
+                    var sourceProj = scope.map.getView().getProjection();
+                    for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+                        var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+                        var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+                        length += wgs84Sphere.haversineDistance(c1, c2);
+                    }
+                } else {
+                    length = Math.round(line.getLength() * 100) / 100;
                 }
-              } else {
-                length = Math.round(line.getLength() * 100) / 100;
-              }
-              var output;
-              if (length > 100) {
-                output = (Math.round(length / 1000 * 100) / 100) +
-                    ' ' + 'km';
-              } else {
-                output = (Math.round(length * 100) / 100) +
-                    ' ' + 'm';
-              }
-              return output;
+                return length;
             };
 
-            var formatArea = function(polygon) {
+            var formatLength = function(line) {
+                var length = calculateLength(line);
+                var output;
+                if (length > 100) {
+                    output = (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
+                } else {
+                    output = (Math.round(length * 100) / 100) + ' ' + 'm';
+                }
+                return output;
+            };
+
+            var calculateArea = function(polygon) {
                 var area;
                 if (scope.geodesic) {
                     var sourceProj = scope.map.getView().getProjection();
@@ -134,6 +139,11 @@ angular.module('anol.measure')
                 } else {
                     area = polygon.getArea();
                 }
+                return area;
+            };
+
+            var formatArea = function(polygon) {
+                var area = calculateArea(polygon);
                 var output;
                 if (area > 10000) {
                     output = (Math.round(area / 10000 * 100) / 100) +
@@ -216,11 +226,24 @@ angular.module('anol.measure')
                         scope.currentGeometry = sketch.getGeometry();
                         if(scope.measureType === 'point') {
                             coord = scope.currentGeometry.getCoordinates();
+                            if(angular.isFunction(scope.measureResultCallback)) {
+                                scope.measureResultCallback({
+                                    type: scope.measureType,
+                                    value: coord
+                                });
+                                return;
+                            }
                             scope.measureOverlay.getElement().innerHTML = formatCoord(coord);
                             scope.measureOverlay.setPosition(coord);
                         } else {
                             scope.listener = scope.currentGeometry.on('change', function(evt) {
                                 var geom = evt.target;
+                                if(angular.isFunction(scope.measureResultCallback)) {
+                                    scope.measureResultCallback({
+                                        type: scope.measureType,
+                                        value: scope.measureType === 'area' ? calculateArea(geom) : calculateLength(geom)
+                                    });
+                                }
                                 var output = scope.measureType === 'area' ? formatArea(geom) : formatLength(geom);
                                 coord = geom.getLastCoordinate();
                                 scope.measureOverlay.getElement().innerHTML = output;
@@ -267,6 +290,10 @@ angular.module('anol.measure')
                 }
                 context.map.removeOverlay(context.measureOverlay);
                 context.measureOverlay = undefined;
+            };
+
+            scope.deactivate = function() {
+                deactivate(undefined, scope);
             };
 
             var activate = function(targetControl, context) {
