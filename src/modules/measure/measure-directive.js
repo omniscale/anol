@@ -145,6 +145,14 @@ angular.module('anol.measure')
               return output;
             };
 
+            var formatCoord = function(coord) {
+                coord = ol.proj.transform(coord, scope.map.getView().getProjection(), 'EPSG:4326');
+                var output = '';
+                output += coord[0] + ' lat | ';
+                output += coord[1] + ' lon';
+                return output;
+            };
+
             var createMeasureOverlay = function() {
                 var element = angular.element('<div></div>');
                 element.addClass('anol-overlay');
@@ -159,10 +167,22 @@ angular.module('anol.measure')
 
             var createDrawInteraction = function(drawStyle) {
                 var sketch;
+                var geomType;
+                switch(scope.measureType) {
+                    case 'area':
+                        geomType = 'Polygon';
+                    break;
+                    case 'point':
+                        geomType = 'Point';
+                    break;
+                    default:
+                        geomType = 'LineString';
+                    break;
+                }
                 // create draw interaction
                 var draw = new ol.interaction.Draw({
                     source: scope._measureSource,
-                    type: scope.measureType === 'area' ? 'Polygon' : 'LineString',
+                    type: geomType,
                     style: drawStyle
                 });
 
@@ -194,13 +214,19 @@ angular.module('anol.measure')
                         scope.measureOverlay.setPosition(coord);
 
                         scope.currentGeometry = sketch.getGeometry();
-                        scope.listener = scope.currentGeometry.on('change', function(evt) {
-                            var geom = evt.target;
-                            var output = scope.measureType === 'area' ? formatArea(geom) : formatLength(geom);
-                            coord = geom.getLastCoordinate();
-                            scope.measureOverlay.getElement().innerHTML = output;
+                        if(scope.measureType === 'point') {
+                            coord = scope.currentGeometry.getCoordinates();
+                            scope.measureOverlay.getElement().innerHTML = formatCoord(coord);
                             scope.measureOverlay.setPosition(coord);
-                        });
+                        } else {
+                            scope.listener = scope.currentGeometry.on('change', function(evt) {
+                                var geom = evt.target;
+                                var output = scope.measureType === 'area' ? formatArea(geom) : formatLength(geom);
+                                coord = geom.getLastCoordinate();
+                                scope.measureOverlay.getElement().innerHTML = output;
+                                scope.measureOverlay.setPosition(coord);
+                            });
+                        }
                     }, this
                 );
 
