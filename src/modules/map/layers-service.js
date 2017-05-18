@@ -140,8 +140,10 @@ angular.module('anol.map')
          */
         Layers.prototype.createOlLayer = function(layer) {
             var olSource;
+            var combined = false;
             if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
                 olSource = this.lastAddedLayer.getCombinedSource(layer);
+                combined = true;
             }
             if(olSource === undefined) {
                 olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
@@ -150,6 +152,9 @@ angular.module('anol.map')
             var layerOpts = layer.olLayerOptions;
             layerOpts.source = olSource;
             var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
+            if(combined && angular.equals(layer.olLayerOptions, this.lastAddedLayer.olLayerOptions)) {
+                return this.lastAddedLayer.olLayer;
+            }
             olLayer.set('anolLayer', layer);
             return olLayer;
         };
