@@ -25,6 +25,7 @@ angular.module('anol.measure')
     return {
         restrict: 'A',
         require: '?^anolMap',
+        replace: true,
         scope: {
             measureType: '@anolMeasure',
             geodesic: '@',
@@ -33,7 +34,8 @@ angular.module('anol.measure')
             autoDisable: '=?',
             tooltipPlacement: '@',
             tooltipDelay: '@',
-            tooltipEnable: '@'
+            tooltipEnable: '@',
+            addToMap: '@?'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/measure/templates/measure.html';
@@ -253,7 +255,7 @@ angular.module('anol.measure')
 
             var draw = createDrawInteraction(drawStyle);
 
-            if(AnolMapController === null) {
+            if(AnolMapController === null || scope.addToMap === false || scope.addToMap === 'false') {
                 control = new anol.control.Control({
                     exclusive: true,
                     olControl: null
