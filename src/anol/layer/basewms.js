@@ -48,7 +48,7 @@ $.extend(anol.layer.BaseWMS.prototype, {
     },
     getCombinedSource: function(other) {
         var olSource = this.olLayer.getSource();
-        if(other.olLayerOptions.visible === true) {
+        if(other.olLayerOptions.visible !== false) {
             var params = olSource.getParams();
             var layers = anol.helper.stringSplit(params.LAYERS, ',');
             layers = layers.concat(other.wmsSourceLayers);
