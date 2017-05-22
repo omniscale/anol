@@ -69,6 +69,19 @@ angular.module('anol.getfeatureinfo')
                     }
                 }
 
+                var featureInfoLayer = new anol.layer.Feature({
+                  name: 'featureInfoLayer',
+                  displayInLayerswitcher: false,
+                  style: scope.markerStyle
+                });
+                var markerOlLayerOptions = featureInfoLayer.olLayerOptions;
+                markerOlLayerOptions.source = new featureInfoLayer.OL_SOURCE_CLASS(featureInfoLayer.olSourceOptions);
+                featureInfoLayer.setOlLayer(new featureInfoLayer.OL_LAYER_CLASS(markerOlLayerOptions));
+
+                LayersService.addSystemLayer(featureInfoLayer);
+
+                LayersService.addSystemLayer(featureInfoLayer, 0);
+
                 var handleFeatureinfoResponses = function(featureInfoObjects) {
                     var divTargetCleared = false;
                     var popupContentTemp = $('<div></div>');
@@ -120,11 +133,24 @@ angular.module('anol.getfeatureinfo')
                     scope.hideWaitingOverlay();
                 };
 
+                var handleGMLFeatureinfoResponses = function(responses) {
+                    var format = new ol.format.WMSGetFeatureInfo();
+
+                    angular.forEach(responses, function(response) {
+                        var features = format.readFeatures(response.data);
+                        angular.forEach(features, function(feature) {
+                            feature.set('style', response.style);
+                        });
+                        featureInfoLayer.addFeatures(features);
+                    });
+                };
+
                 scope.handleClick = function(evt) {
                     var viewResolution = view.getResolution();
                     var coordinate = evt.coordinate;
 
                     scope.popupProperties = {coordinate: undefined};
+                    featureInfoLayer.clear();
 
                     if(angular.isFunction(scope.beforeRequest)) {
                         scope.beforeRequest();
@@ -140,6 +166,12 @@ angular.module('anol.getfeatureinfo')
                         // all promises will be resolved, otherwise we can't access the data
                         // promises that should be rejected will be resolved with undefined
                         $q.all(requestPromises).then(handleFeatureinfoResponses);
+                    });
+
+                    var gmlRequestPromises = [];
+                    var gmlRequestsDeferred = $q.defer();
+                    gmlRequestsDeferred.promise.then(function() {
+                        $q.all(gmlRequestPromises).then(handleGMLFeatureinfoResponses);
                     });
 
                     angular.forEach(LayersService.flattedLayers(), function(layer) {
@@ -189,8 +221,34 @@ angular.module('anol.getfeatureinfo')
                                 }
                             );
                         }
+
+                        if(layer.featureinfo.gml !== true) {
+                            return;
+                        }
+
+                        var gmlRequestParams = {
+                            'INFO_FORMAT': 'application/vnd.ogc.gml'
+                        };
+
+                        var gmlUrl = layer.getFeatureInfoUrl(
+                            coordinate, viewResolution, view.getProjection(), gmlRequestParams
+                        );
+
+                        if(angular.isDefined(gmlUrl)) {
+                            var gmlRequestDeferred = $q.defer();
+                            gmlRequestPromises.push(gmlRequestDeferred.promise);
+                            $http.get(gmlUrl).then(
+                                function(response) {
+                                    gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, data: response.data});
+                                },
+                                function(response) {
+                                    gmlRequestDeferred.resolve();
+                                }
+                            );
+                        }
                     });
                     requestsDeferred.resolve();
+                    gmlRequestsDeferred.resolve();
                 };
 
                 scope.hideWaitingOverlay = function() {

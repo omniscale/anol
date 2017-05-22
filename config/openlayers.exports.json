@@ -45,6 +45,8 @@
     "ol.extent.isEmpty",
     "ol.format.GeoJSON",
     "ol.format.GeoJSON#*",
+    "ol.format.WMSGetFeatureInfo",
+    "ol.format.WMSGetFeatureInfo#*",
     "ol.format.WMTSCapabilities",
     "ol.format.WMTSCapabilities#*",
     "ol.geom.Circle",
