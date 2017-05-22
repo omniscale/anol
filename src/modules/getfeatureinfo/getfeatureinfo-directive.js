@@ -265,6 +265,10 @@ angular.module('anol.getfeatureinfo')
                         scope.waitingOverlay.setPosition(coordinate);
                     }
                 };
+
+                scope.featureInfoPopupClosed = function() {
+                    featureInfoLayer.clear();
+                };
             },
             post: function(scope) {
                 var handlerKey;
