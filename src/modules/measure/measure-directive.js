@@ -156,7 +156,7 @@ angular.module('anol.measure')
     var createMeasureOverlay = function() {
         var element = angular.element('<div></div>');
         element.addClass('anol-overlay');
-        element.addClass('anol-measure-line-dynamic-overlay');
+        element.addClass('anol-measure-overlay');
         var overlay = new ol.Overlay({
             element: element[0],
             offset: [0, -15],
@@ -210,10 +210,6 @@ angular.module('anol.measure')
         draw.on('drawstart',
             function(evt) {
                 var sketch = evt.feature;
-
-                var measureOverlayElement = angular.element(measureOverlay.getElement());
-                measureOverlayElement.removeClass('anol-measure-line-static-overlay');
-                measureOverlayElement.addClass('anol-measure-line-dynamic-overlay');
 
                 /** @type {ol.Coordinate|undefined} */
                 var coord = evt.coordinate;
