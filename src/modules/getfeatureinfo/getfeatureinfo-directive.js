@@ -233,6 +233,9 @@ angular.module('anol.getfeatureinfo')
                         var gmlUrl = layer.getFeatureInfoUrl(
                             coordinate, viewResolution, view.getProjection(), gmlRequestParams
                         );
+                        if(angular.isDefined(scope.proxyUrl)) {
+                            gmlUrl = scope.proxyUrl + layer.name + '/?' + gmlUrl.split('?')[1];
+                        }
 
                         if(angular.isDefined(gmlUrl)) {
                             var gmlRequestDeferred = $q.defer();
