@@ -148,7 +148,7 @@ angular.module('anol.measure')
                 return new ol.geom.Polygon([coords]);
             case 'Polygon':
                 coords = geometry.getCoordinates()[0];
-                coords.splice(coords.length - 2, 0, coordinate);
+                coords.splice(coords.length - 1, 0, coordinate);
                 return new ol.geom.Polygon([coords]);
         }
     };
