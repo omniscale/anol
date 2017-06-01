@@ -137,7 +137,10 @@ angular.module('anol.getfeatureinfo')
                     var format = new ol.format.WMSGetFeatureInfo();
 
                     angular.forEach(responses, function(response) {
-                        var features = format.readFeatures(response.data);
+                        if(angular.isUndefined(response.gmlData)) {
+                            return;
+                        }
+                        var features = format.readFeatures(response.gmlData);
                         angular.forEach(features, function(feature) {
                             feature.set('style', response.style);
                         });
@@ -171,7 +174,7 @@ angular.module('anol.getfeatureinfo')
                     var gmlRequestPromises = [];
                     var gmlRequestsDeferred = $q.defer();
                     gmlRequestsDeferred.promise.then(function() {
-                        $q.all(gmlRequestPromises).then(handleGMLFeatureinfoResponses);
+                        $q.all(requestPromises.concat(gmlRequestPromises)).then(handleGMLFeatureinfoResponses);
                     });
 
                     angular.forEach(LayersService.flattedLayers(), function(layer) {
@@ -246,7 +249,7 @@ angular.module('anol.getfeatureinfo')
                             gmlRequestPromises.push(gmlRequestDeferred.promise);
                             $http.get(gmlUrl).then(
                                 function(response) {
-                                    gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, data: response.data});
+                                    gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, gmlData: response.data});
                                 },
                                 function(response) {
                                     gmlRequestDeferred.resolve();
