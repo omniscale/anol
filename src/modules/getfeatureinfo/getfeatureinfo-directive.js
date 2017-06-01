@@ -230,6 +230,10 @@ angular.module('anol.getfeatureinfo')
                             'INFO_FORMAT': 'application/vnd.ogc.gml'
                         };
 
+                        if(angular.isDefined(layer.featureinfo.featureCount)) {
+                            gmlRequestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
+                        }
+
                         var gmlUrl = layer.getFeatureInfoUrl(
                             coordinate, viewResolution, view.getProjection(), gmlRequestParams
                         );
