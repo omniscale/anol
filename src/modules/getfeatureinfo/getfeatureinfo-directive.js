@@ -137,6 +137,9 @@ angular.module('anol.getfeatureinfo')
                     var format = new ol.format.WMSGetFeatureInfo();
 
                     angular.forEach(responses, function(response) {
+                        if(angular.isUndefined(response)) {
+                            return;
+                        }
                         if(angular.isUndefined(response.gmlData)) {
                             return;
                         }
