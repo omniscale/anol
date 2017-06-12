@@ -75,6 +75,7 @@ angular.module('anol.map')
         var MapService = function(view, cursorPointerConditions) {
             this.view = view;
             this.map = undefined;
+            this.hasTouch = ol.has.TOUCH;
             this.cursorPointerConditions = cursorPointerConditions;
         };
         /**
