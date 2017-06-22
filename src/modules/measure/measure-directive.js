@@ -53,6 +53,9 @@ angular.module('anol.measure')
         var length;
         if (geodesic) {
             var coordinates = geometry.getCoordinates();
+            if(coordinates.length === 1) {
+                return 0;
+            }
             length = 0;
             for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
                 var c1 = ol.proj.transform(coordinates[i], projection, 'EPSG:4326');
