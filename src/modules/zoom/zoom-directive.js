@@ -22,7 +22,8 @@ angular.module('anol.zoom')
             zoomOutTooltipText: '@',
             zoomOutTooltipPlacement: '@',
             tooltipDelay: '@',
-            tooltipEnable: '@'
+            tooltipEnable: '@',
+            ngStyle: '='
         },
         link: function(scope, element, attrs) {
             var olControl = new ol.control.Zoom({
@@ -32,7 +33,10 @@ angular.module('anol.zoom')
             var control = new anol.control.Control({
                 olControl: olControl
             });
-            var zoomInButton = angular.element(olControl.element).find('.ol-zoom-in');
+
+            var olControlElement = angular.element(olControl.element);
+
+            var zoomInButton = olControlElement.find('.ol-zoom-in');
             zoomInButton.removeAttr('title');
             zoomInButton.attr('tooltip', '{{\'anol.zoom.TOOLTIP_ZOOM_IN\' | translate }}');
             zoomInButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
@@ -42,9 +46,8 @@ angular.module('anol.zoom')
             zoomInButton.attr('tooltip-trigger', 'mouseenter click');
             zoomInButton.removeClass('ol-zoom-in');
             zoomInButton.append(angular.element('<span class="glyphicon glyphicon-plus"></span>'));
-            $compile(zoomInButton)(scope);
 
-            var zoomOutButton = angular.element(olControl.element).find('.ol-zoom-out');
+            var zoomOutButton = olControlElement.find('.ol-zoom-out');
             zoomOutButton.removeAttr('title');
             zoomOutButton.attr('tooltip', '{{\'anol.zoom.TOOLTIP_ZOOM_OUT\' | translate }}');
             zoomOutButton.attr('tooltip-placement', scope.zoomOutTooltipPlacement || 'right');
@@ -54,7 +57,9 @@ angular.module('anol.zoom')
             zoomOutButton.attr('tooltip-trigger', 'mouseenter click');
             zoomOutButton.removeClass('ol-zoom-out');
             zoomOutButton.append(angular.element('<span class="glyphicon glyphicon-minus"></span>'));
-            $compile(zoomOutButton)(scope);
+
+            olControlElement.attr('ng-style', 'ngStyle');
+            $compile(olControlElement)(scope);
 
             ControlsService.addControl(control);
         }

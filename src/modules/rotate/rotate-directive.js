@@ -20,14 +20,17 @@ angular.module('anol.rotation')
         scope: {
             tooltipPlacement: '@',
             tooltipDelay: '@',
-            tooltipEnable: '@'
+            tooltipEnable: '@',
+            ngStyle: '='
         },
         link: function(scope, element, attrs) {
             var olControl = new ol.control.Rotate();
             var control = new anol.control.Control({
                 olControl: olControl
             });
-            var rotateButton = angular.element(olControl.element).find('.ol-rotate-reset');
+            var controlElement = angular.element(olControl.element);
+            controlElement.attr('ng-style', 'ngStyle');
+            var rotateButton = controlElement.find('.ol-rotate-reset');
             rotateButton.removeAttr('title');
             rotateButton.attr('tooltip', '{{\'anol.rotate.TOOLTIP\' | translate }}');
             rotateButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
@@ -35,7 +38,8 @@ angular.module('anol.rotation')
             rotateButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             rotateButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
             rotateButton.attr('tooltip-trigger', 'mouseenter click');
-            $compile(rotateButton)(scope);
+
+            $compile(controlElement)(scope);
 
             ControlsService.addControl(control);
         }
