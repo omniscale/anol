@@ -52,6 +52,14 @@ module.exports = function(grunt) {
           'src/modules/**/*.js'
         ],
         dest: 'build/<%= pkg.name %>.js'
+      },
+      ol3: {
+        src: [
+          'node_modules/openlayers/build/ol-custom.js',
+          'node_modules/ol3-animated-cluster/interaction/selectclusterinteraction.js',
+          'node_modules/ol3-animated-cluster/layer/animatedclusterlayer.js'
+        ],
+        dest: 'build/ol-custom.js'
       }
     },
     clean: {
@@ -84,8 +92,7 @@ module.exports = function(grunt) {
               'node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js',
               'node_modules/angular-translate/dist/angular-translate.js',
               'node_modules/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
-              'node_modules/angular-mocks/angular-mocks.js',
-              'node_modules/openlayers/build/ol-custom.js',
+              'node_modules/angular-mocks/angular-mocks.js'
             ],
             dest: 'build'
           },
@@ -245,6 +252,7 @@ module.exports = function(grunt) {
   grunt.registerTask('build-ol3', [
     'merge-json:openlayers-build',
     'shell:build-ol3',
+    'concat:ol3',
     'clean:openlayers-build-config'
   ]);
 
