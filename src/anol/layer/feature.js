@@ -5,6 +5,7 @@
  * @param {Object} options AnOl Layer options
  * @param {Object} options.olLayer Options for ol.layer.Vector
  * @param {Object} options.olLayer.source Options for ol.source.Vector
+ * @param {Object|Boolean} options.cluster options for clustering. When true, defaults will be used
  *
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.

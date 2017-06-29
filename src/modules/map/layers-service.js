@@ -149,6 +149,16 @@ angular.module('anol.map')
             }
 
         };
+        /**
+         * @ngdoc method
+         * @name addSystemLayer
+         * @methodOf anol.map.LayersService
+         * @param {anol.layer} layer Overlay layer to add
+         * @param {number} idx Position to add overlay layer at
+         * @description
+         * Adds a system layer. System layers should only created and added by
+         * anol components
+         */
         Layers.prototype.addSystemLayer = function(layer, idx) {
             var self = this;
             idx = idx || 0;
@@ -195,8 +205,7 @@ angular.module('anol.map')
         };
         /**
          * private function
-         * Added ol layer to map when present
-         * Executes addLayer handlers
+         * Adds layer to internal lists, executes addLayer handlers and calls _addLayer
          */
         Layers.prototype._prepareLayer = function(layer) {
             var self = this;
@@ -243,6 +252,10 @@ angular.module('anol.map')
                 }
             }
         };
+        /**
+         * private function
+         * Add layer to map and execute postAddToMap function of layer
+         */
         Layers.prototype._addLayer = function(layer, skipLayerIndex) {
             this.map.addLayer(layer.olLayer);
             layer.postAddToMap(this.map, MapService);
