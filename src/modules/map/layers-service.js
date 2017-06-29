@@ -27,7 +27,7 @@ angular.module('anol.map')
         _addLayerHandlers.push(handler);
     };
 
-    this.$get = ['$rootScope', 'PopupsService', function($rootScope, PopupsService) {
+    this.$get = ['$rootScope', 'PopupsService', 'ControlsService', function($rootScope, PopupsService, ControlsService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -87,24 +87,28 @@ angular.module('anol.map')
             self.map = map;
             angular.forEach(self.backgroundLayers, function(layer) {
                 self.map.addLayer(layer.olLayer);
+                layer.postAddToMap(self.map);
             });
             angular.forEach(self.overlayLayers, function(layer) {
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
                         if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
                             self.map.addLayer(grouppedLayer.olLayer);
+                            grouppedLayer.postAddToMap(self.map);
                             self.olLayers.push(grouppedLayer.olLayer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
                         self.map.addLayer(layer.olLayer);
+                        layer.postAddToMap(self.map);
                         self.olLayers.push(layer.olLayer);
                     }
                 }
             });
             angular.forEach(self.systemLayers, function(layer) {
                 self.map.addLayer(layer.olLayer);
+                layer.postAddToMap(self.map);
             });
         };
         /**
@@ -171,6 +175,7 @@ angular.module('anol.map')
                 olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
                 olSource.set('anolLayers', [layer]);
             }
+
             var layerOpts = layer.olLayerOptions;
             layerOpts.source = olSource;
             var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
@@ -187,6 +192,11 @@ angular.module('anol.map')
             // HINT olLayer.anolLayer is used in featurepopup-, geocoder- and geolocation-directive
             //      this will only affacts DynamicGeoJsonLayer
             olLayer.set('anolLayer', layer);
+            layer.setOlLayer(olLayer);
+
+            layer.postCreate();
+            ControlsService.addControls(layer._controls);
+
             return olLayer;
         };
         /**
@@ -212,8 +222,7 @@ angular.module('anol.map')
             });
 
             angular.forEach(layers, function(_layer) {
-                var olLayer = self.createOlLayer(_layer);
-                _layer.setOlLayer(olLayer);
+                self.createOlLayer(_layer);
                 self.lastAddedLayer = _layer;
 
                 angular.forEach(self.addLayerHandlers, function(handler) {
@@ -231,12 +240,14 @@ angular.module('anol.map')
                     angular.forEach(layer.layers, function(_layer) {
                         if(self.olLayers.indexOf(_layer.olLayer) < 0) {
                             self.map.addLayer(_layer.olLayer);
+                            _layer.postAddToMap(self.map);
                             self.olLayers.push(_layer.olLayer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
                         self.map.addLayer(layer.olLayer);
+                        layer.postAddToMap(self.map);
                         self.olLayers.push(layer.olLayer);
                     }
                 }

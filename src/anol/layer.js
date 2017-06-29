@@ -55,6 +55,7 @@ anol.layer.Layer = function(options) {
     this.isVector = false;
     this.options = options;
     this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
+    this._controls = [];
 
     if(this.displayInLayerswitcher === false) {
         this.permalink = false;
@@ -107,6 +108,16 @@ anol.layer.Layer.prototype = {
     },
     offVisibleChange: function(func) {
         $(this).off('anol.layer.visible:change', func);
+    },
+    postCreate: function() {
+        return;
+    },
+    postAddToMap: function(map) {
+        angular.forEach(this._controls, function(control) {
+            angular.forEach(control.interactions, function(interaction) {
+                map.addInteraction(interaction);
+            });
+        });
     },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
