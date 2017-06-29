@@ -112,7 +112,7 @@ anol.layer.Layer.prototype = {
     postCreate: function() {
         return;
     },
-    postAddToMap: function(map) {
+    postAddToMap: function(map, MapService) {
         angular.forEach(this._controls, function(control) {
             angular.forEach(control.interactions, function(interaction) {
                 map.addInteraction(interaction);

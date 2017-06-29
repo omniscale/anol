@@ -33,6 +33,8 @@
 
     this.clusterOptions = options.cluster || false;
     this.unclusteredSource = undefined;
+    this.selectClusterControl = undefined;
+    this.sleectClusterInteraction = undefined;
 
     if(this.clusterOptions !== false) {
         this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
@@ -438,6 +440,33 @@ $.extend(anol.layer.Feature.prototype, {
             );
         }
     },
+    postAddToMap: function(map, MapService) {
+        var self = this;
+        anol.layer.Layer.prototype.postAddToMap.call(self, map, MapService);
+
+        if(this.clusterOptions === false) {
+            return;
+        }
+
+        var changeCursorCondition = function(pixel) {
+            return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
+                return layer === self.olLayer;
+            });
+        };
+
+        self.selectClusterControl.onDeactivate(function() {
+            self.selectClusterInteraction.setActive(false);
+            MapService.removeCursorPointerCondition(changeCursorCondition);
+        });
+        self.selectClusterControl.onActivate(function() {
+            self.selectClusterInteraction.setActive(true);
+            MapService.addCursorPointerCondition(changeCursorCondition);
+        });
+
+        // control active by default
+        MapService.addCursorPointerCondition(changeCursorCondition);
+
+    },
     _degreeToRad: function(degree) {
         if(degree === 0) {
             return 0;
@@ -457,7 +486,7 @@ $.extend(anol.layer.Feature.prototype, {
             distance: 40
         };
     },
-    _createSelectClusterControl: function() {
+    _createSelectClusterControl: function(MapService) {
         var self = this;
 
         var defaultUnclusteredStyle = new ol.style.Circle({
@@ -522,20 +551,14 @@ $.extend(anol.layer.Feature.prototype, {
             style: this.clusterOptions.selectClusterStyle || defaultSelectClusteredStyle
         });
 
-        var interaction = new ol.interaction.SelectCluster(interactionOptions);
-        var control = new anol.control.Control({
+        this.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+        this.selectClusterControl = new anol.control.Control({
             subordinate: true,
             olControl: null,
-            interactions: [interaction]
-        });
-        control.onDeactivate(function() {
-            interaction.setActive(false);
-        });
-        control.onActivate(function() {
-            interaction.setActive(true);
+            interactions: [this.selectClusterInteraction]
         });
 
-        return control;
+        return this.selectClusterControl;
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method

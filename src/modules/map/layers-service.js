@@ -27,7 +27,7 @@ angular.module('anol.map')
         _addLayerHandlers.push(handler);
     };
 
-    this.$get = ['$rootScope', 'PopupsService', 'ControlsService', function($rootScope, PopupsService, ControlsService) {
+    this.$get = ['$rootScope', 'MapService', 'PopupsService', 'ControlsService', function($rootScope, MapService, PopupsService, ControlsService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -87,28 +87,28 @@ angular.module('anol.map')
             self.map = map;
             angular.forEach(self.backgroundLayers, function(layer) {
                 self.map.addLayer(layer.olLayer);
-                layer.postAddToMap(self.map);
+                layer.postAddToMap(self.map, MapService);
             });
             angular.forEach(self.overlayLayers, function(layer) {
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
                         if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
                             self.map.addLayer(grouppedLayer.olLayer);
-                            grouppedLayer.postAddToMap(self.map);
+                            grouppedLayer.postAddToMap(self.map, MapService);
                             self.olLayers.push(grouppedLayer.olLayer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
                         self.map.addLayer(layer.olLayer);
-                        layer.postAddToMap(self.map);
+                        layer.postAddToMap(self.map, MapService);
                         self.olLayers.push(layer.olLayer);
                     }
                 }
             });
             angular.forEach(self.systemLayers, function(layer) {
                 self.map.addLayer(layer.olLayer);
-                layer.postAddToMap(self.map);
+                layer.postAddToMap(self.map, MapService);
             });
         };
         /**
@@ -194,7 +194,7 @@ angular.module('anol.map')
             olLayer.set('anolLayer', layer);
             layer.setOlLayer(olLayer);
 
-            layer.postCreate();
+            layer.postCreate(MapService);
             ControlsService.addControls(layer._controls);
 
             return olLayer;
@@ -240,14 +240,14 @@ angular.module('anol.map')
                     angular.forEach(layer.layers, function(_layer) {
                         if(self.olLayers.indexOf(_layer.olLayer) < 0) {
                             self.map.addLayer(_layer.olLayer);
-                            _layer.postAddToMap(self.map);
+                            _layer.postAddToMap(self.map, MapService);
                             self.olLayers.push(_layer.olLayer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
                         self.map.addLayer(layer.olLayer);
-                        layer.postAddToMap(self.map);
+                        layer.postAddToMap(self.map, MapService);
                         self.olLayers.push(layer.olLayer);
                     }
                 }
