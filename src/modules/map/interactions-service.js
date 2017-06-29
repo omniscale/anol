@@ -44,7 +44,11 @@ angular.module('anol.map')
          * Registers an ol3 map in `InteractionsService`
          */
         Interactions.prototype.registerMap = function(map) {
-            this.map = map;
+            var self = this;
+            self.map = map;
+            angular.forEach(self.interactions, function(interaction) {
+                self.map.addInteraction(interaction);
+            });
         };
         /**
          * @ngdoc method

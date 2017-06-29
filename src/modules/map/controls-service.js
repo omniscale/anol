@@ -58,7 +58,11 @@ angular.module('anol.map')
          * Register an ol3 map in `ControlsService`
          */
         Controls.prototype.registerMap = function(map) {
-            this.map = map;
+            var self = this;
+            self.map = map;
+            angular.forEach(self.olControls, function(control) {
+                self.map.addControl(control);
+            });
         };
         /**
          * @ngdoc method

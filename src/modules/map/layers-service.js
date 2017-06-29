@@ -83,7 +83,29 @@ angular.module('anol.map')
          * Register an ol3 map in `LayersService`
          */
         Layers.prototype.registerMap = function(map) {
-            this.map = map;
+            var self = this;
+            self.map = map;
+            angular.forEach(self.backgroundLayers, function(layer) {
+                self.map.addLayer(layer.olLayer);
+            });
+            angular.forEach(self.overlayLayers, function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                    angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
+                        if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
+                            self.map.addLayer(grouppedLayer.olLayer);
+                            self.olLayers.push(grouppedLayer.olLayer);
+                        }
+                    });
+                } else {
+                    if(self.olLayers.indexOf(layer.olLayer) < 0) {
+                        self.map.addLayer(layer.olLayer);
+                        self.olLayers.push(layer.olLayer);
+                    }
+                }
+            });
+            angular.forEach(self.systemLayers, function(layer) {
+                self.map.addLayer(layer.olLayer);
+            });
         };
         /**
          * @ngdoc method

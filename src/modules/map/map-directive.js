@@ -32,36 +32,8 @@ angular.module('anol.map')
                     scope.map.updateSize();
                     // add layers after map has correct size to prevent
                     // loading layer twice (before and after resize)
-                    angular.forEach(LayersService.backgroundLayers, function(layer) {
-                        scope.map.addLayer(layer.olLayer);
-                    });
-                    angular.forEach(LayersService.overlayLayers, function(layer) {
-                        if(layer instanceof anol.layer.Group) {
-                            angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
-                                if(LayersService.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
-                                    scope.map.addLayer(grouppedLayer.olLayer);
-                                    LayersService.olLayers.push(grouppedLayer.olLayer);
-                                }
-                            });
-                        } else {
-                            if(LayersService.olLayers.indexOf(layer.olLayer) < 0) {
-                                scope.map.addLayer(layer.olLayer);
-                                LayersService.olLayers.push(layer.olLayer);
-                            }
-                        }
-                    });
-                    angular.forEach(LayersService.systemLayers, function(layer) {
-                        scope.map.addLayer(layer.olLayer);
-                    });
                     LayersService.registerMap(scope.map);
-                    // add registered controls and interactions
-                    angular.forEach(ControlsService.olControls, function(control) {
-                        scope.map.addControl(control);
-                    });
                     ControlsService.registerMap(scope.map);
-                    angular.forEach(InteractionsService.interactions, function(interaction) {
-                        scope.map.addInteraction(interaction);
-                    });
                     InteractionsService.registerMap(scope.map);
                 });
             }
