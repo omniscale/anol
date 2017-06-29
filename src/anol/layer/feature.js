@@ -131,7 +131,11 @@ $.extend(anol.layer.Feature.prototype, {
             var clusteredFeatures = feature.get('features');
             if(angular.isDefined(clusteredFeatures)) {
                 if(clusteredFeatures.length > 1) {
-                    return this.clusterOptions.clusterStyle || this.DEFAULT_CLUSTERED_STYLE;
+                    var clusterStyle = this.clusterOptions.clusterStyle;
+                    if(angular.isDefined(clusterStyle) && angular.isFunction(clusterStyle)) {
+                        clusterStyle = clusterStyle(feature, resolution)[0];
+                    }
+                    return clusterStyle || this.DEFAULT_CLUSTERED_STYLE;
                 }
                 feature = clusteredFeatures[0];
             }
