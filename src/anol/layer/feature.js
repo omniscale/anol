@@ -552,6 +552,14 @@ $.extend(anol.layer.Feature.prototype, {
         });
 
         this.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+
+        if(angular.isFunction(this.clusterOptions.onSelect)) {
+            var onSelect = this.clusterOptions.onSelect;
+            this.selectClusterInteraction.getFeatures().on('add', function(e) {
+                var features = e.element.get('features');
+                onSelect(features);
+            });
+        }
         this.selectClusterControl = new anol.control.Control({
             subordinate: true,
             olControl: null,
