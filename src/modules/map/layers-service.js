@@ -86,29 +86,23 @@ angular.module('anol.map')
             var self = this;
             self.map = map;
             angular.forEach(self.backgroundLayers, function(layer) {
-                self.map.addLayer(layer.olLayer);
-                layer.postAddToMap(self.map, MapService);
+                self._addLayer(layer, true);
             });
             angular.forEach(self.overlayLayers, function(layer) {
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
                         if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
-                            self.map.addLayer(grouppedLayer.olLayer);
-                            grouppedLayer.postAddToMap(self.map, MapService);
-                            self.olLayers.push(grouppedLayer.olLayer);
+                            self._addLayer(grouppedLayer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
-                        self.map.addLayer(layer.olLayer);
-                        layer.postAddToMap(self.map, MapService);
-                        self.olLayers.push(layer.olLayer);
+                        self._addLayer(layer);
                     }
                 }
             });
             angular.forEach(self.systemLayers, function(layer) {
-                self.map.addLayer(layer.olLayer);
-                layer.postAddToMap(self.map, MapService);
+                self._addLayer(layer, true);
             });
         };
         /**
@@ -239,18 +233,21 @@ angular.module('anol.map')
                 if(layer instanceof anol.layer.Group) {
                     angular.forEach(layer.layers, function(_layer) {
                         if(self.olLayers.indexOf(_layer.olLayer) < 0) {
-                            self.map.addLayer(_layer.olLayer);
-                            _layer.postAddToMap(self.map, MapService);
-                            self.olLayers.push(_layer.olLayer);
+                            self._addLayer(_layer);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
-                        self.map.addLayer(layer.olLayer);
-                        layer.postAddToMap(self.map, MapService);
-                        self.olLayers.push(layer.olLayer);
+                        self._addLayer(layer);
                     }
                 }
+            }
+        };
+        Layers.prototype._addLayer = function(layer, skipLayerIndex) {
+            this.map.addLayer(layer.olLayer);
+            layer.postAddToMap(this.map, MapService);
+            if(skipLayerIndex !== true) {
+                this.olLayers.push(layer.olLayer);
             }
         };
         /**
