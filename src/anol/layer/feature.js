@@ -31,6 +31,14 @@
     this.saveable = options.saveable || false;
     this.editable = options.editable || false;
 
+    this.clusterOptions = options.cluster || false;
+    this.unclusteredSource = undefined;
+
+    if(this.clusterOptions !== false) {
+        this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
+        this.OL_SOURCE_CLASS = ol.source.Cluster;
+    }
+
     anol.layer.Layer.call(this, options);
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
@@ -41,6 +49,28 @@ $.extend(anol.layer.Feature.prototype, {
     DEFAULT_FONT_FACE: 'Helvetica',
     DEFAULT_FONT_SIZE: '10px',
     DEFAULT_FONT_WEIGHT: 'normal',
+    // this is the default ol style. we need to define it because
+    // createStyle function have to return a valid style even if
+    // clusterStyle in clusterOptions is undefined
+    DEFAULT_CLUSTERED_STYLE: new ol.style.Style({
+        image: new ol.style.Circle({
+            fill: new ol.style.Fill({
+                color: 'rgba(255,255,255,0.4)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#3399CC',
+                width: 1.25
+            }),
+            radius: 5
+        }),
+        fill: new ol.style.Fill({
+            color: 'rgba(255,255,255,0.4)'
+        }),
+        stroke: new ol.style.Stroke({
+            color: '#3399CC',
+            width: 1.25
+        })
+    }),
     setOlLayer: function(olLayer) {
         var self = this;
         anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
@@ -91,6 +121,18 @@ $.extend(anol.layer.Feature.prototype, {
         this.olLayer.getSource().addFeatures(features);
     },
     createStyle: function(feature, resolution) {
+        if(this.clusterOptions !== false) {
+            // when clustering, a features have a features array containing features clustered into this feature
+            // so when feature don't have features or only one we draw in normal layer style instead of cluster
+            // style
+            var clusteredFeatures = feature.get('features');
+            if(angular.isDefined(clusteredFeatures)) {
+                if(clusteredFeatures.length > 1) {
+                    return this.clusterOptions.clusterStyle || this.DEFAULT_CLUSTERED_STYLE;
+                }
+                feature = clusteredFeatures[0];
+            }
+        }
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
         if(feature === undefined) {
@@ -388,11 +430,112 @@ $.extend(anol.layer.Feature.prototype, {
         }
         return undefined;
     },
+    postCreate: function() {
+        if(this.clusterOptions !== false) {
+            var control = this._createSelectClusterControl();
+            this._controls.push(
+                control
+            );
+        }
+    },
     _degreeToRad: function(degree) {
         if(degree === 0) {
             return 0;
         }
         return Math.PI * (degree / 180);
+    },
+    _createSourceOptions: function(srcOptions) {
+        if(this.clusterOptions === false) {
+            return srcOptions;
+        }
+        srcOptions = anol.layer.Layer.prototype._createSourceOptions.call(this, srcOptions);
+        this.unclusteredSource = new ol.source.Vector({features: srcOptions.features});
+        delete srcOptions.features;
+
+        return {
+            source: this.unclusteredSource,
+            distance: 40
+        };
+    },
+    _createSelectClusterControl: function() {
+        var self = this;
+
+        var defaultUnclusteredStyle = new ol.style.Circle({
+            radius: 5,
+            stroke: new ol.style.Stroke({
+                color: "rgba(0,255,255,1)",
+                width: 1
+            }),
+            fill: new ol.style.Fill({
+                color: "rgba(0,255,255,0.3)"
+            })
+        });
+
+        var defaultSelectClusteredStyle = new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 10,
+                stroke: new ol.style.Stroke({
+                    color: "rgba(255,255,0,1)",
+                    width: 1
+                }),
+                fill: new ol.style.Fill({
+                    color: "rgba(255,255,0,0.3)"
+                })
+            })
+        });
+
+        var defaultOptions = {
+            selectCluster: true,
+            pointRadius: 7,
+            spiral: true,
+            circleMaxObjects: 10,
+            maxObjects: 60,
+            animate: true,
+            animationDuration: 500,
+        };
+
+        // styling features on unclustering
+        var featureStyle = function(feature, resolution) {
+            var layerStyle = self.olLayer.getStyle();
+            if(angular.isFunction(layerStyle)) {
+                layerStyle = layerStyle(feature, resolution)[0];
+            }
+
+            var imageStyle = layerStyle.getImage();
+            return [
+                new ol.style.Style({
+                    image: imageStyle ? imageStyle : defaultUnclusteredStyle,
+                    // Draw a link beetween points (or not)
+                    stroke: new ol.style.Stroke({
+                        color: "#fff",
+                        width: 1
+                    }),
+                })
+            ];
+        };
+
+        var interactionOptions = $.extend({}, defaultOptions, this.clusterOptions, {
+            layers: [this.olLayer],
+            // styles unclustered features (after select clustered feature)
+            featureStyle: featureStyle,
+            // styles clustered features
+            style: this.clusterOptions.selectClusterStyle || defaultSelectClusteredStyle
+        });
+
+        var interaction = new ol.interaction.SelectCluster(interactionOptions);
+        var control = new anol.control.Control({
+            subordinate: true,
+            olControl: null,
+            interactions: [interaction]
+        });
+        control.onDeactivate(function() {
+            interaction.setActive(false);
+        });
+        control.onActivate(function() {
+            interaction.setActive(true);
+        });
+
+        return control;
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method
