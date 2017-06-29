@@ -34,6 +34,7 @@
     <!-- Remove libs when build dist -->
     <script type="text/javascript" src="../build/jquery.js"></script>
     <script type="text/javascript" src="../build/angular.js"></script>
+    <script type="text/javascript" src="../build/angular-sanitize.js"></script>
     <script type="text/javascript" src="../build/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="../build/angular-translate.js"></script>
     <script type="text/javascript" src="../build/ol-custom.js"></script>
@@ -50,7 +51,7 @@
       }])
       .controller('ExampleController', ['$scope', 'LayersService', function($scope, LayersService) {
           var polygon = new ol.Feature({
-            name: 'Polygo asd fas dfa sdfa sdfn',
+            name: 'This is a polygon',
             geometry: new ol.geom.Polygon([[
               [-15, -15],
               [-15, 15],
