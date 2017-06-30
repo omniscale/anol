@@ -139,7 +139,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         self.olSource.addFeatures(features);
     },
     createStyle: function(feature, resolution) {
-        if(feature !== undefined &&  feature.get('__layer__') !== this.name) {
+        if(feature !== undefined && feature.get('__layer__') !== this.name && feature.get('features') === undefined) {
             return new ol.style.Style();
         }
         return anol.layer.StaticGeoJSON.prototype.createStyle.call(this, feature, resolution);
