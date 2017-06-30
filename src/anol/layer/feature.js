@@ -119,7 +119,7 @@ $.extend(anol.layer.Feature.prototype, {
         this.olLayer.getSource().addFeatures(features);
     },
     createStyle: function(feature, resolution) {
-        if(this.clusterOptions !== false) {
+        if(this.clusterOptions !== false && feature !== undefined) {
             // when clustering, a features have a features array containing features clustered into this feature
             // so when feature don't have features or only one we draw in normal layer style instead of cluster
             // style
