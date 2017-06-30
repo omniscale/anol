@@ -81,11 +81,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             );
         };
 
-        srcOptions = anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
+        return anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
             srcOptions
         );
 
-        return srcOptions;
     },
     loader: function(url, extent, resolution, projection, featureProjection, additionalParameters) {
         var self = this;

@@ -43,10 +43,9 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
         srcOptions.format = new ol.format.GeoJSON({
             defaultDataProjection: srcOptions.dataProjection
         });
-        srcOptions = anol.layer.Feature.prototype._createSourceOptions.call(this,
+        return anol.layer.Feature.prototype._createSourceOptions.call(this,
             srcOptions
         );
-        return srcOptions;
     },
     /**
      * Replaces source by new one with given url
