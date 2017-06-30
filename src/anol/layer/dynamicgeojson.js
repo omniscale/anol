@@ -136,7 +136,11 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var features = format.readFeatures(response, {
             featureProjection: featureProjection
         });
-        self.olSource.addFeatures(features);
+        if(self.clusterOptions !== false) {
+            self.unclusteredSource.addFeatures(features);
+        } else {
+            self.olSource.addFeatures(features);
+        }
     },
     createStyle: function(feature, resolution) {
         if(feature !== undefined && feature.get('__layer__') !== this.name && feature.get('features') === undefined) {
