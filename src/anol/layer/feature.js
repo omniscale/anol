@@ -37,11 +37,6 @@
     this.selectClusterControl = undefined;
     this.sleectClusterInteraction = undefined;
 
-    if(this.clusterOptions !== false) {
-        this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
-        this.OL_SOURCE_CLASS = ol.source.Cluster;
-    }
-
     anol.layer.Layer.call(this, options);
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
@@ -483,8 +478,11 @@ $.extend(anol.layer.Feature.prototype, {
             return srcOptions;
         }
         srcOptions = anol.layer.Layer.prototype._createSourceOptions.call(this, srcOptions);
-        this.unclusteredSource = new ol.source.Vector({features: srcOptions.features});
-        delete srcOptions.features;
+
+        this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
+
+        this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
+        this.OL_SOURCE_CLASS = ol.source.Cluster;
 
         return {
             source: this.unclusteredSource,
