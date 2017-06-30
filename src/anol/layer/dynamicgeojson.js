@@ -19,6 +19,13 @@
  * Ask *url* with current projection and bbox.
  */
 anol.layer.DynamicGeoJSON = function(_options) {
+    if(
+        angular.isObject(_options) &&
+        angular.isObject(_options.olLayer) &&
+        angular.isObject(_options.olLayer.source)
+    ) {
+        this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
+    }
     anol.layer.StaticGeoJSON.call(this, _options);
 };
 anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
@@ -68,7 +75,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             var additionalParameters = {};
             angular.forEach(self.olSource.get('anolLayers'), function(layer) {
                 if(layer.getVisible()) {
-                    additionalParameters = anol.helper.mergeObjects(additionalParameters, layer.olSourceOptions.additionalParameters);
+                    additionalParameters = anol.helper.mergeObjects(additionalParameters, self.additionalRequestParameters);
                 }
             });
             self.loader(
@@ -84,7 +91,6 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         return anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
             srcOptions
         );
-
     },
     loader: function(url, extent, resolution, projection, featureProjection, additionalParameters) {
         var self = this;
