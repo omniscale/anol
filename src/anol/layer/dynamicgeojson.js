@@ -61,10 +61,6 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
      */
     _createSourceOptions: function(srcOptions) {
         var self = this;
-        srcOptions = anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
-            srcOptions
-        );
-
         srcOptions.format = new ol.format.GeoJSON();
         srcOptions.strategy = ol.loadingstrategy.bbox;
 
@@ -84,6 +80,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                 additionalParameters
             );
         };
+
+        srcOptions = anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
+            srcOptions
+        );
 
         return srcOptions;
     },

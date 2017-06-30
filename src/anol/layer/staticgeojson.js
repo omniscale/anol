@@ -39,13 +39,13 @@ $.extend(anol.layer.StaticGeoJSON.prototype, {
      * - dataProjection
      */
     _createSourceOptions: function(srcOptions) {
-        srcOptions = anol.layer.Feature.prototype._createSourceOptions(
-            srcOptions
-        );
         // TODO load dataProjection from received GeoJSON
         srcOptions.format = new ol.format.GeoJSON({
             defaultDataProjection: srcOptions.dataProjection
         });
+        srcOptions = anol.layer.Feature.prototype._createSourceOptions.call(this,
+            srcOptions
+        );
         return srcOptions;
     },
     /**
