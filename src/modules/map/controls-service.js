@@ -17,7 +17,7 @@ angular.module('anol.map')
         _controls = controls;
     };
 
-    this.$get = [function() {
+    this.$get = ['ClusterSelectService', 'MapService', function(ClusterSelectService) {
         /**
          * @ngdoc service
          * @name anol.map.ControlsService
@@ -60,6 +60,13 @@ angular.module('anol.map')
         Controls.prototype.registerMap = function(map) {
             var self = this;
             self.map = map;
+
+            // get cluster select control from service. undefined when no clustered layer present
+            var selectClusterControl = ClusterSelectService.getControl();
+            if(selectClusterControl !== undefined) {
+                self.addControl(selectClusterControl);
+            }
+
             angular.forEach(self.olControls, function(control) {
                 self.map.addControl(control);
             });

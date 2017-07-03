@@ -27,7 +27,7 @@ angular.module('anol.map')
         _addLayerHandlers.push(handler);
     };
 
-    this.$get = ['$rootScope', 'MapService', 'PopupsService', 'ControlsService', function($rootScope, MapService, PopupsService, ControlsService) {
+    this.$get = ['$rootScope', 'MapService', 'PopupsService', 'ClusterSelectService', function($rootScope, MapService, PopupsService, ClusterSelectService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -198,9 +198,6 @@ angular.module('anol.map')
             olLayer.set('anolLayer', layer);
             layer.setOlLayer(olLayer);
 
-            layer.postCreate(MapService);
-            ControlsService.addControls(layer._controls);
-
             return olLayer;
         };
         /**
@@ -258,7 +255,10 @@ angular.module('anol.map')
          */
         Layers.prototype._addLayer = function(layer, skipLayerIndex) {
             this.map.addLayer(layer.olLayer);
-            layer.postAddToMap(this.map, MapService);
+            if(layer.isClustered()) {
+                ClusterSelectService.addLayer(layer);
+            }
+
             if(skipLayerIndex !== true) {
                 this.olLayers.push(layer.olLayer);
             }

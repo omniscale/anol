@@ -93,6 +93,9 @@ anol.layer.Layer.prototype = {
         }
         return true;
     },
+    isClustered: function() {
+        return false;
+    },
     getCombinedSource: function(other) {
         return undefined;
     },
@@ -108,16 +111,6 @@ anol.layer.Layer.prototype = {
     },
     offVisibleChange: function(func) {
         $(this).off('anol.layer.visible:change', func);
-    },
-    postCreate: function() {
-        return;
-    },
-    postAddToMap: function(map, MapService) {
-        angular.forEach(this._controls, function(control) {
-            angular.forEach(control.interactions, function(interaction) {
-                map.addInteraction(interaction);
-            });
-        });
     },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
