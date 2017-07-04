@@ -33,7 +33,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.DynamicGeoJSON',
     setOlLayer: function(olLayer) {
         anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
-        this.olSource = olLayer.getSource();
+        this.olSource = this.isClustered() ? this.unclusteredSource : olLayer.getSource();
     },
     isCombinable: function(other) {
         if(other.CLASS_NAME !== this.CLASS_NAME) {
@@ -136,11 +136,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var features = format.readFeatures(response, {
             featureProjection: featureProjection
         });
-        if(self.clusterOptions !== false) {
-            self.unclusteredSource.addFeatures(features);
-        } else {
-            self.olSource.addFeatures(features);
-        }
+        self.olSource.addFeatures(features);
     },
     createStyle: function(feature, resolution) {
         if(feature !== undefined && feature.get('__layer__') !== this.name && feature.get('features') === undefined) {
