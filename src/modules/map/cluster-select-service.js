@@ -5,6 +5,13 @@ angular.module('anol.map')
  * @name anol.map.ClusterSelectServiceProvider
  */
 .provider('ClusterSelectService', [function() {
+
+    var _clusterSelectOptions;
+
+    this.setClusterSelectOptions = function(options) {
+        _clusterSelectOptions = options;
+    };
+
     this.$get = ['MapService', function(MapService) {
 
         var defaultClusterOptions = {
@@ -41,8 +48,9 @@ angular.module('anol.map')
             })
         });
 
-        var ClusterSelect = function() {
+        var ClusterSelect = function(clusterSelectOptions) {
             this.clusterLayers = [];
+            this.clusterSelectOptions = clusterSelectOptions;
         };
 
         ClusterSelect.prototype.addLayer = function(layer) {
@@ -78,7 +86,8 @@ angular.module('anol.map')
             angular.forEach(self.clusterLayers, function(layer) {
                 olClusterLayers.push(layer.olLayer);
             });
-            self.selectClusterInteraction = new ol.interaction.SelectCluster($.extend({}, defaultClusterOptions, {
+
+            var interactionOptions = $.extend({}, defaultClusterOptions, this.clusterSelectOptions, {
                 layers: olClusterLayers,
                 featureStyle: function(clusterFeature, resolution) {
                     // for each feature represented by selected cluster a feature with
@@ -118,7 +127,9 @@ angular.module('anol.map')
                         selectClusterStyle || defaultSelectClusteredStyle
                     ];
                 }
-            }));
+            });
+
+            self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
 
             self.selectClusterInteraction.getFeatures().on('add', function(e) {
                 var features = e.element.get('features');
@@ -161,6 +172,6 @@ angular.module('anol.map')
             return this.selectClusterControl;
         };
 
-        return new ClusterSelect();
+        return new ClusterSelect(_clusterSelectOptions);
     }];
 }]);
