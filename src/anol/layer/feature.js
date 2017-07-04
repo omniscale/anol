@@ -97,6 +97,10 @@ $.extend(anol.layer.Feature.prototype, {
                 return [self.createStyle(feature, resolution)];
             });
         }
+
+        if(this.isClustered()) {
+            this.unclusteredSource.set('anolLayers', this.olLayer.getSource().get('anolLayers'));
+        }
     },
     isCombinable: function() {
         return false;
