@@ -440,6 +440,9 @@ angular.module('anol.draw')
                     bindActiveLayer(newActiveLayer);
                 }
             });
+            if(angular.isDefined(DrawService.activeLayer)) {
+                bindActiveLayer(DrawService.activeLayer);
+            }
         }
     };
 }]);
