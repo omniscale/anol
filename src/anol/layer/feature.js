@@ -90,6 +90,9 @@ $.extend(anol.layer.Feature.prototype, {
     addFeatures: function(features) {
         this.olLayer.getSource().addFeatures(features);
     },
+    getFeatures: function() {
+        return this.olLayer.getSource().getFeatures();
+    },
     createStyle: function(feature, resolution) {
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
