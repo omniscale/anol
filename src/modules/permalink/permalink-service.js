@@ -104,39 +104,7 @@ angular.module('anol.permalink')
             var params = $location.search();
             var mapParams = extractMapParams(params);
             if(mapParams !== false) {
-                var center = ol.proj.transform(mapParams.center, mapParams.crs, self.view.getProjection());
-                self.view.setCenter(center);
-                self.view.setZoom(mapParams.zoom);
-                if(mapParams.layers !== false) {
-                    self.visibleLayerNames = mapParams.layers;
-                    var backgroundLayerAdded = false;
-                    angular.forEach(LayersService.layers(), function(layer) {
-                        // only overlay layers are grouped
-                        if(layer instanceof anol.layer.Group) {
-                            angular.forEach(layer.layers, function(groupLayer) {
-                                if(groupLayer.permalink !== true) {
-                                    return;
-                                }
-                                var visible = mapParams.layers.indexOf(groupLayer.name) !== -1;
-                                groupLayer.setVisible(visible);
-                            });
-                        } else {
-                            if(layer.permalink !== true) {
-                                return;
-                            }
-                            var visible = mapParams.layers.indexOf(layer.name) > -1;
-
-                            if(layer.isBackground && visible) {
-                                if(!backgroundLayerAdded) {
-                                    backgroundLayerAdded = true;
-                                } else {
-                                    visible = false;
-                                }
-                            }
-                            layer.setVisible(visible);
-                        }
-                    });
-                }
+                self.updateMapFromParameters(mapParams);
             } else {
                 angular.forEach(LayersService.flattedLayers(), function(layer) {
                     if(layer.permalink === true) {
@@ -226,6 +194,55 @@ angular.module('anol.permalink')
             $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
             $location.search('layers', self.visibleLayerNames.join(','));
             $location.replace();
+        };
+        Permalink.prototype.updateMapFromParameters = function(mapParams) {
+            var self = this;
+            var center = ol.proj.transform(mapParams.center, mapParams.crs, self.view.getProjection());
+            self.view.setCenter(center);
+            self.view.setZoom(mapParams.zoom);
+            if(mapParams.layers !== false) {
+                self.visibleLayerNames = mapParams.layers;
+                var backgroundLayerAdded = false;
+                angular.forEach(LayersService.layers(), function(layer) {
+                    // only overlay layers are grouped
+                    if(layer instanceof anol.layer.Group) {
+                        angular.forEach(layer.layers, function(groupLayer) {
+                            if(groupLayer.permalink !== true) {
+                                return;
+                            }
+                            var visible = mapParams.layers.indexOf(groupLayer.name) !== -1;
+                            groupLayer.setVisible(visible);
+                        });
+                    } else {
+                        if(layer.permalink !== true) {
+                            return;
+                        }
+                        var visible = mapParams.layers.indexOf(layer.name) > -1;
+
+                        if(layer.isBackground && visible) {
+                            if(!backgroundLayerAdded) {
+                                backgroundLayerAdded = true;
+                            } else {
+                                visible = false;
+                            }
+                        }
+                        layer.setVisible(visible);
+                    }
+                });
+            }
+        };
+        Permalink.prototype.getPermalinkParameters = function() {
+            var self = this;
+            return {
+                zoom: self.zoom,
+                center: [self.lon, self.lat],
+                crs: self.urlCrs,
+                layers: self.visibleLayerNames
+            };
+        };
+        Permalink.prototype.setPermalinkParameters = function(params) {
+            var self = this;
+            self.updateMapFromParameters(params);
         };
         return new Permalink(_urlCrs, _precision);
     }];
