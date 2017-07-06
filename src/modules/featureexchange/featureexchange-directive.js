@@ -11,7 +11,7 @@ angular.module('anol.featureexchange')
  * @description
  * Download features as geojson
  */
-.directive('anolFeatureexchange', [function() {
+.directive('anolFeatureexchange', ['$translate', '$rootScope', function($translate, $rootScope) {
     return {
         restrict: 'A',
         replace: true,
@@ -28,6 +28,7 @@ angular.module('anol.featureexchange')
         link: function(scope, element, attrs) {
             var format = new ol.format.GeoJSON();
             var fileselector = element.find('#fileselector');
+            var uploadErrorElement = element.find('#upload-error');
 
             scope.download = function() {
                 if(scope.layer instanceof anol.layer.Feature) {
@@ -55,6 +56,7 @@ angular.module('anol.featureexchange')
 
             scope.upload = function() {
                 if(scope.layer instanceof anol.layer.Feature) {
+                    uploadErrorElement.empty();
                     fileselector[0].click();
                 }
             };
@@ -66,7 +68,21 @@ angular.module('anol.featureexchange')
                 }
                 var fileReader = new FileReader();
                 fileReader.onload = function(e) {
-                    var featureCollection = JSON.parse(e.target.result);
+                    var featureCollection;
+                    try {
+                        featureCollection = JSON.parse(e.target.result);
+                    } catch(err) {
+                        uploadErrorElement.text(scope.errorMessages.noJsonFormat);
+                        return;
+                    }
+                    if(angular.isUndefined(featureCollection.features) || !angular.isArray(featureCollection.features)) {
+                        uploadErrorElement.text(scope.errorMessages.invalidGeoJson);
+                        return;
+                    }
+                    if(featureCollection.features.length === 0) {
+                        uploadErrorElement.text(scope.errorMessages.emptyGeoJson);
+                        return;
+                    }
                     if(angular.isFunction(scope.postUpload)) {
                         featureCollection = scope.postUpload(featureCollection);
                     }
@@ -74,8 +90,29 @@ angular.module('anol.featureexchange')
                     scope.layer.clear();
                     scope.layer.addFeatures(features);
                 };
+                fileReader.onerror = function(e) {
+                    uploadErrorElement.text(scope.errorMessages.couldNotReadFile);
+                };
                 fileReader.readAsText(files[0]);
             });
+
+            var translate = function() {
+                $translate([
+                    'anol.featureexchange.NO_JSON_FORMAT',
+                    'anol.featureexchange.INVALID_GEOJSON',
+                    'anol.featureexchange.EMPTY_GEOJSON',
+                    'anol.featureexchange.COULD_NOT_READ_FILE'
+                ]).then(function(translations) {
+                    scope.errorMessages = {
+                        noJsonFormat: translations['anol.featureexchange.NO_JSON_FORMAT'],
+                        invalidGeoJson: translations['anol.featureexchange.INVALID_GEOJSON'],
+                        emptyGeoJson: translations['anol.featureexchange.EMPTY_GEOJSON'],
+                        couldNotReadFile: translations['anol.featureexchange.COULD_NOT_READ_FILE']
+                    };
+                });
+            };
+            $rootScope.$on('$translateChangeSuccess', translate);
+            translate();
         }
     };
 }]);

@@ -33,6 +33,12 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                 'TOOLTIP_POLYGON': 'Draw polygon',
                 'LAYER_TITLE': 'Draw layer'
             },
+            'featureexchange': {
+                'NO_JSON_FORMAT': 'No json format',
+                'INVALID_GEOJSON': 'No valid geojson given',
+                'EMPTY_GEOJSON': 'Empty geojson given',
+                'COULD_NOT_READ_FILE': 'Could not read file'
+            },
             'featurepropertieseditor': {
                 'NEW_PROPERTY': 'New property'
             },
