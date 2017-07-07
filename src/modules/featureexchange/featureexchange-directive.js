@@ -30,6 +30,11 @@ angular.module('anol.featureexchange')
             var fileselector = element.find('#fileselector');
             var uploadErrorElement = element.find('#upload-error');
 
+            var showError = function(errorMessage) {
+                uploadErrorElement.text(errorMessage);
+                uploadErrorElement.removeClass('hide');
+            };
+
             scope.download = function() {
                 if(scope.layer instanceof anol.layer.Feature) {
                     var geojson = format.writeFeaturesObject(scope.layer.getFeatures());
@@ -56,6 +61,7 @@ angular.module('anol.featureexchange')
 
             scope.upload = function() {
                 if(scope.layer instanceof anol.layer.Feature) {
+                    uploadErrorElement.addClass('hide');
                     uploadErrorElement.empty();
                     fileselector[0].click();
                 }
@@ -72,15 +78,15 @@ angular.module('anol.featureexchange')
                     try {
                         featureCollection = JSON.parse(e.target.result);
                     } catch(err) {
-                        uploadErrorElement.text(scope.errorMessages.noJsonFormat);
+                        showError(scope.errorMessages.noJsonFormat);
                         return;
                     }
                     if(angular.isUndefined(featureCollection.features) || !angular.isArray(featureCollection.features)) {
-                        uploadErrorElement.text(scope.errorMessages.invalidGeoJson);
+                        showError(scope.errorMessages.invalidGeoJson);
                         return;
                     }
                     if(featureCollection.features.length === 0) {
-                        uploadErrorElement.text(scope.errorMessages.emptyGeoJson);
+                        showError(scope.errorMessages.emptyGeoJson);
                         return;
                     }
                     if(angular.isFunction(scope.postUpload)) {
@@ -91,7 +97,7 @@ angular.module('anol.featureexchange')
                     scope.layer.addFeatures(features);
                 };
                 fileReader.onerror = function(e) {
-                    uploadErrorElement.text(scope.errorMessages.couldNotReadFile);
+                    showError(scope.errorMessages.couldNotReadFile);
                 };
                 fileReader.readAsText(files[0]);
             });
