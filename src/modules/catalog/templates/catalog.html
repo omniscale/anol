@@ -1,0 +1,9 @@
+<div class="anol-catalog">
+    <input ng-model="search.title">
+    <ul class="list">
+        <li ng-repeat="layer in layers | filter:search:strict">
+            {{ layer.title }}
+            <button class="btn btn-default btn-sm" ng-click="addToMap(layer)">+</button>
+        </li>
+    </ul>
+</div>
