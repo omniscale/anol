@@ -76,6 +76,16 @@ angular.module('anol.layerswitcher')
                         newVal.setVisible(true);
                     }
                 });
+                MapService.getMap().getLayers().on('add', function() {
+                    var overlayLayers = [];
+                    angular.forEach(LayersService.overlayLayers, function(layer) {
+                        if(layer.displayInLayerswitcher !== false) {
+                            overlayLayers.push(layer);
+                        }
+                    });
+                    scope.backgroundLayers = LayersService.backgroundLayers;
+                    scope.overlayLayers = overlayLayers;
+                });
             }
         },
         controller: function($scope, $element, $attrs) {
