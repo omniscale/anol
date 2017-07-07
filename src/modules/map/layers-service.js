@@ -111,6 +111,10 @@ angular.module('anol.map')
          */
         Layers.prototype.addOverlayLayer = function(layer, idx) {
             var self = this;
+            // prevent adding layer twice
+            if(self.overlayLayers.indexOf(layer) > -1) {
+                return false;
+            }
             // layers added reversed to map, so default idx is 0 to add layer "at top"
             idx = idx || 0;
             self.overlayLayers.splice(idx, 0, layer);
@@ -127,7 +131,7 @@ angular.module('anol.map')
                     PopupsService.closeAll();
                 });
             }
-
+            return true;
         };
         Layers.prototype.addSystemLayer = function(layer, idx) {
             var self = this;
