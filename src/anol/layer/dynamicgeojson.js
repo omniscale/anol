@@ -135,5 +135,9 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             return new ol.style.Style();
         }
         return anol.layer.StaticGeoJSON.prototype.createStyle.call(this, feature, resolution);
+    },
+    refresh: function() {
+        this.olSource.clear();
+        this.olSource.refresh();
     }
 });
