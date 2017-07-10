@@ -133,6 +133,29 @@ angular.module('anol.map')
             }
             return true;
         };
+        Layers.prototype.removeOverlayLayer = function(layer) {
+            var self = this;
+            if(self.overlayLayers.indexOf(layer) === -1) {
+                return false;
+            }
+            var layers = [layer];
+            if(layer instanceof anol.layer.Group) {
+                layers = layer.layers;
+                if(layer.name !== undefined) {
+                    delete self.nameGroupsMap[layer.name];
+                }
+            }
+
+            if(self.map !== undefined) {
+                angular.forEach(layers, function(_layer) {
+                    var layerIdx = self.olLayers.indexOf(_layer.olLayer);
+                    if(layerIdx > -1) {
+                        self.map.removeLayer(_layer.olLayer);
+                        self.olLayers.splice(layerIdx, 1);
+                    }
+                });
+            }
+        };
         Layers.prototype.addSystemLayer = function(layer, idx) {
             var self = this;
             idx = idx || 0;
