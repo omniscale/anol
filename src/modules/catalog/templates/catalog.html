@@ -11,6 +11,7 @@
     <ul class="list">
         <li ng-repeat="layer in addedLayers">
             {{ layer.title }}
+            <button class="btn btn-default btn-sm" ng-click="toggleLayerVisible(layer)">V</button>
             <button class="btn btn-default btn-sm" ng-click="removeFromMap(layer)">-</button>
         </li>
     </ul>
