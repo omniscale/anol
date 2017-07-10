@@ -7,11 +7,15 @@ angular.module('anol.featureexchange')
  * @restrict A
  *
  * @param {string} templateUrl Url to template to use instead of default one
+ * @param {string} filename Name of downloaded file
+ * @param {function} preDownload Function executed before download provided
+ * @param {function} postUpload Function executed after file uploaded
+ * @param {string} srs Coordinate system to export features in / load features from
  *
  * @description
  * Download features as geojson
  */
-.directive('anolFeatureexchange', ['$translate', '$rootScope', function($translate, $rootScope) {
+.directive('anolFeatureexchange', ['$translate', '$rootScope', 'MapService', function($translate, $rootScope, MapService) {
     return {
         restrict: 'A',
         replace: true,
@@ -19,7 +23,8 @@ angular.module('anol.featureexchange')
             layer: '=',
             filename: '=',
             preDownload: '=',
-            postUpload: '='
+            postUpload: '=',
+            srs: '@'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/featureexchange/templates/featureexchange.html';
@@ -37,7 +42,10 @@ angular.module('anol.featureexchange')
 
             scope.download = function() {
                 if(scope.layer instanceof anol.layer.Feature) {
-                    var geojson = format.writeFeaturesObject(scope.layer.getFeatures());
+                    var geojson = format.writeFeaturesObject(scope.layer.getFeatures(), {
+                        featureProjection: MapService.getMap().getView().getProjection(),
+                        dataProjection: scope.srs || 'EPSG:4326'
+                    });
                     if(angular.isFunction(scope.preDownload)) {
                         geojson = scope.preDownload(geojson);
                     }
@@ -92,7 +100,10 @@ angular.module('anol.featureexchange')
                     if(angular.isFunction(scope.postUpload)) {
                         featureCollection = scope.postUpload(featureCollection);
                     }
-                    var features = format.readFeatures(featureCollection);
+                    var features = format.readFeatures(featureCollection, {
+                        featureProjection: MapService.getMap().getView().getProjection(),
+                        dataProjection: scope.srs || 'EPSG:4326'
+                    });
                     scope.layer.clear();
                     scope.layer.addFeatures(features);
                 };
