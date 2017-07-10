@@ -16,13 +16,16 @@ angular.module('anol.catalog')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
-            scope.layers = CatalogService.layers;
+            scope.layers = CatalogService.catalogLayers;
+            scope.addedLayers = CatalogService.addedLayers;
+
+            scope.addedLayers = CatalogService.addedLayers;
 
             scope.addToMap = function(layer) {
-                var added = LayersService.addOverlayLayer(layer);
-                if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
-                    layer.refresh();
-                }
+                CatalogService.addToMap(layer);
+            };
+            scope.removeFromMap = function(layer) {
+                CatalogService.removeFromMap(layer);
             };
         }
     };
