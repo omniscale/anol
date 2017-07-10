@@ -45,6 +45,7 @@ angular.module('anol.featurepopup')
             return tAttrs.templateUrl || defaultUrl;
         },
         link: function(scope, element, attrs) {
+            var self = this;
             PopupsService.register(scope);
             var multiselect = angular.isDefined(attrs.multiselect);
             var clickPointSelect = angular.isDefined(attrs.clickPointSelect);
@@ -102,21 +103,20 @@ angular.module('anol.featurepopup')
                 return;
             }
 
-            var selectInteraction;
-            var interactions = [];
-
-            var updateOffset = function(evt) {
+            var updateOffset = function(featureLayerList) {
                 if(scope.offset !== undefined) {
                     return;
                 }
                 var offset = [0, 0];
-                angular.forEach(evt.selected, function(f) {
-                    var style = f.getStyle();
+                angular.forEach(featureLayerList, function(v) {
+                    var feature = v[0];
+                    var layer = v[1];
+                    var style = feature.getStyle();
                     if(style === null) {
-                        style = evt.target.getLayer(f).getStyle();
+                        style = layer.getStyle();
                     }
                     if(angular.isFunction(style)) {
-                        style = style(f, scope.map.getView().getResolution())[0];
+                        style = style(feature, scope.map.getView().getResolution())[0];
                     }
                     var image = style.getImage();
                     // only ol.Style.Icons (subclass of ol.Style.Image) have getSize function
@@ -142,48 +142,6 @@ angular.module('anol.featurepopup')
                 scope.popup.setOffset(offset);
             };
 
-            var handleMultiSelect = function(evt) {
-                scope.selects = {};
-                if(evt.selected.length === 0) {
-                    return false;
-                }
-                angular.forEach(evt.selected, function(feature) {
-                    var layer = selectInteraction.getLayer(feature).get('anolLayer');
-                    if(scope.selects[layer.name] === undefined) {
-                        scope.selects[layer.name] = {
-                            layer: layer,
-                            features: [feature]
-                        };
-                    } else {
-                        scope.selects[layer.name].features.push(feature);
-                    }
-                });
-                return true;
-            };
-            var handleSingleSelect = function(evt) {
-                scope.feature = undefined;
-                scope.layer = undefined;
-                if(evt.selected.length === 0) {
-                    return false;
-                }
-                scope.feature = evt.selected[0];
-                scope.layer = selectInteraction.getLayer(scope.feature).get('anolLayer');
-                return true;
-            };
-
-            var handleSelect = function(evt) {
-                var _handleSelect = multiselect === true ? handleMultiSelect : handleSingleSelect;
-
-                if(_handleSelect(evt) === true) {
-                    updateOffset(evt);
-                    scope.coordinate = evt.mapBrowserEvent.coordinate;
-                    selectInteraction.getFeatures().clear();
-                } else {
-                    scope.coordinate = undefined;
-                }
-                scope.$digest();
-            };
-
             var handleClick = function(evt) {
                 var extent = [
                     evt.coordinate[0] - (scope.tolerance || 0),
@@ -191,52 +149,78 @@ angular.module('anol.featurepopup')
                     evt.coordinate[0] + (scope.tolerance || 0),
                     evt.coordinate[1] + (scope.tolerance || 0)
                 ];
-                scope.selects = {};
+
                 var found = false;
-                angular.forEach(scope.layers, function(layer) {
-                    var _features = layer.olLayer.getSource().getFeaturesInExtent(extent);
-                    if(_features.length > 0) {
-                        found = true;
-                        scope.selects[layer.name] = {
-                            layer: layer,
-                            features: _features
-                        };
+                var features = [];
+                var singleFeature, singleLayer;
+
+                if(clickPointSelect) {
+                    angular.forEach(scope.layers, function(layer) {
+                        if(!layer.getVisible()) {
+                            return;
+                        }
+                        var _features = layer.olLayer.getSource().getFeaturesInExtent(extent);
+
+                        if(_features.length > 0) {
+                            features = features.concat(_features);
+                            found = true;
+                            if(singleFeature === undefined) {
+                                singleFeature = _features[0];
+                                singleLayer = layer;
+                            }
+                            scope.selects[layer.name] = {
+                                layer: layer,
+                                features: _features
+                            };
+                        }
+                    });
+                    if(found === true) {
+                        scope.coordinate = evt.coordinate;
+                    } else {
+                        scope.coordinate = undefined;
                     }
-                });
-                if(found === true) {
-                    scope.coordinate = evt.coordinate;
                 } else {
-                    scope.coordinate = undefined;
+                    if(multiselect === true) {
+                        scope.selects = {};
+                    } else {
+                        scope.feature = undefined;
+                        scope.layer = undefined;
+                    }
+
+                    found = false;
+                    var featureLayerList = [];
+                    scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                        var anolLayer = layer.get('anolLayer');
+                        if(scope.layers.indexOf(anolLayer) === -1) {
+                            return;
+                        }
+                        if(multiselect !== true) {
+                            if(scope.layer === undefined && scope.feature === undefined) {
+                                scope.layer = anolLayer;
+                                scope.feature = feature;
+                                featureLayerList.push([feature, layer]);
+                                found = true;
+                            }
+                            return;
+                        }
+                        if(scope.selects[anolLayer.name] === undefined) {
+                            scope.selects[anolLayer.name] = {
+                                layer: anolLayer,
+                                features: []
+                            };
+                        }
+                        scope.selects[anolLayer.name].features.push(feature);
+                        featureLayerList.push([feature, layer]);
+                        found = true;
+                    });
+                    if(found) {
+                        scope.coordinate = evt.coordinate;
+                    } else {
+                        scope.coordinate = undefined;
+                    }
+                    updateOffset(featureLayerList);
                 }
                 scope.$digest();
-            };
-
-            var recreateInteractions = function() {
-                angular.forEach(interactions, function(interaction) {
-                    interaction.setActive(false);
-                    scope.map.removeInteraction(interaction);
-                });
-
-                var olLayers = [];
-                var snapInteractions = [];
-                angular.forEach(scope.layers, function(layer) {
-                    olLayers.push(layer.olLayer);
-                    snapInteractions.push(new ol.interaction.Snap({
-                        source: layer.olLayer.getSource(),
-                        pixelTolerance: scope.tolerance
-                    }));
-                });
-                selectInteraction = new ol.interaction.Select({
-                    toggleCondition: ol.events.condition.never,
-                    multi: multiselect,
-                    layers: olLayers
-                });
-                selectInteraction.on('select', handleSelect);
-
-                interactions = [selectInteraction].concat(snapInteractions);
-                angular.forEach(interactions, function(interaction) {
-                    scope.map.addInteraction(interaction);
-                });
             };
 
             var changeCursorCondition = function(pixel) {
@@ -258,27 +242,17 @@ angular.module('anol.featurepopup')
                 olControl: null
             });
             control.onDeactivate(function() {
-                angular.forEach(interactions, function(interaction) {
-                    interaction.setActive(false);
-                });
+                scope.map.un('singleclick', handleClick, self);
                 MapService.removeCursorPointerCondition(changeCursorCondition);
             });
             control.onActivate(function() {
-                angular.forEach(interactions, function(interaction) {
-                    interaction.setActive(true);
-                });
+                scope.map.on('singleclick', handleClick, self);
                 MapService.addCursorPointerCondition(changeCursorCondition);
             });
 
-            if(clickPointSelect === true) {
-                scope.map.on('singleclick', handleClick, this);
-                scope.$watch('layers', function() {
-                    scope.coordinate = undefined;
-                });
-            } else {
-                recreateInteractions();
-                scope.$watch('layers', recreateInteractions);
-            }
+            scope.$watch('layers', function() {
+                scope.coordinate = undefined;
+            });
 
             control.activate();
 
@@ -287,9 +261,7 @@ angular.module('anol.featurepopup')
             scope.$watch('layers', bindCursorChange);
             scope.$watch('coordinate', function(coordinate) {
                 if(coordinate === undefined) {
-                    if(selectInteraction !== undefined) {
-                        selectInteraction.getFeatures().clear();
-                    }
+                    scope.selects = {};
                     scope.layer = undefined;
                     scope.feature = undefined;
                     if(angular.isFunction(scope.onClose) && angular.isFunction(scope.onClose())) {
