@@ -121,6 +121,9 @@ $.extend(anol.layer.Feature.prototype, {
     addFeatures: function(features) {
         this.olLayer.getSource().addFeatures(features);
     },
+    getFeatures: function() {
+        return this.olLayer.getSource().getFeatures();
+    },
     createStyle: function(feature, resolution) {
         if(this.clusterOptions !== false && feature !== undefined) {
             // when clustering, a features have a features array containing features clustered into this feature

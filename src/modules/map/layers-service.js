@@ -131,6 +131,10 @@ angular.module('anol.map')
          */
         Layers.prototype.addOverlayLayer = function(layer, idx) {
             var self = this;
+            // prevent adding layer twice
+            if(self.overlayLayers.indexOf(layer) > -1) {
+                return false;
+            }
             // layers added reversed to map, so default idx is 0 to add layer "at top"
             idx = idx || 0;
             self.overlayLayers.splice(idx, 0, layer);
@@ -147,7 +151,30 @@ angular.module('anol.map')
                     PopupsService.closeAll();
                 });
             }
+            return true;
+        };
+        Layers.prototype.removeOverlayLayer = function(layer) {
+            var self = this;
+            if(self.overlayLayers.indexOf(layer) === -1) {
+                return false;
+            }
+            var layers = [layer];
+            if(layer instanceof anol.layer.Group) {
+                layers = layer.layers;
+                if(layer.name !== undefined) {
+                    delete self.nameGroupsMap[layer.name];
+                }
+            }
 
+            if(self.map !== undefined) {
+                angular.forEach(layers, function(_layer) {
+                    var layerIdx = self.olLayers.indexOf(_layer.olLayer);
+                    if(layerIdx > -1) {
+                        self.map.removeLayer(_layer.olLayer);
+                        self.olLayers.splice(layerIdx, 1);
+                    }
+                });
+            }
         };
         /**
          * @ngdoc method
