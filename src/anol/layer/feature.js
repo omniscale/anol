@@ -481,13 +481,20 @@ $.extend(anol.layer.Feature.prototype, {
         }
         return undefined;
     },
-    createStyleFromDefinition: function(styleDefinition, defaultStyle) {
-        return new ol.style.Style({
+    createClusterStyleFromDefinition: function(styleDefinition, defaultStyle) {
+        var style = new ol.style.Style({
             image: this.createImageStyle(styleDefinition, defaultStyle.getImage()),
             fill: this.createFillStyle(styleDefinition, defaultStyle.getFill()),
             stroke: this.createStrokeStyle(styleDefinition, defaultStyle.getStroke()),
             text: this.createTextStyle(styleDefinition, defaultStyle.getText())
         });
+        if(styleDefinition.text === '__num_features__') {
+            return function(feature, resolution) {
+                style.getText().setText(feature.get('features').length.toString());
+                return [style];
+            };
+        }
+        return style;
     },
     isClustered: function() {
         return this.clusterOptions !== false;
@@ -516,10 +523,10 @@ $.extend(anol.layer.Feature.prototype, {
     },
     _prepareClusterStyles: function(clusterOptions) {
         if(clusterOptions.clusterStyle !== undefined && !(clusterOptions.clusterStyle instanceof ol.style.Style)) {
-            clusterOptions.clusterStyle = this.createStyleFromDefinition(clusterOptions.clusterStyle, this.DEFAULT_UNCLUSTERED_STYLE);
+            clusterOptions.clusterStyle = this.createClusterStyleFromDefinition(clusterOptions.clusterStyle, this.DEFAULT_UNCLUSTERED_STYLE);
         }
         if(clusterOptions.selectClusterStyle !== undefined && !(clusterOptions.selectClusterStyle instanceof ol.style.Style)) {
-            clusterOptions.selectClusterStyle = this.createStyleFromDefinition(clusterOptions.selectClusterStyle, this.DEFAULT_SELECT_CLUSTER_STYLE);
+            clusterOptions.selectClusterStyle = this.createClusterStyleFromDefinition(clusterOptions.selectClusterStyle, this.DEFAULT_SELECT_CLUSTER_STYLE);
         }
         return clusterOptions;
     }
