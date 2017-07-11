@@ -190,10 +190,25 @@ angular.module('anol.featurepopup')
                     found = false;
                     var featureLayerList = [];
                     scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+                        if(layer === undefined || layer === null) {
+                            return;
+                        }
+
+                        if(layer.getSource() instanceof ol.source.Cluster) {
+                            // set to original feature when clicked on clustered feature containing one feature
+                            if(feature.get('features').length === 1) {
+                                feature = feature.get('features')[0];
+                            } else {
+                                return;
+                            }
+                        }
+
                         var anolLayer = layer.get('anolLayer');
+
                         if(scope.layers.indexOf(anolLayer) === -1) {
                             return;
                         }
+
                         if(multiselect !== true) {
                             if(scope.layer === undefined && scope.feature === undefined) {
                                 scope.layer = anolLayer;
