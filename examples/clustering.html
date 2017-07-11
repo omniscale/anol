@@ -119,55 +119,16 @@
                     name: 'clusteredLayer',
                     cluster: {
                         pointRadius: 12,
-                        clusterStyle: function(feature, resolution) {
-                            var style = new ol.style.Style({
-                                image: new ol.style.Circle({
-                                    fill: new ol.style.Fill({
-                                        color: 'rgba(200,200,0,0.4)'
-                                    }),
-                                    stroke: new ol.style.Stroke({
-                                        color: 'rgba(200,200,0,1)',
-                                        width: 1
-                                    }),
-                                    radius: 5
-                                }),
-                                fill: new ol.style.Fill({
-                                    color: 'rgba(200,200,0,0.4)'
-                                }),
-                                stroke: new ol.style.Stroke({
-                                    color: 'rgba(200,200,0,1)',
-                                    width: 1
-                                }),
-                                text: new ol.style.Text({
-                                    text: feature.get('features').length.toString()
-                                })
-                            });
-                            return [style];
+                        clusterStyle: {
+                            externalGraphic: 'data/rail-18.svg'
                         },
-                        selectClusterStyle: function(feature, resolution) {
-                            var style = new ol.style.Style({
-                                image: new ol.style.Circle({
-                                    fill: new ol.style.Fill({
-                                        color: 'rgba(200,0,200,0.4)'
-                                    }),
-                                    stroke: new ol.style.Stroke({
-                                        color: 'rgba(200,0,200,1)',
-                                        width: 1
-                                    }),
-                                    radius: 10
-                                }),
-                                fill: new ol.style.Fill({
-                                    color: 'rgba(200,0,200,0.4)'
-                                }),
-                                stroke: new ol.style.Stroke({
-                                    color: 'rgba(200,0,200,1)',
-                                    width: 1
-                                }),
-                                text: new ol.style.Text({
-                                    text: feature.get('features').length.toString()
-                                })
-                            });
-                            return [style];
+                        selectClusterStyle: {
+                            strokeColor: '#0f0',
+                            strokeWidth: 3,
+                            strokeOpacity: 1,
+                            fillColor: '#00f',
+                            fillOpacity: 0.25,
+                            radius: 15
                         },
                         onSelect: function(features) {
                             if(features.length === 1) {
