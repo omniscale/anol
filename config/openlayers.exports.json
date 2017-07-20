@@ -70,6 +70,8 @@
     "ol.has.DEVICE_PIXEL_RATIO",
     "ol.inherits",
     "ol.interaction.defaults",
+    "ol.interaction.DoubleClickZoom",
+    "ol.interaction.DoubleClickZoom#setActive",
     "ol.interaction.DragZoom",
     "ol.interaction.DragZoom#*",
     "ol.interaction.Draw",

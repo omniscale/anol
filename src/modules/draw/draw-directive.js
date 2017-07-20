@@ -84,10 +84,20 @@ angular.module('anol.draw')
                     postDrawActions.push(executePostDrawCallback);
                 }
 
+                // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
+                postDrawActions.push(function() {
+                    MapService.getMap().getInteractions().forEach(function(interaction) {
+                        if(interaction instanceof ol.interaction.DoubleClickZoom) {
+                            interaction.setActive(false);
+                            $timeout(function() {
+                                interaction.setActive(true);
+                            }, 275);
+                        }
+                    });
+                });
                 if(scope.continueDrawing === false && control !== undefined) {
                     postDrawActions.push(function() {
-                        // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
-                        $timeout(function() { control.deactivate(); }, 275);
+                        control.deactivate();
                     });
                 }
 
