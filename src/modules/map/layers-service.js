@@ -216,6 +216,7 @@ angular.module('anol.map')
             if(combined && layer instanceof anol.layer.BaseWMS &&
                angular.equals(layer.olLayerOptions, this.lastAddedLayer.olLayerOptions)
             ) {
+                layer.setOlLayer(this.lastAddedLayer.olLayer);
                 // TODO add layer to anolLayers of lastAddedLayer when anolLayer refactored anolLayers
                 return this.lastAddedLayer.olLayer;
             }
