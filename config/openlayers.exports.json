@@ -72,6 +72,8 @@
     "ol.interaction.defaults",
     "ol.interaction.DoubleClickZoom",
     "ol.interaction.DoubleClickZoom#setActive",
+    "ol.interaction.DragPan",
+    "ol.interaction.DragPan#setActive",
     "ol.interaction.DragZoom",
     "ol.interaction.DragZoom#*",
     "ol.interaction.Draw",
