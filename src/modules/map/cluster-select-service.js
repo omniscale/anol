@@ -73,7 +73,13 @@ angular.module('anol.map')
                     return;
                 }
                 if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
-                    resultLayer = layer;
+                    if(layer instanceof anol.layer.DynamicGeoJSON) {
+                        if(feature.get('__layer__') === layer.name) {
+                            resultLayer = layer;
+                        }
+                    } else {
+                        resultLayer = layer;
+                    }
                 }
             });
             return resultLayer;
