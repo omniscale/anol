@@ -143,10 +143,38 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         self.olSource.addFeatures(features);
     },
     createStyle: function(feature, resolution) {
-        if(feature !== undefined && feature.get('__layer__') !== this.name && feature.get('features') === undefined) {
-            return new ol.style.Style();
+        var parentFunc = anol.layer.StaticGeoJSON.prototype.createStyle;
+
+        // call parent func when feature is undefined
+        if(feature === undefined) {
+            return parentFunc.call(this, feature, resolution);
         }
-        return anol.layer.StaticGeoJSON.prototype.createStyle.call(this, feature, resolution);
+
+        var features = feature.get('features');
+
+        // normal feature
+        if(features === undefined) {
+            // return empty style if feature not belongs to this layer
+            if(feature.get('__layer__') !== this.name) {
+                return new ol.style.Style();
+            } else {
+                return parentFunc.call(this, feature, resolution);
+            }
+        }
+
+        // only for cluster features
+
+        // cluster with one feature
+        if(features.length === 1) {
+            if(features[0].get('__layer__') === this.name) {
+                return parentFunc.call(this, features[0], resolution);
+            } else {
+                return new ol.style.Style();
+            }
+        }
+
+        // cluster with more than one feature
+        return parentFunc.call(this, feature, resolution);
     },
     refresh: function() {
         this.olSource.clear();
