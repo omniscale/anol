@@ -82,7 +82,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             var additionalParameters = {};
             angular.forEach(self.olSource.get('anolLayers'), function(layer) {
                 if(layer.getVisible()) {
-                    additionalParameters = anol.helper.mergeObjects(additionalParameters, self.additionalRequestParameters);
+                    additionalParameters = anol.helper.mergeObjects(additionalParameters, layer.additionalRequestParameters);
                 }
             });
             self.loader(
