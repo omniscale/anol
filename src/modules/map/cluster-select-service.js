@@ -24,17 +24,6 @@ angular.module('anol.map')
             animationDuration: 500,
         };
 
-        var defaultUnclusteredStyle = new ol.style.Circle({
-            radius: 5,
-            stroke: new ol.style.Stroke({
-                color: "rgba(0,255,255,1)",
-                width: 1
-            }),
-            fill: new ol.style.Fill({
-                color: "rgba(0,255,255,0.3)"
-            })
-        });
-
         var defaultSelectClusteredStyle = new ol.style.Style({
             image: new ol.style.Circle({
                 radius: 10,
@@ -102,32 +91,31 @@ angular.module('anol.map')
 
             var interactionOptions = $.extend({}, defaultClusterOptions, this.clusterSelectOptions, {
                 layers: olClusterLayers,
-                featureStyle: function(clusterFeature, resolution) {
-                    // for each feature represented by selected cluster a feature with
-                    // features property containing the original feature is returned.
-                    // the only feature without a features property is the clusterFeature
-                    // representing n features
-                    var clusteredFeature = clusterFeature.get('features');
-                    if(clusteredFeature === undefined) {
-                        return;
-                    }
-                    var feature = clusteredFeature[0];
-                    var layer = self.layerByFeature(feature);
-                    var layerStyle = layer.olLayer.getStyle();
-                    if(angular.isFunction(layerStyle)) {
-                        layerStyle = layerStyle(feature, resolution)[0];
-                    }
-                    var imageStyle = layerStyle.getImage();
-                    return [
-                        new ol.style.Style({
-                            image: imageStyle ? imageStyle : defaultUnclusteredStyle,
-                            // Draw a link beetween points (or not)
+                // for each revealed feature of selected cluster, this function is called
+                featureStyle: function(revealedFeature, resolution) {
+                    var style = new ol.style.Style();
+                    // style link lines
+                    if(revealedFeature.get('selectclusterlink') === true) {
+                        style = new ol.style.Style({
                             stroke: new ol.style.Stroke({
-                                color: "#fff",
+                                color: '#f00',
                                 width: 1
                             })
-                        })
-                    ];
+                        });
+                    }
+                    if(revealedFeature.get('selectclusterfeature') === true) {
+                        var originalFeature = revealedFeature.get('features')[0];
+                        var layer = self.layerByFeature(originalFeature);
+                        var layerStyle = layer.olLayer.getStyle();
+
+                        if(angular.isFunction(layerStyle)) {
+                            layerStyle = layerStyle(originalFeature, resolution)[0];
+                        }
+
+                        style = layerStyle;
+                    }
+
+                    return [style];
                 },
                 style: function(clusterFeature, resolution) {
                     // clusterFeature is the feature representing n features
