@@ -200,6 +200,9 @@ angular.module('anol.map')
             var combined = false;
             if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
                 olSource = this.lastAddedLayer.getCombinedSource(layer);
+                if(layer instanceof anol.layer.DynamicGeoJSON && layer.isClustered()) {
+                    layer.unclusteredSource = this.lastAddedLayer.unclusteredSource;
+                }
                 combined = true;
             }
             if(olSource === undefined) {
