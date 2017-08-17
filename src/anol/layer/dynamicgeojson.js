@@ -54,6 +54,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var anolLayers = this.olSource.get('anolLayers');
         anolLayers.push(other);
         this.olSource.set('anolLayers', anolLayers);
+
+        if(this.isClustered) {
+            return this.olLayer.getSource();
+        }
         return this.olSource;
     },
     setVisible: function(visible) {
