@@ -45,7 +45,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         if(this.olSourceOptions.featureProjection !== other.olSourceOptions.featureProjection) {
             return false;
         }
-        if(this.clusterOptions !== false) {
+        if(this.clusterOptions !== false && this.anolGroup !== other.anolGroup) {
             return false;
         }
         return true;
