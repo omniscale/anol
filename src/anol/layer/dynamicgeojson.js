@@ -212,7 +212,6 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
 
             if(objCount > 1) {
                 var styleDefinition = angular.extend({}, value.layer.style);
-                styleDefinition.anchorXUnits = 'fraction';
                 if(i % 2 === 0) {
                     styleDefinition.graphicXAnchor = -i / 2;
                 } else {
@@ -223,13 +222,26 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                     styleDefinition.graphicXAnchor += 0.5;
                 }
 
+                styleDefinition.graphicXAnchor *=  styleDefinition.graphicWidth;
+
                 styles.push(
                     new ol.style.Style({
-                        image: self.createIconStyle(styleDefinition, defaultStyle.getImage())
+                        image: self.createIconStyle(styleDefinition, defaultStyle.getImage()),
+                        text: new ol.style.Text({
+                            text: value.count.toString(),
+                            offsetX: styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2,
+                            offsetY: styleDefinition.graphicHeight
+                        })
                     })
                 );
             } else {
                 styles.push(defaultStyle);
+                styles.push(new ol.style.Style({
+                    text: new ol.style.Text({
+                        text: value.count.toString(),
+                        offsetY: 18
+                    })
+                }));
             }
             i++;
         });
