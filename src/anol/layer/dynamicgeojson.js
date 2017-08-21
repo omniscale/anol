@@ -229,7 +229,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                         image: self.createIconStyle(styleDefinition, defaultStyle.getImage()),
                         text: new ol.style.Text({
                             text: value.count.toString(),
-                            offsetX: styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2,
+                            offsetX: (styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2) * -1,
                             offsetY: styleDefinition.graphicHeight
                         })
                     })
