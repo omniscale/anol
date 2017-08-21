@@ -129,8 +129,26 @@ angular.module('anol.map')
                     if(angular.isFunction(selectClusterStyle)) {
                         selectClusterStyle = selectClusterStyle(clusterFeature, resolution)[0];
                     }
+                    var style = layer.olLayer.getStyle();
+                    if(angular.isFunction(style)) {
+                        style = style(clusterFeature, resolution);
+                    }
+                    if(angular.isArray(style)) {
+                        angular.forEach(style, function(s) {
+                            s.getImage().setOpacity(0.5);
+                            if(s.getText instanceof ol.style.Style) {
+                                var textColor = ol.color.asArray(s.getText().getFill().getColor());
+                                textColor[3] = 0.5;
+                                s.getText().getFill().setColor(textColor);
+                                var haloColor = ol.color.asArray(s.getText().getStroke().getColor());
+                                haloColor[3] = 0.5;
+                                s.getText().getStroke().setColor(haloColor);
+                            }
+                        });
+                        return style;
+                    }
                     return [
-                        selectClusterStyle || defaultSelectClusteredStyle
+                        style
                     ];
                 }
             });
