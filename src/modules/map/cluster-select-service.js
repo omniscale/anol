@@ -136,11 +136,18 @@ angular.module('anol.map')
             });
 
             self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
-            self.selectClusterInteraction.on('select', function(a, b, c) {
-                if(a.selected.length === 1 && a.selected[0].get('selectclusterfeature') === true) {
-                    angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
-                        f(a.selected[0]);
-                    });
+            self.selectClusterInteraction.on('select', function(a) {
+                if(a.selected.length === 1) {
+                    if(a.selected[0].get('features').length > interactionOptions.maxObjects) {
+                        var view = MapService.getMap().getView();
+                        view.setZoom(view.getZoom() + 1);
+                        return;
+                    }
+                    if(a.selected[0].get('selectclusterfeature') === true) {
+                        angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
+                            f(a.selected[0]);
+                        });
+                    }
                 }
             });
 
