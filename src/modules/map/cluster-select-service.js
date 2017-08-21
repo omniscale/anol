@@ -116,6 +116,25 @@ angular.module('anol.map')
 
             var selectedCluster;
             self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+
+            var changeCursorCondition = function(pixel) {
+                return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
+                    var found = false;
+                    if(self.selectClusterInteraction.overlayLayer_ === layer) {
+                        MapService.getMap().forEachFeatureAtPixel(pixel, function(feature) {
+                            if(found) {
+                                return;
+                            }
+                            if(feature.get('selectclusterfeature')) {
+                                found = true;
+                            }
+                        })
+                    }
+                    return found;
+                });
+            };
+
+            MapService.addCursorPointerCondition(changeCursorCondition);
             self.selectClusterInteraction.on('select', function(a) {
                 if(a.selected.length === 1) {
                     if(a.selected[0].get('features').length > interactionOptions.maxObjects) {
