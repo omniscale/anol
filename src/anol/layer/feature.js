@@ -528,7 +528,7 @@ $.extend(anol.layer.Feature.prototype, {
 
         return {
             source: this.unclusteredSource,
-            distance: 40
+            distance: 150
         };
     },
     _prepareClusterStyles: function(clusterOptions) {
