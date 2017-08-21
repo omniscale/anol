@@ -176,6 +176,67 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         // cluster with more than one feature
         return parentFunc.call(this, feature, resolution);
     },
+    createClusterStyle: function(clusterFeature) {
+        var self = this;
+        var legendItems = {};
+        var objCount = 0;
+        var layers = this.olLayer.getSource().get('anolLayers');
+        clusterFeature.get('features').forEach(function(feature) {
+            layers.forEach(function(layer) {
+                if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
+                    if(layer.name === feature.get('__layer__')) {
+                        if(legendItems[layer.name] === undefined) {
+                            legendItems[layer.name] = {
+                                layer: layer,
+                                count: 0
+                            };
+                            objCount ++;
+                        }
+                        legendItems[layer.name].count ++;
+                    }
+                }
+
+            });
+        });
+
+        var styles = [
+        ];
+
+        var even = objCount % 2 === 0;
+        var i = 0;
+        angular.forEach(legendItems, function(value) {
+            var defaultStyle = value.layer.olLayer.getStyle();
+            if(angular.isFunction(defaultStyle)) {
+                defaultStyle = defaultStyle()[0];
+            }
+
+            if(objCount > 1) {
+                var styleDefinition = angular.extend({}, value.layer.style);
+                styleDefinition.anchorXUnits = 'fraction';
+                if(i % 2 === 0) {
+                    styleDefinition.graphicXAnchor = -i / 2;
+                } else {
+                    styleDefinition.graphicXAnchor = i + Math.floor(i / 2);
+                }
+
+                if(!even) {
+                    styleDefinition.graphicXAnchor += 0.5;
+                }
+
+                styles.push(
+                    new ol.style.Style({
+                        image: self.createIconStyle(styleDefinition, defaultStyle.getImage())
+                    })
+                );
+            } else {
+                styles.push(defaultStyle);
+            }
+            i++;
+        });
+
+        return styles;
+
+    },
     refresh: function() {
         this.olSource.clear();
         this.olSource.refresh();
