@@ -110,6 +110,17 @@ angular.module('anol.map')
                     return [style];
                 },
                 style: function(clusterFeature, resolution) {
+                    if(clusterFeature.get('features').length === 1) {
+                        var layer = self.layerByFeature(clusterFeature.get('features')[0]);
+                        var style = layer.olLayer.getStyle();
+                        if(angular.isFunction(style)) {
+                            style = style(clusterFeature, resolution);
+                        }
+                        if(angular.isArray(style)) {
+                            return style;
+                        }
+                        return [style];
+                    }
                     return [new ol.style.Style()];
                 }
             });
