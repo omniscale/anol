@@ -39,8 +39,13 @@ angular.module('anol.map')
 
         var ClusterSelect = function(clusterSelectOptions) {
             this.clusterLayers = [];
+            this.selectRevealedFeatureCallbacks = [];
             this.clusterSelectOptions = clusterSelectOptions;
             this.selectedClusterLayer = undefined;
+        };
+
+        ClusterSelect.prototype.registerSelectRevealedFeatureCallback = function(f) {
+            this.selectRevealedFeatureCallbacks.push(f);
         };
 
         ClusterSelect.prototype.addLayer = function(layer) {
@@ -131,6 +136,13 @@ angular.module('anol.map')
             });
 
             self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+            self.selectClusterInteraction.on('select', function(a, b, c) {
+                if(a.selected.length === 1 && a.selected[0].get('selectclusterfeature') === true) {
+                    angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
+                        f(a.selected[0]);
+                    });
+                }
+            });
 
             self.selectClusterInteraction.getFeatures().on('add', function(e) {
                 var features = e.element.get('features');
