@@ -275,6 +275,8 @@ $.extend(anol.layer.Feature.prototype, {
             styleOptions.scale = defaultIconStyle.getScale();
             styleOptions.size = defaultIconStyle.getSize();
             styleOptions.imgSize = defaultIconStyle.getSize();
+            styleOptions.anchorXUnits = 'pixel';
+            styleOptions.anchorYUnits = 'pixel';
         }
 
         if(style.externalGraphic !== undefined) {
@@ -308,12 +310,16 @@ $.extend(anol.layer.Feature.prototype, {
 
         var anchor = [0.5, 0.5];
         if(style.graphicXAnchor !== undefined) {
-            anchor[0] = parseInt(style.graphicXAnchor);
-            styleOptions.anchorXUnits = 'pixel';
+            anchor[0] = parseFloat(style.graphicXAnchor);
+        }
+        if(style.anchorXUnits !== undefined) {
+            styleOptions.anchorXUnits = style.anchorXUnits;
         }
         if(style.graphicYAnchor !== undefined) {
-            anchor[1] = parseInt(style.graphicYAnchor);
-            styleOptions.anchorYUnits = 'pixel';
+            anchor[1] = parseFloat(style.graphicYAnchor);
+        }
+        if(style.anchorYUnits !== undefined) {
+            styleOptions.anchorYUnits = style.anchorYUnits;
         }
         styleOptions.anchor = anchor;
 
