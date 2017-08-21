@@ -178,14 +178,7 @@ $.extend(anol.layer.Feature.prototype, {
             // style
             var clusteredFeatures = feature.get('features');
             if(angular.isDefined(clusteredFeatures)) {
-                if(clusteredFeatures.length > 1) {
-                    var clusterStyle = this.clusterOptions.clusterStyle;
-                    if(angular.isDefined(clusterStyle) && angular.isFunction(clusterStyle)) {
-                        clusterStyle = clusterStyle(feature, resolution)[0];
-                    }
-                    return clusterStyle || this.DEFAULT_CLUSTERED_STYLE;
-                }
-                feature = clusteredFeatures[0];
+                return this.createClusterStyle(feature);
             }
         }
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
@@ -229,6 +222,9 @@ $.extend(anol.layer.Feature.prototype, {
         }
         styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
         return new ol.style.Style(styleOptions);
+    },
+    createClusterStyle: function(features) {
+        return this.DEFAULT_CLUSTERED_STYLE;
     },
     createImageStyle: function(style, defaultImageStyle) {
         var radius = style.radius;

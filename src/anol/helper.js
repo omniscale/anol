@@ -81,25 +81,5 @@ anol.helper = {
             a[key] = b[key];
         }
         return a;
-    },
-    // found at https://gis.stackexchange.com/a/158744
-    typeOf: function(obj){
-    return ({}).toString.call(obj)
-        .match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-    },
-    // found at https://gis.stackexchange.com/a/158744
-    cloneObject: function(obj){
-        var type = anol.helper.typeOf(obj);
-        if (type == 'object' || type == 'array') {
-            if (obj.clone) {
-                return obj.clone();
-            }
-            var clone = type == 'array' ? [] : {};
-            for (var key in obj) {
-                clone[key] = anol.helper.cloneObject(obj[key]);
-            }
-            return clone;
-        }
-        return obj;
     }
 };

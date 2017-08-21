@@ -24,19 +24,6 @@ angular.module('anol.map')
             animationDuration: 500,
         };
 
-        var defaultSelectClusteredStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 10,
-                stroke: new ol.style.Stroke({
-                    color: "rgba(255,255,0,1)",
-                    width: 1
-                }),
-                fill: new ol.style.Fill({
-                    color: "rgba(255,255,0,0.3)"
-                })
-            })
-        });
-
         var ClusterSelect = function(clusterSelectOptions) {
             this.clusterLayers = [];
             this.selectRevealedFeatureCallbacks = [];
@@ -123,37 +110,11 @@ angular.module('anol.map')
                     return [style];
                 },
                 style: function(clusterFeature, resolution) {
-                    // clusterFeature is the feature representing n features
-                    var layer = self.layerByFeature(clusterFeature.get('features')[0]);
-                    var selectClusterStyle = layer.clusterOptions.selectClusterStyle;
-                    if(angular.isFunction(selectClusterStyle)) {
-                        selectClusterStyle = selectClusterStyle(clusterFeature, resolution)[0];
-                    }
-                    var style = layer.olLayer.getStyle();
-                    if(angular.isFunction(style)) {
-                        style = style(clusterFeature, resolution);
-                    }
-                    if(angular.isArray(style)) {
-                        var opacityStyles = [];
-                        angular.forEach(style, function(s) {
-                            var opacityStyle = anol.helper.cloneObject(s);
-                            opacityStyle.getImage().setOpacity(0.5);
-                            if(opacityStyle.getText instanceof ol.style.Style) {
-                                var textColor = ol.color.asArray(opacityStyle.getText().getFill().getColor());
-                                textColor[3] = 0.5;
-                                opacityStyle.getText().getFill().setColor(textColor);
-                                var haloColor = ol.color.asArray(opacityStyle.getText().getStroke().getColor());
-                                haloColor[3] = 0.5;
-                                opacityStyle.getText().getStroke().setColor(haloColor);
-                            }
-                            opacityStyles.push(opacityStyle);
-                        });
-                        return opacityStyles;
-                    }
-                    return [style];
+                    return [new ol.style.Style()];
                 }
             });
 
+            var selectedCluster;
             self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
             self.selectClusterInteraction.on('select', function(a) {
                 if(a.selected.length === 1) {
@@ -162,11 +123,19 @@ angular.module('anol.map')
                         view.setZoom(view.getZoom() + 1);
                         return;
                     }
+                    if(a.selected[0].get('features').length > 1) {
+                        selectedCluster = a.selected[0];
+                        selectedCluster.setStyle(new ol.style.Style());
+                        return;
+                    }
                     if(a.selected[0].get('selectclusterfeature') === true) {
                         angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
                             f(a.selected[0]);
                         });
                     }
+                } else if(a.selected.length === 0 && angular.isDefined(selectedCluster)) {
+                    selectedCluster.setStyle(null);
+                    selectedCluster = undefined;
                 }
             });
 
