@@ -137,7 +137,11 @@ $.extend(anol.layer.Feature.prototype, {
                 this.defaultStyle = defaultStyle;
             }
             olLayer.setStyle(function(feature, resolution) {
-                return [self.createStyle(feature, resolution)];
+                var style = self.createStyle(feature, resolution);
+                if(angular.isArray(style)) {
+                    return style;
+                }
+                return [style];
             });
         }
 
