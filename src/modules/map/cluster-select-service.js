@@ -16,12 +16,12 @@ angular.module('anol.map')
 
         var defaultClusterOptions = {
             selectCluster: true,
-            pointRadius: 7,
+            pointRadius: 10,
             spiral: true,
             circleMaxObjects: 10,
             maxObjects: 60,
             animate: true,
-            animationDuration: 500,
+            animationDuration: 500
         };
 
         var ClusterSelect = function(clusterSelectOptions) {
@@ -146,6 +146,7 @@ angular.module('anol.map')
             };
 
             MapService.addCursorPointerCondition(changeCursorCondition);
+
             self.selectClusterInteraction.on('select', function(a) {
                 if(a.selected.length === 1) {
                     if(a.selected[0].get('features').length > interactionOptions.maxObjects) {
