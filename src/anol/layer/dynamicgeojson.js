@@ -230,7 +230,8 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                         text: new ol.style.Text({
                             text: value.count.toString(),
                             offsetX: (styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2) * -1,
-                            offsetY: styleDefinition.graphicHeight
+                            offsetY: styleDefinition.graphicHeight,
+                            stroke: new ol.style.Stroke({color: '#fff', width: 2})
                         })
                     })
                 );
@@ -239,7 +240,8 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                 styles.push(new ol.style.Style({
                     text: new ol.style.Text({
                         text: value.count.toString(),
-                        offsetY: 18
+                        offsetY: value.layer.style.graphicHeight,
+                        stroke: new ol.style.Stroke({color: '#fff', width: 2})
                     })
                 }));
             }
