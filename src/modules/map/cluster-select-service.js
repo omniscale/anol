@@ -134,22 +134,23 @@ angular.module('anol.map')
                         style = style(clusterFeature, resolution);
                     }
                     if(angular.isArray(style)) {
+                        var opacityStyles = [];
                         angular.forEach(style, function(s) {
-                            s.getImage().setOpacity(0.5);
-                            if(s.getText instanceof ol.style.Style) {
-                                var textColor = ol.color.asArray(s.getText().getFill().getColor());
+                            var opacityStyle = anol.helper.cloneObject(s);
+                            opacityStyle.getImage().setOpacity(0.5);
+                            if(opacityStyle.getText instanceof ol.style.Style) {
+                                var textColor = ol.color.asArray(opacityStyle.getText().getFill().getColor());
                                 textColor[3] = 0.5;
-                                s.getText().getFill().setColor(textColor);
-                                var haloColor = ol.color.asArray(s.getText().getStroke().getColor());
+                                opacityStyle.getText().getFill().setColor(textColor);
+                                var haloColor = ol.color.asArray(opacityStyle.getText().getStroke().getColor());
                                 haloColor[3] = 0.5;
-                                s.getText().getStroke().setColor(haloColor);
+                                opacityStyle.getText().getStroke().setColor(haloColor);
                             }
+                            opacityStyles.push(opacityStyle);
                         });
-                        return style;
+                        return opacityStyles;
                     }
-                    return [
-                        style
-                    ];
+                    return [style];
                 }
             });
 
