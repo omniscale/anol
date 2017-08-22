@@ -188,6 +188,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var legendItems = {};
         var objCount = 0;
         var layers = this.olLayer.getSource().get('anolLayers');
+        // iterate over revealed features and sort/count by layer
         clusterFeature.get('features').forEach(function(feature) {
             layers.forEach(function(layer) {
                 if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
@@ -255,7 +256,6 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             }
             i++;
         });
-
         return styles;
 
     },
