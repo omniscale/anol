@@ -286,6 +286,7 @@ angular.module('anol.map')
          */
         Layers.prototype._addLayer = function(layer, skipLayerIndex) {
             this.map.addLayer(layer.olLayer);
+            layer.map = this.map;
             if(layer.isClustered()) {
                 ClusterSelectService.addLayer(layer);
             }
