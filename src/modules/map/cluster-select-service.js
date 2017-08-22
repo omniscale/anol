@@ -159,6 +159,7 @@ angular.module('anol.map')
                         // cluster open
                         selectedCluster = revealedFeature;
                         selectedCluster.setStyle(new ol.style.Style());
+                        MapService.addCursorPointerCondition(changeCursorCondition);
                         return;
                     }
                     if(revealedFeature.get('selectclusterfeature') === true) {
@@ -170,8 +171,10 @@ angular.module('anol.map')
                         });
                     }
                 } else if(a.selected.length === 0 && angular.isDefined(selectedCluster)) {
+                    // cluster closed
                     selectedCluster.setStyle(null);
                     selectedCluster = undefined;
+                    MapService.removeCursorPointerCondition(changeCursorCondition);
                 }
             });
 
@@ -192,23 +195,10 @@ angular.module('anol.map')
                 interactions: [self.selectClusterInteraction]
             });
 
-            var changeCursorCondition = function(pixel) {
-                return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
-                    var anolLayer = layer.get('anolLayer');
-                    if(anolLayer === undefined) {
-                        return false;
-                    }
-                    return anolLayer.isClustered();
-                });
-            };
 
             self.selectClusterControl.onDeactivate(function() {
                 self.selectClusterInteraction.setActive(false);
                 MapService.removeCursorPointerCondition(changeCursorCondition);
-            });
-            self.selectClusterControl.onActivate(function() {
-                self.selectClusterInteraction.setActive(true);
-                MapService.addCursorPointerCondition(changeCursorCondition);
             });
 
             // control active by default
