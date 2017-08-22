@@ -177,6 +177,13 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         return parentFunc.call(this, feature, resolution);
     },
     createClusterStyle: function(clusterFeature) {
+        var visible = ol.extent.containsCoordinate(
+            this.map.getView().calculateExtent(this.map.getSize()),
+            clusterFeature.getGeometry().getCoordinates()
+        );
+        if(!visible) {
+            return new ol.style.Style();
+        }
         var self = this;
         var legendItems = {};
         var objCount = 0;
@@ -199,8 +206,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             });
         });
 
-        var styles = [
-        ];
+        var styles = [];
 
         var even = objCount % 2 === 0;
         var i = 0;
