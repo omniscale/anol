@@ -43,6 +43,13 @@ angular.module('anol.map')
             this.clusterLayers.push(layer);
         };
 
+        ClusterSelect.prototype.removeLayer = function(layer) {
+            layer.olLayer.un('change:visible', this.handleLayerVisibleChange, this);
+            var idx = this.clusterLayers.indexOf(layer);
+            if(idx > -1) {
+                this.clusterLayers.splice(idx, 1);
+            }
+        };
         ClusterSelect.prototype.layerByFeature = function(feature) {
             var self = this;
             var resultLayer;
