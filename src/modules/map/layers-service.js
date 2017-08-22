@@ -7,6 +7,7 @@ angular.module('anol.map')
 .provider('LayersService', [function() {
     var _layers = [];
     var _addLayerHandlers = [];
+    var _clusterDistance = 50;
     /**
      * @ngdoc method
      * @name setLayers
@@ -15,6 +16,9 @@ angular.module('anol.map')
      */
     this.setLayers = function(layers) {
         _layers = _layers.concat(layers);
+    };
+    this.setClusterDistance = function(distance) {
+        _clusterDistance = distance;
     };
     /**
      * @ngdoc method
@@ -35,10 +39,11 @@ angular.module('anol.map')
          * @description
          * Stores ol3 layerss and add them to map, if map present
          */
-        var Layers = function(layers, addLayerHandlers) {
+        var Layers = function(layers, addLayerHandlers, clusterDistance) {
             var self = this;
             self.map = undefined;
             self.addLayerHandlers = addLayerHandlers;
+            self.clusterDistance = clusterDistance;
 
             // contains all anol background layers
             self.backgroundLayers = [];
@@ -206,7 +211,11 @@ angular.module('anol.map')
                 combined = true;
             }
             if(olSource === undefined) {
-                olSource = new layer.OL_SOURCE_CLASS(layer.olSourceOptions);
+                var sourceOptions = layer.olSourceOptions;
+                if(layer.isClustered()) {
+                    sourceOptions.distance = this.clusterDistance;
+                }
+                olSource = new layer.OL_SOURCE_CLASS(sourceOptions);
                 olSource.set('anolLayers', [layer]);
             }
 
@@ -367,6 +376,6 @@ angular.module('anol.map')
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };
-        return new Layers(_layers, _addLayerHandlers);
+        return new Layers(_layers, _addLayerHandlers, _clusterDistance);
     }];
 }]);
