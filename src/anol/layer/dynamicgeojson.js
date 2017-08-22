@@ -204,6 +204,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
 
         var even = objCount % 2 === 0;
         var i = 0;
+        var lastXAnchor = 0;
         angular.forEach(legendItems, function(value) {
             var defaultStyle = value.layer.olLayer.getStyle();
             if(angular.isFunction(defaultStyle)) {
@@ -213,15 +214,16 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             if(objCount > 1) {
                 var styleDefinition = angular.extend({}, value.layer.style);
                 if(i % 2 === 0) {
-                    styleDefinition.graphicXAnchor = -i / 2;
+                    styleDefinition.graphicXAnchor = lastXAnchor + i;
                 } else {
-                    styleDefinition.graphicXAnchor = i + Math.floor(i / 2);
+                    styleDefinition.graphicXAnchor = lastXAnchor - i;
                 }
+
+                lastXAnchor = styleDefinition.graphicXAnchor;
 
                 if(!even) {
                     styleDefinition.graphicXAnchor += 0.5;
                 }
-
                 styleDefinition.graphicXAnchor *=  styleDefinition.graphicWidth;
 
                 styles.push(
