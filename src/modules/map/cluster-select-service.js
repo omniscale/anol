@@ -19,7 +19,7 @@ angular.module('anol.map')
             pointRadius: 10,
             spiral: true,
             circleMaxObjects: 10,
-            maxObjects: 60,
+            maxObjects: 20,
             animate: false,
             animationDuration: 500
         };
