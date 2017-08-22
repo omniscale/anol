@@ -523,7 +523,6 @@ $.extend(anol.layer.Feature.prototype, {
 
         this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
 
-        this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
         this.OL_SOURCE_CLASS = ol.source.Cluster;
 
         return {
