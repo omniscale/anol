@@ -20,7 +20,7 @@ angular.module('anol.map')
             spiral: true,
             circleMaxObjects: 10,
             maxObjects: 60,
-            animate: true,
+            animate: false,
             animationDuration: 500
         };
 
