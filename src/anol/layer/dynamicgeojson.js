@@ -184,6 +184,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         if(!visible) {
             return new ol.style.Style();
         }
+        var cachedStyle = clusterFeature.get('cachedStyle');
+        if(cachedStyle !== null && cachedStyle !== undefined) {
+            return cachedStyle;
+        }
         var self = this;
         var legendItems = {};
         var objCount = 0;
@@ -256,6 +260,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             }
             i++;
         });
+        clusterFeature.set('cachedStyle', styles);
         return styles;
 
     },
