@@ -81,13 +81,14 @@ angular.module('anol.map')
                 return self.selectClusterControl;
             }
 
-            var olClusterLayers = [];
-            angular.forEach(self.clusterLayers, function(layer) {
-                olClusterLayers.push(layer.olLayer);
-            });
-
             var interactionOptions = $.extend({}, defaultClusterOptions, this.clusterSelectOptions, {
-                layers: olClusterLayers,
+                layers: function(layer) {
+                    var anolLayer = layer.get('anolLayer');
+                    if(anolLayer === undefined || !anolLayer.isClustered()) {
+                        return false;
+                    }
+                    return self.clusterLayers.indexOf(anolLayer) > -1;
+                },
                 // for each revealed feature of selected cluster, this function is called
                 featureStyle: function(revealedFeature, resolution) {
                     var style = new ol.style.Style();
