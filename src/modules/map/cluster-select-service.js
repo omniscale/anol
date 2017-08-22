@@ -139,7 +139,7 @@ angular.module('anol.map')
                             if(feature.get('selectclusterfeature')) {
                                 found = true;
                             }
-                        })
+                        });
                     }
                     return found;
                 });
@@ -149,19 +149,24 @@ angular.module('anol.map')
 
             self.selectClusterInteraction.on('select', function(a) {
                 if(a.selected.length === 1) {
-                    if(a.selected[0].get('features').length > interactionOptions.maxObjects) {
+                    var revealedFeature = a.selected[0];
+                    if(revealedFeature.get('features').length > interactionOptions.maxObjects) {
                         var view = MapService.getMap().getView();
                         view.setZoom(view.getZoom() + 1);
                         return;
                     }
-                    if(a.selected[0].get('features').length > 1) {
-                        selectedCluster = a.selected[0];
+                    if(revealedFeature.get('features').length > 1) {
+                        // cluster open
+                        selectedCluster = revealedFeature;
                         selectedCluster.setStyle(new ol.style.Style());
                         return;
                     }
-                    if(a.selected[0].get('selectclusterfeature') === true) {
+                    if(revealedFeature.get('selectclusterfeature') === true) {
+                        // revealedFeature selected
+                        var originalFeature = revealedFeature.get('features')[0];
+                        var layer = self.layerByFeature(originalFeature);
                         angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
-                            f(a.selected[0]);
+                            f(revealedFeature, originalFeature, layer);
                         });
                     }
                 } else if(a.selected.length === 0 && angular.isDefined(selectedCluster)) {
