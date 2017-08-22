@@ -157,6 +157,9 @@ angular.module('anol.map')
                     }
                     if(revealedFeature.get('features').length > 1) {
                         // cluster open
+                        if(selectedCluster !== undefined) {
+                            selectedCluster.setStyle(null);
+                        }
                         selectedCluster = revealedFeature;
                         selectedCluster.setStyle(new ol.style.Style());
                         MapService.addCursorPointerCondition(changeCursorCondition);
