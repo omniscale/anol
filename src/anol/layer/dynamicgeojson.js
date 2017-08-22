@@ -245,10 +245,8 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
 
                 lastXAnchor = styleDefinition.graphicXAnchor;
 
-                if(!even) {
-                    styleDefinition.graphicXAnchor += 0.5;
-                }
-                styleDefinition.graphicXAnchor *=  styleDefinition.graphicWidth;
+                styleDefinition.graphicXAnchor += even ? 1.0 : 0.5;
+                styleDefinition.graphicXAnchor *= styleDefinition.graphicWidth;
 
                 styles.push(
                     new ol.style.Style({
