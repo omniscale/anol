@@ -151,12 +151,22 @@ angular.module('anol.map')
                 if(a.selected.length === 1) {
                     var revealedFeature = a.selected[0];
                     if(revealedFeature.get('features').length > interactionOptions.maxObjects) {
+                        // zoom in when not all revealed features displayed
                         var view = MapService.getMap().getView();
                         view.setZoom(view.getZoom() + 1);
                         return;
                     }
+                    if(revealedFeature.get('selectclusterfeature') === true) {
+                        // revealedFeature selected. execute callbacks
+                        var originalFeature = revealedFeature.get('features')[0];
+                        var layer = self.layerByFeature(originalFeature);
+                        angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
+                            f(revealedFeature, originalFeature, layer);
+                        });
+                        return;
+                    }
                     if(revealedFeature.get('features').length > 1) {
-                        // cluster open
+                        // cluster with multiple features selected. cluster open
                         if(selectedCluster !== undefined) {
                             selectedCluster.setStyle(null);
                         }
@@ -165,13 +175,12 @@ angular.module('anol.map')
                         MapService.addCursorPointerCondition(changeCursorCondition);
                         return;
                     }
-                    if(revealedFeature.get('selectclusterfeature') === true) {
-                        // revealedFeature selected
-                        var originalFeature = revealedFeature.get('features')[0];
-                        var layer = self.layerByFeature(originalFeature);
-                        angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
-                            f(revealedFeature, originalFeature, layer);
-                        });
+                    if(revealedFeature.get('features').length === 1) {
+                        // cluster with one feature selected. clear selectedCluster style
+                        if(selectedCluster !== undefined) {
+                            selectedCluster.setStyle(null);
+                            selectedCluster = undefined;
+                        }
                     }
                 } else if(a.selected.length === 0 && angular.isDefined(selectedCluster)) {
                     // cluster closed
