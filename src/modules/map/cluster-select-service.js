@@ -28,20 +28,18 @@ angular.module('anol.map')
             this.clusterLayers = [];
             this.selectRevealedFeatureCallbacks = [];
             this.clusterSelectOptions = clusterSelectOptions;
-            this.selectedClusterLayer = undefined;
         };
 
         ClusterSelect.prototype.registerSelectRevealedFeatureCallback = function(f) {
             this.selectRevealedFeatureCallbacks.push(f);
         };
 
+        ClusterSelect.prototype.handleLayerVisibleChange = function(e) {
+            this.selectClusterInteraction.clear();
+        };
+
         ClusterSelect.prototype.addLayer = function(layer) {
-            var self = this;
-            layer.olLayer.on('change:visible', function() {
-                if(!layer.getVisible() && layer === self.selectedClusterLayer) {
-                    self.selectClusterInteraction.clear();
-                }
-            });
+            layer.olLayer.on('change:visible', this.handleLayerVisibleChange, this);
             this.clusterLayers.push(layer);
         };
 
@@ -193,7 +191,6 @@ angular.module('anol.map')
             self.selectClusterInteraction.getFeatures().on('add', function(e) {
                 var features = e.element.get('features');
                 var layer = self.layerByFeature(features[0]);
-                self.selectedClusterLayer = layer;
                 if(angular.isFunction(layer.clusterOptions.onSelect)) {
                     layer.clusterOptions.onSelect(features);
                 }
