@@ -164,6 +164,15 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
 
         // only for cluster features
 
+        // cluster with one feature
+        if(features.length === 1) {
+            if(features[0].get('__layer__') === this.name) {
+                return parentFunc.call(this, features[0], resolution);
+            } else {
+                return new ol.style.Style();
+            }
+        }
+
         var sourceLayers = this.olSource.get('anolLayers');
         var styleLayer;
         for(var i = 0; i < sourceLayers.length; i++) {
@@ -175,15 +184,6 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
 
         if(styleLayer !== undefined && styleLayer !== this) {
             return new ol.style.Style();
-        }
-
-        // cluster with one feature
-        if(features.length === 1) {
-            if(features[0].get('__layer__') === this.name) {
-                return parentFunc.call(this, features[0], resolution);
-            } else {
-                return new ol.style.Style();
-            }
         }
 
         // cluster with more than one feature
