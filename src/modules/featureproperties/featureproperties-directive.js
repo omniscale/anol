@@ -133,7 +133,7 @@ angular.module('anol.featureproperties')
             };
 
             scope.$watch('feature', featureChangeHandler);
-            scope.$watch('selects', selectsChangeHandler);
+            scope.$watchCollection('selects', selectsChangeHandler);
         }
     };
 }])
