@@ -51,9 +51,14 @@ angular.module('anol.map')
         };
 
         var ClusterSelect = function(clusterSelectOptions, clusterLayers) {
-            this.clusterLayers = clusterLayers;
+            var self = this;
+            this.clusterLayers = [];
             this.selectRevealedFeatureCallbacks = [];
             this.clusterSelectOptions = clusterSelectOptions;
+
+            angular.forEach(clusterLayers, function(layer) {
+                self.addLayer(layer);
+            });
         };
 
         ClusterSelect.prototype.registerSelectRevealedFeatureCallback = function(f) {
