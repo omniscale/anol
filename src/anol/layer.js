@@ -112,6 +112,12 @@ anol.layer.Layer.prototype = {
     offVisibleChange: function(func) {
         $(this).off('anol.layer.visible:change', func);
     },
+    refresh: function() {
+        if(this.olLayer instanceof ol.layer.Base && this.olLayer.getSource() instanceof ol.source.Source) {
+            var source = this.olLayer.getSource();
+            source.refresh();
+        }
+    },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};
         if(srcOptions.tilePixelRatio !== undefined) {

@@ -109,6 +109,7 @@
     "ol.proj.transformExtent",
     "ol.render.canvas.Immediate#setStyle",
     "ol.render.canvas.Immediate#drawGeometry",
+    "ol.source.Source",
     "ol.source.Cluster",
     "ol.source.ImageWMS",
     "ol.source.ImageWMS#*",
