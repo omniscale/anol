@@ -156,12 +156,14 @@ $.extend(anol.layer.Feature.prototype, {
             if(unclusteredIdx > -1) {
                 unclusteredAnolLayers.splice(unclusteredIdx, 1);
                 this.unclusteredSource.set('anolLayers', unclusteredAnolLayers);
+                this.unclusteredSource.refresh();
             }
             var anolLayers = this.olLayer.getSource().get('anolLayers');
             var idx = anolLayers.indexOf(this);
             if(idx > -1) {
                 anolLayers.splice(idx, 1);
                 this.olLayer.getSource().set('anolLayers', anolLayers);
+                this.olLayer.getSource().refresh();
             }
         }
         anol.layer.Layer.prototype.removeOlLayer.call(this);
