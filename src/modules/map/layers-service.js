@@ -7,6 +7,7 @@ angular.module('anol.map')
 .provider('LayersService', [function() {
     var _layers = [];
     var _addLayerHandlers = [];
+    var _removeLayerHandlers = [];
     var _clusterDistance = 50;
     /**
      * @ngdoc method
@@ -31,7 +32,11 @@ angular.module('anol.map')
         _addLayerHandlers.push(handler);
     };
 
-    this.$get = ['$rootScope', 'MapService', 'PopupsService', 'ClusterSelectService', function($rootScope, MapService, PopupsService, ClusterSelectService) {
+    this.registerRemoveLayerHandler = function(handler) {
+        _removeLayerHandlers.push(handler);
+    };
+
+    this.$get = ['$rootScope', 'MapService', 'PopupsService', function($rootScope, MapService, PopupsService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -39,10 +44,11 @@ angular.module('anol.map')
          * @description
          * Stores ol3 layerss and add them to map, if map present
          */
-        var Layers = function(layers, addLayerHandlers, clusterDistance) {
+        var Layers = function(layers, addLayerHandlers, removeLayerHandlers, clusterDistance) {
             var self = this;
             self.map = undefined;
             self.addLayerHandlers = addLayerHandlers;
+            self.removeLayerHandlers = removeLayerHandlers;
             self.clusterDistance = clusterDistance;
 
             // contains all anol background layers
@@ -190,6 +196,9 @@ angular.module('anol.map')
                         self.olLayers.splice(olLayerIdx, 1);
                     }
                 }
+                angular.forEach(self.removeLayerHandlers, function(handler) {
+                    handler(_layer);
+                });
                 _layer.removeOlLayer();
             });
         };
@@ -308,9 +317,6 @@ angular.module('anol.map')
         Layers.prototype._addLayer = function(layer, skipLayerIndex) {
             this.map.addLayer(layer.olLayer);
             layer.map = this.map;
-            if(layer.isClustered()) {
-                ClusterSelectService.addLayer(layer);
-            }
 
             if(skipLayerIndex !== true) {
                 this.olLayers.push(layer.olLayer);
@@ -394,6 +400,12 @@ angular.module('anol.map')
                 return this.addedLayers[idx];
             }
         };
-        return new Layers(_layers, _addLayerHandlers, _clusterDistance);
+        Layers.prototype.registerRemoveLayerHandler = function(handler) {
+            this.removeLayerHandlers.push(handler);
+        };
+        Layers.prototype.registerAddLayerHandler = function(handler) {
+            this.addLayerHandlers.push(handler);
+        };
+        return new Layers(_layers, _addLayerHandlers, _removeLayerHandlers, _clusterDistance);
     }];
 }]);

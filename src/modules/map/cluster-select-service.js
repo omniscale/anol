@@ -4,9 +4,35 @@ angular.module('anol.map')
  * @ngdoc object
  * @name anol.map.ClusterSelectServiceProvider
  */
-.provider('ClusterSelectService', [function() {
-
+.provider('ClusterSelectService', ['LayersServiceProvider', function(LayersServiceProvider) {
+    var _clusterServiceInstance;
     var _clusterSelectOptions;
+    var _clusterLayers = [];
+
+    LayersServiceProvider.registerAddLayerHandler(function(layer) {
+        if(!layer.isClustered()) {
+            return;
+        }
+        if(angular.isDefined(_clusterServiceInstance)) {
+            _clusterServiceInstance.addLayer(layer);
+        } else {
+            _clusterLayers.push(layer);
+        }
+    });
+
+    LayersServiceProvider.registerRemoveLayerHandler(function(layer) {
+        if(!layer.isClustered()) {
+            return;
+        }
+        if(angular.isDefined(_clusterServiceInstance)) {
+            _clusterServiceInstance.removeLayer(layer);
+        } else {
+            var idx = _clusterLayers.indexOf(layer);
+            if(idx > -1) {
+                _clusterLayers.splice(idx, 1);
+            }
+        }
+    });
 
     this.setClusterSelectOptions = function(options) {
         _clusterSelectOptions = options;
@@ -24,8 +50,8 @@ angular.module('anol.map')
             animationDuration: 500
         };
 
-        var ClusterSelect = function(clusterSelectOptions) {
-            this.clusterLayers = [];
+        var ClusterSelect = function(clusterSelectOptions, clusterLayers) {
+            this.clusterLayers = clusterLayers;
             this.selectRevealedFeatureCallbacks = [];
             this.clusterSelectOptions = clusterSelectOptions;
         };
@@ -75,9 +101,6 @@ angular.module('anol.map')
 
         ClusterSelect.prototype.getControl = function(recreate) {
             var self = this;
-            if(self.clusterLayers.length === 0) {
-                return;
-            }
 
             if(angular.isDefined(self.selectClusterControl) && recreate !== true) {
                 return self.selectClusterControl;
@@ -225,7 +248,7 @@ angular.module('anol.map')
 
             return this.selectClusterControl;
         };
-
-        return new ClusterSelect(_clusterSelectOptions);
+        _clusterServiceInstance = new ClusterSelect(_clusterSelectOptions, _clusterLayers);
+        return _clusterServiceInstance;
     }];
 }]);
