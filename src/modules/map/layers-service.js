@@ -56,7 +56,7 @@ angular.module('anol.map')
 
             self.olLayers = [];
 
-            self.lastAddedLayer = undefined;
+            self.addedLayers = [];
 
             angular.forEach(layers, function(layer) {
                 if(layer.isBackground) {
@@ -171,7 +171,13 @@ angular.module('anol.map')
                 }
             }
 
+
             angular.forEach(layers, function(_layer) {
+                var addedLayersIdx = self.addedLayers.indexOf(_layer);
+                if(addedLayersIdx > -1) {
+                    self.addedLayers.splice(addedLayersIdx, 1);
+                }
+
                 var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
                 if(overlayLayerIdx > -1) {
                     self.overlayLayers.splice(overlayLayerIdx, 1);
@@ -211,10 +217,11 @@ angular.module('anol.map')
          */
         Layers.prototype.createOlLayer = function(layer) {
             var olSource;
-            if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
-                olSource = this.lastAddedLayer.getCombinedSource(layer);
+            var lastAddedLayer = this.lastAddedLayer();
+            if(lastAddedLayer !== undefined && lastAddedLayer.isCombinable(layer)) {
+                olSource = lastAddedLayer.getCombinedSource(layer);
                 if(layer instanceof anol.layer.DynamicGeoJSON && layer.isClustered()) {
-                    layer.unclusteredSource = this.lastAddedLayer.unclusteredSource;
+                    layer.unclusteredSource = lastAddedLayer.unclusteredSource;
                 }
                 layer.combined = true;
             }
@@ -234,11 +241,11 @@ angular.module('anol.map')
             // only instances of BaseWMS are allowed to share olLayers
             // TODO allow also DynamicGeoJSON layer to share olLayers
             if(layer.combined && layer instanceof anol.layer.BaseWMS &&
-               angular.equals(layer.olLayerOptions, this.lastAddedLayer.olLayerOptions)
+               angular.equals(layer.olLayerOptions,lastAddedLayer.olLayerOptions)
             ) {
-                layer.setOlLayer(this.lastAddedLayer.olLayer);
+                layer.setOlLayer(lastAddedLayer.olLayer);
                 // TODO add layer to anolLayers of lastAddedLayer when anolLayer refactored anolLayers
-                return this.lastAddedLayer.olLayer;
+                return lastAddedLayer.olLayer;
             }
             // TODO refactor to anolLayers with list of layers
             // HINT olLayer.anolLayer is used in featurepopup-, geocoder- and geolocation-directive
@@ -271,7 +278,7 @@ angular.module('anol.map')
 
             angular.forEach(layers, function(_layer) {
                 self.createOlLayer(_layer);
-                self.lastAddedLayer = _layer;
+                self.addedLayers.push(_layer);
 
                 angular.forEach(self.addLayerHandlers, function(handler) {
                     handler(_layer);
@@ -383,6 +390,12 @@ angular.module('anol.map')
          */
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
+        };
+        Layers.prototype.lastAddedLayer = function() {
+            var idx = this.addedLayers.length - 1;
+            if(idx > -1) {
+                return this.addedLayers[idx];
+            }
         };
         return new Layers(_layers, _addLayerHandlers, _clusterDistance);
     }];
