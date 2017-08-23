@@ -178,6 +178,10 @@ angular.module('anol.map')
                         self.map.removeLayer(_layer.olLayer);
                         self.olLayers.splice(layerIdx, 1);
                     }
+                    var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
+                    if(overlayLayerIdx > -1) {
+                        self.overlayLayers.splice(overlayLayerIdx, 1);
+                    }
                 });
             }
         };
