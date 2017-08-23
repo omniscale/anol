@@ -206,13 +206,12 @@ angular.module('anol.map')
          */
         Layers.prototype.createOlLayer = function(layer) {
             var olSource;
-            var combined = false;
             if(this.lastAddedLayer !== undefined && this.lastAddedLayer.isCombinable(layer)) {
                 olSource = this.lastAddedLayer.getCombinedSource(layer);
                 if(layer instanceof anol.layer.DynamicGeoJSON && layer.isClustered()) {
                     layer.unclusteredSource = this.lastAddedLayer.unclusteredSource;
                 }
-                combined = true;
+                layer.combined = true;
             }
             if(olSource === undefined) {
                 var sourceOptions = layer.olSourceOptions;
@@ -229,7 +228,7 @@ angular.module('anol.map')
 
             // only instances of BaseWMS are allowed to share olLayers
             // TODO allow also DynamicGeoJSON layer to share olLayers
-            if(combined && layer instanceof anol.layer.BaseWMS &&
+            if(layer.combined && layer instanceof anol.layer.BaseWMS &&
                angular.equals(layer.olLayerOptions, this.lastAddedLayer.olLayerOptions)
             ) {
                 layer.setOlLayer(this.lastAddedLayer.olLayer);

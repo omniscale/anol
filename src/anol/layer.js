@@ -56,6 +56,7 @@ anol.layer.Layer = function(options) {
     this.options = options;
     this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
     this._controls = [];
+    this.combined = false;
 
     if(this.displayInLayerswitcher === false) {
         this.permalink = false;
