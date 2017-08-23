@@ -149,6 +149,23 @@ $.extend(anol.layer.Feature.prototype, {
             this.unclusteredSource.set('anolLayers', this.olLayer.getSource().get('anolLayers'));
         }
     },
+    removeOlLayer: function() {
+        if(this.isClustered()) {
+            var unclusteredAnolLayers = this.unclusteredSource.get('anolLayers');
+            var unclusteredIdx = unclusteredAnolLayers.indexOf(this);
+            if(unclusteredIdx > -1) {
+                unclusteredAnolLayers.splice(unclusteredIdx, 1);
+                this.unclusteredSource.set('anolLayers', unclusteredAnolLayers);
+            }
+            var anolLayers = this.olLayer.getSource().get('anolLayers');
+            var idx = anolLayers.indexOf(this);
+            if(idx > -1) {
+                anolLayers.splice(idx, 1);
+                this.olLayer.getSource().set('anolLayers', anolLayers);
+            }
+        }
+        anol.layer.Layer.prototype.removeOlLayer.call(this);
+    },
     isCombinable: function() {
         return false;
     },

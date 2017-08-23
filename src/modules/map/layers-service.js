@@ -183,10 +183,6 @@ angular.module('anol.map')
                     self.overlayLayers.splice(overlayLayerIdx, 1);
                 }
 
-                if(_layer.combined === true) {
-                    _layer.removeFromCombinedSource();
-                }
-
                 if(self.map !== undefined) {
                     var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
                     if(olLayerIdx > -1) {
@@ -194,6 +190,7 @@ angular.module('anol.map')
                         self.olLayers.splice(olLayerIdx, 1);
                     }
                 }
+                _layer.removeOlLayer();
             });
         };
         /**
@@ -226,7 +223,7 @@ angular.module('anol.map')
                 layer.combined = true;
             }
             if(olSource === undefined) {
-                var sourceOptions = layer.olSourceOptions;
+                var sourceOptions = angular.extend({}, layer.olSourceOptions);
                 if(layer.isClustered()) {
                     sourceOptions.distance = this.clusterDistance;
                 }
@@ -234,7 +231,7 @@ angular.module('anol.map')
                 olSource.set('anolLayers', [layer]);
             }
 
-            var layerOpts = layer.olLayerOptions;
+            var layerOpts = angular.extend({}, layer.olLayerOptions);
             layerOpts.source = olSource;
             var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
 

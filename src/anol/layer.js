@@ -88,6 +88,9 @@ anol.layer.Layer.prototype = {
     setOlLayer: function(olLayer) {
         this.olLayer = olLayer;
     },
+    removeOlLayer: function() {
+        delete this.olLayer;
+    },
     isCombinable: function(other) {
         if(other.CLASS_NAME !== this.CLASS_NAME) {
             return false;
@@ -102,6 +105,9 @@ anol.layer.Layer.prototype = {
     },
     removeFromCombinedSource: function() {},
     getVisible: function() {
+        if(this.olLayer === undefined) {
+            return false;
+        }
         return this.olLayer.getVisible();
     },
     setVisible: function(visible)  {
