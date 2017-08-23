@@ -48,8 +48,10 @@ angular.module('anol.map')
             var idx = this.clusterLayers.indexOf(layer);
             if(idx > -1) {
                 this.clusterLayers.splice(idx, 1);
+                this.selectClusterInteraction.clear();
             }
         };
+
         ClusterSelect.prototype.layerByFeature = function(feature) {
             var self = this;
             var resultLayer;
