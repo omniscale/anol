@@ -173,10 +173,10 @@ angular.module('anol.map')
 
             if(self.map !== undefined) {
                 angular.forEach(layers, function(_layer) {
-                    var layerIdx = self.olLayers.indexOf(_layer.olLayer);
-                    if(layerIdx > -1) {
+                    var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
+                    if(olLayerIdx > -1) {
                         self.map.removeLayer(_layer.olLayer);
-                        self.olLayers.splice(layerIdx, 1);
+                        self.olLayers.splice(olLayerIdx, 1);
                     }
                     var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
                     if(overlayLayerIdx > -1) {
