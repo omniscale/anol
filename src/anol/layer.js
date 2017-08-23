@@ -100,6 +100,7 @@ anol.layer.Layer.prototype = {
     getCombinedSource: function(other) {
         return undefined;
     },
+    removeFromCombinedSource: function() {},
     getVisible: function() {
         return this.olLayer.getVisible();
     },

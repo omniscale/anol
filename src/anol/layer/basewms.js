@@ -60,6 +60,15 @@ $.extend(anol.layer.BaseWMS.prototype, {
         olSource.set('anolLayers', anolLayers);
         return olSource;
     },
+    removeFromCombinedSource: function() {
+        var olSource = this.olLayer.getSource();
+        var anolLayers = olSource.get('anolLayers');
+        var idx = anolLayers.indexOf(this);
+        if(idx > -1) {
+            anolLayers.splice(idx, 1);
+        }
+        olSource.set('anolLayers', anolLayers);
+    },
     getVisible: function() {
         return this.visible;
     },

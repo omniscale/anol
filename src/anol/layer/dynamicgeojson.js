@@ -60,6 +60,14 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         }
         return this.olSource;
     },
+    removeFromCombinedSource: function() {
+        var anolLayers = this.olSource.get('anolLayers');
+        var idx = anolLayers.indexOf(this);
+        if(idx > -1) {
+            anolLayers.splice(idx, 1);
+        }
+        this.olSource.set('anolLayers', anolLayers);
+    },
     setVisible: function(visible) {
         anol.layer.StaticGeoJSON.prototype.setVisible.call(this, visible);
         // find better solution than clear, cause it's remove all features from the source, not only

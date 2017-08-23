@@ -171,19 +171,24 @@ angular.module('anol.map')
                 }
             }
 
-            if(self.map !== undefined) {
-                angular.forEach(layers, function(_layer) {
+            angular.forEach(layers, function(_layer) {
+                var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
+                if(overlayLayerIdx > -1) {
+                    self.overlayLayers.splice(overlayLayerIdx, 1);
+                }
+
+                if(_layer.combined === true) {
+                    _layer.removeFromCombinedSource();
+                }
+
+                if(self.map !== undefined) {
                     var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
                     if(olLayerIdx > -1) {
                         self.map.removeLayer(_layer.olLayer);
                         self.olLayers.splice(olLayerIdx, 1);
                     }
-                    var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
-                    if(overlayLayerIdx > -1) {
-                        self.overlayLayers.splice(overlayLayerIdx, 1);
-                    }
-                });
-            }
+                }
+            });
         };
         /**
          * @ngdoc method
