@@ -27,7 +27,6 @@
     this.externalGraphicPrefix = options.externalGraphicPrefix;
     this.hasPropertyLabel = false;
 
-    this.isVector = true;
     this.loaded = true;
     this.saveable = options.saveable || false;
     this.editable = options.editable || false;
@@ -43,6 +42,7 @@
     this.sleectClusterInteraction = undefined;
 
     anol.layer.Layer.call(this, options);
+    this.isVector = true;
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
