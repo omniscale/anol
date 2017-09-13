@@ -10,7 +10,7 @@ angular.module('anol.featurestyleeditor')
  * @param {string} templateUrl Url to template to use instead of default one
  * @param {ol.Feature} anolFeatureStyleEditor Feature to edit
  * @param {anol.layer.Feature} layer Layer feature belongs to
- * @param {boolean} disabled Disable style editor
+ * @param {boolean} formDisabled Disable style editor
  * @param {string} disabledText Text to display while styleeditor is disabled
  *
  * @description
@@ -54,7 +54,7 @@ angular.module('anol.featurestyleeditor')
         scope: {
             feature: '=anolFeatureStyleEditor',
             layer: '=',
-            disabled: '=',
+            formDisabled: '=',
             disabledText: '@'
         },
         templateUrl: function(tElement, tAttrs) {
@@ -120,7 +120,7 @@ angular.module('anol.featurestyleeditor')
                     disableOverlay = undefined;
                 };
 
-                scope.$watch('disabled', function(n, o) {
+                scope.$watch('formDisabled', function(n, o) {
                     if(o === true) {
                         removeOverlay();
                     }
