@@ -27,7 +27,6 @@
     this.externalGraphicPrefix = options.externalGraphicPrefix;
     this.hasPropertyLabel = false;
 
-    this.isVector = true;
     this.loaded = true;
     this.saveable = options.saveable || false;
     this.editable = options.editable || false;
@@ -43,6 +42,7 @@
     this.sleectClusterInteraction = undefined;
 
     anol.layer.Layer.call(this, options);
+    this.isVector = true;
 };
 anol.layer.Feature.prototype = new anol.layer.Layer(false);
 $.extend(anol.layer.Feature.prototype, {
@@ -137,13 +137,35 @@ $.extend(anol.layer.Feature.prototype, {
                 this.defaultStyle = defaultStyle;
             }
             olLayer.setStyle(function(feature, resolution) {
-                return [self.createStyle(feature, resolution)];
+                var style = self.createStyle(feature, resolution);
+                if(angular.isArray(style)) {
+                    return style;
+                }
+                return [style];
             });
         }
 
         if(this.isClustered()) {
             this.unclusteredSource.set('anolLayers', this.olLayer.getSource().get('anolLayers'));
         }
+    },
+    removeOlLayer: function() {
+        if(this.isClustered()) {
+            var unclusteredAnolLayers = this.unclusteredSource.get('anolLayers');
+            var unclusteredIdx = unclusteredAnolLayers.indexOf(this);
+            if(unclusteredIdx > -1) {
+                unclusteredAnolLayers.splice(unclusteredIdx, 1);
+                this.unclusteredSource.set('anolLayers', unclusteredAnolLayers);
+            }
+            var anolLayers = this.olLayer.getSource().get('anolLayers');
+            var idx = anolLayers.indexOf(this);
+            if(idx > -1) {
+                anolLayers.splice(idx, 1);
+                this.olLayer.getSource().set('anolLayers', anolLayers);
+            }
+            this.olSource.clear(true);
+        }
+        anol.layer.Layer.prototype.removeOlLayer.call(this);
     },
     isCombinable: function() {
         return false;
@@ -174,14 +196,7 @@ $.extend(anol.layer.Feature.prototype, {
             // style
             var clusteredFeatures = feature.get('features');
             if(angular.isDefined(clusteredFeatures)) {
-                if(clusteredFeatures.length > 1) {
-                    var clusterStyle = this.clusterOptions.clusterStyle;
-                    if(angular.isDefined(clusterStyle) && angular.isFunction(clusterStyle)) {
-                        clusterStyle = clusterStyle(feature, resolution)[0];
-                    }
-                    return clusterStyle || this.DEFAULT_CLUSTERED_STYLE;
-                }
-                feature = clusteredFeatures[0];
+                return this.createClusterStyle(feature);
             }
         }
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
@@ -225,6 +240,9 @@ $.extend(anol.layer.Feature.prototype, {
         }
         styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
         return new ol.style.Style(styleOptions);
+    },
+    createClusterStyle: function(features) {
+        return this.DEFAULT_CLUSTERED_STYLE;
     },
     createImageStyle: function(style, defaultImageStyle) {
         var radius = style.radius;
@@ -302,14 +320,24 @@ $.extend(anol.layer.Feature.prototype, {
             styleOptions.color = style.graphicColor;
         }
 
+        if(style.anchorOrigin !== undefined) {
+            styleOptions.anchorOrigin = style.anchorOrigin;
+        }
+
         var anchor = [0.5, 0.5];
         if(style.graphicXAnchor !== undefined) {
-            anchor[0] = parseInt(style.graphicXAnchor);
+            anchor[0] = parseFloat(style.graphicXAnchor);
             styleOptions.anchorXUnits = 'pixel';
         }
+        if(style.anchorXUnits !== undefined) {
+            styleOptions.anchorXUnits = style.anchorXUnits;
+        }
         if(style.graphicYAnchor !== undefined) {
-            anchor[1] = parseInt(style.graphicYAnchor);
+            anchor[1] = parseFloat(style.graphicYAnchor);
             styleOptions.anchorYUnits = 'pixel';
+        }
+        if(style.anchorYUnits !== undefined) {
+            styleOptions.anchorYUnits = style.anchorYUnits;
         }
         styleOptions.anchor = anchor;
 
@@ -513,12 +541,11 @@ $.extend(anol.layer.Feature.prototype, {
 
         this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
 
-        this.OL_LAYER_CLASS = ol.layer.AnimatedCluster;
         this.OL_SOURCE_CLASS = ol.source.Cluster;
 
         return {
             source: this.unclusteredSource,
-            distance: 40
+            distance: 50
         };
     },
     _prepareClusterStyles: function(clusterOptions) {

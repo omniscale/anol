@@ -45,7 +45,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         if(this.olSourceOptions.featureProjection !== other.olSourceOptions.featureProjection) {
             return false;
         }
-        if(this.clusterOptions !== false) {
+        if(this.clusterOptions !== false && this.anolGroup !== other.anolGroup) {
             return false;
         }
         return true;
@@ -54,6 +54,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var anolLayers = this.olSource.get('anolLayers');
         anolLayers.push(other);
         this.olSource.set('anolLayers', anolLayers);
+
+        if(this.isClustered) {
+            return this.olLayer.getSource();
+        }
         return this.olSource;
     },
     setVisible: function(visible) {
@@ -78,7 +82,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             var additionalParameters = {};
             angular.forEach(self.olSource.get('anolLayers'), function(layer) {
                 if(layer.getVisible()) {
-                    additionalParameters = anol.helper.mergeObjects(additionalParameters, self.additionalRequestParameters);
+                    additionalParameters = anol.helper.mergeObjects(additionalParameters, layer.additionalRequestParameters);
                 }
             });
             self.loader(
@@ -139,10 +143,137 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         self.olSource.addFeatures(features);
     },
     createStyle: function(feature, resolution) {
-        if(feature !== undefined && feature.get('__layer__') !== this.name && feature.get('features') === undefined) {
+        var parentFunc = anol.layer.StaticGeoJSON.prototype.createStyle;
+
+        // call parent func when feature is undefined
+        if(feature === undefined) {
+            return parentFunc.call(this, feature, resolution);
+        }
+
+        var features = feature.get('features');
+
+        // normal feature
+        if(features === undefined) {
+            // return empty style if feature not belongs to this layer
+            if(feature.get('__layer__') !== this.name) {
+                return new ol.style.Style();
+            } else {
+                return parentFunc.call(this, feature, resolution);
+            }
+        }
+
+        // only for cluster features
+
+        // cluster with one feature
+        if(features.length === 1) {
+            if(features[0].get('__layer__') === this.name) {
+                return parentFunc.call(this, features[0], resolution);
+            } else {
+                return new ol.style.Style();
+            }
+        }
+
+        var sourceLayers = this.olSource.get('anolLayers');
+        var styleLayer;
+        for(var i = 0; i < sourceLayers.length; i++) {
+            if(sourceLayers[i].getVisible()) {
+                styleLayer = sourceLayers[i];
+                break;
+            }
+        }
+
+        if(styleLayer !== undefined && styleLayer !== this) {
             return new ol.style.Style();
         }
-        return anol.layer.StaticGeoJSON.prototype.createStyle.call(this, feature, resolution);
+
+        // cluster with more than one feature
+        return parentFunc.call(this, feature, resolution);
+    },
+    createClusterStyle: function(clusterFeature) {
+        var visible = ol.extent.containsCoordinate(
+            this.map.getView().calculateExtent(this.map.getSize()),
+            clusterFeature.getGeometry().getCoordinates()
+        );
+        if(!visible) {
+            return new ol.style.Style();
+        }
+        var cachedStyle = clusterFeature.get('cachedStyle');
+        if(cachedStyle !== null && cachedStyle !== undefined) {
+            return cachedStyle;
+        }
+        var self = this;
+        var legendItems = {};
+        var objCount = 0;
+        var layers = this.olLayer.getSource().get('anolLayers');
+        // iterate over revealed features and sort/count by layer
+        clusterFeature.get('features').forEach(function(feature) {
+            layers.forEach(function(layer) {
+                if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
+                    if(layer.name === feature.get('__layer__')) {
+                        if(legendItems[layer.name] === undefined) {
+                            legendItems[layer.name] = {
+                                layer: layer,
+                                count: 0
+                            };
+                            objCount ++;
+                        }
+                        legendItems[layer.name].count ++;
+                    }
+                }
+
+            });
+        });
+
+        var styles = [];
+
+        var even = objCount % 2 === 0;
+        var i = 0;
+        var lastXAnchor = 0;
+        angular.forEach(legendItems, function(value) {
+            var defaultStyle = value.layer.olLayer.getStyle();
+            if(angular.isFunction(defaultStyle)) {
+                defaultStyle = defaultStyle()[0];
+            }
+
+            if(objCount > 1) {
+                var styleDefinition = angular.extend({}, value.layer.style);
+                if(i % 2 === 0) {
+                    styleDefinition.graphicXAnchor = lastXAnchor + i;
+                } else {
+                    styleDefinition.graphicXAnchor = lastXAnchor - i;
+                }
+
+                lastXAnchor = styleDefinition.graphicXAnchor;
+
+                styleDefinition.graphicXAnchor += even ? 1.0 : 0.5;
+                styleDefinition.graphicXAnchor *= styleDefinition.graphicWidth;
+
+                styles.push(
+                    new ol.style.Style({
+                        image: self.createIconStyle(styleDefinition, defaultStyle.getImage()),
+                        text: new ol.style.Text({
+                            text: value.count.toString(),
+                            offsetX: (styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2) * -1,
+                            offsetY: styleDefinition.graphicHeight,
+                            stroke: new ol.style.Stroke({color: '#fff', width: 2})
+                        })
+                    })
+                );
+            } else {
+                styles.push(defaultStyle);
+                styles.push(new ol.style.Style({
+                    text: new ol.style.Text({
+                        text: value.count.toString(),
+                        offsetY: value.layer.style.graphicHeight,
+                        stroke: new ol.style.Stroke({color: '#fff', width: 2})
+                    })
+                }));
+            }
+            i++;
+        });
+        clusterFeature.set('cachedStyle', styles);
+        return styles;
+
     },
     refresh: function() {
         this.olSource.clear();

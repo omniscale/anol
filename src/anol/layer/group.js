@@ -12,9 +12,13 @@
  */
  // TODO think about rebasing into anol.Group
 anol.layer.Group = function(options) {
+    var self = this;
     this.name = options.name;
     this.title = options.title;
     this.layers = options.layers;
+    angular.forEach(this.layers, function(layer) {
+        layer.anolGroup = self;
+    });
 };
 anol.layer.Group.prototype = {
     CLASS_NAME: 'anol.layer.Group',

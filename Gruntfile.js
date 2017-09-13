@@ -49,6 +49,10 @@ module.exports = function(grunt) {
           'src/anol/**/*.js',
           'src/modules/module.js',
           'src/modules/**/module.js',
+          'src/modules/map/map-service.js',
+          'src/modules/map/layers-service.js',
+          'src/modules/map/cluster-select-service.js',
+          'src/modules/map/*.js',
           'src/modules/**/*.js'
         ],
         dest: 'build/<%= pkg.name %>.js'

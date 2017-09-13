@@ -56,6 +56,7 @@ anol.layer.Layer = function(options) {
     this.options = options;
     this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
     this._controls = [];
+    this.combined = false;
 
     if(this.displayInLayerswitcher === false) {
         this.permalink = false;
@@ -87,6 +88,9 @@ anol.layer.Layer.prototype = {
     setOlLayer: function(olLayer) {
         this.olLayer = olLayer;
     },
+    removeOlLayer: function() {
+        delete this.olLayer;
+    },
     isCombinable: function(other) {
         if(other.CLASS_NAME !== this.CLASS_NAME) {
             return false;
@@ -99,7 +103,11 @@ anol.layer.Layer.prototype = {
     getCombinedSource: function(other) {
         return undefined;
     },
+    removeFromCombinedSource: function() {},
     getVisible: function() {
+        if(this.olLayer === undefined) {
+            return false;
+        }
         return this.olLayer.getVisible();
     },
     setVisible: function(visible)  {
@@ -111,6 +119,12 @@ anol.layer.Layer.prototype = {
     },
     offVisibleChange: function(func) {
         $(this).off('anol.layer.visible:change', func);
+    },
+    refresh: function() {
+        if(this.olLayer instanceof ol.layer.Base && this.olLayer.getSource() instanceof ol.source.Source) {
+            var source = this.olLayer.getSource();
+            source.refresh();
+        }
     },
     _createSourceOptions: function(srcOptions) {
         srcOptions = srcOptions || {};

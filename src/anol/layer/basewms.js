@@ -60,6 +60,18 @@ $.extend(anol.layer.BaseWMS.prototype, {
         olSource.set('anolLayers', anolLayers);
         return olSource;
     },
+    removeOlLayer: function() {
+        if(this.combined) {
+            var olSource = this.olLayer.getSource();
+            var anolLayers = olSource.get('anolLayers');
+            var idx = anolLayers.indexOf(this);
+            if(idx > -1) {
+                anolLayers.splice(idx, 1);
+            }
+            olSource.set('anolLayers', anolLayers);
+        }
+        anol.layer.Layer.prototype.removeOlLayer.call(this);
+    },
     getVisible: function() {
         return this.visible;
     },
@@ -105,7 +117,14 @@ $.extend(anol.layer.BaseWMS.prototype, {
             requestParams.FORMAT = this.legend.format;
         }
 
-        return this.olLayer.getSource().getUrl() + $.param(requestParams);
+        var url = this.olLayer.getSource().getUrl();
+        if(url.indexOf('?') === -1) {
+            url += '?';
+        } else if(url.lastIndexOf('&') !== url.length - 1) {
+            url += '&';
+        }
+
+        return url + $.param(requestParams);
     },
     getFeatureInfoUrl: function(coordinate, resolution, projection, params) {
         var requestParams = $.extend(true,

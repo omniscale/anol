@@ -4,9 +4,35 @@ angular.module('anol.map')
  * @ngdoc object
  * @name anol.map.ClusterSelectServiceProvider
  */
-.provider('ClusterSelectService', [function() {
-
+.provider('ClusterSelectService', ['LayersServiceProvider', function(LayersServiceProvider) {
+    var _clusterServiceInstance;
     var _clusterSelectOptions;
+    var _clusterLayers = [];
+
+    LayersServiceProvider.registerAddLayerHandler(function(layer) {
+        if(!layer.isClustered()) {
+            return;
+        }
+        if(angular.isDefined(_clusterServiceInstance)) {
+            _clusterServiceInstance.addLayer(layer);
+        } else {
+            _clusterLayers.push(layer);
+        }
+    });
+
+    LayersServiceProvider.registerRemoveLayerHandler(function(layer) {
+        if(!layer.isClustered()) {
+            return;
+        }
+        if(angular.isDefined(_clusterServiceInstance)) {
+            _clusterServiceInstance.removeLayer(layer);
+        } else {
+            var idx = _clusterLayers.indexOf(layer);
+            if(idx > -1) {
+                _clusterLayers.splice(idx, 1);
+            }
+        }
+    });
 
     this.setClusterSelectOptions = function(options) {
         _clusterSelectOptions = options;
@@ -16,52 +42,45 @@ angular.module('anol.map')
 
         var defaultClusterOptions = {
             selectCluster: true,
-            pointRadius: 7,
+            pointRadius: 10,
             spiral: true,
             circleMaxObjects: 10,
-            maxObjects: 60,
-            animate: true,
-            animationDuration: 500,
+            maxObjects: 20,
+            animate: false,
+            animationDuration: 500
         };
 
-        var defaultUnclusteredStyle = new ol.style.Circle({
-            radius: 5,
-            stroke: new ol.style.Stroke({
-                color: "rgba(0,255,255,1)",
-                width: 1
-            }),
-            fill: new ol.style.Fill({
-                color: "rgba(0,255,255,0.3)"
-            })
-        });
-
-        var defaultSelectClusteredStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 10,
-                stroke: new ol.style.Stroke({
-                    color: "rgba(255,255,0,1)",
-                    width: 1
-                }),
-                fill: new ol.style.Fill({
-                    color: "rgba(255,255,0,0.3)"
-                })
-            })
-        });
-
-        var ClusterSelect = function(clusterSelectOptions) {
+        var ClusterSelect = function(clusterSelectOptions, clusterLayers) {
+            var self = this;
             this.clusterLayers = [];
+            this.selectRevealedFeatureCallbacks = [];
             this.clusterSelectOptions = clusterSelectOptions;
-            this.selectedClusterLayer = undefined;
+
+            angular.forEach(clusterLayers, function(layer) {
+                self.addLayer(layer);
+            });
+        };
+
+        ClusterSelect.prototype.registerSelectRevealedFeatureCallback = function(f) {
+            this.selectRevealedFeatureCallbacks.push(f);
+        };
+
+        ClusterSelect.prototype.handleLayerVisibleChange = function(e) {
+            this.selectClusterInteraction.clear();
         };
 
         ClusterSelect.prototype.addLayer = function(layer) {
-            var self = this;
-            layer.olLayer.on('change:visible', function() {
-                if(!layer.getVisible() && layer === self.selectedClusterLayer) {
-                    self.selectClusterInteraction.clear();
-                }
-            });
+            layer.olLayer.on('change:visible', this.handleLayerVisibleChange, this);
             this.clusterLayers.push(layer);
+        };
+
+        ClusterSelect.prototype.removeLayer = function(layer) {
+            layer.olLayer.un('change:visible', this.handleLayerVisibleChange, this);
+            var idx = this.clusterLayers.indexOf(layer);
+            if(idx > -1) {
+                this.clusterLayers.splice(idx, 1);
+                this.selectClusterInteraction.clear();
+            }
         };
 
         ClusterSelect.prototype.layerByFeature = function(feature) {
@@ -73,7 +92,13 @@ angular.module('anol.map')
                     return;
                 }
                 if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
-                    resultLayer = layer;
+                    if(layer instanceof anol.layer.DynamicGeoJSON) {
+                        if(feature.get('__layer__') === layer.name) {
+                            resultLayer = layer;
+                        }
+                    } else {
+                        resultLayer = layer;
+                    }
                 }
             });
             return resultLayer;
@@ -81,67 +106,129 @@ angular.module('anol.map')
 
         ClusterSelect.prototype.getControl = function(recreate) {
             var self = this;
-            if(self.clusterLayers.length === 0) {
-                return;
-            }
 
             if(angular.isDefined(self.selectClusterControl) && recreate !== true) {
                 return self.selectClusterControl;
             }
 
-            var olClusterLayers = [];
-            angular.forEach(self.clusterLayers, function(layer) {
-                olClusterLayers.push(layer.olLayer);
-            });
-
             var interactionOptions = $.extend({}, defaultClusterOptions, this.clusterSelectOptions, {
-                layers: olClusterLayers,
-                featureStyle: function(clusterFeature, resolution) {
-                    // for each feature represented by selected cluster a feature with
-                    // features property containing the original feature is returned.
-                    // the only feature without a features property is the clusterFeature
-                    // representing n features
-                    var clusteredFeature = clusterFeature.get('features');
-                    if(clusteredFeature === undefined) {
-                        return;
+                layers: function(layer) {
+                    var anolLayer = layer.get('anolLayer');
+                    if(anolLayer === undefined || !anolLayer.isClustered()) {
+                        return false;
                     }
-                    var feature = clusteredFeature[0];
-                    var layer = self.layerByFeature(feature);
-                    var layerStyle = layer.olLayer.getStyle();
-                    if(angular.isFunction(layerStyle)) {
-                        layerStyle = layerStyle(feature, resolution)[0];
-                    }
-                    var imageStyle = layerStyle.getImage();
-                    return [
-                        new ol.style.Style({
-                            image: imageStyle ? imageStyle : defaultUnclusteredStyle,
-                            // Draw a link beetween points (or not)
+                    return self.clusterLayers.indexOf(anolLayer) > -1;
+                },
+                // for each revealed feature of selected cluster, this function is called
+                featureStyle: function(revealedFeature, resolution) {
+                    var style = new ol.style.Style();
+                    // style link lines
+                    if(revealedFeature.get('selectclusterlink') === true) {
+                        style = new ol.style.Style({
                             stroke: new ol.style.Stroke({
-                                color: "#fff",
+                                color: '#f00',
                                 width: 1
                             })
-                        })
-                    ];
+                        });
+                    }
+                    if(revealedFeature.get('selectclusterfeature') === true) {
+                        var originalFeature = revealedFeature.get('features')[0];
+                        var layer = self.layerByFeature(originalFeature);
+                        var layerStyle = layer.olLayer.getStyle();
+
+                        if(angular.isFunction(layerStyle)) {
+                            layerStyle = layerStyle(originalFeature, resolution)[0];
+                        }
+
+                        style = layerStyle;
+                    }
+
+                    return [style];
                 },
                 style: function(clusterFeature, resolution) {
-                    // clusterFeature is the feature representing n features
-                    var layer = self.layerByFeature(clusterFeature.get('features')[0]);
-                    var selectClusterStyle = layer.clusterOptions.selectClusterStyle;
-                    if(angular.isFunction(selectClusterStyle)) {
-                        selectClusterStyle = selectClusterStyle(clusterFeature, resolution)[0];
+                    if(clusterFeature.get('features').length === 1) {
+                        var layer = self.layerByFeature(clusterFeature.get('features')[0]);
+                        var style = layer.olLayer.getStyle();
+                        if(angular.isFunction(style)) {
+                            style = style(clusterFeature, resolution);
+                        }
+                        if(angular.isArray(style)) {
+                            return style;
+                        }
+                        return [style];
                     }
-                    return [
-                        selectClusterStyle || defaultSelectClusteredStyle
-                    ];
+                    return [new ol.style.Style()];
                 }
             });
 
+            var selectedCluster;
             self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+
+            var changeCursorCondition = function(pixel) {
+                return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
+                    var found = false;
+                    if(self.selectClusterInteraction.overlayLayer_ === layer) {
+                        MapService.getMap().forEachFeatureAtPixel(pixel, function(feature) {
+                            if(found) {
+                                return;
+                            }
+                            if(feature.get('selectclusterfeature')) {
+                                found = true;
+                            }
+                        });
+                    }
+                    return found;
+                });
+            };
+
+            MapService.addCursorPointerCondition(changeCursorCondition);
+
+            self.selectClusterInteraction.on('select', function(a) {
+                if(a.selected.length === 1) {
+                    var revealedFeature = a.selected[0];
+                    if(revealedFeature.get('features').length > interactionOptions.maxObjects) {
+                        // zoom in when not all revealed features displayed
+                        var view = MapService.getMap().getView();
+                        view.setZoom(view.getZoom() + 1);
+                        return;
+                    }
+                    if(revealedFeature.get('selectclusterfeature') === true) {
+                        // revealedFeature selected. execute callbacks
+                        var originalFeature = revealedFeature.get('features')[0];
+                        var layer = self.layerByFeature(originalFeature);
+                        angular.forEach(self.selectRevealedFeatureCallbacks, function(f) {
+                            f(revealedFeature, originalFeature, layer);
+                        });
+                        return;
+                    }
+                    if(revealedFeature.get('features').length > 1) {
+                        // cluster with multiple features selected. cluster open
+                        if(selectedCluster !== undefined) {
+                            selectedCluster.setStyle(null);
+                        }
+                        selectedCluster = revealedFeature;
+                        selectedCluster.setStyle(new ol.style.Style());
+                        MapService.addCursorPointerCondition(changeCursorCondition);
+                        return;
+                    }
+                    if(revealedFeature.get('features').length === 1) {
+                        // cluster with one feature selected. clear selectedCluster style
+                        if(selectedCluster !== undefined) {
+                            selectedCluster.setStyle(null);
+                            selectedCluster = undefined;
+                        }
+                    }
+                } else if(a.selected.length === 0 && angular.isDefined(selectedCluster)) {
+                    // cluster closed
+                    selectedCluster.setStyle(null);
+                    selectedCluster = undefined;
+                    MapService.removeCursorPointerCondition(changeCursorCondition);
+                }
+            });
 
             self.selectClusterInteraction.getFeatures().on('add', function(e) {
                 var features = e.element.get('features');
                 var layer = self.layerByFeature(features[0]);
-                self.selectedClusterLayer = layer;
                 if(angular.isFunction(layer.clusterOptions.onSelect)) {
                     layer.clusterOptions.onSelect(features);
                 }
@@ -155,23 +242,10 @@ angular.module('anol.map')
                 interactions: [self.selectClusterInteraction]
             });
 
-            var changeCursorCondition = function(pixel) {
-                return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
-                    var anolLayer = layer.get('anolLayer');
-                    if(anolLayer === undefined) {
-                        return false;
-                    }
-                    return anolLayer.isClustered();
-                });
-            };
 
             self.selectClusterControl.onDeactivate(function() {
                 self.selectClusterInteraction.setActive(false);
                 MapService.removeCursorPointerCondition(changeCursorCondition);
-            });
-            self.selectClusterControl.onActivate(function() {
-                self.selectClusterInteraction.setActive(true);
-                MapService.addCursorPointerCondition(changeCursorCondition);
             });
 
             // control active by default
@@ -179,7 +253,7 @@ angular.module('anol.map')
 
             return this.selectClusterControl;
         };
-
-        return new ClusterSelect(_clusterSelectOptions);
+        _clusterServiceInstance = new ClusterSelect(_clusterSelectOptions, _clusterLayers);
+        return _clusterServiceInstance;
     }];
 }]);

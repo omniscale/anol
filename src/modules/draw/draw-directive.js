@@ -134,10 +134,20 @@ angular.module('anol.draw')
                     features: selectInteraction.getFeatures()
                 });
                 modifyInteraction.on('modifystart', function() {
+                    MapService.getMap().getInteractions().forEach(function(interaction) {
+                        if(interaction instanceof ol.interaction.DragPan) {
+                            interaction.setActive(false);
+                        }
+                    });
                     MapService.removeCursorPointerCondition(changeCursorCondition);
                 });
                 modifyInteraction.on('modifyend', function() {
                     MapService.addCursorPointerCondition(changeCursorCondition);
+                    MapService.getMap().getInteractions().forEach(function(interaction) {
+                        if(interaction instanceof ol.interaction.DragPan) {
+                            interaction.setActive(true);
+                        }
+                    });
                 });
                 var snapInteraction = new ol.interaction.Snap({
                     source: layer.getSource()
