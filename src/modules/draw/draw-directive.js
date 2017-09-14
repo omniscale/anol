@@ -60,6 +60,7 @@ angular.module('anol.draw')
                 scope.polygonTooltipPlacement : 'right';
 
             scope.activeLayer = undefined;
+            scope.modifyActive = false;
             var selectedFeature;
             var controls = [];
             var drawPointControl, drawLineControl, drawPolygonControl, modifyControl;
@@ -459,6 +460,12 @@ angular.module('anol.draw')
                 if(newActiveLayer !== undefined) {
                     bindActiveLayer(newActiveLayer);
                 }
+            });
+
+            scope.$watch(function() {
+                return modifyControl.active;
+            }, function() {
+                scope.modifyActive = modifyControl.active;
             });
         }
     };
