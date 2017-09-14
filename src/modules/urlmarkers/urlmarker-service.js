@@ -185,7 +185,7 @@ angular.module('anol.urlmarkers')
                 if(coordinate === undefined) {
                     return;
                 }
-                var template = '<div anol-feature-popup coordinate="coordinate" layers="layers" offset="offset" open sticky><span bbcode>{{ label }}</span></div>';
+                var template = '<div anol-feature-popup coordinate="coordinate" layers="layers" offset="offset" open><span bbcode>{{ label }}</span></div>';
                 var compiled = $compile(angular.element(template));
                 var popupScope = $rootScope.$new();
                 popupScope.coordinate = coordinate;
