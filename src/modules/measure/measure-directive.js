@@ -309,7 +309,8 @@ angular.module('anol.measure')
             });
             var _measureLayer = new ol.layer.Vector({
                 source: measureSource,
-                style: scope.style || measureStyle
+                style: scope.style || measureStyle,
+                zIndex: 2
             });
 
             var layerOptions = {
