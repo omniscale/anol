@@ -121,7 +121,8 @@ angular.module('anol.print')
         var _printSource = new ol.source.Vector();
         // TODO use anol.layer.Feature
         var _printLayer = new ol.layer.Vector({
-            source: _printSource
+            source: _printSource,
+            zIndex: 3
         });
 
         // TODO replace ol3 styling by anol.layerFeature styling
