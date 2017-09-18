@@ -265,7 +265,10 @@ angular.module('anol.featurepopup')
                 MapService.addCursorPointerCondition(changeCursorCondition);
             });
 
-            scope.$watch('layers', function() {
+            scope.$watch('layers', function(n, o) {
+                if(angular.equals(n, o)) {
+                    return;
+                }
                 scope.coordinate = undefined;
             });
 
