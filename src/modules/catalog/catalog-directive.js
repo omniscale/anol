@@ -17,7 +17,6 @@ angular.module('anol.catalog')
         },
         link: function(scope, element, attrs) {
             scope.layers = CatalogService.catalogLayers;
-            scope.addedLayers = CatalogService.addedLayers;
 
             scope.addedLayers = CatalogService.addedLayers;
 
