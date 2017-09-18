@@ -71,6 +71,7 @@ angular.module('anol.featureexchange')
                 if(scope.layer instanceof anol.layer.Feature) {
                     uploadErrorElement.addClass('hide');
                     uploadErrorElement.empty();
+                    fileselector.val('');
                     fileselector[0].click();
                 }
             };
