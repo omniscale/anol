@@ -183,8 +183,25 @@ angular.module('anol.draw')
                     controlOptions.olControl = null;
                 }
                 var _modifyControl = new anol.control.Control(controlOptions);
-                _modifyControl.onDeactivate(deactivate);
-                _modifyControl.onActivate(activate);
+
+                // modifyControl adds all interactions needed at activate time
+                // otherwise, a feature added programmaticaly is not selectable
+                // until modify control is enabled twice by user
+                // reproducable with featureexchange module when uploading a geojson
+                // and try to select uploaded feature for modify
+                _modifyControl.onDeactivate(function(targetControl) {
+                    angular.forEach(targetControl.interactions, function(interaction) {
+                        interaction.setActive(false);
+                        MapService.getMap().removeInteraction(interaction);
+                    });
+                });
+                _modifyControl.onActivate(function(targetControl) {
+                    targetControl.interactions = createModifyInteractions(scope.activeLayer.olLayer);
+                    angular.forEach(targetControl.interactions, function(interaction) {
+                        interaction.setActive(true);
+                        scope.map.addInteraction(interaction);
+                    });
+                });
                 _modifyControl.onDeactivate(function() {
                     selectedFeature = undefined;
                 });
@@ -407,7 +424,6 @@ angular.module('anol.draw')
                 drawPolygonControl.interactions = createDrawInteractions(
                     'Polygon', layer.olLayer.getSource(), drawPolygonControl, layer.olLayer);
                 drawPolygonControl.enable();
-                modifyControl.interactions = createModifyInteractions(layer.olLayer);
                 modifyControl.enable();
 
                 angular.forEach(allInteractions(), function(interaction) {
