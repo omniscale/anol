@@ -36,7 +36,8 @@ angular.module('anol.getfeatureinfo')
             proxyUrl: '@',
             popupOpeningDirection: '@',
             waitingMarkerSrc: '@?',
-            waitingMarkerOffset: '=?'
+            waitingMarkerOffset: '=?',
+            excludeLayers: '=?'
         },
         templateUrl: function(tElement, tAttrs) {
             var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
