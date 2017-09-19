@@ -26,6 +26,7 @@ angular.module('anol.featurepopup')
         restrict: 'A',
         scope: {
             'layers': '=?',
+            'excludeLayers': '=?',
             'tolerance': '=?',
             'openFor': '=?',
             'openingDirection': '@',
@@ -69,6 +70,9 @@ angular.module('anol.featurepopup')
                     scope.layers.length = 0;
                     angular.forEach(layers, function(layer) {
                         if(!(layer instanceof anol.layer.Feature)) {
+                            return;
+                        }
+                        if(angular.isDefined(scope.excludeLayers) && scope.excludeLayers.indexOf(layer) > -1) {
                             return;
                         }
                         scope.layers.push(layer);
