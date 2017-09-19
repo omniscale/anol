@@ -72,7 +72,7 @@ angular.module('anol.urlmarkers')
         _popupOffset = popupOffset === undefined ? _popupOffset : popupOffset;
     };
 
-    this.$get = ['$rootScope', '$location', '$compile', '$document', 'MapService', 'LayersService', function($rootScope, $location, $compile, $document, MapService, LayersService) {
+    this.$get = ['$location', 'MapService', 'LayersService', function($location, MapService, LayersService) {
         /**
          * @ngdoc service
          * @name anol.urlmarkers.UrlMarkersService
@@ -99,10 +99,6 @@ angular.module('anol.urlmarkers')
             self.layer = self.createLayer(self.features);
 
             LayersService.addSystemLayer(self.layer);
-
-            if(self.usePopup) {
-                self.overlays = self.createPopups(self.features);
-            }
         };
 
         UrlMarkers.prototype.extractFeaturesFromUrl = function() {
@@ -136,8 +132,7 @@ angular.module('anol.urlmarkers')
                             strokeColor: '#' + kv[1],
                             graphicColor: '#' + kv[1]
                         };
-                    }
-                    else {
+                    } else {
                         marker[kv[0]] = kv[1];
                     }
                 });
@@ -172,29 +167,6 @@ angular.module('anol.urlmarkers')
             layer.setOlLayer(new layer.OL_LAYER_CLASS(olLayerOptions));
 
             return layer;
-        };
-
-        UrlMarkers.prototype.createPopups = function(features)  {
-            var self = this;
-            angular.forEach(features, function(feature) {
-                var label = feature.get('label');
-                if(label === undefined) {
-                    return;
-                }
-                var coordinate = feature.getGeometry().getCoordinates();
-                if(coordinate === undefined) {
-                    return;
-                }
-                var template = '<div anol-feature-popup coordinate="coordinate" layers="layers" offset="offset" open><span bbcode>{{ label }}</span></div>';
-                var compiled = $compile(angular.element(template));
-                var popupScope = $rootScope.$new();
-                popupScope.coordinate = coordinate;
-                popupScope.label = label;
-                popupScope.layers = [self.layer];
-                popupScope.offset = self.popupOffset;
-                $document.find('body').append(compiled(popupScope));
-            });
-
         };
 
         return new UrlMarkers(_defaultSrs, _propertiesDelimiter, _keyValueDelimiter, _style, _usePopup, _popupOffset);
