@@ -65,7 +65,7 @@ angular.module('anol.map')
                     // when twoFingerPinchDrag is true, no PinchRotate and -Zoom interaction
                     // is added. This should improve map handling for users in twoFingerPinchDrag-mode
                     angular.forEach(InteractionsService.interactions, function(interaction) {
-                        if(MapService.twoFingersPinchDrag) {
+                        if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
                             if(interaction instanceof ol.interaction.PinchRotate) {
                                 return;
                             }
@@ -79,7 +79,8 @@ angular.module('anol.map')
 
                     var dragPan;
                     var unregisterDragPanEvent;
-                    if(MapService.twoFingersPinchDrag === true) {
+
+                    if(ol.has.TOUCH && MapService.twoFingersPinchDrag === true) {
                         scope.map.on('pointerdown', function() {
                             pointers++;
                             if(pointers > 1 && dragPan === undefined) {
