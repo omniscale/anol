@@ -253,6 +253,7 @@ module.exports = function(grunt) {
     'clean:prebuild',
     'sass:dist',
     'ngtemplates',
+    'revision',
     'concat:dev',
     'build-ol3',
     'copy:dev',
@@ -265,6 +266,7 @@ module.exports = function(grunt) {
     'jshint',
     'sass:dist',
     'ngtemplates',
+    'revision',
     'concat:dev',
     'build-ol3',
     'copy:dev'
@@ -275,6 +277,7 @@ module.exports = function(grunt) {
     'jshint',
     'sass:dist',
     'ngtemplates',
+    'revision',
     'concat:dev',
     'copy:dev'
   ]);
