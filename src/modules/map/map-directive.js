@@ -29,7 +29,17 @@ angular.module('anol.map')
             },
             post: function(scope, element, attrs) {
                 var pointers = 0;
-                var addDragPanInteractionTimeout;
+
+                var createOverlayControl = function() {
+                    var element = document.createElement('div');
+                    element.className = 'map-info-overlay';
+                    element.innerHTML = '<div class="map-info-overlay-text">' + MapService.twoFingersPinchDragText + '</div>';
+                    var control = new ol.control.Control({
+                        element: element
+                    });
+                    return control;
+                };
+
                 $timeout(function() {
                     scope.map.updateSize();
                     // add layers after map has correct size to prevent
@@ -78,6 +88,7 @@ angular.module('anol.map')
                     InteractionsService.registerMap(scope.map);
 
                     var dragPan;
+                    var useKeyControl;
                     var unregisterDragPanEvent;
 
                     if(ol.has.TOUCH && MapService.twoFingersPinchDrag === true) {
@@ -102,23 +113,27 @@ angular.module('anol.map')
                             return true;
                         });
                         scope.map.on('pointermove', function() {
-                            if(pointers === 1) {
-                                var element = document.createElement('div');
-                                element.className = 'mouse-wheel-zoom-press-key';
-                                element.innerHTML = '<div class="press-key-text">' + MapService.twoFingersPinchDragText + '</div>';
-                                var control = new ol.control.Control({
-                                    element: element
-                                });
-                                setTimeout(function() {
-                                    if(pointers === 1) {
-                                        scope.map.addControl(control);
-                                        setTimeout(function() {
-                                            scope.map.removeControl(control);
-                                        }, 1000);
-                                        addDragPanInteractionTimeout = undefined;
-                                    }
-                                }, 250);
+                            if(pointers !== 1) {
+                                return true;
                             }
+                            if(useKeyControl !== undefined) {
+                                return true;
+                            }
+
+                            useKeyControl = createOverlayControl();
+                            setTimeout(function() {
+                                // ensure move is going on
+                                if(pointers === 1) {
+                                    scope.map.addControl(useKeyControl);
+                                    setTimeout(function() {
+                                        scope.map.removeControl(useKeyControl);
+                                        useKeyControl = undefined;
+                                    }, 1000);
+                                } else {
+                                    useKeyControl = undefined;
+                                }
+                            }, 100);
+
                             return true;
                         });
                     }
