@@ -81,6 +81,7 @@
     "ol.interaction.Modify",
     "ol.interaction.Modify#*",
     "ol.interaction.PinchRotate",
+    "ol.interaction.PinchZoom",
     "ol.interaction.Pointer",
     "ol.interaction.Pointer#*",
     "ol.interaction.Select",

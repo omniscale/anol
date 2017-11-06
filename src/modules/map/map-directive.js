@@ -61,49 +61,50 @@ angular.module('anol.map')
                         scope.map.addControl(control);
                     });
                     ControlsService.registerMap(scope.map);
+
+                    // when twoFingerPinchDrag is true, no PinchRotate and -Zoom interaction
+                    // is added. This should improve map handling for users in twoFingerPinchDrag-mode
                     angular.forEach(InteractionsService.interactions, function(interaction) {
+                        if(MapService.twoFingersPinchDrag) {
+                            if(interaction instanceof ol.interaction.PinchRotate) {
+                                return;
+                            }
+                            if(interaction instanceof ol.interaction.PinchZoom) {
+                                return;
+                            }
+                        }
                         scope.map.addInteraction(interaction);
-                        // interaction.dispatchEvent('anol:setmap');
                     });
                     InteractionsService.registerMap(scope.map);
 
                     var dragPan;
+                    var unregisterDragPanEvent;
                     if(MapService.twoFingersPinchDrag === true) {
                         scope.map.on('pointerdown', function() {
                             pointers++;
                             if(pointers > 1 && dragPan === undefined) {
                                 dragPan = new ol.interaction.DragPan();
                                 scope.map.addInteraction(dragPan);
-
-                                // disable pinch rotate
-                                scope.map.getInteractions().forEach(function(i) {
-                                    if(i instanceof ol.interaction.PinchRotate) {
-                                        i.setActive(false);
-                                    }
-                                });
                             }
+                            return true;
                         });
                         scope.map.on('pointerup', function() {
                             pointers--;
-                            if(pointers <= 1 && dragPan !== undefined) {
-                                dragPan.setActive(false);
-                                scope.map.removeInteraction(dragPan);
-                                dragPan = undefined;
-
-                                // reanable pinch rotate
-                                scope.map.getInteractions().forEach(function(i) {
-                                    if(i instanceof ol.interaction.PinchRotate) {
-                                        i.setActive(true);
-                                    }
+                            if(pointers <= 1 && dragPan !== undefined && unregisterDragPanEvent === undefined) {
+                                unregisterDragPanEvent = scope.map.once('moveend', function() {
+                                    dragPan.setActive(false);
+                                    scope.map.removeInteraction(dragPan);
+                                    dragPan = undefined;
+                                    unregisterDragPanEvent = undefined;
                                 });
-                                scope.map.renderSync();
                             }
+                            return true;
                         });
                         scope.map.on('pointermove', function() {
                             if(pointers === 1) {
                                 var element = document.createElement('div');
                                 element.className = 'mouse-wheel-zoom-press-key';
-                                element.innerHTML = '<div class="press-key-text">Use two fingers to drag map</div>';
+                                element.innerHTML = '<div class="press-key-text">' + MapService.twoFingersPinchDragText + '</div>';
                                 var control = new ol.control.Control({
                                     element: element
                                 });
@@ -117,6 +118,7 @@ angular.module('anol.map')
                                     }
                                 }, 250);
                             }
+                            return true;
                         });
                     }
                 });
