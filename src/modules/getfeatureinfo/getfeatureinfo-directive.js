@@ -79,8 +79,6 @@ angular.module('anol.getfeatureinfo')
                 markerOlLayerOptions.source = new featureInfoLayer.OL_SOURCE_CLASS(featureInfoLayer.olSourceOptions);
                 featureInfoLayer.setOlLayer(new featureInfoLayer.OL_LAYER_CLASS(markerOlLayerOptions));
 
-                LayersService.addSystemLayer(featureInfoLayer);
-
                 LayersService.addSystemLayer(featureInfoLayer, 0);
 
                 var handleFeatureinfoResponses = function(featureInfoObjects) {
