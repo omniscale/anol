@@ -13,7 +13,8 @@ angular.module('anol.map')
 .provider('MapService', [function() {
     var _view, _bbox;
     var _cursorPointerConditions = [];
-
+    var _twoFingersPinchDrag = false;
+    var _twoFingersPinchDragText = 'Use two fingers to move the map';
     /**
      * @ngdoc method
      * @name addView
@@ -57,6 +58,14 @@ angular.module('anol.map')
         _cursorPointerConditions.push(conditionFunc);
     };
 
+    this.setTwoFingersPinchDrag = function(enabled) {
+        _twoFingersPinchDrag = enabled;
+    };
+
+    this.setTwoFingersPinchDragText = function(text) {
+        _twoFingersPinchDragText = text;
+    }
+
     this.$get = [function() {
         /**
          * @ngdoc service
@@ -72,11 +81,13 @@ angular.module('anol.map')
          * The ol.View is added with the provider method addView
          * It will only create one instance of an ol map
          */
-        var MapService = function(view, cursorPointerConditions) {
+        var MapService = function(view, cursorPointerConditions, twoFingersPinchDrag, twoFingersPinchDragText) {
             this.view = view;
             this.map = undefined;
             this.hasTouch = ol.has.TOUCH;
             this.cursorPointerConditions = cursorPointerConditions;
+            this.twoFingersPinchDrag = twoFingersPinchDrag;
+            this.twoFingersPinchDragText = twoFingersPinchDragText;
         };
         /**
          * @ngdoc method
@@ -167,6 +178,6 @@ angular.module('anol.map')
                 this.map.un('pointermove', this._changeCursorToPointer, this);
             }
         };
-        return new MapService(_view, _cursorPointerConditions);
+        return new MapService(_view, _cursorPointerConditions, _twoFingersPinchDrag, _twoFingersPinchDragText);
     }];
 }]);
