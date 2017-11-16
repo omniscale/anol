@@ -77,9 +77,11 @@ angular.module('anol.map')
                     angular.forEach(InteractionsService.interactions, function(interaction) {
                         if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
                             if(interaction instanceof ol.interaction.PinchRotate) {
+                                interaction.setActive(false);
                                 return;
                             }
                             if(interaction instanceof ol.interaction.PinchZoom) {
+                                interaction.setActive(false);
                                 return;
                             }
                         }
