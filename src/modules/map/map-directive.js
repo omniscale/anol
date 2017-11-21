@@ -26,20 +26,17 @@ angular.module('anol.map')
                     .addClass(scope.mapName);
 
                 scope.map.setTarget(document.getElementById(scope.mapName));
+                // when twoFingePinchDrag is true and we have a touch device
+                // set touchAction to it's default value.
+                // This may cause page zoom on IE >= 10 browsers but allows us
+                // to scroll the page when only one finger has touched and dragged the map
+                if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
+                    var viewport = scope.map.getViewport();
+                    viewport.style.touchAction = 'auto';
+                    viewport.style.msTouchAction = 'auto';
+                }
             },
             post: function(scope, element, attrs) {
-                var pointers = 0;
-
-                var createOverlayControl = function() {
-                    var element = document.createElement('div');
-                    element.className = 'map-info-overlay';
-                    element.innerHTML = '<div class="map-info-overlay-text">' + MapService.twoFingersPinchDragText + '</div>';
-                    var control = new ol.control.Control({
-                        element: element
-                    });
-                    return control;
-                };
-
                 $timeout(function() {
                     scope.map.updateSize();
                     // add layers after map has correct size to prevent
@@ -47,73 +44,100 @@ angular.module('anol.map')
                     LayersService.registerMap(scope.map);
                     ControlsService.registerMap(scope.map);
 
-                    // when twoFingerPinchDrag is true, no PinchRotate and -Zoom interaction
-                    // is added. This should improve map handling for users in twoFingerPinchDrag-mode
+                    // add interactions from InteractionsService to map
                     angular.forEach(InteractionsService.interactions, function(interaction) {
                         if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
+                            // when twoFingerPinchDrag is true, no PinchRotate interaction
+                            // is added. This should improve map handling for users in twoFingerPinchDrag-mode
                             if(interaction instanceof ol.interaction.PinchRotate) {
                                 interaction.setActive(false);
                                 return;
                             }
-                            if(interaction instanceof ol.interaction.PinchZoom) {
+                            // Skipped because a DragPan interaction is added later
+                            if(interaction instanceof ol.interaction.DragPan) {
                                 interaction.setActive(false);
                                 return;
                             }
+                            // reanable when needed
+                            // if(interaction instanceof ol.interaction.PinchZoom) {
+                            //     interaction.setActive(false);
+                            //     return;
+                            // }
                         }
                         scope.map.addInteraction(interaction);
                     });
 
                     InteractionsService.registerMap(scope.map);
 
-                    var dragPan;
-                    var useKeyControl;
-                    var unregisterDragPanEvent;
-
                     if(ol.has.TOUCH && MapService.twoFingersPinchDrag === true) {
-                        scope.map.on('pointerdown', function() {
-                            pointers++;
-                            if(pointers > 1 && dragPan === undefined) {
-                                dragPan = new ol.interaction.DragPan();
-                                scope.map.addInteraction(dragPan);
+                        var useKeyControl, dragPan;
+                        var pointers = 0;
+
+                        var viewport = angular.element(scope.map.getViewport());
+
+                        var createOverlayControl = function() {
+                            var element = document.createElement('div');
+                            element.className = 'map-info-overlay';
+                            element.innerHTML = '<div class="map-info-overlay-text">' + MapService.twoFingersPinchDragText + '</div>';
+                            var control = new ol.control.Control({
+                                element: element
+                            });
+                            return control;
+                        };
+
+                        var handleTouchMove = function(e) {
+                            if(useKeyControl === undefined) {
+                                useKeyControl = createOverlayControl();
+                                scope.map.addControl(useKeyControl);
                             }
-                            return true;
-                        });
-                        scope.map.on('pointerup', function() {
+                        };
+
+                        var handleTouchStart = function(e) {
+                            pointers++;
+                            if(pointers > 1) {
+                                if(dragPan === undefined) {
+                                    dragPan = new ol.interaction.DragPan();
+                                    scope.map.addInteraction(dragPan);
+                                }
+                                viewport.off('touchmove', handleTouchMove);
+                                if(useKeyControl !== undefined) {
+                                    scope.map.removeControl(useKeyControl);
+                                    useKeyControl = undefined;
+                                }
+                                e.preventDefault();
+                            } else {
+                                viewport.one('touchmove', handleTouchMove);
+                            }
+                            if(pointers < 2) {
+                                e.stopPropagation();
+                            }
+                        };
+
+                        var handleTouchEnd = function(e) {
                             pointers--;
-                            if(pointers <= 1 && dragPan !== undefined && unregisterDragPanEvent === undefined) {
-                                unregisterDragPanEvent = scope.map.once('moveend', function() {
+                            if(pointers <= 1) {
+                                if(dragPan !== undefined) {
                                     dragPan.setActive(false);
                                     scope.map.removeInteraction(dragPan);
                                     dragPan = undefined;
-                                    unregisterDragPanEvent = undefined;
-                                });
-                            }
-                            return true;
-                        });
-                        scope.map.on('pointermove', function() {
-                            if(pointers !== 1) {
-                                return true;
-                            }
-                            if(useKeyControl !== undefined) {
-                                return true;
-                            }
-
-                            useKeyControl = createOverlayControl();
-                            setTimeout(function() {
-                                // ensure move is going on
-                                if(pointers === 1) {
-                                    scope.map.addControl(useKeyControl);
-                                    setTimeout(function() {
-                                        scope.map.removeControl(useKeyControl);
-                                        useKeyControl = undefined;
-                                    }, 1000);
-                                } else {
+                                }
+                                e.preventDefault();
+                                if(useKeyControl !== undefined) {
+                                    scope.map.removeControl(useKeyControl);
                                     useKeyControl = undefined;
                                 }
-                            }, 100);
+                            }
+                            if(pointers === 0) {
+                                dragPan = new ol.interaction.DragPan();
+                                scope.map.addInteraction(dragPan);
+                            }
+                        };
 
-                            return true;
-                        });
+                        dragPan = new ol.interaction.DragPan();
+                        scope.map.addInteraction(dragPan);
+
+                        viewport.on('touchstart', handleTouchStart);
+                        viewport.on('touchend', handleTouchEnd);
                     }
                 });
             }
