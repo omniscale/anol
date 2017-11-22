@@ -122,7 +122,6 @@ angular.module('anol.map')
                                     scope.map.removeInteraction(dragPan);
                                     dragPan = undefined;
                                 }
-                                e.preventDefault();
                                 if(useKeyControl !== undefined) {
                                     scope.map.removeControl(useKeyControl);
                                     useKeyControl = undefined;
