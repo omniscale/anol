@@ -115,6 +115,7 @@ angular.module('anol.map')
 
                         var handleTouchEnd = function(e) {
                             pointers--;
+                            pointers = Math.max(0, pointers);
                             if(pointers <= 1) {
                                 if(dragPan !== undefined) {
                                     dragPan.setActive(false);
