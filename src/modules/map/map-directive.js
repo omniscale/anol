@@ -116,18 +116,12 @@ angular.module('anol.map')
                         var handleTouchEnd = function(e) {
                             pointers--;
                             pointers = Math.max(0, pointers);
-                            if(pointers <= 1) {
-                                if(dragPan !== undefined) {
-                                    dragPan.setActive(false);
-                                    scope.map.removeInteraction(dragPan);
-                                    dragPan = undefined;
-                                }
-                                if(useKeyControl !== undefined) {
-                                    scope.map.removeControl(useKeyControl);
-                                    useKeyControl = undefined;
-                                }
+                            if(pointers <= 1 && useKeyControl !== undefined) {
+                                scope.map.removeControl(useKeyControl);
+                                useKeyControl = undefined;
                             }
                             if(pointers === 0) {
+                                scope.map.removeInteraction(dragPan);
                                 dragPan = new ol.interaction.DragPan();
                                 scope.map.addInteraction(dragPan);
                             }
