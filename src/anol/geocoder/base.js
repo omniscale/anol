@@ -28,7 +28,7 @@ anol.geocoder.Base.prototype = {
             data: self.getData(searchString),
             method: self.options.method
         })
-        .success(function(response) {
+        .done(function(response) {
                     var results = self.handleResponse(response);
                     deferred.resolve(results);
                 })
