@@ -100,7 +100,8 @@ angular.module('anol.geocoder')
           var urlMarker = {
             'color': scope.urlMarkerColor || 'aa0000',
             'coord':  position.join(','),
-            'srs': '4326'
+            'srs': '4326',
+            'label': label
           };
           if(scope.urlMarkerWithLabel === 'true') {
             urlMarker.label = label;
