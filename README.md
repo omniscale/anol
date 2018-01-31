@@ -18,7 +18,7 @@ Get Started
 
 **(3)** Build AnOl
 
-    - grunt build-full
+    - grunt build-dev
 
 **(4)** Use AnOl
 
@@ -33,7 +33,7 @@ A dev server on port 7000 startet. Now you can open the examples on http://local
 Build notes
 ------------
 
-If you build AnOl with `grunt build-full` all javascript dependencies are included in built `anol.min.js`.
+If you build AnOl with `grunt build-dev` all javascript dependencies are included in built `anol.min.js`.
 
 If you want to include the dependencies by your own, run `grunt build` instead.
 
