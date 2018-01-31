@@ -43,7 +43,7 @@
     "grunt-sass": "^1.1.0-beta",
     "grunt-shell": "~1.1.2",
     "jasmine-core": "2.4.1",
-    "jquery": "~> 3.0.0",
+    "jquery": "2.2.4",
     "karma": "0.13.x",
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
