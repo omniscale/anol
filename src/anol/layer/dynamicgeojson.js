@@ -103,7 +103,9 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         var self = this;
         var params = [
             'srs=' + projection.getCode(),
-            'bbox=' + extent.join(',')
+            'bbox=' + extent.join(','),
+            'resolution=' + resolution,
+            'zoom='+self.map.getView().getZoom()
         ];
         if($.isFunction(additionalParameters)) {
             params.push(additionalParameters());
