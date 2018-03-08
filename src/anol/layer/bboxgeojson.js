@@ -33,7 +33,7 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
     CLASS_NAME: 'anol.layer.BBOXGeoJSON',
     setOlLayer: function(olLayer) {
         anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
-        this.olSource = olLayer.getSource();
+        this.olSource = this.olLayer.getSource();
     },
     /**
      * Additional source options
@@ -45,7 +45,6 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
         var self = this;
         srcOptions.format = new ol.format.GeoJSON();
         srcOptions.strategy = ol.loadingstrategy.bbox;
-        console.log("Humpty")
         srcOptions.loader = function(extent, resolution, projection) {
             var additionalParameters = {};
             angular.forEach(self.olSource.get('anolLayers'), function(layer) {
@@ -60,6 +59,7 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
                 projection,
                 srcOptions.featureProjection,
                 srcOptions.extentProjection,
+                srcOptions.dataProjection,
                 additionalParameters
             );
         };
@@ -68,7 +68,7 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
             srcOptions
         );
     },
-    loader: function(url, extent, resolution, projection, featureProjection, extentProjection, additionalParameters) {
+    loader: function(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
         var self = this;
         if (extentProjection !== undefined) {
             extent = ol.proj.transformExtent(extent, projection, extentProjection);
@@ -92,10 +92,10 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
             dataType: 'json'
         })
         .done(function(response) {
-            self.responseHandler(response, featureProjection, projection);
+            self.responseHandler(response, featureProjection, dataProjection);
         });
     },
-    responseHandler: function(response, featureProjection, projection) {
+    responseHandler: function(response, featureProjection, dataProjection) {
         var self = this;
         // TODO find a better solution
         // remove all features from source.
@@ -106,26 +106,24 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
         // source.clear() will trigger to reload features from server
         // and this leads to an infinite loop
         // even with opt_fast=true
-        var sourceFeatures = self.olSource.getFeatures();
+        var sourceFeatures = self.olLayer.getSource().getFeatures();
         for(var i = 0; i < sourceFeatures.length; i++) {
-            self.olSource.removeFeature(sourceFeatures[i]);
+            self.olLayer.getSource().removeFeature(sourceFeatures[i]);
         }
 
         var format = new ol.format.GeoJSON({
-            defaultDataProjection: projection.getCode()
+            defaultDataProjection: dataProjection,
         });
-
         var features = format.readFeatures(
           response, {
-            defaultDataProjection: projection.getCode(),
-            featureProjection: featureProjection.getCode()
+            defaultDataProjection: dataProjection,
+            featureProjection: featureProjection
           }
         );
-
-        self.olSource.addFeatures(features);
+        self.olLayer.getSource().addFeatures(features);
     },
     refresh: function() {
-        this.olSource.clear();
-        this.olSource.refresh();
+        this.olLayer.getSource().clear();
+        this.olLayer.getSource().refresh();
     }
 });
