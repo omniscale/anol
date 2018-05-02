@@ -43,6 +43,8 @@
     "ol.events.condition.never",
     "ol.easing.easeOut",
     "ol.extent.buffer",
+    "ol.extent.extend",
+    "ol.extent.createEmpty",
     "ol.extent.containsCoordinate",
     "ol.extent.intersects",
     "ol.extent.getHeight",

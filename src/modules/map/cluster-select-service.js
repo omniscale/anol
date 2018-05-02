@@ -188,8 +188,13 @@ angular.module('anol.map')
                     var revealedFeature = a.selected[0];
                     if(revealedFeature.get('features').length > interactionOptions.maxObjects) {
                         // zoom in when not all revealed features displayed
+                        var _featureExtent = ol.extent.createEmpty();
+                        angular.forEach(revealedFeature.get('features'), function(child) {
+                            var _childExtent = child.getGeometry().getExtent();
+                            ol.extent.extend(_featureExtent, _childExtent)
+                        });
                         var view = MapService.getMap().getView();
-                        view.setZoom(view.getZoom() + 1);
+                        view.fit(_featureExtent, MapService.getMap().getSize()); 
                         return;
                     }
                     if(revealedFeature.get('selectclusterfeature') === true) {
