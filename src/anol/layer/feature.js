@@ -39,7 +39,6 @@
 
     this.unclusteredSource = undefined;
     this.selectClusterControl = undefined;
-    this.sleectClusterInteraction = undefined;
 
     anol.layer.Layer.call(this, options);
     this.isVector = true;
