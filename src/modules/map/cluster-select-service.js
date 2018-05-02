@@ -46,6 +46,7 @@ angular.module('anol.map')
             spiral: true,
             circleMaxObjects: 10,
             maxObjects: 20,
+            maxZoomLevel: 18,
             animate: false,
             animationDuration: 500
         };
@@ -186,8 +187,9 @@ angular.module('anol.map')
             self.selectClusterInteraction.on('select', function(a) {
                 if(a.selected.length === 1) {
                     var revealedFeature = a.selected[0];
-                    if(revealedFeature.get('features').length > interactionOptions.maxObjects) {
-                        // zoom in when not all revealed features displayed
+                    var zoom = MapService.getMap().getView().getZoom();
+                    if(revealedFeature.get('features').length > 1 && zoom < interactionOptions.maxZoomLevel) {
+                        // zoom in when not all revealed features displayed and max zoom is not reached 
                         var _featureExtent = ol.extent.createEmpty();
                         angular.forEach(revealedFeature.get('features'), function(child) {
                             var _childExtent = child.getGeometry().getExtent();
