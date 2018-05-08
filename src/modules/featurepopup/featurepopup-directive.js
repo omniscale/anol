@@ -159,10 +159,17 @@ angular.module('anol.featurepopup')
                 var singleFeature, singleLayer;
 
                 if(clickPointSelect) {
+                    var mapResolution = scope.map.getView().getResolution();
                     angular.forEach(scope.layers, function(layer) {
                         if(!layer.getVisible()) {
                             return;
                         }
+                        // don't show popup if layer has min and maxresolution
+                        if (layer.olLayer.getMinResolution() > mapResolution || 
+                            layer.olLayer.getMaxResolution() < mapResolution) {
+                            return;
+                        }
+
                         var _features = layer.olLayer.getSource().getFeaturesInExtent(extent);
 
                         if(_features.length > 0) {
