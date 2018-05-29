@@ -33,6 +33,7 @@ angular.module('anol.featurepopup')
             'onClose': '&?',
             'coordinate': '=?',
             'offset': '=?',
+            'closeOnZoom': '=?',
             '_autoPanMargin': '=autoPanMargin',
             '_popupFlagSize': '=popupFlagSize',
             '_mobileFullscreen': '=mobileFullscreen',
@@ -94,6 +95,12 @@ angular.module('anol.featurepopup')
             }
             if(scope.offset !== undefined) {
                 scope.overlayOptions.offset = scope.offset;
+            }
+
+            if (scope.closeOnZoom !== undefined) {
+                scope.map.getView().on('change:resolution', function() {
+                    scope.coordinate = undefined;
+                }, this);
             }
 
             scope.popup = new ol.Overlay(scope.overlayOptions);
