@@ -257,9 +257,17 @@ angular.module('anol.featurepopup')
             };
 
             var changeCursorCondition = function(pixel) {
-                return scope.map.hasFeatureAtPixel(pixel, function(layer) {
-                    return scope.layers.indexOf(layer.get('anolLayer')) !== -1;
+                var coordinate = scope.map.getCoordinateFromPixel(pixel);
+                var hasFeatureAtPixel = false;
+                angular.forEach(scope.layers, function(layer) {
+                    if(!layer.getVisible()) {
+                        return;
+                    }
+                    if (layer.olLayer.getSource() && layer.olLayer.getSource().getFeaturesAtCoordinate(coordinate).length > 0) {
+                        hasFeatureAtPixel = true;;
+                    };
                 });
+                return hasFeatureAtPixel;
             };
 
             var bindCursorChange = function() {
