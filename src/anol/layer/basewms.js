@@ -78,8 +78,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
     setVisible: function(visible)  {
         var insertLayerIdx = 0;
         var source = this.olLayer.getSource();
+        var self = this;
         $.each(source.get('anolLayers'), function(idx, layer) {
-            if(layer === this) {
+            if(layer === self) {
                 return false;
             }
             if(layer.getVisible()) {
