@@ -36,7 +36,7 @@ anol.layer.Group.prototype = {
     setVisible: function(visible) {
         var self = this;
         $.each(self.layers, function(idx, layer) {
-            if(layer.getVisible !== visible) {
+            if(layer.getVisible() !== visible) {
                 layer.setVisible(visible);
             }
         });
