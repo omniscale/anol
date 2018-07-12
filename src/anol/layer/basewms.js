@@ -89,6 +89,7 @@ $.extend(anol.layer.BaseWMS.prototype, {
         });
         var params = source.getParams();
         var layers = anol.helper.stringSplit(params.LAYERS, ',');
+        layers = layers.reverse();
         if(!visible) {
             layers = anol.helper.excludeList(layers, this.wmsSourceLayers);
         } else {
