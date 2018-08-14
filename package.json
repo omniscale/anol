@@ -1,47 +1,30 @@
 {
   "name": "anol",
-  "version": "0.0.1",
-  "description": "Framework to create a cool map with AngularJS, Bootstrap and OpenLayers3",
+  "version": "0.2.0",
+  "description": "Framework to create a cool map with AngularJS, Bootstrap and OpenLayers",
   "homepage": "https://github.com/omniscale/anol",
   "repository": {
     "type": "git",
     "url": "git://github.com/omniscale/anol.git"
   },
-  "scripts": {
-    "install": "napa"
-  },
-  "napa": {
-    "ol3-animated-cluster": "https://github.com/Viglino/OL3-AnimatedCluster.git#5d769192924260a4d8967549f70e1eace3e1d606"
-  },
+  "license": "MIT",
   "readme": "README.md",
   "dependencies": {
+    "@types/angular-sanitize": "^1.3.7",
+    "@types/angular-translate": "^2.16.0",
+    "@types/angular-ui-bootstrap": "^0.13.47",
     "angular": "1.4.9",
     "angular-animate": "~1.3.0",
     "angular-mocks": "1.4.9",
     "angular-sanitize": "1.4.9",
     "angular-translate": "~2.8.1",
     "angular-translate-loader-static-files": "~2.8.1",
-    "angular-ui-bootstrap": "~0.13.4",
+    "angular-ui-bootstrap": "^2.5.6",
     "bootstrap": "3.3.6",
+    "buble": "^0.19.3",
+    "buble-loader": "^0.5.1",
     "canonical-path": "0.0.2",
-    "grunt": "^0.4.5",
-    "grunt-angular-templates": "^0.5.7",
-    "grunt-cli": "^0.1.13",
-    "grunt-concurrent": "^2.0.3",
-    "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-concat": "~0.4.0",
-    "grunt-contrib-connect": "^0.7.1",
-    "grunt-contrib-copy": "~0.7.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-uglify": "^0.6.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-git-revision": "0.0.1",
-    "grunt-karma": "2.0.0",
-    "grunt-merge-json": "^0.9.5",
-    "grunt-ngdocs": "^0.2.6",
-    "grunt-ngmin": "0.0.3",
-    "grunt-sass": "^1.1.0-beta",
-    "grunt-shell": "~1.1.2",
+    "html-loader": "^0.5.5",
     "jasmine-core": "2.4.1",
     "jquery": "3.3.1",
     "karma": "0.13.x",
@@ -53,7 +36,31 @@
     "karma-phantomjs-launcher": "1.0.1",
     "karma-safari-launcher": "latest",
     "karma-script-launcher": "~0.1.0",
+    "lint": "^1.1.2",
     "napa": "^3.0.0",
-    "openlayers": "3.15.1"
+    "ol": "^5.1.3",
+    "ol-ext": "^3.0.0"
+  },
+  "scripts": {
+    "pretest": "npm run lint",
+    "test": "npm run karma -- --single-run",
+    "serve-examples": "webpack-dev-server --config examples/webpack/config.js --mode development --watch",
+    "build-examples": "webpack --config examples/webpack/config.js --mode production",
+    "build": "webpack --config webpack.config.js --mode production",
+    "start": "webpack --watch --mode development"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "file-loader": "^1.1.11",
+    "front-matter": "^2.3.0",
+    "handlebars": "^4.0.11",
+    "mini-css-extract-plugin": "^0.4.1",
+    "node-sass": "^4.9.2",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.22.0",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.4"
   }
 }
