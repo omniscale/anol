@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js'
+import Control from 'ol/control/Control';
+
 // TODO rename to popup
 angular.module('anol.featurepopup')
 /**
@@ -15,10 +20,11 @@ angular.module('anol.featurepopup')
         scope: {},
         replace: true,
         transclude: true,
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featurepopup/templates/dragpopup.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/dragpopup.html'),
+        // templateUrl: function(tElement, tAttrs) {
+            // var defaultUrl = 'src/modules/featurepopup/templates/dragpopup.html';
+            // return tAttrs.templateUrl || defaultUrl;
+        // },
         link: function(scope, element, attrs) {
             element.css('display', 'none');
             scope.feature = undefined;
@@ -46,7 +52,7 @@ angular.module('anol.featurepopup')
             scope.makeControl = function(options) {
                 scope.control = new anol.control.Control({
                     subordinate: false,
-                    olControl: new ol.control.Control({
+                    olControl: new Control({
                         element: element[0]
                     })
                 });

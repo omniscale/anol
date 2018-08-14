@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import GeoJSON from 'ol/format/GeoJSON';
+
 angular.module('anol.featureexchange')
 
 /**
@@ -26,12 +31,13 @@ angular.module('anol.featureexchange')
             postUpload: '=',
             srs: '@'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featureexchange/templates/featureexchange.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/featureexchange.html'),
+        // templateUrl: function(tElement, tAttrs) {
+        // var defaultUrl = 'src/modules/featureexchange/templates/featureexchange.html';
+        // return tAttrs.templateUrl || defaultUrl;
+        // },
         link: function(scope, element, attrs) {
-            var format = new ol.format.GeoJSON();
+            var format = new GeoJSON();
             var fileselector = element.find('#fileselector');
             var uploadErrorElement = element.find('#upload-error');
 

@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.featureproperties')
 /**
  * @ngdoc directive
@@ -44,10 +48,12 @@ angular.module('anol.featureproperties')
             'selects': '=',
             'translationNamespace': '@'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featureproperties/templates/featureproperties.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/featureproperties.html'),
+        // templateUrl: function(tElement, tAttrs) {
+            // var defaultUrl = 'src/modules/featureproperties/templates/featureproperties.html';
+            // return tAttrs.templateUrl || defaultUrl;
+        //     return require('./templates/featureproperties.html')
+        // },
         link: function(scope, element, attrs, FeaturePopupController) {
             scope.translationNamespace = angular.isDefined(scope.translationNamespace) ?
                 scope.translationNamespace : 'featureproperties';

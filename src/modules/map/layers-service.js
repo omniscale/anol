@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js'
+import { PopupsService } from '../featurepopup/featurepopup-service.js'
+
 angular.module('anol.map')
 
 /**
@@ -243,7 +248,6 @@ angular.module('anol.map')
             var layerOpts = angular.extend({}, layer.olLayerOptions);
             layerOpts.source = olSource;
             var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
-
             // only instances of BaseWMS are allowed to share olLayers
             // TODO allow also DynamicGeoJSON layer to share olLayers
             if(layer.combined && layer instanceof anol.layer.BaseWMS &&
@@ -285,9 +289,9 @@ angular.module('anol.map')
             angular.forEach(layers, function(_layer) {
                 self.createOlLayer(_layer);
                 self.addedLayers.push(_layer);
-                if (_layer.options !== undefined && _layer.options.visible) {
-                    _layer.setVisible(true);
-                }
+                // if (_layer.options !== undefined && _layer.options.visible) {
+                //     _layer.setVisible(true);
+                // }
                 angular.forEach(self.addLayerHandlers, function(handler) {
                     handler(_layer);
                 });

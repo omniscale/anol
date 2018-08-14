@@ -1,3 +1,24 @@
+require('angular');
+
+import { defaults } from './module.js';
+
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Circle from 'ol/style/Circle';
+import Style from 'ol/style/Style';
+import Point from 'ol/geom/Point';
+import LineString from 'ol/geom/LineString';
+import Modify from 'ol/interaction/Modify';
+import Polygon from 'ol/geom/Polygon';
+import Draw from 'ol/interaction/Draw';
+import Overlay from 'ol/Overlay';
+import { TOUCH as hasTouch } from 'ol/has'
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import { transform } from 'ol/proj'
+
+import {getArea, getDistance} from 'ol/sphere';
+
 angular.module('anol.measure')
 /**
  * @ngdoc directive
@@ -9,7 +30,7 @@ angular.module('anol.measure')
  *
  * @param {string} anolMeasure Type of measurement. Supported values are *line* and *area*. Default: *line*
  * @param {boolean} geodesic Use geodesic measure method
- * @param {ol.style.Style} style Style for drawed measures
+ * @param {Style} style Style for drawed measures
  * @param {string} tooltipPlacement Position of tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
@@ -26,20 +47,20 @@ angular.module('anol.measure')
  */
 .directive('anolMeasure', ['$timeout', 'ControlsService', 'LayersService', 'MapService', function($timeout, ControlsService, LayersService, MapService) {
     // create a sphere whose radius is equal to the semi-major axis of the WGS84 ellipsoid
-    var wgs84Sphere = new ol.Sphere(6378137);
-    var measureStyle = new ol.style.Style({
-        fill: new ol.style.Fill({
+    // var wgs84Sphere = new ol.Sphere(6378137);
+    var measureStyle = new Style({
+        fill: new Fill({
             color: 'rgba(255, 255, 255, 0.2)'
         }),
-        stroke: new ol.style.Stroke({
+        stroke: new Stroke({
             color: 'rgba(0, 0, 0, 0.5)',
             lineDash: [10, 10],
             width: 2,
             opacity: 0.5
         }),
-        image: new ol.style.Circle({
+        image: new Circle({
             radius: 5,
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: 'rgba(0, 0, 0, 0.7)'
             })
         })
@@ -58,9 +79,9 @@ angular.module('anol.measure')
             var coordinates = geometry.getCoordinates();
             length = 0;
             for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-                var c1 = ol.proj.transform(coordinates[i], projection, 'EPSG:4326');
-                var c2 = ol.proj.transform(coordinates[i + 1], projection, 'EPSG:4326');
-                length += wgs84Sphere.haversineDistance(c1, c2);
+                var c1 = transform(coordinates[i], projection, 'EPSG:4326');
+                var c2 = transform(coordinates[i + 1], projection, 'EPSG:4326');
+                length += getDistance(c1, c2);
             }
         } else {
             length = Math.round(geometry.getLength() * 100) / 100;
@@ -74,7 +95,7 @@ angular.module('anol.measure')
         }
         var area;
         if (geodesic) {
-            var geom = /** @type {ol.geom.Polygon} */(geometry.clone().transform(
+            var geom = (geometry.clone().transform(
                 projection, 'EPSG:4326'));
             var coordinates = geom.getLinearRing(0).getCoordinates();
             area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
@@ -85,7 +106,7 @@ angular.module('anol.measure')
     };
 
     var formatCoordinateResult = function(geometry, projection, geodesic) {
-        var coord = ol.proj.transform(geometry.getCoordinates(),
+        var coord = transform(geometry.getCoordinates(),
                                      projection,
                                      'EPSG:4326');
         var output = '';
@@ -119,20 +140,20 @@ angular.module('anol.measure')
     };
 
     var handlePointMeasure = function(geometry, coordinate) {
-        return new ol.geom.Point(coordinate);
+        return new Point(coordinate);
     };
 
     var handleLineMeasure = function(geometry, coordinate) {
         switch(geometry.getType()) {
             case 'Point':
-                return new ol.geom.LineString([
+                return new LineString([
                     geometry.getCoordinates(),
                     coordinate
                 ]);
             case 'LineString':
                 var coords = geometry.getCoordinates();
                 coords.push(coordinate);
-                return new ol.geom.LineString(coords);
+                return new LineString(coords);
         }
     };
 
@@ -140,7 +161,7 @@ angular.module('anol.measure')
         var coords;
         switch(geometry.getType()) {
             case 'Point':
-                return new ol.geom.LineString([
+                return new LineString([
                     geometry.getCoordinates(),
                     coordinate
                 ]);
@@ -148,11 +169,11 @@ angular.module('anol.measure')
                 coords = geometry.getCoordinates();
                 coords.push(coordinate);
                 coords.push(coords[0]);
-                return new ol.geom.Polygon([coords]);
+                return new Polygon([coords]);
             case 'Polygon':
                 coords = geometry.getCoordinates()[0];
                 coords.splice(coords.length - 1, 0, coordinate);
-                return new ol.geom.Polygon([coords]);
+                return new Polygon([coords]);
         }
     };
 
@@ -160,7 +181,7 @@ angular.module('anol.measure')
         var element = angular.element('<div></div>');
         element.addClass('anol-overlay');
         element.addClass('anol-measure-overlay');
-        var overlay = new ol.Overlay({
+        var overlay = new Overlay({
             element: element[0],
             offset: [0, -15],
             positioning: 'bottom-center'
@@ -169,7 +190,7 @@ angular.module('anol.measure')
     };
 
     var createModifyInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic) {
-        var modify = new ol.interaction.Modify({
+        var modify = new Modify({
             features: measureSource.getFeaturesCollection()
         });
         modify.on('modifyend', function(evt) {
@@ -205,9 +226,9 @@ angular.module('anol.measure')
     };
 
     var createDrawInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic) {
-        var draw = new ol.interaction.Draw({
+        var draw = new Draw({
             type: 'Point',
-            style: new ol.style.Style({})
+            style: new Style({})
         });
 
         draw.on('drawstart',
@@ -288,10 +309,13 @@ angular.module('anol.measure')
             activatedCallback: '=?',
             deactivatedCallback: '=?'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/measure/templates/measure.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/measure.html'),
+        
+        // templateUrl: function(tElement, tAttrs) {
+        //     // var defaultUrl = 'src/modules/measure/templates/measure.html';
+        //     // return tAttrs.templateUrl || defaultUrl;
+        //     return require('./templates/measure.html')
+        // },
         link: function(scope, element, attrs, AnolMapController) {
             //attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
@@ -299,15 +323,15 @@ angular.module('anol.measure')
             scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
                 scope.tooltipDelay : 500;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                scope.tooltipEnable : !ol.has.TOUCH;
+                scope.tooltipEnable : !hasTouch;
             scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
             var control;
 
             // create layer to draw in
-            var measureSource = new ol.source.Vector({
+            var measureSource = new VectorSource({
                 useSpatialIndex: false
             });
-            var _measureLayer = new ol.layer.Vector({
+            var _measureLayer = new VectorLayer({
                 source: measureSource,
                 style: scope.style || measureStyle,
                 zIndex: 2

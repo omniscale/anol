@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.print')
 /**
  * @ngdoc directive
@@ -25,8 +29,9 @@ angular.module('anol.print')
     return {
       restrict: 'A',
       templateUrl: function(tElement, tAttrs) {
-        var defaultUrl = 'src/modules/print/templates/print.html';
-        return tAttrs.templateUrl || defaultUrl;
+        // var defaultUrl = 'src/modules/print/templates/print.html';
+        // return tAttrs.templateUrl || defaultUrl;
+        return require('./templates/print.html')
       },
       scope: {
         showPrintArea: '='

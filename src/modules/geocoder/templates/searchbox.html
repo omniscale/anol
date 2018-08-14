@@ -5,7 +5,7 @@
            placeholder="{{ 'anol.geocoder.PLACEHOLDER' | translate }}"
            ng-focus="handleInputFocus($event);"
            ng-blur="handleInputBlur($event);">
-    <ul class="dropdown-menu result-list" ng-show="showResultList"
+    <ul class="dropdown-menu result-list" 
         ng-mousedown="handleResultListMousedown($event);"
         ng-mouseup="handleResultListMouseup($event)">
         <li ng-repeat="result in searchResults"

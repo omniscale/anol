@@ -1,4 +1,11 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has'
+import Zoom from 'ol/control/Zoom';
+
 angular.module('anol.zoom')
+
 /**
  * @ngdoc directive
  * @name anol.zoom.directive:anolZoom
@@ -26,7 +33,7 @@ angular.module('anol.zoom')
             ngStyle: '='
         },
         link: function(scope, element, attrs) {
-            var olControl = new ol.control.Zoom({
+            var olControl = new Zoom({
                 zoomInLabel: document.createTextNode(''),
                 zoomOutLabel: document.createTextNode('')
             });
@@ -42,7 +49,7 @@ angular.module('anol.zoom')
             zoomInButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
             zoomInButton.attr('tooltip-append-to-body', true);
             zoomInButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
-            zoomInButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
+            zoomInButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
             zoomInButton.attr('tooltip-trigger', 'mouseenter click');
             zoomInButton.removeClass('ol-zoom-in');
             zoomInButton.append(angular.element('<span class="glyphicon glyphicon-plus"></span>'));
@@ -53,7 +60,7 @@ angular.module('anol.zoom')
             zoomOutButton.attr('tooltip-placement', scope.zoomOutTooltipPlacement || 'right');
             zoomOutButton.attr('tooltip-append-to-body', true);
             zoomOutButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
-            zoomOutButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
+            zoomOutButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
             zoomOutButton.attr('tooltip-trigger', 'mouseenter click');
             zoomOutButton.removeClass('ol-zoom-out');
             zoomOutButton.append(angular.element('<span class="glyphicon glyphicon-minus"></span>'));

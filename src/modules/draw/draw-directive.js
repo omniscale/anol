@@ -1,3 +1,14 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has'
+import Draw from 'ol/interaction/Draw';
+import Select from 'ol/interaction/Select';
+import Modify from 'ol/interaction/Modify';
+import Snap from 'ol/interaction/Snap';
+import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
+import {never as neverCondition} from 'ol/events/condition'
+
 angular.module('anol.draw')
 /**
  * @ngdoc directive
@@ -38,10 +49,11 @@ angular.module('anol.draw')
             lineTooltipPlacement: '@',
             polygonTooltipPlacement: '@'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/draw/templates/draw.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/draw.html'),
+        // templateUrl: function(tElement, tAttrs) {
+            // var defaultUrl = 'src/modules/draw/templates/draw.html';
+            // return tAttrs.templateUrl || defaultUrl;
+        // },
         link: function(scope, element, attrs, AnolMapController) {
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
@@ -49,7 +61,7 @@ angular.module('anol.draw')
             scope.freeDrawing = angular.isDefined(scope.freeDrawing) ?
                 scope.freeDrawing : false;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                scope.tooltipEnable : !ol.has.TOUCH;
+                scope.tooltipEnable : !hasTouch;
             scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
                 scope.tooltipDelay : 500;
             scope.pointTooltipPlacement = angular.isDefined(scope.pointTooltipPlacement) ?
@@ -76,7 +88,7 @@ angular.module('anol.draw')
             var createDrawInteractions = function(drawType, source, control, layer, postDrawActions) {
                 postDrawActions = postDrawActions || [];
                 // create draw interaction
-                var draw = new ol.interaction.Draw({
+                var draw = new Draw({
                     source: source,
                     type: drawType
                 });
@@ -88,7 +100,7 @@ angular.module('anol.draw')
                 // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                 postDrawActions.push(function() {
                     MapService.getMap().getInteractions().forEach(function(interaction) {
-                        if(interaction instanceof ol.interaction.DoubleClickZoom) {
+                        if(interaction instanceof DoubleClickZoom) {
                             interaction.setActive(false);
                             $timeout(function() {
                                 interaction.setActive(true);
@@ -109,7 +121,7 @@ angular.module('anol.draw')
 
                 var interactions = [draw];
                 if(scope.freeDrawing !== false) {
-                    var snapInteraction = new ol.interaction.Snap({
+                    var snapInteraction = new Snap({
                         source: layer.getSource()
                     });
                     interactions.push(snapInteraction);
@@ -118,8 +130,8 @@ angular.module('anol.draw')
             };
 
             var createModifyInteractions = function(layer) {
-                var selectInteraction = new ol.interaction.Select({
-                    toggleCondition: ol.events.condition.never,
+                var selectInteraction = new Select({
+                    toggleCondition: neverCondition,
                     layers: [layer]
                 });
                 selectInteraction.on('select', function(evt) {
@@ -131,7 +143,7 @@ angular.module('anol.draw')
                         removeButtonElement.removeClass('disabled');
                     }
                 });
-                var modifyInteraction = new ol.interaction.Modify({
+                var modifyInteraction = new Modify({
                     features: selectInteraction.getFeatures()
                 });
                 modifyInteraction.on('modifystart', function() {
@@ -140,7 +152,7 @@ angular.module('anol.draw')
                 modifyInteraction.on('modifyend', function() {
                     MapService.addCursorPointerCondition(changeCursorCondition);
                 });
-                var snapInteraction = new ol.interaction.Snap({
+                var snapInteraction = new Snap({
                     source: layer.getSource()
                 });
                 return [selectInteraction, modifyInteraction, snapInteraction];

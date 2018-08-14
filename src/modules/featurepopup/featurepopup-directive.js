@@ -1,3 +1,9 @@
+require('angular');
+
+import { defaults } from './module.js'
+import Overlay from 'ol/Overlay';
+import Cluster from 'ol/source/Cluster';
+
 // TODO rename to popup
 angular.module('anol.featurepopup')
 /**
@@ -42,10 +48,12 @@ angular.module('anol.featurepopup')
         },
         replace: true,
         transclude: true,
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/popup.html'),
+        // templateUrl: function(tElement, tAttrs) {
+            // var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
+            // return tAttrs.templateUrl || defaultUrl;
+        //     return require('./templates/popup.html')
+        // },
         link: function(scope, element, attrs) {
             var self = this;
             PopupsService.register(scope);
@@ -103,7 +111,7 @@ angular.module('anol.featurepopup')
                 }, this);
             }
 
-            scope.popup = new ol.Overlay(scope.overlayOptions);
+            scope.popup = new Overlay(scope.overlayOptions);
             scope.map.addOverlay(scope.popup);
             element.parent().addClass('anol-popup-container');
             if(scope.mobileFullscreen === true) {
@@ -212,7 +220,7 @@ angular.module('anol.featurepopup')
                             return;
                         }
 
-                        if(layer.getSource() instanceof ol.source.Cluster) {
+                        if(layer.getSource() instanceof Cluster) {
                             // set to original feature when clicked on clustered feature containing one feature
                             if(feature.get('features').length === 1) {
                                 feature = feature.get('features')[0];

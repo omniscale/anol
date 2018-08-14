@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has'
+
 angular.module('anol.layerswitcher')
 
 /**
@@ -19,15 +24,19 @@ angular.module('anol.layerswitcher')
  */
  // TODO handle add / remove layer
  // TODO handle edit layers title
-.directive('anolLayerswitcher', ['LayersService', 'ControlsService', 'MapService', function(LayersService, ControlsService, MapService) {
+ .directive('anolLayerswitcher', ['LayersService', 'ControlsService', 'MapService', function(LayersService, ControlsService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/layerswitcher/templates/layerswitcher.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/layerswitcher.html'),
+            // function(tElement, tAttrs) {
+            // if (tAttrs.templateUrl) {
+            //     require(tAttrs.templateUrl);
+            // } else {
+            //     require('./templates/layerswitcher.html');
+            // }
+            // },
         scope: {
             anolLayerswitcher: '@anolLayerswitcher',
             tooltipPlacement: '@',
@@ -45,7 +54,7 @@ angular.module('anol.layerswitcher')
                 scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
                     scope.tooltipDelay : 500;
                 scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                    scope.tooltipEnable : !ol.has.TOUCH;
+                    scope.tooltipEnable : !hasTouch;
 
                 scope.backgroundLayers = LayersService.backgroundLayers;
                 var overlayLayers = [];

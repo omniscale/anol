@@ -1,3 +1,11 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { transform } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import Select from 'ol/interaction/Select';
+
 angular.module('anol.geocoder')
 /**
  * @ngdoc directive
@@ -24,10 +32,11 @@ angular.module('anol.geocoder')
       restrict: 'A',
       require: '?^anolMap',
       transclude: true,
-      templateUrl: function(tElement, tAttrs) {
-          var defaultUrl = 'src/modules/geocoder/templates/searchbox.html';
-          return tAttrs.templateUrl || defaultUrl;
-      },
+      template: require('./templates/searchbox.html'),
+      // templateUrl: function(tElement, tAttrs) {
+      //     var defaultUrl = './templates/searchbox.html';
+      //     return tAttrs.templateUrl || defaultUrl;
+      // },
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',
@@ -80,7 +89,7 @@ angular.module('anol.geocoder')
             return;
           }
           removeUrlMarker();
-          var position = ol.proj.transform(
+          var position = transform(
             coordinate,
             projectionCode,
             'EPSG:4326'
@@ -133,8 +142,8 @@ angular.module('anol.geocoder')
         };
 
         var addMarker = function(position) {
-          var markerFeature = new ol.Feature({
-            geometry: new ol.geom.Point(position)
+          var markerFeature = new Feature({
+            geometry: new Point(position)
           });
           var markerSource = markerLayer.olLayer.getSource();
           markerSource.addFeature(markerFeature);
@@ -143,7 +152,7 @@ angular.module('anol.geocoder')
               markerSource.clear();
             }, scope.highlight);
           } else {
-            removeMarkerInteraction = new ol.interaction.Select({
+            removeMarkerInteraction = new Select({
               layers: [markerLayer.olLayer]
             });
             removeMarkerInteraction.on('select', function(evt) {
@@ -168,7 +177,6 @@ angular.module('anol.geocoder')
 
           markerLayer.clear();
           removeUrlMarker();
-
           element.find('.anol-searchbox').removeClass('open');
           geocoder.request(scope.searchString)
             .then(function(results) {
@@ -247,8 +255,9 @@ angular.module('anol.geocoder')
 
 
         scope.showResult = function(result) {
+          console.log(result)
           var view = MapService.getMap().getView();
-          var position = ol.proj.transform(
+          var position = transform(
             result.coordinate,
             result.projectionCode,
             view.getProjection()

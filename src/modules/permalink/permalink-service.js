@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { transform } from 'ol/proj';
+
 angular.module('anol.permalink')
 
 /**
@@ -115,7 +120,9 @@ angular.module('anol.permalink')
                 });
             }
 
-            self.map.on('moveend', self.moveendHandler, self);
+            self.map.on('moveend', function() {
+              self.moveendHandler();
+            }.bind(self));
 
             $rootScope.$watchCollection(function() {
                 return LayersService.layers();
@@ -167,11 +174,11 @@ angular.module('anol.permalink')
          * @description
          * Get lat, lon and zoom after map stoped moving
          */
-        Permalink.prototype.moveendHandler = function(evt) {
+        Permalink.prototype.moveendHandler = function() {
             var self = this;
-            var center = ol.proj.transform(self.view.getCenter(), self.view.getProjection(), self.urlCrs);
-            self.lon = Math.round(center[0] * this.precision) / this.precision;
-            self.lat = Math.round(center[1] * this.precision) / this.precision;
+            var center = transform(self.view.getCenter(), self.view.getProjection(), self.urlCrs);
+            self.lon = Math.round(center[0] * self.precision) / self.precision;
+            self.lat = Math.round(center[1] * self.precision) / self.precision;
 
             self.zoom = self.view.getZoom();
             $rootScope.$apply(function() {
@@ -197,7 +204,7 @@ angular.module('anol.permalink')
         };
         Permalink.prototype.updateMapFromParameters = function(mapParams) {
             var self = this;
-            var center = ol.proj.transform(mapParams.center, mapParams.crs, self.view.getProjection());
+            var center = transform(mapParams.center, mapParams.crs, self.view.getProjection());
             self.view.setCenter(center);
             self.view.setZoom(mapParams.zoom);
             if(mapParams.layers !== false) {

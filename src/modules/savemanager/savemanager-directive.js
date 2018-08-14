@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.savemanager')
 
 /**
@@ -16,8 +20,9 @@ angular.module('anol.savemanager')
     return {
         restrict: 'A',
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/savemanager/templates/savemanager.html';
-            return tAttrs.templateUrl || defaultUrl;
+            // var defaultUrl = 'src/modules/savemanager/templates/savemanager.html';
+            // return tAttrs.templateUrl || defaultUrl;
+            return require('./templates/savemanager.html')
         },
         scope: {},
 

@@ -1,3 +1,9 @@
+require('angular');
+
+import { defaults } from './module.js'
+
+import { defaults as interactionDefaults } from 'ol/interaction'
+
 angular.module('anol.map')
 
 /**
@@ -11,7 +17,7 @@ angular.module('anol.map')
      * @ngdoc method
      * @name setInteractions
      * @methodOf anol.map.InteractionsServiceProvider
-     * @param {Array.<Object>} interactions ol3 interactions
+     * @param {Array.<Object>} interactions ol interactions
      */
     this.setInteractions = function(interactions) {
         _interactions = interactions;
@@ -23,7 +29,7 @@ angular.module('anol.map')
          * @name anol.map.InteractionsService
          *
          * @description
-         * Stores ol3 interactions and add them to map, if map present
+         * Stores ol interactions and add them to map, if map present
          */
         var Interactions = function(interactions) {
             this.map = undefined;
@@ -33,15 +39,15 @@ angular.module('anol.map')
                 return;
 
             }
-            this.interactions = ol.interaction.defaults();
+            this.interactions = interactionDefaults();
         };
         /**
          * @ngdoc method
          * @name registerMap
          * @methodOf anol.map.InteractionsService
-         * @param {Object} map ol3 map object
+         * @param {Object} map ol map object
          * @description
-         * Registers an ol3 map in `InteractionsService`
+         * Registers an ol map in `InteractionsService`
          */
         Interactions.prototype.registerMap = function(map) {
             var self = this;
@@ -54,9 +60,9 @@ angular.module('anol.map')
          * @ngdoc method
          * @name addInteraction
          * @methodOf anol.map.InteractionsService
-         * @param {Object} interaction ol3 interaction
+         * @param {Object} interaction ol interaction
          * @description
-         * Adds an ol3 interaction
+         * Adds an ol interaction
          */
         Interactions.prototype.addInteraction = function(interaction) {
             if(this.map !== undefined) {
@@ -68,9 +74,9 @@ angular.module('anol.map')
          * @ngdoc method
          * @name addInteractions
          * @methodOf anol.map.InteractionsService
-         * @param {Array.<Object>} interactions ol3 interactions
+         * @param {Array.<Object>} interactions ol interactions
          * @description
-         * Adds an ol3 interactions
+         * Adds an ol interactions
          */
         Interactions.prototype.addInteractions = function(interactions) {
             var self = this;
@@ -85,9 +91,9 @@ angular.module('anol.map')
          * @ngdoc method
          * @name removeInteraction
          * @methodOf anol.map.InteractionsService
-         * @param {Object} interaction ol3 interaction object to remove
+         * @param {Object} interaction ol interaction object to remove
          * @description
-         * Removes given ol3 interaction
+         * Removes given ol interaction
          */
         Interactions.prototype.removeInteraction = function(interaction) {
             this.map.removeInteraction(interaction);

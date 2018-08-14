@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.featurepropertieseditor')
 /**
  * @ngdoc directive
@@ -19,10 +23,11 @@ angular.module('anol.featurepropertieseditor')
             feature: '=anolFeaturePropertiesEditor',
             layer: '='
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/featurepropertieseditor.html'),
+        // templateUrl: function(tElement, tAttrs) {
+        //     var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
+        //     return tAttrs.templateUrl || defaultUrl;
+        // },
         link: function(scope, element, attrs) {
             scope.properties = {};
             var propertyWatchers = {};

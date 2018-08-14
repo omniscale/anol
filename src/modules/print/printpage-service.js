@@ -1,3 +1,16 @@
+require('angular');
+
+import { defaults } from './module.js';
+
+import Collection from 'ol/Collection';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import PointerInteraction from 'ol/interaction/Pointer';
+import { inherits } from 'ol'
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import Polygon from 'ol/geom/Polygon';
+
 angular.module('anol.print')
 
 /**
@@ -116,11 +129,11 @@ angular.module('anol.print')
             righttop: undefined,
             center: undefined
         };
-        var _modifyFeatures = new ol.Collection();
+        var _modifyFeatures = new Collection();
 
-        var _printSource = new ol.source.Vector();
+        var _printSource = new VectorSource();
         // TODO use anol.layer.Feature
-        var _printLayer = new ol.layer.Vector({
+        var _printLayer = new VectorLayer({
             source: _printSource,
             zIndex: 3
         });
@@ -139,7 +152,7 @@ angular.module('anol.print')
         LayersService.addSystemLayer(new anol.layer.Layer(layerOptions), 0);
 
         var CursorPointerInteraction = function(options) {
-            ol.interaction.Pointer.call(this, {
+            PointerInteraction.call(this, {
                 handleMoveEvent: CursorPointerInteraction.prototype.handleMoveEvent
             });
             this.cursor_ = 'pointer';
@@ -148,7 +161,7 @@ angular.module('anol.print')
             this.features = options.features;
             this.layer = options.layer;
         };
-        ol.inherits(CursorPointerInteraction, ol.interaction.Pointer);
+        inherits(CursorPointerInteraction, PointerInteraction);
         CursorPointerInteraction.prototype.handleMoveEvent = function(evt) {
             var self = this;
             if (self.cursor_) {
@@ -173,7 +186,7 @@ angular.module('anol.print')
         };
 
         var DragPrintPageInteraction = function(options) {
-            ol.interaction.Pointer.call(this, {
+            PointerInteraction.call(this, {
                 handleDownEvent: DragPrintPageInteraction.prototype.handleDownEvent,
                 handleDragEvent: DragPrintPageInteraction.prototype.handleDragEvent,
                 handleUpEvent: DragPrintPageInteraction.prototype.handleUpEvent
@@ -186,7 +199,7 @@ angular.module('anol.print')
             this.pageFeature = options.pageFeature;
             this.pageLayer = options.pageLayer;
         };
-        ol.inherits(DragPrintPageInteraction, ol.interaction.Pointer);
+        inherits(DragPrintPageInteraction, PointerInteraction);
         DragPrintPageInteraction.prototype.handleDownEvent = function(evt) {
             var self = this;
             var map = evt.map;
@@ -355,42 +368,42 @@ angular.module('anol.print')
             var self = this;
             _modifyFeatures.clear();
 
-            _dragFeatures.left = new ol.Feature(new ol.geom.Point([left, center[1]]));
+            _dragFeatures.left = new Feature(new Point([left, center[1]]));
             _dragFeatures.left.set('position', 'left');
             _dragFeatures.left.on('change', self.dragFeatureNormalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.left);
 
-            _dragFeatures.right = new ol.Feature(new ol.geom.Point([right, center[1]]));
+            _dragFeatures.right = new Feature(new Point([right, center[1]]));
             _dragFeatures.right.set('position', 'right');
             _dragFeatures.right.on('change', self.dragFeatureNormalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.right);
 
-            _dragFeatures.top = new ol.Feature(new ol.geom.Point([center[0], top]));
+            _dragFeatures.top = new Feature(new Point([center[0], top]));
             _dragFeatures.top.set('position', 'top');
             _dragFeatures.top.on('change', self.dragFeatureNormalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.top);
 
-            _dragFeatures.bottom = new ol.Feature(new ol.geom.Point([center[0], bottom]));
+            _dragFeatures.bottom = new Feature(new Point([center[0], bottom]));
             _dragFeatures.bottom.set('position', 'bottom');
             _dragFeatures.bottom.on('change', self.dragFeatureNormalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.bottom);
 
-            _dragFeatures.leftbottom = new ol.Feature(new ol.geom.Point([left, bottom]));
+            _dragFeatures.leftbottom = new Feature(new Point([left, bottom]));
             _dragFeatures.leftbottom.set('position', 'leftbottom');
             _dragFeatures.leftbottom.on('change', self.dragFeatureDiagonalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.leftbottom);
 
-            _dragFeatures.lefttop = new ol.Feature(new ol.geom.Point([left, top]));
+            _dragFeatures.lefttop = new Feature(new Point([left, top]));
             _dragFeatures.lefttop.set('position', 'lefttop');
             _dragFeatures.lefttop.on('change', self.dragFeatureDiagonalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.lefttop);
 
-            _dragFeatures.rightbottom = new ol.Feature(new ol.geom.Point([right, bottom]));
+            _dragFeatures.rightbottom = new Feature(new Point([right, bottom]));
             _dragFeatures.rightbottom.set('position', 'rightbottom');
             _dragFeatures.rightbottom.on('change', self.dragFeatureDiagonalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.rightbottom);
 
-            _dragFeatures.righttop = new ol.Feature(new ol.geom.Point([right, top]));
+            _dragFeatures.righttop = new Feature(new Point([right, top]));
             _dragFeatures.righttop.set('position', 'righttop');
             _dragFeatures.righttop.on('change', self.dragFeatureDiagonalChangeHandler, self);
             _modifyFeatures.push(_dragFeatures.righttop);
@@ -605,7 +618,7 @@ angular.module('anol.print')
             if(_printArea !== undefined) {
                 _printArea.getGeometry().setCoordinates(coords);
             } else {
-                _printArea = new ol.Feature(new ol.geom.Polygon(coords));
+                _printArea = new Feature(new Polygon(coords));
                 _printSource.addFeatures([_printArea]);
             }
         };

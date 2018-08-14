@@ -1,3 +1,11 @@
+require('angular');
+
+import { defaults } from './module.js';
+import Stroke from 'ol/style/Stroke';
+import SelectCluster from 'ol-ext/interaction/SelectCluster.js';
+import Style from 'ol/style/Style';
+import { createEmpty as createEmptyExtent } from 'ol/extent'
+import { extend as extendExtent } from 'ol/extent'
 angular.module('anol.map')
 
 /**
@@ -122,11 +130,11 @@ angular.module('anol.map')
                 },
                 // for each revealed feature of selected cluster, this function is called
                 featureStyle: function(revealedFeature, resolution) {
-                    var style = new ol.style.Style();
+                    var style = new Style();
                     // style link lines
                     if(revealedFeature.get('selectclusterlink') === true) {
-                        style = new ol.style.Style({
-                            stroke: new ol.style.Stroke({
+                        style = new Style({
+                            stroke: new Stroke({
                                 color: '#f00',
                                 width: 1
                             })
@@ -158,12 +166,12 @@ angular.module('anol.map')
                         }
                         return [style];
                     }
-                    return [new ol.style.Style()];
+                    return [new Style()];
                 }
             });
 
             var selectedCluster;
-            self.selectClusterInteraction = new ol.interaction.SelectCluster(interactionOptions);
+            self.selectClusterInteraction = new SelectCluster(interactionOptions);
 
             var changeCursorCondition = function(pixel) {
                 return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
@@ -190,10 +198,10 @@ angular.module('anol.map')
                     var zoom = MapService.getMap().getView().getZoom();
                     if(revealedFeature.get('features').length > 1 && zoom < interactionOptions.maxZoomLevel) {
                         // zoom in when not all revealed features displayed and max zoom is not reached 
-                        var _featureExtent = ol.extent.createEmpty();
+                        var _featureExtent = createEmptyExtent();
                         angular.forEach(revealedFeature.get('features'), function(child) {
                             var _childExtent = child.getGeometry().getExtent();
-                            ol.extent.extend(_featureExtent, _childExtent)
+                            extendExtent(_featureExtent, _childExtent)
                         });
                         var view = MapService.getMap().getView();
                         view.fit(_featureExtent, MapService.getMap().getSize()); 
@@ -214,7 +222,7 @@ angular.module('anol.map')
                             selectedCluster.setStyle(null);
                         }
                         selectedCluster = revealedFeature;
-                        selectedCluster.setStyle(new ol.style.Style());
+                        selectedCluster.setStyle(new Style());
                         MapService.addCursorPointerCondition(changeCursorCondition);
                         return;
                     }

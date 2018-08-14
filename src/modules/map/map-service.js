@@ -1,3 +1,12 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { LayersService } from './layers-service.js'
+import { ControlsService } from './controls-service.js'
+import { InteractionsService } from './interactions-service.js'
+import { Map, View } from 'ol';
+import { TOUCH as hasTouch } from 'ol/has'
+
 angular.module('anol.map')
 
  /**
@@ -5,7 +14,7 @@ angular.module('anol.map')
  * @name anol.map.MapServiceProvider
  *
  * @description
- * MapService handles ol3 map creation including adding interactions, controls and layers to it.
+ * MapService handles ol map creation including adding interactions, controls and layers to it.
  *
  * The ol.View is added with the provider method addView
  * It will only create one instance of an ol map
@@ -20,7 +29,7 @@ angular.module('anol.map')
      * @name addView
      * @methodOf anol.map.MapServiceProvider
      *
-     * @param {ol.View} view ol3 view object
+     * @param {ol.View} view ol view object
      *
      * @description
      * Set the map view
@@ -48,10 +57,10 @@ angular.module('anol.map')
      * @name addCursorPointerCondition
      * @methodOf anol.map.MapServiceProvider
      *
-     * @param {function} conditionFunc Function called on ol3 map pointermove event
+     * @param {function} conditionFunc Function called on ol map pointermove event
      *
      * @description
-     * Adds function to list of called functions on ol3 map pointermove event.
+     * Adds function to list of called functions on ol map pointermove event.
      * Function must return boolean. When true, cursor is changed to pointer
      */
     this.addCursorPointerCondition = function(conditionFunc) {
@@ -76,7 +85,7 @@ angular.module('anol.map')
          * @requires anol.map.InteractionsService
          *
          * @description
-         * MapService handles ol3 map creation including adding interactions, controls and layers to it.
+         * MapService handles ol map creation including adding interactions, controls and layers to it.
          *
          * The ol.View is added with the provider method addView
          * It will only create one instance of an ol map
@@ -84,7 +93,7 @@ angular.module('anol.map')
         var MapService = function(view, cursorPointerConditions, twoFingersPinchDrag, twoFingersPinchDragText) {
             this.view = view;
             this.map = undefined;
-            this.hasTouch = ol.has.TOUCH;
+            this.hasTouch = hasTouch;
             this.cursorPointerConditions = cursorPointerConditions;
             this.twoFingersPinchDrag = twoFingersPinchDrag;
             this.twoFingersPinchDragText = twoFingersPinchDragText;
@@ -102,8 +111,7 @@ angular.module('anol.map')
          */
         MapService.prototype.getMap = function() {
             if(angular.isUndefined(this.map)) {
-                this.map = new ol.Map(angular.extend({}, {
-                    logo: false,
+                this.map = new Map(angular.extend({}, {
                     controls: [],
                     interactions: [],
                     layers: [],
@@ -116,7 +124,10 @@ angular.module('anol.map')
                     });
                 }
                 if(this.cursorPointerConditions.length > 0) {
-                    this.map.on('pointermove', this._changeCursorToPointer, this);
+                    var self = this;
+                    this.map.on('pointermove', function(evt) { 
+                        self._changeCursorToPointer(evt)
+                    }).bind(self);
                 }
             }
             return this.map;
@@ -124,11 +135,11 @@ angular.module('anol.map')
         /**
          * @private
          *
-         * ol3 map pointermove event callback
+         * ol map pointermove event callback
          */
         MapService.prototype._changeCursorToPointer = function(evt) {
             var self = this;
-            var pixel = self.map.getEventPixel(evt.originalEvent);
+            var pixel = evt.map.getEventPixel(evt.originalEvent);
             var hit = false;
             angular.forEach(self.cursorPointerConditions, function(conditionFunc) {
                 if(hit === true) {
@@ -136,17 +147,17 @@ angular.module('anol.map')
                 }
                 hit = conditionFunc(pixel);
             });
-            self.map.getTarget().style.cursor = hit ? 'pointer' : '';
+            evt.map.getTarget().style.cursor = hit ? 'pointer' : '';
         };
         /**
          * @ngdoc method
          * @name addCursorPointerCondition
          * @methodOf anol.map.MapService
          *
-         * @param {function} conditionFunc Function called on ol3 map pointermove event
+         * @param {function} conditionFunc Function called on ol map pointermove event
          *
          * @description
-         * Adds function to list of called functions on ol3 map pointermove event.
+         * Adds function to list of called functions on ol map pointermove event.
          * Function must return boolean. When true, cursor is changed to pointer
          */
         MapService.prototype.addCursorPointerCondition = function(conditionFunc) {
@@ -156,7 +167,10 @@ angular.module('anol.map')
             }
             this.cursorPointerConditions.push(conditionFunc);
             if(this.cursorPointerConditions.length === 1) {
-                this.map.on('pointermove', this._changeCursorToPointer, this);
+                var self = this;
+                self.map.on('pointermove', function(evt) {
+                  self._changeCursorToPointer(evt);
+                }.bind(self));
             }
         };
         /**
@@ -167,7 +181,7 @@ angular.module('anol.map')
          * @param {function} conditionFunc Function to remove
          *
          * @description
-         * Removes given function from list of called functions on ol3 map pointermove event
+         * Removes given function from list of called functions on ol map pointermove event
          */
         MapService.prototype.removeCursorPointerCondition = function(conditionFunc) {
             var idx = this.cursorPointerConditions.indexOf(conditionFunc);
@@ -176,7 +190,10 @@ angular.module('anol.map')
             }
             this.cursorPointerConditions.splice(idx, 1);
             if(this.cursorPointerConditions.length === 0) {
-                this.map.un('pointermove', this._changeCursorToPointer, this);
+                var self = this;
+                self.map.un('pointermove', function(evt) { 
+                    self._changeCursorToPointer(evt)
+                }).bind(self);
             }
         };
         return new MapService(_view, _cursorPointerConditions, _twoFingersPinchDrag, _twoFingersPinchDragText);

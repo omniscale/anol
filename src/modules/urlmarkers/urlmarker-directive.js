@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import Overlay from 'ol/Overlay'
+
 angular.module('anol.urlmarkers')
 
 .directive('anolUrlMarkers', ['$compile', 'UrlMarkersService', 'MapService', function($compile, UrlMarkersService, MapService) {
@@ -18,7 +23,7 @@ angular.module('anol.urlmarkers')
             var overlayTemplate = angular.element(angular.copy(popupTemplate));
             overlayTemplate.find('.anol-popup-content').text(feature.get('label'));
             var overlayElement = $compile(overlayTemplate)(scope);
-            var overlay = new ol.Overlay({
+            var overlay = new Overlay({
                 element: overlayElement[0],
                 autoPan: false
             });

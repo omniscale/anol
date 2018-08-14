@@ -4,4 +4,9 @@
  * @description
  * Module providing ol3 map related services and directives
  */
-angular.module('anol.map', ['anol', 'anol.featurepopup']);
+require('angular');
+
+import { anol } from '../../anol/anol.js'
+
+// angular.module('anol.map', ['anol', 'anol.featurepopup']);
+angular.module('anol.map', ['anol']);

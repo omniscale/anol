@@ -1,3 +1,10 @@
+require('angular');
+
+import { defaults } from './module.js'
+import { ClusterSelectService } from './cluster-select-service.js'
+
+import { defaults as controlDefaults, Control } from 'ol/control'
+
 angular.module('anol.map')
 
 /**
@@ -34,7 +41,7 @@ angular.module('anol.map')
             self.map = undefined;
             if(controls === undefined) {
                 // Zoom-, Rotate and AttributionControls provided by corresponding directives
-                var defaultControls = ol.control.defaults({
+                var defaultControls = controlDefaults({
                     attribution: false,
                     zoom: false,
                     rotate: false
@@ -80,11 +87,11 @@ angular.module('anol.map')
          * Adds a single control
          */
         Controls.prototype.addControl = function(control) {
-            if(this.map !== undefined && control.olControl instanceof ol.control.Control) {
+            if(this.map !== undefined && control.olControl instanceof Control) {
                 this.map.addControl(control.olControl);
             }
             this.controls.push(control);
-            if(control.olControl instanceof ol.control.Control) {
+            if(control.olControl instanceof Control) {
                 this.olControls.push(control.olControl);
             }
             if(control.exclusive === true) {
@@ -130,7 +137,7 @@ angular.module('anol.map')
             if(subordinateIdx > -1) {
                 this.subordinateControls.splice(subordinateIdx, 1);
             }
-            if(this.map !== undefined && control.olControl instanceof ol.control.Control) {
+            if(this.map !== undefined && control.olControl instanceof Control) {
                 this.map.removeControl(control.olControl);
             }
         };

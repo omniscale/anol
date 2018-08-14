@@ -1,3 +1,10 @@
+require('angular');
+
+import { defaults } from './module.js';
+import OverviewMap from 'ol/control/OverviewMap';
+import { TOUCH as hasTouch } from 'ol/has';
+import View from 'ol/View';
+
 angular.module('anol.overviewmap')
 /**
  * @ngdoc directive
@@ -32,12 +39,12 @@ angular.module('anol.overviewmap')
             });
             // TODO use when resolved
             // https://github.com/openlayers/ol3/issues/3753
-            var olControl = new ol.control.OverviewMap({
+            var olControl = new OverviewMap({
                 layers: backgroundLayers,
                 label: document.createTextNode(''),
                 collapseLabel: document.createTextNode(''),
                 collapsed: scope.collapsed,
-                view: new ol.View({
+                view: new View({
                     projection: MapService.getMap().getView().getProjection()
                 })
             });
@@ -53,7 +60,7 @@ angular.module('anol.overviewmap')
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
             overviewmapButton.attr('tooltip-append-to-body', true);
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
-            overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !ol.has.TOUCH : scope.tooltipEnable);
+            overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
             overviewmapButton.attr('tooltip-trigger', 'mouseenter click');
             // add icon
             // cannot use ng-class, because icon change comes to late after click

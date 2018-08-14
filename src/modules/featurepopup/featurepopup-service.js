@@ -1,5 +1,9 @@
-angular.module('anol.featurepopup')
+require('angular');
 
+import { defaults } from './module.js'
+
+// TODO rename to popup
+angular.module('anol.featurepopup')
 /**
  * @ngdoc object
  * @name anol.map.PopupsServiceProvider

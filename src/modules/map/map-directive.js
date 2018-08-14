@@ -1,5 +1,11 @@
-angular.module('anol.map')
+require('angular');
 
+import { defaults } from './module.js'
+import { PinchRotate, DragPan } from 'ol/interaction.js'
+import { Control } from 'ol/control.js'
+import { TOUCH as hasTouch } from 'ol/has.js'
+
+angular.module('anol.map')
 /**
  * @ngdoc directive
  * @name anol.map.directive:anolMap
@@ -30,7 +36,7 @@ angular.module('anol.map')
                 // set touchAction to it's default value.
                 // This may cause page zoom on IE >= 10 browsers but allows us
                 // to scroll the page when only one finger has touched and dragged the map
-                if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
+                if(hasTouch && MapService.twoFingersPinchDrag) {
                     var viewport = scope.map.getViewport();
                     viewport.style.touchAction = 'auto';
                     viewport.style.msTouchAction = 'auto';
@@ -46,15 +52,15 @@ angular.module('anol.map')
 
                     // add interactions from InteractionsService to map
                     angular.forEach(InteractionsService.interactions, function(interaction) {
-                        if(ol.has.TOUCH && MapService.twoFingersPinchDrag) {
+                        if(hasTouch && MapService.twoFingersPinchDrag) {
                             // when twoFingerPinchDrag is true, no PinchRotate interaction
                             // is added. This should improve map handling for users in twoFingerPinchDrag-mode
-                            if(interaction instanceof ol.interaction.PinchRotate) {
+                            if(interaction instanceof PinchRotate) {
                                 interaction.setActive(false);
                                 return;
                             }
                             // Skipped because a DragPan interaction is added later
-                            if(interaction instanceof ol.interaction.DragPan) {
+                            if(interaction instanceof DragPan) {
                                 interaction.setActive(false);
                                 return;
                             }
@@ -69,7 +75,7 @@ angular.module('anol.map')
 
                     InteractionsService.registerMap(scope.map);
 
-                    if(ol.has.TOUCH && MapService.twoFingersPinchDrag === true) {
+                    if(hasTouch && MapService.twoFingersPinchDrag === true) {
                         var useKeyControl, dragPan;
                         var pointers = 0;
 
@@ -79,7 +85,7 @@ angular.module('anol.map')
                             var element = document.createElement('div');
                             element.className = 'map-info-overlay';
                             element.innerHTML = '<div class="map-info-overlay-text">' + MapService.twoFingersPinchDragText + '</div>';
-                            var control = new ol.control.Control({
+                            var control = new Control({
                                 element: element
                             });
                             return control;
@@ -96,7 +102,7 @@ angular.module('anol.map')
                             pointers++;
                             if(pointers > 1) {
                                 if(dragPan === undefined) {
-                                    dragPan = new ol.interaction.DragPan();
+                                    dragPan = new DragPan();
                                     scope.map.addInteraction(dragPan);
                                 }
                                 viewport.off('touchmove', handleTouchMove);
@@ -122,12 +128,12 @@ angular.module('anol.map')
                             }
                             if(pointers === 0) {
                                 scope.map.removeInteraction(dragPan);
-                                dragPan = new ol.interaction.DragPan();
+                                dragPan = new DragPan();
                                 scope.map.addInteraction(dragPan);
                             }
                         };
 
-                        dragPan = new ol.interaction.DragPan();
+                        dragPan = new DragPan();
                         scope.map.addInteraction(dragPan);
 
                         viewport.on('touchstart', handleTouchStart);

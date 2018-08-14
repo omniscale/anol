@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.featurestyleeditor')
 /**
  * @ngdoc directive
@@ -57,10 +61,11 @@ angular.module('anol.featurestyleeditor')
             formDisabled: '=',
             disabledText: '@'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/featurestyleeditor.html'),
+        // templateUrl: function(tElement, tAttrs) {
+        //     var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
+        //     return tAttrs.templateUrl || defaultUrl;
+        // },
         link: {
             pre: function(scope, element, attrs) {
                 element.addClass('anol-styleeditor');

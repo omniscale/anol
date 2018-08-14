@@ -1,3 +1,12 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has'
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import Select from 'ol/interaction/Select';
+import Geolocation from 'ol/Geolocation';
+
 angular.module('anol.geolocation')
 /**
  * @ngdoc directive
@@ -33,10 +42,11 @@ angular.module('anol.geolocation')
         highlight: '@',
         resultStyle: '=?'
       },
-      templateUrl: function(tElement, tAttrs) {
-          var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
-          return tAttrs.templateUrl || defaultUrl;
-      },
+      template: require('./templates/geolocation.html'),
+      // templateUrl: function(tElement, tAttrs) {
+      //     var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
+      //     return tAttrs.templateUrl || defaultUrl;
+      // },
       link: function(scope, element) {
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
         scope.showPosition = 'false' !== scope.showPosition;
@@ -48,7 +58,7 @@ angular.module('anol.geolocation')
         scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
           scope.tooltipDelay : 500;
         scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-          scope.tooltipEnable : !ol.has.TOUCH;
+          scope.tooltipEnable : !hasTouch;
 
         if(scope.showPosition) {
           var geolocationLayer = new anol.layer.Feature({
@@ -64,7 +74,7 @@ angular.module('anol.geolocation')
         }
 
         if('true' !== scope.disableButton) {
-          var button = angular.element('');
+          var button = $('');
           element.addClass('anol-geolocation');
           element.append($compile(button)(scope));
         }
@@ -78,13 +88,13 @@ angular.module('anol.geolocation')
         var addGeolocationFeatures = function(accuracyGeometry, position) {
           var features = [];
           if(accuracyGeometry !== undefined && accuracyGeometry !== null) {
-            features.push(new ol.Feature({
+            features.push(new Feature({
               geometry: accuracyGeometry
             }));
           }
           if(position !== undefined && position !== null) {
-            features.push(new ol.Feature({
-              geometry: new ol.geom.Point(position)
+            features.push(new Feature({
+              geometry: new Point(position)
             }));
           }
           if(features.length > 0) {
@@ -95,7 +105,7 @@ angular.module('anol.geolocation')
                 geolocationLayer.clear();
               }, scope.highlight);
             } else {
-              removeGeolocationFeaturesInteraction = new ol.interaction.Select({
+              var removeGeolocationFeaturesInteraction = new Select({
                 layers: [geolocationLayer.olLayer]
               });
               removeGeolocationFeaturesInteraction.on('select', function(evt) {
@@ -114,7 +124,7 @@ angular.module('anol.geolocation')
         };
 
         var view = MapService.getMap().getView();
-        var geolocation = new ol.Geolocation({
+        var geolocation = new Geolocation({
           projection: view.getProjection(),
           tracking: scope.anolGeolocation,
           trackingOptions: {

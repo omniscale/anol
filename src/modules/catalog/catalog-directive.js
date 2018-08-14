@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.catalog')
 /**
  * @ngdoc directive
@@ -11,10 +15,11 @@ angular.module('anol.catalog')
     return {
         restrict: 'A',
         scope: {},
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/catalog/templates/catalog.html';
-            return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/catalog.html'),
+        // templateUrl: function(tElement, tAttrs) {
+            // var defaultUrl = 'src/modules/catalog/templates/catalog.html';
+            // return tAttrs.templateUrl || defaultUrl;
+        // },
         link: function(scope, element, attrs) {
             scope.layers = CatalogService.catalogLayers;
 

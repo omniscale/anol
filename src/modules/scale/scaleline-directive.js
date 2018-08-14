@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import ScaleLine from 'ol/control/ScaleLine';
+
 angular.module('anol.scale')
 
 /**
@@ -25,7 +30,7 @@ angular.module('anol.scale')
                 var controlOptions = {
                     target: anolScaleLineInner[0]
                 };
-                var olControl = new ol.control.ScaleLine(controlOptions);
+                var olControl = new ScaleLine(controlOptions);
                 // For placement reason we need a container control
                 var containerControl = new anol.control.Control({
                     element: element

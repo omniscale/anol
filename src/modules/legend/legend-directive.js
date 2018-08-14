@@ -1,3 +1,11 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has'
+import { asString as colorAsString } from 'ol/color';
+import VectorLayer from 'ol/layer/Vector';
+
+
 angular.module('anol.legend')
 /**
  * @ngdoc directive
@@ -23,10 +31,11 @@ angular.module('anol.legend')
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        templateUrl: function(tElement, tAttrs) {
-          var defaultUrl = 'src/modules/legend/templates/legend.html';
-          return tAttrs.templateUrl || defaultUrl;
-        },
+        template: require('./templates/legend.html'),
+        // templateUrl: function(tElement, tAttrs) {
+        //   // var defaultUrl = 'src/modules/legend/templates/legend.html';
+        //   // return tAttrs.templateUrl || defaultUrl;
+        // },
         scope: {
             anolLegend: '@',
             // TODO compare with featurepopup openCallback. Why a callback wrapper is added here?
@@ -47,7 +56,7 @@ angular.module('anol.legend')
                 scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
                     scope.tooltipDelay : 500;
                 scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                    scope.tooltipEnable : !ol.has.TOUCH;
+                    scope.tooltipEnable : !hasTouch;
                 scope.showInactive = (scope.showInactive === true || scope.showInactive === 'true');
 
                 // get callback from wrapper function
@@ -149,9 +158,9 @@ angular.module('anol.legend')
                         var r = (Math.min(scope.width, scope.height) / 2) - 2;
                         ratio = r / style.getImage().getRadius();
                         ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-                        ctx.strokeStyle = ol.color.asString(style.getImage().getStroke().getColor());
+                        ctx.strokeStyle = colorAsString(style.getImage().getStroke().getColor());
                         ctx.lineWidth = style.getImage().getStroke().getWidth() * ratio;
-                        ctx.fillStyle = ol.color.asString(style.getImage().getFill().getColor());
+                        ctx.fillStyle = colorAsString(style.getImage().getFill().getColor());
                         ctx.fill();
                         ctx.stroke();
                     }
@@ -165,7 +174,7 @@ angular.module('anol.legend')
                     var y = scope.height / 2;
                     ctx.moveTo(minX, y);
                     ctx.lineTo(maxX, y);
-                    ctx.strokeStyle = ol.color.asString(style.getStroke().getColor());
+                    ctx.strokeStyle = colorAsString(style.getStroke().getColor());
                     ctx.lineWidth = style.getStroke().getWidth();
                     ctx.stroke();
                     return canvas;
@@ -179,8 +188,8 @@ angular.module('anol.legend')
                     var maxX = scope.width - 2;
                     var maxY = scope.height - 2;
                     ctx.rect(minX, minY, maxX, maxY);
-                    ctx.fillStyle = ol.color.asString(style.getFill().getColor());
-                    ctx.strokeStyle = ol.color.asString(style.getStroke().getColor());
+                    ctx.fillStyle = colorAsString(style.getFill().getColor());
+                    ctx.strokeStyle = colorAsString(style.getStroke().getColor());
                     ctx.lineWidth = style.getStroke().getWidth();
                     ctx.fill();
                     ctx.stroke();
@@ -259,7 +268,7 @@ angular.module('anol.legend')
 
             if(scope.legendLayer.legend.url !== undefined) {
                 legendItem = ImageLegend.createLegendEntry(scope.legendLayer.title, scope.legendLayer.legend.url);
-            } else if(scope.legendLayer.olLayer instanceof ol.layer.Vector) {
+            } else if(scope.legendLayer.olLayer instanceof VectorLayer) {
                 legendItem = VectorLegend.createLegendEntry(
                     scope.legendLayer.title,
                     scope.legendLayer.legend.type,

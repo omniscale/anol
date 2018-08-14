@@ -4,4 +4,9 @@
  * @description
  * Module providing the feature style editor directive
  */
+
+require('angular');
+
+import { anol } from '../../anol/anol.js'
+ 
 angular.module('anol.featurestyleeditor', ['anol.map']);

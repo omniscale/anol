@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import { TOUCH as hasTouch } from 'ol/has';
+
 angular.module('anol.attribution')
 
 /**
@@ -53,9 +58,12 @@ angular.module('anol.attribution')
             tooltipDelay: '@',
             tooltipEnable: '@'
         },
-        templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/attribution/templates/attribution.html';
-            return tAttrs.templateUrl || defaultUrl;
+        template: function(tElement, tAttrs) {
+            // var defaultUrl = './templates/attribution.html';
+            // if (tAttrs.templateUrl) {
+            //     return require(tAttrs.templateUrl)
+            // }
+            return require('./templates/attribution.html')
         },
         link: function(scope, element, attrs) {
             // attribute defaults
@@ -64,7 +72,7 @@ angular.module('anol.attribution')
             scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
                 scope.tooltipDelay : 500;
             scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                scope.tooltipEnable : !ol.has.TOUCH;
+                scope.tooltipEnable : !hasTouch;
             scope.layers = LayersService.flattedLayers();
 
             ControlsService.addControl(

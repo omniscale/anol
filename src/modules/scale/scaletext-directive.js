@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.scale')
 
 /**
@@ -37,8 +41,9 @@ angular.module('anol.scale')
         restrict: 'A',
         require: '?^anolMap',
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/scale/templates/scaletext.html';
-            return tAttrs.templateUrl || defaultUrl;
+            // var defaultUrl = 'src/modules/scale/templates/scaletext.html';
+            // return tAttrs.templateUrl || defaultUrl;
+            return require('./templates/scaletext.html')
         },
         scope: {},
         link: {

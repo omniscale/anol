@@ -1,3 +1,10 @@
+require('angular');
+
+import { defaults } from './module.js';
+import Overlay from 'ol/Overlay';
+import WMSGetFeatureInfo from 'ol/format/WMSGetFeatureInfo';
+import VectorLayer from 'ol/layer/Vector';
+
 angular.module('anol.getfeatureinfo')
 /**
  * @ngdoc directive
@@ -40,8 +47,9 @@ angular.module('anol.getfeatureinfo')
             excludeLayers: '=?'
         },
         templateUrl: function(tElement, tAttrs) {
-            var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
-            return tAttrs.templateUrl || defaultUrl;
+            // var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
+            // return tAttrs.templateUrl || defaultUrl;
+            return require('./templates/getfeatureinfo.html')
         },
         link: {
             pre: function(scope, element) {
@@ -55,7 +63,7 @@ angular.module('anol.getfeatureinfo')
                 if(scope.waitingMarkerSrc !== undefined) {
                     scope.waitingOverlayElement = element.find('#get-featureinfo-waiting-overlay');
                     $compile(scope.waitingOverlayElement)(scope);
-                    scope.waitingOverlay = new ol.Overlay({
+                    scope.waitingOverlay = new Overlay({
                         element: scope.waitingOverlayElement[0],
                         position: undefined,
                         offset: scope.waitingMarkerOffset
@@ -133,7 +141,7 @@ angular.module('anol.getfeatureinfo')
                 };
 
                 var handleGMLFeatureinfoResponses = function(responses) {
-                    var format = new ol.format.WMSGetFeatureInfo();
+                    var format = new WMSGetFeatureInfo();
 
                     angular.forEach(responses, function(response) {
                         if(angular.isUndefined(response)) {
@@ -183,7 +191,7 @@ angular.module('anol.getfeatureinfo')
                         if(!layer.getVisible()) {
                             return;
                         }
-                        if(layer.olLayer instanceof ol.layer.Vector) {
+                        if(layer.olLayer instanceof VectorLayer) {
                             return;
                         }
                         if(!layer.featureinfo) {

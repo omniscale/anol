@@ -1,3 +1,7 @@
+require('angular');
+
+import { defaults } from './module.js';
+
 angular.module('anol.urlmarkers')
 .directive('bbcode', [function() {
     var snippets = {

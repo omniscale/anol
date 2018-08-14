@@ -1,3 +1,9 @@
+require('angular');
+
+import { defaults } from './module.js';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+
 angular.module('anol.urlmarkers')
 /**
  * @ngdoc object
@@ -123,7 +129,7 @@ angular.module('anol.urlmarkers')
                     if(kv[0] === 'coord') {
                         var coord = kv[1].split(',');
                         coord = [parseFloat(coord[0]), parseFloat(coord[1])];
-                        marker.geometry = new ol.geom.Point(coord);
+                        marker.geometry = new Point(coord);
                     } else if (kv[0] === 'srs') {
                         marker.srs = 'EPSG:' + kv[1];
                     } else if (kv[0] === 'color') {
@@ -147,7 +153,7 @@ angular.module('anol.urlmarkers')
                 if(!self.usePopup && marker.label !== undefined) {
                     marker.style.text = marker.label;
                 }
-                self.features.push(new ol.Feature(marker));
+                self.features.push(new Feature(marker));
 
             });
         };

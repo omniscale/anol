@@ -1,3 +1,8 @@
+require('angular');
+
+import { defaults } from './module.js';
+import GeoJSON from 'ol/format/GeoJSON';
+
 angular.module('anol.savemanager')
 
 /**
@@ -202,7 +207,7 @@ angular.module('anol.savemanager')
         SaveManager.prototype.commit = function(layer) {
             var self = this;
             var deferred = $q.defer();
-            var format = new ol.format.GeoJSON();
+            var format = new GeoJSON();
 
             if(layer.name in self.changedLayers) {
                 var data = {

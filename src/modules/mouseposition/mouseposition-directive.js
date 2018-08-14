@@ -1,3 +1,10 @@
+require('angular');
+
+import { defaults } from './module.js';
+
+import { get as getProj } from 'ol/proj'
+import MousePosition from 'ol/control/MousePosition';
+
 angular.module('anol.mouseposition')
 
 /**
@@ -39,7 +46,7 @@ angular.module('anol.mouseposition')
                 $compile(element.contents())(scope);
                 scope.map = MapService.getMap();
                 if(angular.isDefined(scope.projectionCode)) {
-                    scope.projection = ol.proj.get(scope.projectionCode);
+                    scope.projection = getProj(scope.projectionCode);
                 } else {
                     scope.projection = scope.map.getView().getProjection();
                     scope.projectionCode = scope.projection.getCode();
@@ -50,7 +57,7 @@ angular.module('anol.mouseposition')
             },
             post: function(scope, element, attrs, AnolMapController) {
                 var inMap = angular.isObject(AnolMapController);
-                var olControl = new ol.control.MousePosition({
+                var olControl = new MousePosition({
                     coordinateFormat: function(coordinate) {
                         scope.x = coordinate[0].toFixed(scope.precision);
                         scope.y = coordinate[1].toFixed(scope.precision);
@@ -68,7 +75,7 @@ angular.module('anol.mouseposition')
                 }
                 scope.$watch('projectionCode', function(newVal) {
                     if(angular.isDefined(newVal)) {
-                        scope.projection = ol.proj.get(newVal);
+                        scope.projection = getProj(newVal);
                         scope.mapUnits = scope.projection.getUnits();
                         olControl.setProjection(scope.projection);
                     }
