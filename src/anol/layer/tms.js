@@ -13,24 +13,33 @@
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
- anol.layer.TMS = function(_options) {
-    var defaults = {
-        olLayer: {
-            source: {
-                tileSize: [256, 256],
-                levels: 22
-            }
-        }
-    };
-    var options = $.extend(true, {}, defaults, _options);
 
-    anol.layer.Layer.call(this, options);
-};
-anol.layer.TMS.prototype = new anol.layer.Layer(false);
-$.extend(anol.layer.TMS.prototype, {
-    CLASS_NAME: 'anol.layer.TMS',
-    OL_LAYER_CLASS: ol.layer.Tile,
-    OL_SOURCE_CLASS: ol.source.XYZ,
+import AnolBaseLayer from '../layer.js'
+
+import Extent from 'ol'
+    
+import {getWidth, getHeight, getBottomLeft} from 'ol/extent.js';
+import TileLayer from 'ol/layer/Tile';
+import XYZ from 'ol/source/XYZ';
+import TileGrid from 'ol/tilegrid/TileGrid';
+
+class TMS extends AnolBaseLayer {
+    constructor(_options) {
+        var defaults = {
+            olLayer: {
+                source: {
+                    tileSize: [256, 256],
+                    levels: 22
+                }
+            }
+        };
+        var options = $.extend(true, {}, defaults, _options);
+        super(options);
+        this.CLASS_NAME = 'anol.layer.TMS'
+        this.OL_LAYER_CLASS = TileLayer
+        this.OL_SOURCE_CLASS = XYZ
+    }
+
     /**
      * Additional source options:
      * - baseUrl
@@ -38,10 +47,9 @@ $.extend(anol.layer.TMS.prototype, {
      * - extent
      * - format
      */
-    _createSourceOptions: function(srcOptions) {
+    _createSourceOptions(srcOptions) {
         var self = this;
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions(srcOptions);
-
+        srcOptions = super._createSourceOptions(srcOptions);
         srcOptions.tileUrlFunction = function(tileCoord, pixelRatio, projection) {
             return self.tileUrlFunction(
                 tileCoord,
@@ -54,11 +62,11 @@ $.extend(anol.layer.TMS.prototype, {
             srcOptions.tileGrid === undefined &&
             srcOptions.extent !== undefined
         ) {
-            var w = ol.extent.getWidth(extent);
-            var h = ol.extent.getHeight(extent);
+            var w = getWidth(extent);
+            var h = getHeight(extent);
             var minRes = Math.max(w / sourceOpts.tileSize[0], h / sourceOpts.tileSize[1]);
-            srcOptions.tileGrid = new ol.tilegrid.TileGrid({
-                origin: ol.extent.getBottomLeft(srcOptions.extent),
+            srcOptions.tileGrid = new TileGrid({
+                origin: getBottomLeft(srcOptions.extent),
                 resolutions: self._createResolutions(
                     minRes,
                     srcOptions.levels
@@ -66,8 +74,8 @@ $.extend(anol.layer.TMS.prototype, {
             });
         }
         return srcOptions;
-    },
-    _createResolutions: function(minRes, levels) {
+    }
+    _createResolutions(minRes, levels) {
         var resolutions = [];
         // need one resolution more
         for(var z = 0; z <= levels; ++z) {
@@ -77,8 +85,8 @@ $.extend(anol.layer.TMS.prototype, {
         // so ol requests 4 tiles instead of one for first zoom level
         resolutions.shift();
         return resolutions;
-    },
-    tileUrlFunction: function(tileCoord, baseUrl, layer, format) {
+    }
+    tileUrlFunction(tileCoord, baseUrl, layer, format) {
         var url = '';
         if (tileCoord[1] >= 0 && tileCoord[2] >= 0) {
             url += baseUrl + '/';
@@ -89,9 +97,11 @@ $.extend(anol.layer.TMS.prototype, {
             url += '.' + format.split('/')[1];
         }
         return url;
-    },
-    isCombinable: function(other) {
+    }
+    isCombinable(other) {
         var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
         return false;
     }
-});
+}
+
+export default TMS

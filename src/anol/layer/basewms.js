@@ -9,34 +9,39 @@
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
- anol.layer.BaseWMS = function(_options) {
-    if(_options === false) {
-        anol.layer.Layer.call(this, _options);
-        return;
-    }
-    var defaults = {};
-    var options = $.extend(true, {}, defaults, _options);
 
-    anol.layer.Layer.call(this, options);
-    this.wmsSourceLayers = anol.helper.stringSplit(this.olSourceOptions.params.LAYERS, ',');
-    if(this.olLayerOptions.visible === false) {
-        this.olSourceOptions.params.LAYERS = '';
+import AnolBaseLayer from '../layer.js'
+
+class BaseWMS extends AnolBaseLayer {
+    constructor(_options) {
+        super(_options);
+        this.CLASS_NAME = 'anol.layer.BaseWMS';
+        this.OL_LAYER_CLASS = undefined;
+        this.OL_SOURCE_CLASS = undefined;
+
+        if(_options === undefined) {
+            return;
+        }
+
+        var defaults = {};
+        this.options = $.extend(true, {}, defaults, _options);
+
+        this.wmsSourceLayers = anol.helper.stringSplit(this.olSourceOptions.params.LAYERS, ',');
+        if(this.olLayerOptions.visible === false) {
+            this.olSourceOptions.params.LAYERS = '';
+        }
+        this.visible = this.olLayerOptions.visible !== false;
     }
-    this.visible = this.olLayerOptions.visible !== false;
-};
-anol.layer.BaseWMS.prototype = new anol.layer.Layer(false);
-$.extend(anol.layer.BaseWMS.prototype, {
-    CLASS_NAME: 'anol.layer.BaseWMS',
-    OL_LAYER_CLASS: undefined,
-    OL_SOURCE_CLASS: undefined,
-    isCombinable: function(other) {
-        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+
+    isCombinable(other) {
+        var combinable = super.isCombinable(other);
         if(!combinable) {
             return false;
         }
         if(this.olSourceOptions.url !== other.olSourceOptions.url) {
             return false;
         }
+
         var thisParams = $.extend(true, {}, this.olSourceOptions.params);
         delete thisParams.LAYERS;
         var otherParams = $.extend(true, {}, other.olSourceOptions.params);
@@ -45,8 +50,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
             return false;
         }
         return true;
-    },
-    getCombinedSource: function(other) {
+    }
+
+    getCombinedSource(other) {
         var olSource = this.olLayer.getSource();
         if(other.olLayerOptions.visible !== false) {
             var params = olSource.getParams();
@@ -59,8 +65,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
         anolLayers.push(other);
         olSource.set('anolLayers', anolLayers);
         return olSource;
-    },
-    removeOlLayer: function() {
+    }
+
+    removeOlLayer() {
         if(this.combined) {
             var olSource = this.olLayer.getSource();
             var anolLayers = olSource.get('anolLayers');
@@ -70,12 +77,12 @@ $.extend(anol.layer.BaseWMS.prototype, {
             }
             olSource.set('anolLayers', anolLayers);
         }
-        anol.layer.Layer.prototype.removeOlLayer.call(this);
-    },
-    getVisible: function() {
+        super.removeOlLayer();
+    }
+    getVisible() {
         return this.visible;
-    },
-    setVisible: function(visible)  {
+    }
+    setVisible(visible) {
         if (visible == this.getVisible()) {
             return;
         }        
@@ -101,9 +108,9 @@ $.extend(anol.layer.BaseWMS.prototype, {
         params.LAYERS = layers.reverse().join(',');
         source.updateParams(params);
         this.visible = visible;
-        anol.layer.Layer.prototype.setVisible.call(this, layers.length > 0);
-    },
-    getLegendGraphicUrl: function() {
+        super.setVisible(layers.length > 0)
+    }
+    getLegendGraphicUrl() {
         var requestParams = {
             SERVICE: 'WMS',
             VERSION: '1.3.0',
@@ -130,8 +137,8 @@ $.extend(anol.layer.BaseWMS.prototype, {
         }
 
         return url + $.param(requestParams);
-    },
-    getFeatureInfoUrl: function(coordinate, resolution, projection, params) {
+    }
+    getFeatureInfoUrl(coordinate, resolution, projection, params) {
         var requestParams = $.extend(true,
             {},
             {
@@ -145,4 +152,7 @@ $.extend(anol.layer.BaseWMS.prototype, {
             coordinate, resolution, projection, requestParams
         );
     }
-});
+};
+
+export default BaseWMS;
+

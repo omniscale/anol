@@ -16,85 +16,94 @@
  * Without capabilitiesUrl you can also specify *levels* in source options.
  * The default value is 22.
  */
-anol.layer.WMTS = function(_options) {
-    var self = this;
-    var defaults = {
-        olLayer: {
-            source: {
-                tileSize: [256, 256],
-                levels: 22
+
+import AnolBaseLayer from '../layer.js'
+
+import TileLayer from 'ol/layer/Tile';
+import XYZ from 'ol/source/WMTS';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import { getWidth, getHeight, getTopLeft} from 'ol/extent.js';
+import { DEVICE_PIXEL_RATIO } from 'ol/has'
+
+class WMTS extends AnolBaseLayer {
+    
+    constructor(_options) {
+        var self = this;
+        var defaults = {
+            olLayer: {
+                source: {
+                    tileSize: [256, 256],
+                    levels: 22
+                }
             }
-        }
-    };
-    var options = $.extend(true, {}, defaults, _options );
+        };
+        var options = $.extend(true, {}, defaults, _options );
 
-    var hqUrl = options.olLayer.source.hqUrl || false;
-    delete options.olLayer.source.hqUrl;
-    var hqLayer = options.olLayer.source.hqLayer || false;
-    delete options.olLayer.source.hqLayer;
-    var hqMatrixSet = options.olLayer.source.hqMatrixSet || false;
-    delete options.olLayer.source.hqMatrixSet;
+        var hqUrl = options.olLayer.source.hqUrl || false;
+        delete options.olLayer.source.hqUrl;
+        var hqLayer = options.olLayer.source.hqLayer || false;
+        delete options.olLayer.source.hqLayer;
+        var hqMatrixSet = options.olLayer.source.hqMatrixSet || false;
+        delete options.olLayer.source.hqMatrixSet;
 
-    if(ol.has.DEVICE_PIXEL_RATIO > 1) {
-        var useHq = false;
-        if(hqUrl !== false) {
-            options.olLayer.source.url = hqUrl;
-            useHq = true;
+        if(DEVICE_PIXEL_RATIO > 1) {
+            var useHq = false;
+            if(hqUrl !== false) {
+                options.olLayer.source.url = hqUrl;
+                useHq = true;
+            }
+            if(hqLayer !== false) {
+                options.olLayer.source.layer = hqLayer;
+                useHq = true;
+            }
+            if(hqMatrixSet !== false) {
+                options.olLayer.source.matrixSet = hqMatrixSet;
+                useHq = true;
+            }
+            if(useHq) {
+                options.olLayer.source.tilePixelRatio = 2;
+             }
         }
-        if(hqLayer !== false) {
-            options.olLayer.source.layer = hqLayer;
-            useHq = true;
-        }
-        if(hqMatrixSet !== false) {
-            options.olLayer.source.matrixSet = hqMatrixSet;
-            useHq = true;
-        }
-        if(useHq) {
-            options.olLayer.source.tilePixelRatio = 2;
-         }
+        super(options);
+        this.CLASS_NAME = 'anol.layer.WMTS';
+        this.OL_LAYER_CLASS = TileLayer;
+        this.OL_SOURCE_CLASS = WMTS;
+
     }
-
-    anol.layer.Layer.call(this, options);
-};
-anol.layer.WMTS.prototype = new anol.layer.Layer(false);
-$.extend(anol.layer.WMTS.prototype, {
-    CLASS_NAME: 'anol.layer.WMTS',
-    OL_LAYER_CLASS: ol.layer.Tile,
-    OL_SOURCE_CLASS: ol.source.WMTS,
-    _createResolution: function(levels, minRes) {
+    _createResolution(levels, minRes) {
         var resolutions = [];
         for(var z = 0; z < levels; ++z) {
             resolutions[z] = minRes / Math.pow(2, z);
         }
         return resolutions;
-    },
-    _createMatrixIds: function(levels) {
+    }
+    _createMatrixIds(levels) {
         var matrixIds = [];
         for(var z = 0; z < levels; ++z) {
             matrixIds[z] = z;
         }
         return matrixIds;
-    },
-    _createRequestUrl: function(options) {
+    }
+    _createRequestUrl(options) {
         return options.url +
                options.layer +
                '/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.' +
                options.format.split('/')[1];
-    },
-    _createSourceOptions: function(srcOptions) {
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions(srcOptions);
+    }
+    _createSourceOptions(srcOptions) {
+        srcOptions = super._createSourceOptions(srcOptions);
         var levels = srcOptions.levels;
         var extent = srcOptions.extent || srcOptions.projection.getExtent();
-        var w = ol.extent.getWidth(extent);
-        var h = ol.extent.getHeight(extent);
+        var w = getWidth(extent);
+        var h = getHeight(extent);
         var minRes = Math.max(w / srcOptions.tileSize[0], h / srcOptions.tileSize[1]);
         var url = this._createRequestUrl(srcOptions);
 
         srcOptions = $.extend(true, {}, srcOptions, {
             url: url,
-            tileGrid: new ol.tilegrid.WMTS({
+            tileGrid: new WMTSTileGrid({
                 extent: extent,
-                origin: ol.extent.getTopLeft(extent),
+                origin: getTopLeft(extent),
                 resolutions: this._createResolution(levels, minRes),
                 matrixIds: this._createMatrixIds(levels)
             }),
@@ -103,9 +112,11 @@ $.extend(anol.layer.WMTS.prototype, {
         });
 
         return srcOptions;
-    },
-    isCombinable: function(other) {
+    }
+    isCombinable(other) {
         var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
         return false;
     }
-});
+};
+
+export default WMTS 

@@ -18,24 +18,37 @@
  *
  * Ask *url* with current projection and bbox.
  */
-anol.layer.DynamicGeoJSON = function(_options) {
-    if(
-        angular.isObject(_options) &&
-        angular.isObject(_options.olLayer) &&
-        angular.isObject(_options.olLayer.source)
-    ) {
-        this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
+
+import StaticGeoJSON from './staticgeojson.js'
+
+import {bbox as bboxStrategy} from 'ol/loadingstrategy';
+import Style from 'ol/style/Style';
+import Text from 'ol/style/Text';
+import Stroke from 'ol/style/Stroke';
+import {containsCoordinate} from 'ol/extent.js';
+
+import GeoJSON from 'ol/format/GeoJSON';
+
+class DynamicGeoJSON  extends StaticGeoJSON {
+
+    constructor(_options) {
+        if(
+            angular.isObject(_options) &&
+            angular.isObject(_options.olLayer) &&
+            angular.isObject(_options.olLayer.source)
+        ) {
+            this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
+        }
+        super(_options);
+        this.CLASS_NAME = 'anol.layer.DynamicGeoJSON';
     }
-    anol.layer.StaticGeoJSON.call(this, _options);
-};
-anol.layer.DynamicGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
-$.extend(anol.layer.DynamicGeoJSON.prototype, {
-    CLASS_NAME: 'anol.layer.DynamicGeoJSON',
-    setOlLayer: function(olLayer) {
-        anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
+
+    setOlLayer(olLayer) {
+        super.setOlLayer(olLayer);
         this.olSource = this.isClustered() ? this.unclusteredSource : olLayer.getSource();
-    },
-    isCombinable: function(other) {
+    }
+
+    isCombinable(other) {
         if(other.CLASS_NAME !== this.CLASS_NAME) {
             return false;
         }
@@ -49,8 +62,9 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             return false;
         }
         return true;
-    },
-    getCombinedSource: function(other) {
+    }
+
+    getCombinedSource(other) {
         var anolLayers = this.olSource.get('anolLayers');
         anolLayers.push(other);
         this.olSource.set('anolLayers', anolLayers);
@@ -59,24 +73,26 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             return this.olLayer.getSource();
         }
         return this.olSource;
-    },
-    setVisible: function(visible) {
-        anol.layer.StaticGeoJSON.prototype.setVisible.call(this, visible);
+    }
+
+    setVisible(visible) {
+        super.setVisible(visible);
         // find better solution than clear, cause it's remove all features from the source, not only
         // features related to current layer. But we need to call clear, otherwise source extent is not
         // resetted and it will not be reloaded with updated url params
         this.olSource.clear(true);
-    },
+    }
+
     /**
      * Additional source options
      * - url
      * - featureProjection
      * - additionalParameters
      */
-    _createSourceOptions: function(srcOptions) {
+    _createSourceOptions(srcOptions) {
         var self = this;
-        srcOptions.format = new ol.format.GeoJSON();
-        srcOptions.strategy = ol.loadingstrategy.bbox;
+        srcOptions.format = new GeoJSON();
+        srcOptions.strategy = bboxStrategy;
 
         srcOptions.loader = function(extent, resolution, projection) {
             var additionalParameters = {};
@@ -95,11 +111,10 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             );
         };
 
-        return anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
-            srcOptions
-        );
-    },
-    loader: function(url, extent, resolution, projection, featureProjection, additionalParameters) {
+        return super._createSourceOptions(srcOptions);
+    }
+
+    loader(url, extent, resolution, projection, featureProjection, additionalParameters) {
         var self = this;
         var params = [
             'srs=' + projection.getCode(),
@@ -122,8 +137,9 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         .done(function(response) {
             self.responseHandler(response, featureProjection);
         });
-    },
-    responseHandler: function(response, featureProjection) {
+    }
+
+    responseHandler(response, featureProjection) {
         var self = this;
         // TODO find a better solution
         // remove all features from source.
@@ -138,13 +154,14 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         for(var i = 0; i < sourceFeatures.length; i++) {
             self.olSource.removeFeature(sourceFeatures[i]);
         }
-        var format = new ol.format.GeoJSON();
+        var format = new GeoJSON();
         var features = format.readFeatures(response, {
             featureProjection: featureProjection
         });
         self.olSource.addFeatures(features);
-    },
-    createStyle: function(feature, resolution) {
+    }
+
+    createStyle(feature, resolution) {
         var parentFunc = anol.layer.StaticGeoJSON.prototype.createStyle;
 
         // call parent func when feature is undefined
@@ -158,7 +175,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         if(features === undefined) {
             // return empty style if feature not belongs to this layer
             if(feature.get('__layer__') !== this.name) {
-                return new ol.style.Style();
+                return new Style();
             } else {
                 return parentFunc.call(this, feature, resolution);
             }
@@ -171,7 +188,7 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
             if(features[0].get('__layer__') === this.name) {
                 return parentFunc.call(this, features[0], resolution);
             } else {
-                return new ol.style.Style();
+                return new Style();
             }
         }
 
@@ -185,19 +202,20 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         }
 
         if(styleLayer !== undefined && styleLayer !== this) {
-            return new ol.style.Style();
+            return new Style();
         }
 
         // cluster with more than one feature
         return parentFunc.call(this, feature, resolution);
-    },
-    createClusterStyle: function(clusterFeature) {
-        var visible = ol.extent.containsCoordinate(
+    }
+
+    createClusterStyle(clusterFeature) {
+        var visible = containsCoordinate(
             this.map.getView().calculateExtent(this.map.getSize()),
             clusterFeature.getGeometry().getCoordinates()
         );
         if(!visible) {
-            return new ol.style.Style();
+            return new Style();
         }
         var cachedStyle = clusterFeature.get('cachedStyle');
         if(cachedStyle !== null && cachedStyle !== undefined) {
@@ -251,23 +269,23 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
                 styleDefinition.graphicXAnchor *= styleDefinition.graphicWidth;
 
                 styles.push(
-                    new ol.style.Style({
+                    new Style({
                         image: self.createIconStyle(styleDefinition, defaultStyle.getImage()),
-                        text: new ol.style.Text({
+                        text: new Text({
                             text: value.count.toString(),
                             offsetX: (styleDefinition.graphicXAnchor - styleDefinition.graphicWidth / 2) * -1,
                             offsetY: styleDefinition.graphicHeight,
-                            stroke: new ol.style.Stroke({color: '#fff', width: 2})
+                            stroke: new Stroke({color: '#fff', width: 2})
                         })
                     })
                 );
             } else {
                 styles.push(defaultStyle);
-                styles.push(new ol.style.Style({
-                    text: new ol.style.Text({
+                styles.push(new Style({
+                    text: new Text({
                         text: value.count.toString(),
                         offsetY: value.layer.style.graphicHeight,
-                        stroke: new ol.style.Stroke({color: '#fff', width: 2})
+                        stroke: new Stroke({color: '#fff', width: 2})
                     })
                 }));
             }
@@ -276,9 +294,12 @@ $.extend(anol.layer.DynamicGeoJSON.prototype, {
         clusterFeature.set('cachedStyle', styles);
         return styles;
 
-    },
-    refresh: function() {
+    }
+    refresh() {
         this.olSource.clear();
         this.olSource.refresh();
     }
-});
+};
+
+export default DynamicGeoJSON;
+

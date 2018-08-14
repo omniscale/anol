@@ -10,19 +10,25 @@
  * @description
  * Groups {@link anol.layer.Layer anol.layer.Layer}.
  */
- // TODO think about rebasing into anol.Group
-anol.layer.Group = function(options) {
-    var self = this;
-    this.name = options.name;
-    this.title = options.title;
-    this.layers = options.layers;
-    angular.forEach(this.layers, function(layer) {
-        layer.anolGroup = self;
-    });
-};
-anol.layer.Group.prototype = {
-    CLASS_NAME: 'anol.layer.Group',
-    getVisible: function() {
+
+class Group {
+
+    constructor(options) {
+        var self = this;
+        this.CLASS_NAME = 'anol.layer.Group';    
+        this.name = options.name;
+        this.title = options.title;
+        this.layers = options.layers;
+
+        if (this.layers === undefined) {
+            this.layers = []
+        }
+        angular.forEach(this.layers, function(layer) {
+            layer.anolGroup = self;
+        });
+    }
+
+    getVisible() {
         var self = this;
         var visible = false;
         $.each(self.layers, function(idx, layer) {
@@ -32,8 +38,9 @@ anol.layer.Group.prototype = {
             }
         });
         return visible;
-    },
-    setVisible: function(visible) {
+    }
+
+    setVisible(visible) {
         var self = this;
         $.each(self.layers, function(idx, layer) {
             if(layer.getVisible() !== visible) {
@@ -41,4 +48,6 @@ anol.layer.Group.prototype = {
             }
         });
     }
-};
+}
+
+export default Group;

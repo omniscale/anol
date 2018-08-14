@@ -9,30 +9,34 @@
  * @description
  * Nominatim geocoder. See http://wiki.openstreetmap.org/wiki/Nominatim
  */
-anol.geocoder.Nominatim = function(_options) {
-    var defaults = {
-        url: 'http://nominatim.openstreetmap.org/search?'
-    };
-    var options = $.extend({},
-        defaults,
-        _options
-    );
-    anol.geocoder.Base.call(this, options);
-};
-anol.geocoder.Nominatim.prototype = new anol.geocoder.Base();
-$.extend(anol.geocoder.Nominatim.prototype, {
-    CLASS_NAME: 'anol.geocoder.Nominatim',
-    RESULT_PROJECTION: 'EPSG:4326',
-    extractDisplayText: function(result) {
+
+import BaseGeocoder from './base.js'
+
+class Nominatim extends BaseGeocoder {
+
+    constructor(_options) {
+        if(_options === undefined) {
+            super();
+            return;
+        }
+        _options.url = 'http://nominatim.openstreetmap.org/search?';
+        super(_options);
+        this.options = _options;
+        this.CLASS_NAME = 'anol.geocoder.Nominatim';
+        this.RESULT_PROJECTION = 'EPSG:4326';
+    }
+
+    extractDisplayText(result) {
         return result.display_name;
-    },
-    extractCoordinate: function(result) {
+    }
+
+    extractCoordinate(result) {
         return [
             parseFloat(result.lon),
             parseFloat(result.lat)
         ];
-    },
-    getData: function(searchString) {
+    }
+    getData(searchString) {
         var data = {
             q: searchString,
             format: 'json',
@@ -47,4 +51,6 @@ $.extend(anol.geocoder.Nominatim.prototype, {
         }
         return data;
     }
-});
+}
+
+export default Nominatim;

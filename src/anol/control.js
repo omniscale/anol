@@ -16,115 +16,121 @@
  * @description
  * anol.control.Control is designed to work with anol.map.ControlsService.
  */
-anol.control.Control = function(options) {
-    if(options === undefined) {
-        return;
-    }
 
-    this.active = options.active || false;
-    this.disabled = options.disabled || false;
-    this.exclusive = options.exclusive || false;
-    this.subordinate = options.subordinate || false;
-    this.element = options.element;
-    this.interactions = options.interactions || [];
+import { Control as OlControl} from 'ol/control'
 
-    if(options.olControl === undefined) {
-        var controlElement;
-        if(this.element !== undefined) {
-            controlElement = this.element[0];
-        }
-        var target;
-        if(options.target !== undefined) {
-            target = options.target[0];
+class Control {
+    
+    constructor(options) {
+        if(options === undefined) {
+            return;
         }
 
-        this.olControl = new ol.control.Control({
-            element: controlElement,
-            target: target
-        });
-    } else {
-        this.olControl = options.olControl;
-    }
+        this.active = options.active || false;
+        this.disabled = options.disabled || false;
+        this.exclusive = options.exclusive || false;
+        this.subordinate = options.subordinate || false;
+        this.element = options.element;
+        this.interactions = options.interactions || [];
 
-    if(this.disabled) {
-        this.addClass('disabled');
-    }
-};
+        if(options.olControl === undefined) {
+            var controlElement;
+            if(this.element !== undefined) {
+                controlElement = this.element[0];
+            }
+            var target;
+            if(options.target !== undefined) {
+                target = options.target[0];
+            }
+            this.olControl = new OlControl({
+                element: controlElement,
+                target: target
+            });
+        } else {
+            this.olControl = options.olControl;
+        }
 
-anol.control.Control.prototype = {
-    CLASS_NAME: 'anol.control.Control',
-    DEFAULT_OPTIONS: {},
-    activate: function() {
+        if(this.disabled) {
+            this.addClass('disabled');
+        }
+        this.CLASS_NAME = 'anol.control.Control';
+        this.DEFAULT_OPTIONS = {};
+
+    }
+    activate() {
         if(this.active === true) {
             return;
         }
         this.active = true;
         this.addClass('active');
         $(this).triggerHandler('anol.control.activate');
-    },
-    onActivate: function(func, context) {
+    }
+    onActivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
         $(this).on('anol.control.activate', handler);
         return handler;
-    },
-    oneActivate: function(func, context) {
+    }
+    oneActivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
         $(this).one('anol.control.activate', handler);
         return handler;
-    },
-    unActivate: function(handler) {
+    }
+    unActivate(handler) {
         $(this).off('anol.control.activate', handler);
-    },
-    deactivate: function() {
+    }
+    deactivate() {
         if(this.active === false) {
             return;
         }
         this.active = false;
         this.removeClass('active');
         $(this).triggerHandler('anol.control.deactivate');
-    },
-    onDeactivate: function(func, context) {
+    }
+    onDeactivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
         $(this).on('anol.control.deactivate', handler);
         return handler;
-    },
-    oneDeactivate: function(func, context) {
+    }
+    oneDeactivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
         $(this).one('anol.control.deactivate', handler);
         return handler;
-    },
-    unDeactivate: function(handler) {
+    }
+    unDeactivate(handler) {
         $(this).off('anol.control.deactivate', handler);
-    },
-    disable: function() {
+    }
+    disable() {
         this.deactivate();
         this.disabled = true;
         this.addClass('disabled');
-    },
-    enable: function() {
+    }
+    enable() {
         this.disabled = false;
         this.removeClass('disabled');
-    },
-    addClass: function(className) {
+    }
+    addClass(className) {
         if(this.element !== undefined) {
             this.element.addClass(className);
         }
-    },
-    removeClass: function(className) {
+    }
+    removeClass(className) {
         if(this.element !== undefined) {
             this.element.removeClass(className);
         }
     }
-};
+}
+
+export default Control;
+

@@ -41,97 +41,106 @@
  *   });
  * ```
  */
-anol.layer.Layer = function(options) {
-    if(options === false) {
-        return;
-    }
-    options = $.extend(true, {}, this.DEFAULT_OPTIONS, options);
-    this.name = options.name;
-    this.title = options.title;
-    this.isBackground = options.isBackground || false;
-    this.featureinfo = options.featureinfo || false;
-    this.legend = options.legend || false;
-    this.attribution = options.attribution || undefined;
-    this.isVector = false;
-    this.options = options;
-    this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
-    this._controls = [];
-    this.combined = false;
 
-    if(this.displayInLayerswitcher === false) {
-        this.permalink = false;
-    } else {
-        this.permalink = anol.helper.getValue(options.permalink, true);
-    }
+import BaseLayer from 'ol/layer/Base';
+import Source from 'ol/source/Source.js';
 
-    // keep ability to create anol.layer.Layer with predefined olLayer
-    // this is needed for system layers in measure/print/etc.
-    if(options.olLayer instanceof ol.layer.Base) {
-        this.olLayer = options.olLayer;
-    } else {
-        this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
-        delete options.olLayer.source;
-        this.olLayerOptions = options.olLayer;
-        this.olLayer = undefined;
-    }
-};
+class AnolBaseLayer {
 
-anol.layer.Layer.prototype = {
-    CLASS_NAME: 'anol.layer.Layer',
-    OL_LAYER_CLASS: undefined,
-    OL_SOURCE_CLASS: undefined,
-    DEFAULT_OPTIONS: {
-        olLayer: {
-            source: {}
+    constructor(options) {
+        if(options === false) {
+            return;
         }
-    },
-    setOlLayer: function(olLayer) {
+        this.CLASS_NAME = 'anol.layer.Layer';
+        this.OL_LAYER_CLASS = undefined;
+        this.OL_SOURCE_CLASS = undefined;
+        this.DEFAULT_OPTIONS = {
+            olLayer: {
+                source: {}
+            }
+        }
+        options = $.extend(true, {}, this.DEFAULT_OPTIONS, options);
+
+        this.name = options.name;
+        this.title = options.title;
+        this.isBackground = options.isBackground || false;
+        this.featureinfo = options.featureinfo || false;
+        this.legend = options.legend || false;
+        this.attribution = options.attribution || undefined;
+        this.isVector = false;
+        this.options = options;
+        this.displayInLayerswitcher = anol.helper.getValue(options.displayInLayerswitcher, true);
+        this._controls = [];
+        this.combined = false;
+        this.clusterOptions = options.cluster || false;
+        this.unclusteredSource = undefined;
+        this.selectClusterControl = undefined;
+
+        if(this.displayInLayerswitcher === false) {
+            this.permalink = false;
+        } else {
+            this.permalink = anol.helper.getValue(options.permalink, true);
+        }
+        // keep ability to create anol.layer.Layer with predefined olLayer
+        // this is needed for system layers in measure/print/etc.
+        if(options.olLayer instanceof BaseLayer) {
+            this.olLayer = options.olLayer;
+        } 
+        else {
+            this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
+            delete options.olLayer.source;
+            this.olLayerOptions = options.olLayer;
+            this.olLayer = undefined;
+        }
+    }
+    setOlLayer(olLayer) {
         this.olLayer = olLayer;
-    },
-    removeOlLayer: function() {
+    }
+    removeOlLayer() {
         delete this.olLayer;
-    },
-    isCombinable: function(other) {
+    }
+    isCombinable(other) {
         if(other.CLASS_NAME !== this.CLASS_NAME) {
             return false;
         }
         return true;
-    },
-    isClustered: function() {
+    }
+    isClustered() {
         return false;
-    },
-    getCombinedSource: function(other) {
+    }
+    getCombinedSource(other) {
         return undefined;
-    },
-    removeFromCombinedSource: function() {},
-    getVisible: function() {
+    }
+    removeFromCombinedSource() {}
+    getVisible() {
         if(this.olLayer === undefined) {
             return false;
         }
         return this.olLayer.getVisible();
-    },
-    setVisible: function(visible)  {
+    }
+    setVisible(visible)  {
         this.olLayer.setVisible(visible);
         $(this).triggerHandler('anol.layer.visible:change', [this]);
-    },
-    onVisibleChange: function(func, context) {
+    }
+    onVisibleChange(func, context) {
         $(this).on('anol.layer.visible:change', {'context': context}, func);
-    },
-    offVisibleChange: function(func) {
+    }
+    offVisibleChange(func) {
         $(this).off('anol.layer.visible:change', func);
-    },
-    refresh: function() {
-        if(this.olLayer instanceof ol.layer.Base && this.olLayer.getSource() instanceof ol.source.Source) {
+    }
+    refresh() {
+        if(this.olLayer instanceof BaseLayer && this.olLayer.getSource() instanceof Source) {
             var source = this.olLayer.getSource();
             source.refresh();
         }
-    },
-    _createSourceOptions: function(srcOptions) {
+    }
+    _createSourceOptions(srcOptions) {
         srcOptions = srcOptions || {};
         if(srcOptions.tilePixelRatio !== undefined) {
             srcOptions.tilePixelRatio = ol.has.DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
         }
         return srcOptions;
     }
-};
+}
 
+export default AnolBaseLayer;

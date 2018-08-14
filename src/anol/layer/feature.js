@@ -10,110 +10,135 @@
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
- anol.layer.Feature = function(_options) {
-    if(_options === false) {
-        anol.layer.Layer.call(this, _options);
-        return;
-    }
-    var self = this;
-    var defaults = {};
-    var options = $.extend({}, defaults, _options );
 
-    this.style = options.style;
-    this.minResolution = (options.style || {}).minResolution;
-    this.maxResolution = (options.style || {}).maxResolution;
-    this.hasPropertyLabel = (options.style || {}).propertyLabel !== undefined;
+import AnolBaseLayer from '../layer.js'
 
-    this.externalGraphicPrefix = options.externalGraphicPrefix;
-    this.hasPropertyLabel = false;
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+import CircleStyle from 'ol/style/Circle';
+import Icon from 'ol/style/Icon';
+import {asArray as colorAsArray} from 'ol/color';
+import Text from 'ol/style/Text';
+import Cluster from 'ol/source/Cluster';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 
-    this.loaded = true;
-    this.saveable = options.saveable || false;
-    this.editable = options.editable || false;
+import {isEmpty} from 'ol/extent.js';
 
-    this.clusterOptions = options.cluster || false;
 
-    if(this.clusterOptions !== false) {
-        this.clusterOptions = this._prepareClusterStyles(this.clusterOptions);
-    }
+class FeatureLayer extends AnolBaseLayer {
+    
+    constructor(_options) {
+        if(_options === false) {
+            super();
+            return;
+        }        
 
-    this.unclusteredSource = undefined;
-    this.selectClusterControl = undefined;
+        var defaults = {};
+        var options = $.extend({}, defaults, _options );
+        super(options);
 
-    anol.layer.Layer.call(this, options);
-    this.isVector = true;
-};
-anol.layer.Feature.prototype = new anol.layer.Layer(false);
-$.extend(anol.layer.Feature.prototype, {
-    CLASS_NAME: 'anol.layer.Feature',
-    OL_LAYER_CLASS: ol.layer.Vector,
-    OL_SOURCE_CLASS: ol.source.Vector,
-    DEFAULT_FONT_FACE: 'Helvetica',
-    DEFAULT_FONT_SIZE: '10px',
-    DEFAULT_FONT_WEIGHT: 'normal',
-    // this is the default ol style. we need to define it because
-    // createStyle function have to return a valid style even if
-    // clusterStyle in clusterOptions is undefined
-    DEFAULT_CLUSTERED_STYLE: new ol.style.Style({
-        image: new ol.style.Circle({
-            fill: new ol.style.Fill({
+        this.style = options.style;
+        this.minResolution = (options.style || {}).minResolution;
+        this.maxResolution = (options.style || {}).maxResolution;
+        this.hasPropertyLabel = (options.style || {}).propertyLabel !== undefined;
+
+        this.externalGraphicPrefix = options.externalGraphicPrefix;
+        this.hasPropertyLabel = false;
+
+        this.loaded = true;
+        this.saveable = options.saveable || false;
+        this.editable = options.editable || false;
+        this.clusterOptions = options.cluster || false;
+        this.unclusteredSource = undefined;
+        this.selectClusterControl = undefined;
+        this.isVector = true;
+
+        this.CLASS_NAME = 'anol.layer.Feature';
+        this.OL_LAYER_CLASS = VectorLayer;
+        this.OL_SOURCE_CLASS =  VectorSource;
+        this.DEFAULT_FONT_FACE =  'Helvetica';
+        this.DEFAULT_FONT_SIZE =  '10px';
+        this.DEFAULT_FONT_WEIGHT = 'normal';
+
+        // this is the default ol style. we need to define it because
+        // createStyle function have to return a valid style even if
+        // clusterStyle in clusterOptions is undefined
+        this.DEFAULT_CLUSTERED_STYLE = new Style({
+            image: new CircleStyle({
+                fill: new Fill({
+                    color: 'rgba(255,255,255,0.4)'
+                }),
+                stroke: new Stroke({
+                    color: '#3399CC',
+                    width: 1.25
+                }),
+                radius: 5
+            }),
+            fill: new Fill({
                 color: 'rgba(255,255,255,0.4)'
             }),
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: '#3399CC',
                 width: 1.25
+            })
+        });
+
+        this.DEFAULT_UNCLUSTERED_STYLE = new Style({
+            image: new CircleStyle({
+                radius: 5,
+                stroke: new Stroke({
+                    color: "rgba(0,255,255,1)",
+                    width: 1
+                }),
+                fill: new Fill({
+                    color: "rgba(0,255,255,0.3)"
+                })
             }),
-            radius: 5
-        }),
-        fill: new ol.style.Fill({
-            color: 'rgba(255,255,255,0.4)'
-        }),
-        stroke: new ol.style.Stroke({
-            color: '#3399CC',
-            width: 1.25
-        })
-    }),
-    DEFAULT_UNCLUSTERED_STYLE: new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: 5,
-            stroke: new ol.style.Stroke({
+            stroke: new Stroke({
                 color: "rgba(0,255,255,1)",
                 width: 1
             }),
-            fill: new ol.style.Fill({
+            fill: new Fill({
                 color: "rgba(0,255,255,0.3)"
             })
-        }),
-        stroke: new ol.style.Stroke({
-            color: "rgba(0,255,255,1)",
-            width: 1
-        }),
-        fill: new ol.style.Fill({
-            color: "rgba(0,255,255,0.3)"
-        })
-    }),
-    DEFAULT_SELECT_CLUSTER_STYLE: new ol.style.Style({
-        image: new ol.style.Circle({
-            radius: 10,
-            stroke: new ol.style.Stroke({
+        });
+
+        this.DEFAULT_SELECT_CLUSTER_STYLE = new Style({
+            image: new CircleStyle({
+                radius: 10,
+                stroke: new Stroke({
+                    color: "rgba(255,255,0,1)",
+                    width: 1
+                }),
+                fill: new Fill({
+                    color: "rgba(255,255,0,0.3)"
+                })
+            }),
+            stroke: new Stroke({
                 color: "rgba(255,255,0,1)",
                 width: 1
             }),
-            fill: new ol.style.Fill({
+            fill: new Fill({
                 color: "rgba(255,255,0,0.3)"
             })
-        }),
-        stroke: new ol.style.Stroke({
-            color: "rgba(255,255,0,1)",
-            width: 1
-        }),
-        fill: new ol.style.Fill({
-            color: "rgba(255,255,0,0.3)"
         })
-    }),
-    setOlLayer: function(olLayer) {
+
+        this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
+        delete options.olLayer.source;
+        this.olLayerOptions = options.olLayer;
+        this.olLayer = undefined;
+
+        if(this.clusterOptions !== false) {
+            this.clusterOptions = this._prepareClusterStyles(this.clusterOptions);
+        }
+
+
+    }   
+
+    setOlLayer(olLayer) {
         var self = this;
-        anol.layer.Layer.prototype.setOlLayer.call(this, olLayer);
 
         // if a style function is in layer config we don't create a style function here
         if(!angular.isFunction(self.olLayerOptions.style)) {
@@ -126,7 +151,7 @@ $.extend(anol.layer.Feature.prototype, {
             if(this.style !== undefined) {
                 var createImageStyleFunction = this.style.externalGraphic !== undefined ? this.createIconStyle : this.createCircleStyle;
 
-                this.defaultStyle = new ol.style.Style({
+                this.defaultStyle = new Style({
                     image: createImageStyleFunction.call(this, this.style, defaultStyle.getImage()),
                     fill: this.createFillStyle(this.style, defaultStyle.getFill()),
                     stroke: this.createStrokeStyle(this.style, defaultStyle.getStroke()),
@@ -143,12 +168,13 @@ $.extend(anol.layer.Feature.prototype, {
                 return [style];
             });
         }
-
         if(this.isClustered()) {
-            this.unclusteredSource.set('anolLayers', this.olLayer.getSource().get('anolLayers'));
+            this.unclusteredSource.set('anolLayers', olLayer.getSource().get('anolLayers'));
         }
-    },
-    removeOlLayer: function() {
+        super.setOlLayer(olLayer);
+    }
+
+    removeOlLayer() {
         if(this.isClustered()) {
             var unclusteredAnolLayers = this.unclusteredSource.get('anolLayers');
             var unclusteredIdx = unclusteredAnolLayers.indexOf(this);
@@ -164,31 +190,37 @@ $.extend(anol.layer.Feature.prototype, {
             }
             this.olSource.clear(true);
         }
-        anol.layer.Layer.prototype.removeOlLayer.call(this);
-    },
-    isCombinable: function() {
+        super.removeOlLayer(this);
+    }
+
+    isCombinable() {
         return false;
-    },
-    extent: function() {
+    }
+
+    extent() {
         var extent = this.olLayer.getSource().getExtent();
-        if(ol.extent.isEmpty(extent)) {
+        if(isEmpty(extent)) {
             return false;
         }
         return extent;
-    },
-    clear: function() {
+    }
+
+    clear() {
         this.olLayer.getSource().clear();
-    },
-    addFeature: function(feature) {
+    }
+
+    addFeature(feature) {
         this.olLayer.getSource().addFeature(feature);
-    },
-    addFeatures: function(features) {
+    }
+
+    addFeatures(features) {
         this.olLayer.getSource().addFeatures(features);
-    },
-    getFeatures: function() {
+    }
+
+    getFeatures() {
         return this.olLayer.getSource().getFeatures();
-    },
-    createStyle: function(feature, resolution) {
+    }
+    createStyle(feature, resolution) {
         if(this.clusterOptions !== false && feature !== undefined) {
             // when clustering, a features have a features array containing features clustered into this feature
             // so when feature don't have features or only one we draw in normal layer style instead of cluster
@@ -226,7 +258,7 @@ $.extend(anol.layer.Feature.prototype, {
             (angular.isDefined(minResolution) && minResolution > resolution) ||
             (angular.isDefined(maxResolution) && maxResolution < resolution)
         ) {
-            return new ol.style.Style();
+            return new Style();
         }
 
         var styleOptions = {};
@@ -238,19 +270,19 @@ $.extend(anol.layer.Feature.prototype, {
             styleOptions.stroke = this.createStrokeStyle(featureStyle, defaultStyle.getStroke());
         }
         styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
-        return new ol.style.Style(styleOptions);
-    },
-    createClusterStyle: function(features) {
+        return new Style(styleOptions);
+    }
+    createClusterStyle(features) {
         return this.DEFAULT_CLUSTERED_STYLE;
-    },
-    createImageStyle: function(style, defaultImageStyle) {
+    }
+    createImageStyle(style, defaultImageStyle) {
         var radius = style.radius;
         var externalGraphic = style.externalGraphic;
 
         var isCircle = radius !== undefined;
         var isIcon = externalGraphic !== undefined;
-        var isDefaultCircle = defaultImageStyle instanceof ol.style.Circle;
-        var isDefaultIcon = defaultImageStyle instanceof ol.style.Icon;
+        var isDefaultCircle = defaultImageStyle instanceof CircleStyle;
+        var isDefaultIcon = defaultImageStyle instanceof Icon;
 
         if (isIcon || (!isCircle && isDefaultIcon)) {
             return this.createIconStyle(style, defaultImageStyle);
@@ -258,12 +290,12 @@ $.extend(anol.layer.Feature.prototype, {
             return this.createCircleStyle(style, defaultImageStyle);
         }
         return defaultImageStyle;
-    },
-    createCircleStyle: function(style, defaultCircleStyle) {
-        var defaultStrokeStyle = new ol.style.Stroke();
-        var defaultFillStyle = new ol.style.Fill();
+    }
+    createCircleStyle(style, defaultCircleStyle) {
+        var defaultStrokeStyle = new Stroke();
+        var defaultFillStyle = new Fill();
         var radius;
-        if(defaultCircleStyle instanceof ol.style.Circle) {
+        if(defaultCircleStyle instanceof CircleStyle) {
             defaultStrokeStyle = defaultCircleStyle.getStroke();
             defaultFillStyle = defaultCircleStyle.getFill();
             radius = defaultCircleStyle.getRadius();
@@ -273,16 +305,16 @@ $.extend(anol.layer.Feature.prototype, {
         if(_radius !== undefined) {
             radius = parseFloat(_radius);
         }
-        return new ol.style.Circle({
+        return new CircleStyle({
             radius: radius,
             stroke: this.createStrokeStyle(style, defaultStrokeStyle),
             fill: this.createFillStyle(style, defaultFillStyle)
         });
-    },
-    createIconStyle: function(style, defaultIconStyle) {
+    }
+    createIconStyle(style, defaultIconStyle) {
         var styleOptions = {};
 
-        if(defaultIconStyle instanceof ol.style.Icon) {
+        if(defaultIconStyle instanceof Icon) {
             styleOptions.src = defaultIconStyle.getSrc();
             styleOptions.rotation = defaultIconStyle.getRotation();
             styleOptions.scale = defaultIconStyle.getScale();
@@ -343,13 +375,13 @@ $.extend(anol.layer.Feature.prototype, {
         if(style.graphicScale !== undefined) {
             styleOptions.scale = parseFloat(style.graphicScale);
         }
-        return new ol.style.Icon(styleOptions);
-    },
-    createFillStyle: function(style, defaultFillStyle) {
-        var color = ol.color.asArray(defaultFillStyle.getColor()).slice();
+        return new Icon(styleOptions);
+    }
+    createFillStyle(style, defaultFillStyle) {
+        var color = colorAsArray(defaultFillStyle.getColor()).slice();
         var fillColor = style.fillColor;
         if (fillColor !== undefined) {
-            fillColor = ol.color.asArray(fillColor);
+            fillColor = colorAsArray(fillColor);
             color[0] = fillColor[0];
             color[1] = fillColor[1];
             color[2] = fillColor[2];
@@ -358,18 +390,18 @@ $.extend(anol.layer.Feature.prototype, {
         if(fillOpacity !== undefined) {
             color[3] = parseFloat(fillOpacity);
         }
-        return new ol.style.Fill({
+        return new Fill({
             color: color
         });
-    },
-    createStrokeStyle: function(style, defaultStrokeStyle) {
-        var color = ol.color.asArray(defaultStrokeStyle.getColor()).slice();
+    }
+    createStrokeStyle(style, defaultStrokeStyle) {
+        var color = colorAsArray(defaultStrokeStyle.getColor()).slice();
         var strokeWidth = defaultStrokeStyle.getWidth();
         var strokeDashstyle = defaultStrokeStyle.getLineDash();
 
         var strokeColor = style.strokeColor;
         if(strokeColor !== undefined) {
-            strokeColor = ol.color.asArray(strokeColor);
+            strokeColor = colorAsArray(strokeColor);
             color[0] = strokeColor[0];
             color[1] = strokeColor[1];
             color[2] = strokeColor[2];
@@ -387,16 +419,16 @@ $.extend(anol.layer.Feature.prototype, {
             strokeDashstyle = this.createDashStyle(strokeWidth, _strokeDashstyle);
         }
 
-        return new ol.style.Stroke({
+        return new Stroke({
             color: color,
             width: strokeWidth,
             lineDash: strokeDashstyle,
             lineJoin: 'round'
         });
-    },
+    }
     // Taken from OpenLayers 2.13.1
     // see https://github.com/openlayers/openlayers/blob/release-2.13.1/lib/OpenLayers/Renderer/SVG.js#L391
-    createDashStyle: function(strokeWidth, strokeDashstyle) {
+    createDashStyle(strokeWidth, strokeDashstyle) {
         var w = strokeWidth;
         var str = strokeDashstyle;
         switch (str) {
@@ -414,10 +446,10 @@ $.extend(anol.layer.Feature.prototype, {
             default:
                 return undefined;
           }
-    },
+    }
     // return function for labelKey from feature if feature is undefined
     // used for default layer style
-    getLabel: function(feature, labelKey) {
+    getLabel(feature, labelKey) {
         if(feature === undefined) {
             return function(_feature) {
                 if(_feature === undefined) {
@@ -427,8 +459,8 @@ $.extend(anol.layer.Feature.prototype, {
             };
         }
         return feature.get(labelKey);
-    },
-    createTextStyle: function(style, defaultTextStyle, feature) {
+    }
+    createTextStyle(style, defaultTextStyle, feature) {
         var fontWeight = this.DEFAULT_FONT_WEIGHT;
         var fontFace = this.DEFAULT_FONT_FACE;
         var fontSize = this.DEFAULT_FONT_SIZE;
@@ -486,11 +518,11 @@ $.extend(anol.layer.Feature.prototype, {
         if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
             var defaultFontColor = defaultTextFillStyle.getColor();
             if(defaultFontColor !== undefined) {
-                fontColor = ol.color.asArray(defaultFontColor).slice();
+                fontColor = colorAsArray(defaultFontColor).slice();
             }
         }
         if(style.fontColor !== undefined) {
-            var _fontColor = ol.color.asArray(style.fontColor).slice();
+            var _fontColor = colorAsArray(style.fontColor).slice();
             if(_fontColor !== undefined) {
                 fontColor[0] = _fontColor[0];
                 fontColor[1] = _fontColor[1];
@@ -499,17 +531,17 @@ $.extend(anol.layer.Feature.prototype, {
             }
         }
         if(fontColor !== undefined && fontColor.length === 4) {
-            styleOptions.fill = new ol.style.Fill({
+            styleOptions.fill = new Fill({
                 color: fontColor
             });
         }
         if(Object.keys(styleOptions).length > 0) {
-            return new ol.style.Text(styleOptions);
+            return new Text(styleOptions);
         }
         return undefined;
-    },
-    createClusterStyleFromDefinition: function(styleDefinition, defaultStyle) {
-        var style = new ol.style.Style({
+    }
+    createClusterStyleFromDefinition(styleDefinition, defaultStyle) {
+        var style = new Style({
             image: this.createImageStyle(styleDefinition, defaultStyle.getImage()),
             fill: this.createFillStyle(styleDefinition, defaultStyle.getFill()),
             stroke: this.createStrokeStyle(styleDefinition, defaultStyle.getStroke()),
@@ -522,40 +554,43 @@ $.extend(anol.layer.Feature.prototype, {
             };
         }
         return style;
-    },
-    isClustered: function() {
+    }
+    isClustered() {
         return this.clusterOptions !== false;
-    },
-    _degreeToRad: function(degree) {
+    }
+    _degreeToRad(degree) {
         if(degree === 0) {
             return 0;
         }
         return Math.PI * (degree / 180);
-    },
-    _createSourceOptions: function(srcOptions) {
-        if(this.clusterOptions === false) {
+    }
+    _createSourceOptions(srcOptions) {
+        if(this.clusterOptions === false || this.clusterOptions == undefined) {
             return srcOptions;
         }
-        srcOptions = anol.layer.Layer.prototype._createSourceOptions.call(this, srcOptions);
-
+        if (this.OL_SOURCE_CLASS === undefined) {
+            return srcOptions
+        }
+        srcOptions = super._createSourceOptions(srcOptions);
         this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
-
-        this.OL_SOURCE_CLASS = ol.source.Cluster;
-
+        this.OL_SOURCE_CLASS = Cluster;
+        
         return {
             source: this.unclusteredSource,
             distance: 50
         };
-    },
-    _prepareClusterStyles: function(clusterOptions) {
-        if(clusterOptions.clusterStyle !== undefined && !(clusterOptions.clusterStyle instanceof ol.style.Style)) {
+    }
+    _prepareClusterStyles(clusterOptions) {
+        if(clusterOptions.clusterStyle !== undefined && !(clusterOptions.clusterStyle instanceof Style)) {
             clusterOptions.clusterStyle = this.createClusterStyleFromDefinition(clusterOptions.clusterStyle, this.DEFAULT_UNCLUSTERED_STYLE);
         }
-        if(clusterOptions.selectClusterStyle !== undefined && !(clusterOptions.selectClusterStyle instanceof ol.style.Style)) {
+        if(clusterOptions.selectClusterStyle !== undefined && !(clusterOptions.selectClusterStyle instanceof Style)) {
             clusterOptions.selectClusterStyle = this.createClusterStyleFromDefinition(clusterOptions.selectClusterStyle, this.DEFAULT_SELECT_CLUSTER_STYLE);
         }
         return clusterOptions;
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method
-});
+};
+
+export default FeatureLayer;

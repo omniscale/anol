@@ -18,33 +18,43 @@
  *
  * Ask *url* with current projection and bbox.
  */
-anol.layer.BBOXGeoJSON = function(_options) {
-    if(
-        angular.isObject(_options) &&
-        angular.isObject(_options.olLayer) &&
-        angular.isObject(_options.olLayer.source)
-    ) {
-        this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
+
+import StaticGeoJSON from './staticgeojson.js'
+import GeoJSON from 'ol/format/GeoJSON';
+import {bbox as bboxStrategy} from 'ol/loadingstrategy';
+
+import {transformExtent} from 'ol/proj.js';
+
+class BBOXGeoJSON  extends StaticGeoJSON {
+
+    constructor(_options) {
+
+        if(
+            angular.isObject(_options) &&
+            angular.isObject(_options.olLayer) &&
+            angular.isObject(_options.olLayer.source)
+        ) {
+            this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
+        }
+        super(_options);
+        this.CLASS_NAME = 'anol.layer.BBOXGeoJSON';
+
     }
-    anol.layer.StaticGeoJSON.call(this, _options);
-};
-anol.layer.BBOXGeoJSON.prototype = new anol.layer.StaticGeoJSON(false);
-$.extend(anol.layer.BBOXGeoJSON.prototype, {
-    CLASS_NAME: 'anol.layer.BBOXGeoJSON',
-    setOlLayer: function(olLayer) {
-        anol.layer.StaticGeoJSON.prototype.setOlLayer.call(this, olLayer);
+
+    setOlLayer(olLayer) {
+        super.setOlLayer(olLayer);
         this.olSource = this.olLayer.getSource();
-    },
+    }
     /**
      * Additional source options
      * - url
      * - featureProjection
      * - additionalParameters
      */
-    _createSourceOptions: function(srcOptions) {
+    _createSourceOptions(srcOptions) {
         var self = this;
-        srcOptions.format = new ol.format.GeoJSON();
-        srcOptions.strategy = ol.loadingstrategy.bbox;
+        srcOptions.format = new GeoJSON();
+        srcOptions.strategy = bboxStrategy;
         srcOptions.loader = function(extent, resolution, projection) {
             var additionalParameters = {};
             angular.forEach(self.olSource.get('anolLayers'), function(layer) {
@@ -64,14 +74,13 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
             );
         };
 
-        return anol.layer.StaticGeoJSON.prototype._createSourceOptions.call(this,
-            srcOptions
-        );
-    },
-    loader: function(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
+        return super._createSourceOptions(srcOptions);
+    }
+
+    loader(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
         var self = this;
         if (extentProjection !== undefined) {
-            extent = ol.proj.transformExtent(extent, projection, extentProjection);
+            extent = transformExtent(extent, projection, extentProjection);
         } 
         var params = [
             'srs=' + extentProjection.getCode(),
@@ -94,8 +103,8 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
         .done(function(response) {
             self.responseHandler(response, featureProjection, dataProjection);
         });
-    },
-    responseHandler: function(response, featureProjection, dataProjection) {
+    }
+    responseHandler(response, featureProjection, dataProjection) {
         var self = this;
         // TODO find a better solution
         // remove all features from source.
@@ -111,7 +120,7 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
             self.olLayer.getSource().removeFeature(sourceFeatures[i]);
         }
 
-        var format = new ol.format.GeoJSON({
+        var format = new GeoJSON({
             defaultDataProjection: dataProjection,
         });
         var features = format.readFeatures(
@@ -121,9 +130,11 @@ $.extend(anol.layer.BBOXGeoJSON.prototype, {
           }
         );
         self.olLayer.getSource().addFeatures(features);
-    },
-    refresh: function() {
+    }
+    refresh() {
         this.olLayer.getSource().clear();
         this.olLayer.getSource().refresh();
     }
-});
+};
+
+export default BBOXGeoJSON;

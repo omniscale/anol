@@ -1,14 +1,16 @@
-anol.geocoder.Base = function(_options) {
-    if(_options === undefined) {
-        return;
-    }
-    this.url = _options.url;
-    this.options = _options;
-};
 
-anol.geocoder.Base.prototype = {
-    CLASS_NAME: 'anol.geocoder.Base',
-    handleResponse: function(response) {
+class BaseGeocoder {
+
+    constructor(_options) {
+        if(_options === undefined) {
+            return;
+        }
+        this.url = _options.url;
+        this.options = _options;
+        this.CLASS_NAME = 'anol.geocoder.Base';
+    }
+
+    handleResponse(response) {
         var self = this;
         var results = [];
         $.each(response, function(idx, result) {
@@ -19,8 +21,9 @@ anol.geocoder.Base.prototype = {
             });
         });
         return results;
-    },
-    request: function(searchString) {
+    }
+
+    request(searchString) {
         var self = this;
         var deferred = $.Deferred();
         $.ajax({
@@ -36,14 +39,19 @@ anol.geocoder.Base.prototype = {
             deferred.resolve([]);
         });
         return deferred.promise();
-    },
-    extractDisplayText: function() {
+    }
+
+    extractDisplayText() {
         throw 'Not implemented';
-    },
-    extractCoordinate: function() {
+    }
+
+    extractCoordinate() {
         throw 'Not implemented';
-    },
-    getData: function() {
+    }
+
+    getData() {
         throw 'Not implemented';
     }
 };
+
+export default BaseGeocoder;
