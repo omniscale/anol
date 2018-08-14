@@ -27,46 +27,7 @@
       <div anol-measure='area' geodesic="true"></div>
     </div>
 
-    <!-- Remove libs when build dist -->
-    <script type="text/javascript" src="../build/jquery.js"></script>
-    <script type="text/javascript" src="../build/angular.js"></script>
-    <script type="text/javascript" src="../build/ui-bootstrap-tpls.js"></script>
-    <script type="text/javascript" src="../build/angular-translate.js"></script>
-    <script type="text/javascript" src="../build/angular-sanitize.js"></script>
-    <script type="text/javascript" src="../build/ol-custom.js"></script>
     <script type="text/javascript" src="../build/anol.js"></script>
-    <script type="text/javascript" src="../build/templates.js"></script>
 
-    <script type="text/javascript">
-      angular.module('example', ['anol.measure', 'anol.zoom'])
-      .config(['MapServiceProvider', 'LayersServiceProvider',
-        function(MapServiceProvider, LayersServiceProvider) {
-          MapServiceProvider.addView(new ol.View({
-            center: [914764, 7011016],
-            zoom: 18
-          }));
-
-          var wms = new anol.layer.SingleTileWMS({
-            olLayer: {
-              source: {
-                url: 'http://maps.omniscale.net/wms/demo/default/service?',
-                params: {
-                  'LAYERS': 'osm',
-                  'SRS': 'EPSG:3857'
-                }
-              }
-            }
-          });
-          LayersServiceProvider.setLayers([wms]);
-      }])
-      .controller('exampleController', ['$scope', function($scope) {
-        $scope.lineStyle = new ol.style.Style({
-                stroke: new ol.style.Stroke({
-                    color: '#ffccdd',
-                    width: 4
-                })
-            });
-      }]);
-    </script>
   </body>
 </html>
