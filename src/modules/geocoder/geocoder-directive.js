@@ -32,11 +32,12 @@ angular.module('anol.geocoder')
       restrict: 'A',
       require: '?^anolMap',
       transclude: true,
-      template: require('./templates/searchbox.html'),
-      // templateUrl: function(tElement, tAttrs) {
-      //     var defaultUrl = './templates/searchbox.html';
-      //     return tAttrs.templateUrl || defaultUrl;
-      // },
+      template: function(tElement, tAttrs) {
+        if (tAttrs.templateUrl) {
+          return tAttrs.templateUrl;
+        }
+        return require('./templates/searchbox.html')
+      },           
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',

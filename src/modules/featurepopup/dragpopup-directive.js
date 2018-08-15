@@ -20,11 +20,12 @@ angular.module('anol.featurepopup')
         scope: {},
         replace: true,
         transclude: true,
-        template: require('./templates/dragpopup.html'),
-        // templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/featurepopup/templates/dragpopup.html';
-            // return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/dragpopup.html')
+        },         
         link: function(scope, element, attrs) {
             element.css('display', 'none');
             scope.feature = undefined;

@@ -67,7 +67,6 @@ angular.module('anol.map')
         Controls.prototype.registerMap = function(map) {
             var self = this;
             self.map = map;
-
             // get cluster select control from service. undefined when no clustered layer present
             var selectClusterControl = ClusterSelectService.getControl();
             if(selectClusterControl !== undefined) {

@@ -48,12 +48,12 @@ angular.module('anol.featurepopup')
         },
         replace: true,
         transclude: true,
-        template: require('./templates/popup.html'),
-        // templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/featurepopup/templates/popup.html';
-            // return tAttrs.templateUrl || defaultUrl;
-        //     return require('./templates/popup.html')
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/popup.html')
+        },           
         link: function(scope, element, attrs) {
             var self = this;
             PopupsService.register(scope);

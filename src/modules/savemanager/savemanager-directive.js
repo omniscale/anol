@@ -19,13 +19,13 @@ angular.module('anol.savemanager')
 .directive('anolSavemanager', ['SaveManagerService', function(SaveManagerService) {
     return {
         restrict: 'A',
-        templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/savemanager/templates/savemanager.html';
-            // return tAttrs.templateUrl || defaultUrl;
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+              return tAttrs.templateUrl;
+            }
             return require('./templates/savemanager.html')
-        },
+        },                 
         scope: {},
-
         link: function(scope, element, attrs) {
             scope.unsavedLayers = SaveManagerService.changedLayers;
             scope.changedFeatures = SaveManagerService.changedFeatures;

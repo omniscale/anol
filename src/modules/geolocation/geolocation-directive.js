@@ -42,11 +42,12 @@ angular.module('anol.geolocation')
         highlight: '@',
         resultStyle: '=?'
       },
-      template: require('./templates/geolocation.html'),
-      // templateUrl: function(tElement, tAttrs) {
-      //     var defaultUrl = 'src/modules/geolocation/templates/geolocation.html';
-      //     return tAttrs.templateUrl || defaultUrl;
-      // },
+      template: function(tElement, tAttrs) {
+        if (tAttrs.templateUrl) {
+          return tAttrs.templateUrl;
+        }
+        return require('./templates/geolocation.html')
+      },           
       link: function(scope, element) {
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
         scope.showPosition = 'false' !== scope.showPosition;
@@ -59,7 +60,6 @@ angular.module('anol.geolocation')
           scope.tooltipDelay : 500;
         scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
           scope.tooltipEnable : !hasTouch;
-
         if(scope.showPosition) {
           var geolocationLayer = new anol.layer.Feature({
             name: 'geolocationLayer',

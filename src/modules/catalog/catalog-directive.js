@@ -15,11 +15,12 @@ angular.module('anol.catalog')
     return {
         restrict: 'A',
         scope: {},
-        template: require('./templates/catalog.html'),
-        // templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/catalog/templates/catalog.html';
-            // return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/catalog.html')
+        },
         link: function(scope, element, attrs) {
             scope.layers = CatalogService.catalogLayers;
 

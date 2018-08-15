@@ -49,11 +49,12 @@ angular.module('anol.draw')
             lineTooltipPlacement: '@',
             polygonTooltipPlacement: '@'
         },
-        template: require('./templates/draw.html'),
-        // templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/draw/templates/draw.html';
-            // return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/draw.html')
+        },
         link: function(scope, element, attrs, AnolMapController) {
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?

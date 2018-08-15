@@ -261,7 +261,6 @@ angular.module('anol.map')
             //      this will only affacts DynamicGeoJsonLayer
             olLayer.set('anolLayer', layer);
             layer.setOlLayer(olLayer);
-
             return olLayer;
         };
         /**

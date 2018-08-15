@@ -29,14 +29,12 @@ angular.module('anol.layerswitcher')
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        template: require('./templates/layerswitcher.html'),
-            // function(tElement, tAttrs) {
-            // if (tAttrs.templateUrl) {
-            //     require(tAttrs.templateUrl);
-            // } else {
-            //     require('./templates/layerswitcher.html');
-            // }
-            // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/layerswitcher.html')
+        },
         scope: {
             anolLayerswitcher: '@anolLayerswitcher',
             tooltipPlacement: '@',

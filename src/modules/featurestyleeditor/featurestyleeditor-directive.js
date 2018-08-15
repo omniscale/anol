@@ -61,11 +61,12 @@ angular.module('anol.featurestyleeditor')
             formDisabled: '=',
             disabledText: '@'
         },
-        template: require('./templates/featurestyleeditor.html'),
-        // templateUrl: function(tElement, tAttrs) {
-        //     var defaultUrl = 'src/modules/featurestyleeditor/templates/featurestyleeditor.html';
-        //     return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/featurestyleeditor.html')
+        },           
         link: {
             pre: function(scope, element, attrs) {
                 element.addClass('anol-styleeditor');

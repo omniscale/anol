@@ -31,11 +31,12 @@ angular.module('anol.featureexchange')
             postUpload: '=',
             srs: '@'
         },
-        template: require('./templates/featureexchange.html'),
-        // templateUrl: function(tElement, tAttrs) {
-        // var defaultUrl = 'src/modules/featureexchange/templates/featureexchange.html';
-        // return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/featureexchange.html')
+        },        
         link: function(scope, element, attrs) {
             var format = new GeoJSON();
             var fileselector = element.find('#fileselector');

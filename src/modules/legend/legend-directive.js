@@ -31,11 +31,12 @@ angular.module('anol.legend')
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
-        template: require('./templates/legend.html'),
-        // templateUrl: function(tElement, tAttrs) {
-        //   // var defaultUrl = 'src/modules/legend/templates/legend.html';
-        //   // return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/legend.html')
+        },           
         scope: {
             anolLegend: '@',
             // TODO compare with featurepopup openCallback. Why a callback wrapper is added here?

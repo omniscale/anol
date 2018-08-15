@@ -59,10 +59,9 @@ angular.module('anol.attribution')
             tooltipEnable: '@'
         },
         template: function(tElement, tAttrs) {
-            // var defaultUrl = './templates/attribution.html';
-            // if (tAttrs.templateUrl) {
-            //     return require(tAttrs.templateUrl)
-            // }
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
             return require('./templates/attribution.html')
         },
         link: function(scope, element, attrs) {

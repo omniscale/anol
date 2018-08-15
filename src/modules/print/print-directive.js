@@ -28,11 +28,12 @@ angular.module('anol.print')
   function(PrintService, PrintPageService, MapService, LayersService) {
     return {
       restrict: 'A',
-      templateUrl: function(tElement, tAttrs) {
-        // var defaultUrl = 'src/modules/print/templates/print.html';
-        // return tAttrs.templateUrl || defaultUrl;
+      template: function(tElement, tAttrs) {
+        if (tAttrs.templateUrl) {
+          return tAttrs.templateUrl;
+        }
         return require('./templates/print.html')
-      },
+      },                 
       scope: {
         showPrintArea: '='
       },

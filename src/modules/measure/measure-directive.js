@@ -309,13 +309,12 @@ angular.module('anol.measure')
             activatedCallback: '=?',
             deactivatedCallback: '=?'
         },
-        template: require('./templates/measure.html'),
-        
-        // templateUrl: function(tElement, tAttrs) {
-        //     // var defaultUrl = 'src/modules/measure/templates/measure.html';
-        //     // return tAttrs.templateUrl || defaultUrl;
-        //     return require('./templates/measure.html')
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/measure.html')
+        },                 
         link: function(scope, element, attrs, AnolMapController) {
             //attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?

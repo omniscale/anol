@@ -23,11 +23,12 @@ angular.module('anol.featurepropertieseditor')
             feature: '=anolFeaturePropertiesEditor',
             layer: '='
         },
-        template: require('./templates/featurepropertieseditor.html'),
-        // templateUrl: function(tElement, tAttrs) {
-        //     var defaultUrl = 'src/modules/featurepropertieseditor/templates/featurepropertieseditor.html';
-        //     return tAttrs.templateUrl || defaultUrl;
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/featurepropertieseditor.html')
+        },           
         link: function(scope, element, attrs) {
             scope.properties = {};
             var propertyWatchers = {};

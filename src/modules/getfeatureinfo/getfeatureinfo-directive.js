@@ -4,6 +4,7 @@ import { defaults } from './module.js';
 import Overlay from 'ol/Overlay';
 import WMSGetFeatureInfo from 'ol/format/WMSGetFeatureInfo';
 import VectorLayer from 'ol/layer/Vector';
+import { unByKey } from 'ol/Observable';
 
 angular.module('anol.getfeatureinfo')
 /**
@@ -46,12 +47,12 @@ angular.module('anol.getfeatureinfo')
             waitingMarkerOffset: '=?',
             excludeLayers: '=?'
         },
-        template: require('./templates/getfeatureinfo.html'),
-        // templateUrl: function(tElement, tAttrs) {
-        //     // var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
-        //     // return tAttrs.templateUrl || defaultUrl;
-        //     return require('./templates/getfeatureinfo.html')
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/getfeatureinfo.html')
+        },           
         link: {
             pre: function(scope, element) {
                 scope.popupOpeningDirection = scope.popupOpeningDirection || 'top';
@@ -295,7 +296,7 @@ angular.module('anol.getfeatureinfo')
                     olControl: null
                 });
                 control.onDeactivate(function() {
-                    scope.map.unByKey(handlerKey);
+                    unByKey(handlerKey);
                 });
                 control.onActivate(function() {
                     handlerKey = scope.map.on('singleclick', scope.handleClick, this);

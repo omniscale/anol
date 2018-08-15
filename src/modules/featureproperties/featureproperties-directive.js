@@ -48,12 +48,12 @@ angular.module('anol.featureproperties')
             'selects': '=',
             'translationNamespace': '@'
         },
-        template: require('./templates/featureproperties.html'),
-        // templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/featureproperties/templates/featureproperties.html';
-            // return tAttrs.templateUrl || defaultUrl;
-        //     return require('./templates/featureproperties.html')
-        // },
+        template: function(tElement, tAttrs) {
+            if (tAttrs.templateUrl) {
+                return tAttrs.templateUrl;
+            }
+            return require('./templates/featureproperties.html')
+        },           
         link: function(scope, element, attrs, FeaturePopupController) {
             scope.translationNamespace = angular.isDefined(scope.translationNamespace) ?
                 scope.translationNamespace : 'featureproperties';
