@@ -5,12 +5,17 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
-  entry: './src/anol/anol.js',
+  entry: {
+    app:  './src/anol/anol.js',
+    vendor: ['angular', 'jquery', 'ol']
+  },    
   output: {
-    path: __dirname,
-    filename: 'build/anol.js',
+    filename: 'anol.[name].js',
+    path: path.resolve(__dirname, './build'),
+    chunkFilename: 'anol.[name].bundle.js',
+    publicPath: '/',
     library: 'anol'
-  },
+  },  
   module: {
     rules: [
       {
@@ -26,12 +31,25 @@ module.exports = {
         use: ['html-loader']
       }
     ]
-  },  
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          chunks: 'initial',
+          name: 'vendor',
+          test: 'vendor',
+          enforce: true
+        },
+      }
+    },
+    runtimeChunk: true
+  },    
   plugins: [
-      new webpack.ProvidePlugin({
-          $: "jquery",
-          jQuery: "jquery",
-          'window.jQuery': 'jquery'
-      })
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      'window.jQuery': 'jquery'
+    })
   ]
 };
