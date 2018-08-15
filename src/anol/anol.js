@@ -10,6 +10,7 @@ import Nominatim from "./geocoder/nominatim.js"
 
 import AnolBaseLayer from "./layer.js"
 
+import BaseWMS from "./layer/basewms.js"
 import SingleTileWMS from "./layer/singletilewms.js"
 import TiledWMS from "./layer/tiledwms.js"
 import TMS from "./layer/tms.js"
@@ -29,6 +30,7 @@ export var geocoder = {
 }
 
 export var layer = {
+	BaseWMS: BaseWMS,
 	SingleTileWMS: SingleTileWMS,
 	TiledWMS: TiledWMS,
 	TMS: TMS,
@@ -44,7 +46,12 @@ export var layer = {
 export var control = {
 	Control: Control
 };
-
+window.anol = {
+	'layer': layer,
+	'control': control,
+	'helper': helper,
+	'geocoder': geocoder
+}
 import { defaults } from '../modules/module.js'
 
 import Attribution from '../modules/attribution/attribution-directive.js'
@@ -90,6 +97,5 @@ import URLMarkersBBCode from '../modules/urlmarkers/urlmerker-bbcode-directive.j
 import Zoom from '../modules/zoom/zoom-directive.js'
 
 // import map from '../../examples/featurepropertieseditor.js'
-import map from '../../examples/clustering.js'
 
 
