@@ -7,9 +7,9 @@
 
 import Helper from "./helper.js"
 import Nominatim from "./geocoder/nominatim.js"
+import Solr from "./geocoder/Solr.js"
 
 import AnolBaseLayer from "./layer.js"
-
 import BaseWMS from "./layer/basewms.js"
 import SingleTileWMS from "./layer/singletilewms.js"
 import TiledWMS from "./layer/tiledwms.js"
@@ -26,9 +26,9 @@ import Control from "./control.js"
 
 export var helper = new Helper() || {};
 export var geocoder = {
-	Nominatim: Nominatim
+	Nominatim: Nominatim,
+	Solr: Solr
 }
-
 export var layer = {
 	BaseWMS: BaseWMS,
 	SingleTileWMS: SingleTileWMS,
@@ -95,7 +95,3 @@ import URLMarkersService from '../modules/urlmarkers/urlmarker-service.js'
 import URLMarkersBBCode from '../modules/urlmarkers/urlmerker-bbcode-directive.js'
 
 import Zoom from '../modules/zoom/zoom-directive.js'
-
-// import map from '../../examples/featurepropertieseditor.js'
-
-
