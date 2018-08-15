@@ -244,7 +244,6 @@ angular.module('anol.map')
                 olSource = new layer.OL_SOURCE_CLASS(sourceOptions);
                 olSource.set('anolLayers', [layer]);
             }
-
             var layerOpts = angular.extend({}, layer.olLayerOptions);
             layerOpts.source = olSource;
             var olLayer = new layer.OL_LAYER_CLASS(layerOpts);

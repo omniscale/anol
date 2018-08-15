@@ -46,11 +46,12 @@ angular.module('anol.getfeatureinfo')
             waitingMarkerOffset: '=?',
             excludeLayers: '=?'
         },
-        templateUrl: function(tElement, tAttrs) {
-            // var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
-            // return tAttrs.templateUrl || defaultUrl;
-            return require('./templates/getfeatureinfo.html')
-        },
+        template: require('./templates/getfeatureinfo.html'),
+        // templateUrl: function(tElement, tAttrs) {
+        //     // var defaultUrl = 'src/modules/getfeatureinfo/templates/getfeatureinfo.html';
+        //     // return tAttrs.templateUrl || defaultUrl;
+        //     return require('./templates/getfeatureinfo.html')
+        // },
         link: {
             pre: function(scope, element) {
                 scope.popupOpeningDirection = scope.popupOpeningDirection || 'top';
