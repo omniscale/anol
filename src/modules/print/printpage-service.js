@@ -1,7 +1,10 @@
 require('angular');
 
 import { defaults } from './module.js';
-
+import Style from 'ol/style/Style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import CircleStyle from 'ol/style/Circle';
 import Collection from 'ol/Collection';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -132,17 +135,37 @@ angular.module('anol.print')
         var _modifyFeatures = new Collection();
 
         var _printSource = new VectorSource();
+        var defaultStyle = new Style({
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.4)'
+          }),
+          stroke: new Stroke({
+            color: 'rgba(0, 0, 0, 1)',
+            width: 1
+          }),
+          image: new CircleStyle({
+            radius: 5,
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 1)'
+            }),
+            stroke: new Stroke({
+              color: 'rgba(0, 0, 0, 1)',
+              width: 1
+            })
+            })
+         })
+        // var style = $.extend({}, defaultStyle, _style);
         // TODO use anol.layer.Feature
         var _printLayer = new VectorLayer({
             source: _printSource,
+            style: defaultStyle,
             zIndex: 3
         });
-
+          
         // TODO replace ol3 styling by anol.layerFeature styling
-        if(_style) {
-            _printLayer.setStyle(_style);
-        }
-
+        // if(_style) {
+        //     _printLayer.setStyle(_style);
+        // }
         var layerOptions = {
             title: 'PrintLayer',
             displayInLayerswitcher: false,
