@@ -21,7 +21,6 @@ import VectorSource from 'ol/source/Vector';
 class StaticGeoJSON extends FeatureLayer {
 
     constructor(_options) {
-
         if(_options === false) {
             super();
             return;

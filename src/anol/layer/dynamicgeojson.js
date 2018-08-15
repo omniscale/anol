@@ -32,6 +32,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 class DynamicGeoJSON  extends StaticGeoJSON {
 
     constructor(_options) {
+        super(_options);
         if(
             angular.isObject(_options) &&
             angular.isObject(_options.olLayer) &&
@@ -39,7 +40,6 @@ class DynamicGeoJSON  extends StaticGeoJSON {
         ) {
             this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
         }
-        super(_options);
         this.CLASS_NAME = 'anol.layer.DynamicGeoJSON';
     }
 
