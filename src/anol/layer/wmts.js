@@ -20,7 +20,7 @@
 import AnolBaseLayer from '../layer.js'
 
 import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/WMTS';
+import { default as WMTSSource} from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import { getWidth, getHeight, getTopLeft} from 'ol/extent.js';
 import { DEVICE_PIXEL_RATIO } from 'ol/has'
@@ -28,7 +28,6 @@ import { DEVICE_PIXEL_RATIO } from 'ol/has'
 class WMTS extends AnolBaseLayer {
     
     constructor(_options) {
-        var self = this;
         var defaults = {
             olLayer: {
                 source: {
@@ -38,7 +37,6 @@ class WMTS extends AnolBaseLayer {
             }
         };
         var options = $.extend(true, {}, defaults, _options );
-
         var hqUrl = options.olLayer.source.hqUrl || false;
         delete options.olLayer.source.hqUrl;
         var hqLayer = options.olLayer.source.hqLayer || false;
@@ -67,8 +65,7 @@ class WMTS extends AnolBaseLayer {
         super(options);
         this.CLASS_NAME = 'anol.layer.WMTS';
         this.OL_LAYER_CLASS = TileLayer;
-        this.OL_SOURCE_CLASS = WMTS;
-
+        this.OL_SOURCE_CLASS = WMTSSource;
     }
     _createResolution(levels, minRes) {
         var resolutions = [];
