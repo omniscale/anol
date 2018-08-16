@@ -17,7 +17,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { transform } from 'ol/proj'
 
-import {getArea, getDistance} from 'ol/sphere';
+import {getArea as getSphereArea, getDistance} from 'ol/sphere';
 
 angular.module('anol.measure')
 /**
@@ -95,10 +95,7 @@ angular.module('anol.measure')
         }
         var area;
         if (geodesic) {
-            var geom = (geometry.clone().transform(
-                projection, 'EPSG:4326'));
-            var coordinates = geom.getLinearRing(0).getCoordinates();
-            area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+            area = getSphereArea(geometry);
         } else {
             area = geometry.getArea();
         }
