@@ -11,22 +11,18 @@
     <link href="../build/css/bootstrap.css" rel="stylesheet">
     <link href="../build/css/ol.css" rel="stylesheet">
     <link href="../build/css/anol.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
 
   <body ng-app="example">
     <!-- map -->
     <div anol-map style="width:600px; height: 400px; border: 1px solid black;">
-      <div anol-attribution="true"></div>
+      <div anol-attribution="true" template-url='test.html'></div>
       <div anol-zoom></div>
-      <div anol-layerswitcher></div>
+      <div anol-layerswitcher>
     </div>
+    <script type="text/javascript" src="../build/anol.app.bundle.js"></script>
+    <script type="text/javascript" src="../build/anol.runtime~app.js"></script>
+    <script type="text/javascript" src="../build/anol.vendor.bundle.js"></script>
 
-    <script type="text/javascript" src="../build/anol.js"></script>
   </body>
 </html>
