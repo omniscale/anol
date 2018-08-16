@@ -215,7 +215,7 @@ angular.module('anol.getfeatureinfo')
                         }
 
                         var url = layer.getFeatureInfoUrl(
-                            coordinate, viewResolution, view.getProjection(), requestParams
+                            coordinate, viewResolution, view.getProjection().getCode(), requestParams
                         );
                         if(angular.isDefined(scope.proxyUrl)) {
                             url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
