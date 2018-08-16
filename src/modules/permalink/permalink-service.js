@@ -176,7 +176,7 @@ angular.module('anol.permalink')
          */
         Permalink.prototype.moveendHandler = function() {
             var self = this;
-            var center = transform(self.view.getCenter(), self.view.getProjection(), self.urlCrs);
+            var center = transform(self.view.getCenter(), self.view.getProjection().getCode(), self.urlCrs);
             self.lon = Math.round(center[0] * self.precision) / self.precision;
             self.lat = Math.round(center[1] * self.precision) / self.precision;
 
@@ -204,7 +204,7 @@ angular.module('anol.permalink')
         };
         Permalink.prototype.updateMapFromParameters = function(mapParams) {
             var self = this;
-            var center = transform(mapParams.center, mapParams.crs, self.view.getProjection());
+            var center = transform(mapParams.center, mapParams.crs, self.view.getProjection().getCode());
             self.view.setCenter(center);
             self.view.setZoom(mapParams.zoom);
             if(mapParams.layers !== false) {

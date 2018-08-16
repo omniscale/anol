@@ -79,8 +79,8 @@ angular.module('anol.measure')
             var coordinates = geometry.getCoordinates();
             length = 0;
             for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-                var c1 = transform(coordinates[i], projection, 'EPSG:4326');
-                var c2 = transform(coordinates[i + 1], projection, 'EPSG:4326');
+                var c1 = transform(coordinates[i], projection.getCode(), 'EPSG:4326');
+                var c2 = transform(coordinates[i + 1], projection.getCode(), 'EPSG:4326');
                 length += getDistance(c1, c2);
             }
         } else {
@@ -107,7 +107,7 @@ angular.module('anol.measure')
 
     var formatCoordinateResult = function(geometry, projection, geodesic) {
         var coord = transform(geometry.getCoordinates(),
-                                     projection,
+                                     projection.getCode(),
                                      'EPSG:4326');
         var output = '';
         output += coord[0] + ' lat | ';
@@ -314,7 +314,7 @@ angular.module('anol.measure')
                 return tAttrs.templateUrl;
             }
             return require('./templates/measure.html')
-        },                 
+        },
         link: function(scope, element, attrs, AnolMapController) {
             //attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?

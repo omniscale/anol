@@ -147,7 +147,7 @@ angular.module('anol.urlmarkers')
                 }
                 marker.geometry.transform(
                     marker.srs || self.defaultSrs,
-                    MapService.view.getProjection()
+                    MapService.view.getProjection().getCode()
                 );
                 marker.style = angular.merge({}, self.style, style);
                 if(!self.usePopup && marker.label !== undefined) {
