@@ -24,14 +24,15 @@ angular.module('anol.layerswitcher')
  */
  // TODO handle add / remove layer
  // TODO handle edit layers title
- .directive('anolLayerswitcher', ['LayersService', 'ControlsService', 'MapService', function(LayersService, ControlsService, MapService) {
+ .directive('anolLayerswitcher', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 'MapService',
+  function($templateRequest, $compile, LayersService, ControlsService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/layerswitcher.html')
         },
@@ -43,6 +44,14 @@ angular.module('anol.layerswitcher')
         },
         link: {
             pre: function(scope, element, attrs, AnolMapController) {
+                if (attrs.templateUrl && attrs.templateUrl !== '') {
+                    $templateRequest(attrs.templateUrl).then(function(html){
+                        var template = angular.element(html);
+                        element.html(template);
+                        $compile(template)(scope);
+                      });
+                } 
+
                 scope.collapsed = false;
                 scope.showToggle = false;
 

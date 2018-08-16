@@ -34,8 +34,8 @@ angular.module('anol.getfeatureinfo')
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
 .directive('anolGetFeatureInfo', [
-    '$http', '$window', '$q', '$compile', 'MapService', 'LayersService', 'ControlsService',
-    function($http, $window, $q, $compile, MapService, LayersService, ControlsService) {
+    '$templateRequest', '$http', '$window', '$q', '$compile', 'MapService', 'LayersService', 'ControlsService',
+    function($templateRequest, $http, $window, $q, $compile, MapService, LayersService, ControlsService) {
     return {
         restrict: 'A',
         scope: {
@@ -49,12 +49,19 @@ angular.module('anol.getfeatureinfo')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/getfeatureinfo.html')
         },           
         link: {
-            pre: function(scope, element) {
+            pre: function(scope, element, attrs) {
+                if (attrs.templateUrl && attrs.templateUrl !== '') {
+                    $templateRequest(attrs.templateUrl).then(function(html){
+                        var template = angular.element(html);
+                        element.html(template);
+                        $compile(template)(scope);
+                    });
+                }                     
                 scope.popupOpeningDirection = scope.popupOpeningDirection || 'top';
 
                 scope.map = MapService.getMap();

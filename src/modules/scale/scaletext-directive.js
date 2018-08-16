@@ -35,20 +35,28 @@ angular.module('anol.scale')
  * Add scaletext to element directive is used in.
  * If element is defined inside anol-map-directive, scaletext is added to map
  */
-.directive('anolScaleText', ['$timeout', 'MapService', 'ControlsService', 'calculateScale', function($timeout, MapService, ControlsService, calculateScale) {
+.directive('anolScaleText', ['$templateRequest', '$compile', '$timeout', 'MapService', 'ControlsService', 'calculateScale', 
+    function($templateRequest, $compile, $timeout, MapService, ControlsService, calculateScale) {
 
     return {
         restrict: 'A',
         require: '?^anolMap',
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-              return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/scaletext.html')
         },         
         scope: {},
         link: {
             pre: function(scope, element, attrs, AnolMapController) {
+                if (attrs.templateUrl && attrs.templateUrl !== '') {
+                    $templateRequest(attrs.templateUrl).then(function(html){
+                        var template = angular.element(html);
+                        element.html(template);
+                        $compile(template)(scope);
+                    });
+                }                 
                 scope.view = MapService.getMap().getView();
                 if(angular.isObject(AnolMapController)) {
                     element.addClass('ol-unselectable');

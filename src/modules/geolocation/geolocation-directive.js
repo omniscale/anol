@@ -28,8 +28,8 @@ angular.module('anol.geolocation')
  * @description
  * Get current position and center map on it.
  */
-.directive('anolGeolocation', ['$compile', '$translate', '$timeout', 'MapService', 'ControlsService', 'LayersService', 'InteractionsService',
-  function($compile, $translate, $timeout, MapService, ControlsService, LayersService, InteractionsService) {
+.directive('anolGeolocation', ['$templateRequest', '$compile', '$translate', '$timeout', 'MapService', 'ControlsService', 'LayersService', 'InteractionsService',
+  function($templateRequest, $compile, $translate, $timeout, MapService, ControlsService, LayersService, InteractionsService) {
     return {
       scope: {
         anolGeolocation: '@',
@@ -44,11 +44,18 @@ angular.module('anol.geolocation')
       },
       template: function(tElement, tAttrs) {
         if (tAttrs.templateUrl) {
-          return tAttrs.templateUrl;
+                return '<div></div>';
         }
         return require('./templates/geolocation.html')
       },           
-      link: function(scope, element) {
+      link: function(scope, element, attrs) {
+        if (attrs.templateUrl && attrs.templateUrl !== '') {
+            $templateRequest(attrs.templateUrl).then(function(html){
+                var template = angular.element(html);
+                element.html(template);
+                $compile(template)(scope);
+            });
+        }         
         scope.anolGeolocation = 'false' !== scope.anolGeolocation;
         scope.showPosition = 'false' !== scope.showPosition;
         scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;

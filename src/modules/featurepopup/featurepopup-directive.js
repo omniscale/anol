@@ -22,7 +22,8 @@ angular.module('anol.featurepopup')
  * @description
  * Shows a popup for selected feature
  */
-.directive('anolFeaturePopup', ['$window', '$timeout', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', function($window, $timeout, MapService, LayersService, ControlsService, PopupsService) {
+.directive('anolFeaturePopup', ['$templateRequest', '$compile','$window', '$timeout', 'MapService', 'LayersService', 'ControlsService', 'PopupsService', 
+    function($templateRequest, $compile, $window, $timeout, MapService, LayersService, ControlsService, PopupsService) {
     // TODO use for all css values
     var cssToFloat = function(v) {
         return parseFloat(v.replace(/[^-\d\.]/g, ''));
@@ -50,11 +51,18 @@ angular.module('anol.featurepopup')
         transclude: true,
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/popup.html')
         },           
         link: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            }             
             var self = this;
             PopupsService.register(scope);
             var multiselect = angular.isDefined(attrs.multiselect);

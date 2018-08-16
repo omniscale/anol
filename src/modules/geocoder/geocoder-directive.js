@@ -26,18 +26,12 @@ angular.module('anol.geocoder')
  * @description
  * Search for a location string on given geocoder, display and select results
  */
-.directive('anolGeocoderSearchbox', ['$timeout', '$location', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'UrlMarkersService',
-  function($timeout, $location, MapService, ControlsService, InteractionsService, LayersService, UrlMarkersService) {
+.directive('anolGeocoderSearchbox', ['$templateRequest', '$compile', '$timeout', '$location', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'UrlMarkersService',
+  function($templateRequest, $compile, $timeout, $location, MapService, ControlsService, InteractionsService, LayersService, UrlMarkersService) {
     return {
       restrict: 'A',
       require: '?^anolMap',
       transclude: true,
-      template: function(tElement, tAttrs) {
-        if (tAttrs.templateUrl) {
-          return tAttrs.templateUrl;
-        }
-        return require('./templates/searchbox.html')
-      },           
       scope: {
         geocoder: '@anolGeocoderSearchbox',
         zoomLevel: '@',
@@ -49,7 +43,20 @@ angular.module('anol.geocoder')
         urlMarkerColor: '@?',
         urlMarkerWithLabel: '@?'
       },
+      template: function(tElement, tAttrs) {
+        if (tAttrs.templateUrl) {
+          return '<div></div>';
+        }
+        return require('./templates/searchbox.html');
+      },
       link: function(scope, element, attrs, AnolMapController) {
+        if (attrs.templateUrl && attrs.templateUrl !== '') {
+          $templateRequest(attrs.templateUrl).then(function(html){
+            var template = angular.element(html);
+            element.append(template);
+            $compile(template)(scope);
+          });
+        }
         var removeMarkerInteraction;
         var geocoderOptions = angular.copy(scope.geocoderOptions);
         var markerLayer = new anol.layer.Feature({

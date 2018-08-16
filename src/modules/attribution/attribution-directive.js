@@ -48,8 +48,8 @@ angular.module('anol.attribution')
  * @description
  * Provides attribution buttons
  */
-.directive('anolAttribution', ['ControlsService', 'LayersService',
-    function(ControlsService, LayersService) {
+.directive('anolAttribution', ['$templateRequest', '$compile', 'ControlsService', 'LayersService',
+    function($templateRequest, $compile, ControlsService, LayersService) {
     return {
         restrict: 'A',
         scope: {
@@ -60,11 +60,18 @@ angular.module('anol.attribution')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
-            return require('./templates/attribution.html')
+            return require('./templates/attribution.html');
         },
         link: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                  });
+            } 
             // attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
                 scope.tooltipPlacement : 'left';

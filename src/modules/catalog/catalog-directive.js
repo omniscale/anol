@@ -10,18 +10,26 @@ angular.module('anol.catalog')
  * @description
  * Provides a catalog of layers that can be added to map
  */
-.directive('anolCatalog', ['LayersService', 'CatalogService',
-    function(LayersService, CatalogService) {
+.directive('anolCatalog', ['$templateRequest', '$compile', 'LayersService', 'CatalogService',
+    function($templateRequest, $compile, LayersService, CatalogService) {
     return {
         restrict: 'A',
         scope: {},
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/catalog.html')
         },
         link: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                  });
+            } 
+
             scope.layers = CatalogService.catalogLayers;
 
             scope.addedLayers = CatalogService.addedLayers;

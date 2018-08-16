@@ -38,7 +38,8 @@ angular.module('anol.featureproperties')
  *
  *
  */
-.directive('anolFeatureProperties', ['$translate', function($translate) {
+.directive('anolFeatureProperties', ['$templateRequest', '$compile', '$translate', 
+    function($templateRequest, $compile, $translate) {
     return {
         restrict: 'A',
         require: '?^anolFeaturePopup',
@@ -50,11 +51,18 @@ angular.module('anol.featureproperties')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/featureproperties.html')
         },           
         link: function(scope, element, attrs, FeaturePopupController) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            } 
             scope.translationNamespace = angular.isDefined(scope.translationNamespace) ?
                 scope.translationNamespace : 'featureproperties';
 

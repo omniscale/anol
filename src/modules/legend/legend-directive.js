@@ -26,14 +26,15 @@ angular.module('anol.legend')
  * @description
  * Adds a legend to map
  */
-.directive('anolLegend', ['LayersService', 'ControlsService', function(LayersService, ControlsService) {
+.directive('anolLegend', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 
+    function($templateRequest, $compile, LayersService, ControlsService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
         transclude: true,
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/legend.html')
         },           
@@ -48,6 +49,13 @@ angular.module('anol.legend')
         },
         link: {
             pre: function(scope, element, attrs, AnolMapController) {
+                if (attrs.templateUrl && attrs.templateUrl !== '') {
+                    $templateRequest(attrs.templateUrl).then(function(html){
+                        var template = angular.element(html);
+                        element.html(template);
+                        $compile(template)(scope);
+                    });
+                }                 
                 scope.collapsed = false;
                 scope.showToggle = false;
 

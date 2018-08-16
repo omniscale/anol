@@ -20,7 +20,8 @@ angular.module('anol.featureexchange')
  * @description
  * Download features as geojson
  */
-.directive('anolFeatureexchange', ['$translate', '$rootScope', 'MapService', function($translate, $rootScope, MapService) {
+.directive('anolFeatureexchange', ['$compile', '$templateRequest' ,'$translate', '$rootScope', 'MapService', 
+    function($compile, $templateRequest, $translate, $rootScope, MapService) {
     return {
         restrict: 'A',
         replace: true,
@@ -33,11 +34,18 @@ angular.module('anol.featureexchange')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/featureexchange.html')
         },        
         link: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            }             
             var format = new GeoJSON();
             var fileselector = element.find('#fileselector');
             var uploadErrorElement = element.find('#upload-error');

@@ -24,13 +24,13 @@ angular.module('anol.print')
  * *tempalteValues* can be extended by transclude input fields into directive. *ng-model* value for these fields have to be
  * *$parent.printAttributes.[name]*
  */
-.directive('anolPrint', ['PrintService', 'PrintPageService', 'MapService', 'LayersService',
-  function(PrintService, PrintPageService, MapService, LayersService) {
+.directive('anolPrint', ['$templateRequest', '$compile', 'PrintService', 'PrintPageService', 'MapService', 'LayersService',
+  function($templateRequest, $compile, PrintService, PrintPageService, MapService, LayersService) {
     return {
       restrict: 'A',
       template: function(tElement, tAttrs) {
         if (tAttrs.templateUrl) {
-          return tAttrs.templateUrl;
+                return '<div></div>';
         }
         return require('./templates/print.html')
       },                 
@@ -40,6 +40,13 @@ angular.module('anol.print')
       transclude: true,
       link: {
         pre: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            }           
             scope.printAttributes = {
               pageSize: [],
               layout: undefined,

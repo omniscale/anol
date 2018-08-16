@@ -45,7 +45,8 @@ angular.module('anol.measure')
  * @description
  * Point, Line or area measurement
  */
-.directive('anolMeasure', ['$timeout', 'ControlsService', 'LayersService', 'MapService', function($timeout, ControlsService, LayersService, MapService) {
+.directive('anolMeasure', ['$templateRequest', '$compile', '$timeout', 'ControlsService', 'LayersService', 'MapService', 
+    function($templateRequest, $compile, $timeout, ControlsService, LayersService, MapService) {
     // create a sphere whose radius is equal to the semi-major axis of the WGS84 ellipsoid
     // var wgs84Sphere = new ol.Sphere(6378137);
     var measureStyle = new Style({
@@ -308,11 +309,18 @@ angular.module('anol.measure')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
-            return require('./templates/measure.html')
+            return require('./templates/measure.html');
         },
         link: function(scope, element, attrs, AnolMapController) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                  });
+            }            
             //attribute defaults
             scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
                 scope.tooltipPlacement : 'right';

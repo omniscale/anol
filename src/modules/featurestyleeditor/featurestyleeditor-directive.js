@@ -20,7 +20,8 @@ angular.module('anol.featurestyleeditor')
  * @description
  * Shows a form for editing feature style depending on its geometry type
  */
-.directive('anolFeatureStyleEditor', ['$rootScope', '$translate', function($rootScope, $translate) {
+.directive('anolFeatureStyleEditor', ['$templateRequest', '$compile', '$rootScope', '$translate', 
+    function($templateRequest, $compile, $rootScope, $translate) {
     var prepareStyleProperties = function(_style) {
         var style = angular.copy(_style);
         if(style.radius !== undefined) {
@@ -63,12 +64,19 @@ angular.module('anol.featurestyleeditor')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/featurestyleeditor.html')
         },           
         link: {
             pre: function(scope, element, attrs) {
+                if (attrs.templateUrl && attrs.templateUrl !== '') {
+                    $templateRequest(attrs.templateUrl).then(function(html){
+                        var template = angular.element(html);
+                        element.html(template);
+                        $compile(template)(scope);
+                    });
+                }                 
                 element.addClass('anol-styleeditor');
                 var unregisterStyleWatcher;
                 scope.$watch('feature', function(feature) {

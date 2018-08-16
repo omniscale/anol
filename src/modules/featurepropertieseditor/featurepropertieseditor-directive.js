@@ -16,7 +16,8 @@ angular.module('anol.featurepropertieseditor')
  * @description
  * Shows a form for editing feature properties
  */
-.directive('anolFeaturePropertiesEditor', [function() {
+.directive('anolFeaturePropertiesEditor', ['$templateRequest', '$compile', 
+    function($templateRequest, $compile) {
     return {
         restrict: 'A',
         scope: {
@@ -25,11 +26,18 @@ angular.module('anol.featurepropertieseditor')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/featurepropertieseditor.html')
         },           
         link: function(scope, element, attrs) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            } 
             scope.properties = {};
             var propertyWatchers = {};
 

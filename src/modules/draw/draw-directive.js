@@ -34,8 +34,8 @@ angular.module('anol.draw')
  * @description
  * Provides controls to draw points, lines and polygons, modify and remove them
  */
-.directive('anolDraw', ['$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'MapService', 'DrawService',
-    function($compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
+.directive('anolDraw', ['$templateRequest', '$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'MapService', 'DrawService',
+    function($templateRequest, $compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -51,11 +51,18 @@ angular.module('anol.draw')
         },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
-                return tAttrs.templateUrl;
+                return '<div></div>';
             }
             return require('./templates/draw.html')
         },
         link: function(scope, element, attrs, AnolMapController) {
+            if (attrs.templateUrl && attrs.templateUrl !== '') {
+                $templateRequest(attrs.templateUrl).then(function(html){
+                    var template = angular.element(html);
+                    element.html(template);
+                    $compile(template)(scope);
+                });
+            } 
             // attribute defaults
             scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
                 scope.continueDrawing : false;
