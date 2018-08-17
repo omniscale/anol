@@ -124,22 +124,10 @@ class FeatureLayer extends AnolBaseLayer {
                 color: "rgba(255,255,0,0.3)"
             })
         })
-
-        this.olSourceOptions = this._createSourceOptions(options.olLayer.source);
-        delete options.olLayer.source;
-        this.olLayerOptions = options.olLayer;
-        this.olLayer = undefined;
-
-        if(this.clusterOptions !== false) {
-            this.clusterOptions = this._prepareClusterStyles(this.clusterOptions);
-        }
-
-
     }   
 
     setOlLayer(olLayer) {
         var self = this;
-
         // if a style function is in layer config we don't create a style function here
         if(!angular.isFunction(self.olLayerOptions.style)) {
             var defaultStyle = olLayer.getStyle();

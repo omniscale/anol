@@ -193,7 +193,8 @@ angular.module('anol.map')
                 var self = this;
                 self.map.un('pointermove', function(evt) { 
                     self._changeCursorToPointer(evt)
-                }).bind(self);
+                });
+                // }.bind(self));
             }
         };
         return new MapService(_view, _cursorPointerConditions, _twoFingersPinchDrag, _twoFingersPinchDragText);

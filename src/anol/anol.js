@@ -52,6 +52,7 @@ window.anol = {
 	'helper': helper,
 	'geocoder': geocoder
 }
+
 import { defaults } from '../modules/module.js'
 
 import Attribution from '../modules/attribution/attribution-directive.js'

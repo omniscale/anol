@@ -176,7 +176,6 @@ angular.module('anol.featurepopup')
                     evt.coordinate[0] + (scope.tolerance || 0),
                     evt.coordinate[1] + (scope.tolerance || 0)
                 ];
-
                 var found = false;
                 var features = [];
                 var singleFeature, singleLayer;
