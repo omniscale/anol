@@ -27,10 +27,39 @@ angular.module('anol.catalog')
             var self = this;
             this.catalogLayers = [];
             this.addedLayers = [];
-            angular.forEach(catalogLayers, function(layer) {
-                self.addCatalogLayer(layer);
+            this.nameLayersMap = {};
+            angular.forEach(catalogLayers, function(_layer) {
+                self.addCatalogLayer(_layer);
+                if(_layer.name !== undefined) {
+                    self.nameLayersMap[_layer.name] = _layer;
+                }                
             });
         };
+
+        /**
+         * @ngdoc method
+         * @name layerByName
+         * @methodOf anol.map.CatalogService
+         * @param {string} name
+         * @returns {anol.layer.Layer} layer
+         * @description Gets a layer by it's name
+         */
+        CatalogService.prototype.layerByName = function(name) {
+            return this.nameLayersMap[name];
+        };
+        /**
+         * @ngdoc method
+         * @name layers
+         * @methodOf anol.map.CatalogService
+         * @returns {array.<anol.layer.Layer>} All layers
+         * @description
+         * Get all layers managed by catalog service
+         */
+        CatalogService.prototype.addedCatalogLayers = function() {
+            var self = this;
+            return self.addedLayers;
+        };
+
         /**
          * @ngdoc method
          * @name addLayer

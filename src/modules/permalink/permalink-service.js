@@ -37,6 +37,17 @@ angular.module('anol.permalink')
             layers = layersParam.split(',');
         }
 
+        var visibleCatalogLayersParam = getParamString('visibleCatalogLayers', params);
+        var visibleCatalogLayers;
+        if(visibleCatalogLayersParam !== false) {
+            visibleCatalogLayers = visibleCatalogLayersParam.split(',');
+        }
+
+        var catalogLayersParam = getParamString('catalogLayers', params);
+        var catalogLayers;
+        if(catalogLayersParam !== false) {
+            catalogLayers = catalogLayersParam.split(',');
+        }
         if(mapParams !== null && mapParams.length == 4) {
             var result = {
                 'zoom': parseInt(mapParams[0]),
@@ -45,6 +56,14 @@ angular.module('anol.permalink')
             };
             if(layers !== undefined) {
                 result.layers = layers;
+            }
+
+            if(catalogLayers !== undefined) {
+                result.catalogLayers = catalogLayers;
+            }
+
+            if(visibleCatalogLayers !== undefined) {
+                result.visibleCatalogLayers = visibleCatalogLayers;
             }
             return result;
         }
@@ -75,7 +94,8 @@ angular.module('anol.permalink')
         _precision = precision;
     };
 
-    this.$get = ['$rootScope', '$location', 'MapService', 'LayersService', function($rootScope, $location, MapService, LayersService) {
+    this.$get = ['$rootScope', '$location', 'MapService', 'LayersService', 'CatalogService', 
+        function($rootScope, $location, MapService, LayersService, CatalogService) {
         /**
          * @ngdoc service
          * @name anol.permalink.PermalinkService
@@ -99,7 +119,8 @@ angular.module('anol.permalink')
             self.map = MapService.getMap();
             self.view = self.map.getView();
             self.visibleLayerNames = [];
-
+            self.visibleCatalogLayerNames = [];
+            self.catalogLayerNames = [];
             self.urlCrs = urlCrs;
             if (self.urlCrs === undefined) {
                 var projection = self.view.getProjection();
@@ -145,6 +166,25 @@ angular.module('anol.permalink')
                     });
                 }
             });
+
+            $rootScope.$watchCollection(function() {
+                return CatalogService.addedCatalogLayers();
+            }, function(newVal) {
+                if(angular.isDefined(newVal)) {
+                    self.catalogLayerNames = [];
+                    self.visibleCatalogLayerNames = [];
+                    angular.forEach(newVal, function(layer) {
+                        layer.offVisibleChange(self.handleVisibleChange);
+                        layer.onVisibleChange(self.handleVisibleChange, self);
+                        self.catalogLayerNames.push(layer.name);
+                        if (layer.getVisible()) {
+                            self.visibleCatalogLayerNames.push(layer.name);
+                        }
+                    });
+                    self.generatePermalink();
+                }
+            });
+
         };
         /**
          * @private
@@ -161,6 +201,19 @@ angular.module('anol.permalink')
                     var layerNameIdx = $.inArray(layerName, self.visibleLayerNames);
                     if(layerNameIdx > -1) {
                         self.visibleLayerNames.splice(layerNameIdx, 1);
+                    }
+                }
+                self.generatePermalink();
+            }
+
+            if(layer.catalogLayer == true) {
+                var layerName = layer.name;
+                if(angular.isDefined(layerName) && layer.getVisible()) {
+                    self.visibleCatalogLayerNames.push(layerName);
+                } else {
+                    var layerNameIdx = $.inArray(layerName, self.visibleCatalogLayerNames);
+                    if(layerNameIdx > -1) {
+                        self.visibleCatalogLayerNames.splice(layerNameIdx, 1);
                     }
                 }
                 self.generatePermalink();
@@ -200,8 +253,11 @@ angular.module('anol.permalink')
             }
             $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
             $location.search('layers', self.visibleLayerNames.join(','));
+            $location.search('visibleCatalogLayers', self.visibleCatalogLayerNames.join(','));
+            $location.search('catalogLayers', self.catalogLayerNames.join(','));
             $location.replace();
         };
+
         Permalink.prototype.updateMapFromParameters = function(mapParams) {
             var self = this;
             var center = transform(mapParams.center, mapParams.crs, self.view.getProjection().getCode());
@@ -237,6 +293,20 @@ angular.module('anol.permalink')
                     }
                 });
             }
+
+            if (mapParams.catalogLayers !== false) {
+                angular.forEach(mapParams.catalogLayers, function(layerName) {
+                    var layer = CatalogService.layerByName(layerName)
+                    if (layer !== undefined) {
+                        CatalogService.addToMap(layer);
+                        var visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
+                        layer.setVisible(visible);
+                    } 
+                });
+
+            }
+            
+
         };
         Permalink.prototype.getPermalinkParameters = function() {
             var self = this;

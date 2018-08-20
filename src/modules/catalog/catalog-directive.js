@@ -29,10 +29,24 @@ angular.module('anol.catalog')
                     $compile(template)(scope);
                   });
             } 
-
             scope.layers = CatalogService.catalogLayers;
 
             scope.addedLayers = CatalogService.addedLayers;
+
+            function groupLayers(layers) {
+                var firstLetters = [];
+                var sortedLayers = [];
+                angular.forEach(layers, function(layer) {
+                    var firstLetter = layer.title.charAt(0).toUpperCase();
+                    if (firstLetters.indexOf(firstLetter) === -1) {
+                        firstLetters.push(firstLetter);
+                        sortedLayers[firstLetter] = [layer];
+                    } else {
+                        sortedLayers[firstLetter].push(layer);
+                    }
+                });
+            }
+            scope.sortedLayers = groupLayers(CatalogService.catalogLayers);
 
             scope.addToMap = function(layer) {
                 CatalogService.addToMap(layer);

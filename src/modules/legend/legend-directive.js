@@ -85,12 +85,25 @@ angular.module('anol.legend')
             },
             post: function(scope, element, attrs) {
                 scope.legendLayers = [];
+                scope.hasLegend = false;
 
-                angular.forEach(LayersService.flattedLayers(), function(layer) {
-                    if(layer.legend === false) {
-                        return;
+                angular.forEach(LayersService.overlayLayers, function(layer) {
+                    if(layer instanceof anol.layer.Group) {
+                        var layers = [];
+                        angular.forEach(layer.layers, function(overlayLayer) {
+                            if(overlayLayer.legend !== false) {
+                                layers.push(overlayLayer);
+                            }
+                        });                        
+                        scope.legendLayers.push({
+                            'group': layer,
+                            'content': layers
+                        });
+                    } else {
+                        if(layer.legend !== false) {
+                            scope.legendLayers.push(layer);
+                        }
                     }
-                    scope.legendLayers.push(layer);
                 });
             }
         }
