@@ -43,7 +43,8 @@
  */
 
 import BaseLayer from 'ol/layer/Base';
-import Source from 'ol/source/Source.js';
+import Source from 'ol/source/Source';
+import { DEVICE_PIXEL_RATIO } from 'ol/has'
 
 class AnolBaseLayer {
 
@@ -137,7 +138,7 @@ class AnolBaseLayer {
     _createSourceOptions(srcOptions) {
         srcOptions = srcOptions || {};
         if(srcOptions.tilePixelRatio !== undefined) {
-            srcOptions.tilePixelRatio = ol.has.DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
+            srcOptions.tilePixelRatio = DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
         }
         return srcOptions;
     }
