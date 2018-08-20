@@ -1,39 +1,26 @@
-<div class="ol-unselectable ol-control anol-legend-hidden"
-     ng-show="showToggle && collapsed"
-     tooltip="{{ 'anol.legend.TOOLTIP' | translate }}"
-     tooltip-placement="{{ tooltipPlacement}}"
-     tooltip-append-to-body="true"
-     tooltip-popup-delay="{{ tooltipDelay }}"
-     tooltip-enable="{{ tooltipEnable }}"
-     tooltip-trigger="mouseenter click">
-    <button class="glyphicon glyphicon-chevron-left cursor-pointer"
-            ng-click="collapsed=!collapsed">
-    </button>
-</div>
-<div ng-hide="collapsed"
-     class="anol-legend-container">
-    <div class="ol-unselectable ol-control anol-legend-visible"
-         ng-show="showToggle"
-         tooltip="{{ 'anol.legend.TOOLTIP' | translate }}"
-         tooltip-placement="{{ tooltipPlacement}}"
-         tooltip-append-to-body="true"
-         tooltip-popup-delay="{{ tooltipDelay }}"
-         tooltip-enable="{{ tooltipEnable }}"
-         tooltip-trigger="mouseenter click">
-        <button class="glyphicon glyphicon-chevron-right"
-                ng-click="collapsed=!collapsed">
-        </button>
-    </div>
+<div class="anol-legend-container">
     <div class="anol-legend-items">
-
-        <div ng-repeat="layer in legendLayers"
-             ng-show="layer.getVisible()">
-            <span class="anol-legend-item-title" ng-if="layer.legend.url === undefined && !layer.isVector">{{ layer.title }}</span>
-            <div anol-legend-image="layer"
-                custom-target-filled="customTargetCallback">
+        <div ng-repeat="layer in legendLayers">
+            <!-- Layer with Groups -->
+            <strong ng-show="layer.group.getVisible()">{{ layer.group.title }}</strong>
+            <div ng-repeat="layer in layer.content">
+                <div ng-show="layer.getVisible()">
+                    <div ng-show="layer.legend.type != 'link'" anol-legend-image="layer"
+                        size="[15, 15]"
+                        prepend="layer.legend && (layer.type == 'static_geojson' || layer.type == 'dynamic_geojson')">
+                    </div>
+                    <span class="anol-legend-item-title" ng-if="layer.legend.url !== undefined || layer.isVector">{{ layer.title }}</span>
+                    <div ng-show="layer.legend.type == 'link'">
+                        <a target="_blank" href="{{ layer.legend.href }}" title="{{ layer.legend.title }}">{{ layer.legend.text }}</a>
+                    </div>
+                 </div>
             </div>
-            <span class="anol-legend-item-title" ng-if="layer.legend.url !== undefined || layer.isVector">{{ layer.title }}</span>
+            <!-- Layer without Groups -->
+            <div ng-if="!layer.content" anol-legend-image="layer"
+                 size="[15, 15]"
+                 prepend="layer.legend && (layer.type == 'static_geojson' || layer.type == 'dynamic_geojson')">
+            </div>
+            <span ng-if="!layer.content" class="anol-legend-item-title" ng-if="layer.legend.url !== undefined || layer.isVector">{{ layer.title }}</span>
         </div>
-
     </div>
 </div>
