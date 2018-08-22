@@ -10,11 +10,13 @@ angular.module('anol.catalog')
  * @description
  * Provides a catalog of layers that can be added to map
  */
-.directive('anolCatalog', ['$templateRequest', '$compile', 'LayersService', 'CatalogService',
-    function($templateRequest, $compile, LayersService, CatalogService) {
+.directive('anolCatalog', ['$templateRequest', '$compile', '$timeout', 'LayersService', 'CatalogService',
+    function($templateRequest, $compile, $timeout, LayersService, CatalogService) {
     return {
-        restrict: 'A',
-        scope: {},
+        restrict: 'EA',
+        scope: {
+            model:'='
+        },
         template: function(tElement, tAttrs) {
             if (tAttrs.templateUrl) {
                 return '<div></div>';
@@ -29,24 +31,9 @@ angular.module('anol.catalog')
                     $compile(template)(scope);
                   });
             } 
-            scope.layers = CatalogService.catalogLayers;
-
+            scope.sortedLayers = CatalogService.sortedLayers;
             scope.addedLayers = CatalogService.addedLayers;
-
-            function groupLayers(layers) {
-                var firstLetters = [];
-                var sortedLayers = [];
-                angular.forEach(layers, function(layer) {
-                    var firstLetter = layer.title.charAt(0).toUpperCase();
-                    if (firstLetters.indexOf(firstLetter) === -1) {
-                        firstLetters.push(firstLetter);
-                        sortedLayers[firstLetter] = [layer];
-                    } else {
-                        sortedLayers[firstLetter].push(layer);
-                    }
-                });
-            }
-            scope.sortedLayers = groupLayers(CatalogService.catalogLayers);
+            scope.firstLetters = CatalogService.firstLetters;
 
             scope.addToMap = function(layer) {
                 CatalogService.addToMap(layer);

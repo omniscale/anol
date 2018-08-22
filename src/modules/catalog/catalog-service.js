@@ -28,12 +28,32 @@ angular.module('anol.catalog')
             this.catalogLayers = [];
             this.addedLayers = [];
             this.nameLayersMap = {};
+            this.sortedLayers = {};
+            this.firstLetters = [];
             angular.forEach(catalogLayers, function(_layer) {
                 self.addCatalogLayer(_layer);
                 if(_layer.name !== undefined) {
                     self.nameLayersMap[_layer.name] = _layer;
-                }                
+                }   
+                
+                var firstLetter = _layer.title.charAt(0).toUpperCase();
+                if (self.firstLetters.indexOf(firstLetter) === -1) {
+                    self.firstLetters.push(firstLetter);
+                    self.sortedLayers[firstLetter] = {
+                        'layers':  [_layer],
+                        'title': firstLetter
+                    };
+                } 
+                else {
+                    self.sortedLayers[firstLetter]['layers'].push(_layer);
+                }
             });
+
+            self.sortedLayers = Object.keys(self.sortedLayers)
+                .sort()
+                .reduce((acc, key) => ({
+                    ...acc, [key]: self.sortedLayers[key]
+                }), {});
         };
 
         /**
