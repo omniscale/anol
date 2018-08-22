@@ -26,8 +26,8 @@ angular.module('anol.legend')
  * @description
  * Adds a legend to map
  */
-.directive('anolLegend', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 
-    function($templateRequest, $compile, LayersService, ControlsService) {
+.directive('anolLegend', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 'CatalogService',  
+    function($templateRequest, $compile, LayersService, ControlsService, CatalogService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -85,8 +85,7 @@ angular.module('anol.legend')
             },
             post: function(scope, element, attrs) {
                 scope.legendLayers = [];
-                scope.hasLegend = false;
-
+                scope.visibleLayerNames = [];
                 angular.forEach(LayersService.overlayLayers, function(layer) {
                     if(layer instanceof anol.layer.Group) {
                         var layers = [];
@@ -103,6 +102,77 @@ angular.module('anol.legend')
                         if(layer.legend !== false) {
                             scope.legendLayers.push(layer);
                         }
+                    }
+                });
+
+                scope.handleVisibleChange = function(evt) {
+                    var self = evt.data.context;
+                    var layer = this;
+                    if(layer.permalink === true) {
+                        var layerName = layer.name;
+                        if(angular.isDefined(layerName) && layer.getVisible()) {
+                            scope.visibleLayerNames.push(layerName);
+                        } else {
+                            var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
+                            if(layerNameIdx > -1) {
+                                scope.visibleLayerNames.splice(layerNameIdx, 1);
+                            }
+                        }
+                    }
+
+                    if(layer.catalogLayer == true) {
+                        var layerName = layer.name;
+                        if(angular.isDefined(layerName) && layer.getVisible()) {
+                            scope.visibleLayerNames.push(layerName);
+                        } else {
+                            var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
+                            if(layerNameIdx > -1) {
+                                scope.visibleLayerNames.splice(layerNameIdx, 1);
+                            }
+                        }
+                    }
+                };
+
+                var self = this;
+                scope.$watchCollection(function() {
+                    return LayersService.overlayLayers;
+                }, function(newVal) {
+                    if(angular.isDefined(newVal)) {
+                        angular.forEach(newVal, function(layer) {
+                            if(layer instanceof anol.layer.Group) {
+                                angular.forEach(layer.layers, function(groupLayer) {
+                                    if(groupLayer.permalink === true) {
+                                        groupLayer.offVisibleChange(scope.handleVisibleChange);
+                                        groupLayer.onVisibleChange(scope.handleVisibleChange, self);
+                                        if (groupLayer.getVisible()) {
+                                            scope.visibleLayerNames.push(groupLayer.name);
+                                        }
+                                    }
+                                });
+                            } else {
+                                if(layer.permalink === true) {
+                                    layer.offVisibleChange(scope.handleVisibleChange);
+                                    layer.onVisibleChange(scope.handleVisibleChange, self);
+                                    if (layer.getVisible()) {
+                                        scope.visibleLayerNames.push(layer.name);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+
+                scope.$watchCollection(function() {
+                    return CatalogService.addedCatalogLayers();
+                }, function(newVal) {
+                    if(angular.isDefined(newVal)) {
+                        angular.forEach(newVal, function(layer) {
+                            layer.offVisibleChange(scope.handleVisibleChange);
+                            layer.onVisibleChange(scope.handleVisibleChange, self);
+                            if (layer.getVisible()) {
+                                scope.visibleLayerNames.push(layer.name);
+                            }
+                        });
                     }
                 });
             }
