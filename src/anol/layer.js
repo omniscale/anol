@@ -76,12 +76,16 @@ class AnolBaseLayer {
         this.clusterOptions = options.cluster || false;
         this.unclusteredSource = undefined;
         this.selectClusterControl = undefined;
+        
+        this.catalog = options.catalog || false;
+        this.catalogLayer = options.catalogLayer || false;
 
         if(this.displayInLayerswitcher === false) {
             this.permalink = false;
         } else {
             this.permalink = anol.helper.getValue(options.permalink, true);
         }
+
         // keep ability to create anol.layer.Layer with predefined olLayer
         // this is needed for system layers in measure/print/etc.
         if(options.olLayer instanceof BaseLayer) {
