@@ -28,7 +28,7 @@ import {transformExtent} from 'ol/proj.js';
 class BBOXGeoJSON  extends StaticGeoJSON {
 
     constructor(_options) {
-
+        super(_options);
         if(
             angular.isObject(_options) &&
             angular.isObject(_options.olLayer) &&
@@ -36,7 +36,6 @@ class BBOXGeoJSON  extends StaticGeoJSON {
         ) {
             this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
         }
-        super(_options);
         this.CLASS_NAME = 'anol.layer.BBOXGeoJSON';
 
     }
@@ -80,7 +79,7 @@ class BBOXGeoJSON  extends StaticGeoJSON {
     loader(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
         var self = this;
         if (extentProjection !== undefined) {
-            extent = transformExtent(extent, projection, extentProjection);
+            extent = transformExtent(extent, projection.getCode(), extentProjection.getCode());
         } 
         var params = [
             'srs=' + extentProjection.getCode(),
@@ -95,7 +94,6 @@ class BBOXGeoJSON  extends StaticGeoJSON {
                 params.push(key + '=' + value);
             });
         }
-
         $.ajax({
             url: url + params.join('&'),
             dataType: 'json'
