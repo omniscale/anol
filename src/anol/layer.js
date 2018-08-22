@@ -79,6 +79,7 @@ class AnolBaseLayer {
         
         this.catalog = options.catalog || false;
         this.catalogLayer = options.catalogLayer || false;
+        this.metadataUrl = options.metadataUrl || false;
 
         if(this.displayInLayerswitcher === false) {
             this.permalink = false;
