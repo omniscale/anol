@@ -33,7 +33,6 @@ angular.module('anol.catalog')
             } 
             scope.sortedLayers = CatalogService.sortedLayers;
             scope.addedLayers = CatalogService.addedLayers;
-            scope.firstLetters = CatalogService.firstLetters;
 
             scope.addToMap = function(layer) {
                 CatalogService.addToMap(layer);
