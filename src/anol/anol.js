@@ -5,6 +5,13 @@
  * Wrapper namespace
  */
 
+import proj4 from 'proj4';
+import {register} from 'ol/proj/proj4.js';
+import {transformExtent, transform} from 'ol/proj';
+
+proj4.defs("EPSG:25832", "+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+register(proj4);
+
 import Helper from "./helper.js"
 import Nominatim from "./geocoder/nominatim.js"
 import Solr from "./geocoder/Solr.js"
@@ -53,46 +60,4 @@ window.anol = {
 	'geocoder': geocoder
 }
 
-import { defaults } from '../modules/module.js'
 
-import Attribution from '../modules/attribution/attribution-directive.js'
-import Catalog from '../modules/catalog/catalog-directive.js'
-import CatalogService from '../modules/catalog/catalog-service.js'
-
-import DragPopup from '../modules/featurepopup/dragpopup-directive.js'
-import Draw from '../modules/draw/draw-directive.js'
-import DrawService from '../modules/draw/draw-service.js'
-import FeatureExchange from '../modules/featureexchange/featureexchange-directive.js'
-
-import FeaturePopup from '../modules/featurepopup/featurepopup-directive.js'
-import FeaturePopupService from '../modules/featurepopup/featurepopup-service.js'
-
-import FeaturePropertiesEditor from '../modules/featurepropertieseditor/featurepropertieseditor-directive.js'
-import FeatureProperties from '../modules/featureproperties/featureproperties-directive.js'
-import FeatureStyleEditor from '../modules/featurestyleeditor/featurestyleeditor-directive.js'
-
-import GeoCoder from '../modules/geocoder/geocoder-directive.js'
-import GeoLocation from '../modules/geolocation/geolocation-directive.js'
-import GetFeatureInfo from '../modules/getfeatureinfo/getfeatureinfo-directive.js'
-import LayerSwitcher from '../modules/layerswitcher/layerswitcher-directive.js'
-import Legend from '../modules/legend/legend-directive.js'
-import MapDiretive from '../modules/map/map-directive.js'
-import MapService from '../modules/map/map-service.js'
-import Measure from '../modules/measure/measure-directive.js'
-import MousePosition from '../modules/mouseposition/mouseposition-directive.js'
-import OverviewMap from '../modules/overviewmap/overviewmap-directive.js'
-import PermalinkService from '../modules/permalink/permalink-service.js'
-import Print from '../modules/print/print-directive.js'
-import PrintService from '../modules/print/print-service.js'
-import PrintPageService from '../modules/print/printpage-service.js'
-import Rotate from '../modules/rotate/rotate-directive.js'
-import SaveManager from '../modules/savemanager/savemanager-directive.js'
-import SaveManagerService from '../modules/savemanager/savemanager-service.js'
-import ScaleLine from '../modules/scale/scaleline-directive.js'
-import ScaleText from '../modules/scale/scaletext-directive.js'
-
-import URLMarkers from '../modules/urlmarkers/urlmarker-directive.js'
-import URLMarkersService from '../modules/urlmarkers/urlmarker-service.js'
-import URLMarkersBBCode from '../modules/urlmarkers/urlmerker-bbcode-directive.js'
-
-import Zoom from '../modules/zoom/zoom-directive.js'
