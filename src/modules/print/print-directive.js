@@ -24,8 +24,8 @@ angular.module('anol.print')
  * *tempalteValues* can be extended by transclude input fields into directive. *ng-model* value for these fields have to be
  * *$parent.printAttributes.[name]*
  */
-.directive('anolPrint', ['$templateRequest', '$compile', 'PrintService', 'PrintPageService', 'MapService', 'LayersService',
-  function($templateRequest, $compile, PrintService, PrintPageService, MapService, LayersService) {
+.directive('anolPrint', ['$rootScope', '$templateRequest', '$compile', 'PrintService', 'PrintPageService', 'MapService', 'LayersService',
+  function($rootScope, $templateRequest, $compile, PrintService, PrintPageService, MapService, LayersService) {
     return {
       restrict: 'A',
       template: function(tElement, tAttrs) {
@@ -176,10 +176,38 @@ angular.module('anol.print')
               PrintPageService.removePrintArea();
               scope.printAttributes.layout = undefined;
               scope.printAttributes.pageSize = undefined;
-
             };
+
+
+            $rootScope.$on("updatePrintPageSettings", function(br, data){
+              var printData = data.print;
+              scope.printAttributes = {
+                pageSize: printData.pageSize,
+                layout: printData.layout,
+                scale: printData.scale
+              };
+
+              if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
+                angular.forEach(scope.outputFormats, function(format, idx) {
+                  if (format.value == printData.outputFormat.value) { 
+                    scope.printAttributes.outputFormat = scope.outputFormats[idx];
+                  }
+                });
+              }
+              if (data.sidebar == print) {
+                scope.setPageLayout(printData.pageSize, printData.layout)
+              }
+            });
         },
         post: function(scope, element, attrs) {
+
+          scope.$watchCollection('printAttributes',
+            function(n) {
+              if(angular.isDefined(n)) {
+                PrintPageService.saveSettings(scope.printAttributes);
+              } 
+            }
+          );
           scope.$watchCollection('printAttributes.pageSize',
             function(n) {
               if(angular.isDefined(n)) {
@@ -191,6 +219,7 @@ angular.module('anol.print')
                   scope.pageHeight = Math.round(n[1]);
                 }
               }
+              PrintPageService.saveSettings(scope.printAttributes);
             }
           );
           scope.$watch('showPrintArea', function(n) {

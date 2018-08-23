@@ -129,6 +129,7 @@ angular.module('anol.permalink')
 
             var params = $location.search();
             var mapParams = extractMapParams(params);
+
             if(mapParams !== false) {
                 self.updateMapFromParameters(mapParams);
             } else {
@@ -305,9 +306,24 @@ angular.module('anol.permalink')
                 });
 
             }
-            
-
         };
+
+        Permalink.prototype.getSettings = function() {
+            var self = this;
+            var sidebarStatus = $location.search().sidebarStatus;
+            var sidebar = $location.search().sidebar;
+            return {
+                zoom: self.zoom,
+                center: [self.lon, self.lat],
+                crs: self.urlCrs,
+                layers: self.visibleLayerNames,
+                catalogLayers: self.catalogLayerNames,
+                visibleCatalogLayers: self.visibleCatalogLayerNames,
+                sidebar: sidebar,
+                sidebarStatus: sidebarStatus
+            };
+        };
+
         Permalink.prototype.getPermalinkParameters = function() {
             var self = this;
             return {
@@ -317,10 +333,12 @@ angular.module('anol.permalink')
                 layers: self.visibleLayerNames
             };
         };
+
         Permalink.prototype.setPermalinkParameters = function(params) {
             var self = this;
             self.updateMapFromParameters(params);
         };
+        
         return new Permalink(_urlCrs, _precision);
     }];
 }]);

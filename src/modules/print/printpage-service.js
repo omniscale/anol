@@ -286,6 +286,7 @@ angular.module('anol.print')
             this.pageMargins = pageMargins;
             this.minPageSize = minPageSize;
             this.maxPageSize = maxPageSize;
+            this.settings = {}
 
             var self = this;
 
@@ -789,6 +790,23 @@ angular.module('anol.print')
             };
         };
 
+        PrintPage.prototype.saveSettings = function(attr) {
+            this.settings = {
+                'scale': attr.scale,
+                'outputFormat': attr.outputFormat,
+                'layout': attr.layout,
+                'pageSize': attr.pageSize 
+            }
+       }
+
+        PrintPage.prototype.loadSettings = function(attr) {
+            this.settings = attr;
+            $rootScope.$broadcast("updatePrintPageSettings", this.settings);
+        }
+
+        PrintPage.prototype.getSettings = function(attr) {
+            return this.settings
+        }        
         return new PrintPage(_pageLayouts, _outputFormats, _defaultScale, _availableScales, _allowPageResize, _pageMargins, _minPageSize, _maxPageSize);
     }];
 }]);
