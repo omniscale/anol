@@ -39,16 +39,23 @@ angular.module('anol.featureexchange')
             return require('./templates/featureexchange.html')
         },        
         link: function(scope, element, attrs) {
-            if (attrs.templateUrl && attrs.templateUrl !== '') {
+             if (attrs.templateUrl && attrs.templateUrl !== '') {
                 $templateRequest(attrs.templateUrl).then(function(html){
                     var template = angular.element(html);
                     element.html(template);
                     $compile(template)(scope);
+                    fileselector = element.find('#fileselector');
+                    uploadErrorElement = element.find('#upload-error');
+                    addFileselectorChangeEvent();
                 });
-            }             
-            var format = new GeoJSON();
+            }     
             var fileselector = element.find('#fileselector');
             var uploadErrorElement = element.find('#upload-error');
+            if (fileselector.length > 0) {
+                addFileselectorChangeEvent();
+            }                    
+
+            var format = new GeoJSON();
 
             var showError = function(errorMessage) {
                 uploadErrorElement.text(errorMessage);
@@ -86,48 +93,51 @@ angular.module('anol.featureexchange')
                 if(scope.layer instanceof anol.layer.Feature) {
                     uploadErrorElement.addClass('hide');
                     uploadErrorElement.empty();
+                    console.log(fileselector)
                     fileselector.val('');
                     fileselector[0].click();
                 }
             };
 
-            fileselector.change(function(e) {
-                var files = e.target.files;
-                if(files.length === 0) {
-                    return;
-                }
-                var fileReader = new FileReader();
-                fileReader.onload = function(e) {
-                    var featureCollection;
-                    try {
-                        featureCollection = JSON.parse(e.target.result);
-                    } catch(err) {
-                        showError(scope.errorMessages.noJsonFormat);
+            function addFileselectorChangeEvent() {
+                fileselector.change(function(e) {
+                    var files = e.target.files;
+                    if(files.length === 0) {
                         return;
                     }
-                    if(angular.isUndefined(featureCollection.features) || !angular.isArray(featureCollection.features)) {
-                        showError(scope.errorMessages.invalidGeoJson);
-                        return;
-                    }
-                    if(featureCollection.features.length === 0) {
-                        showError(scope.errorMessages.emptyGeoJson);
-                        return;
-                    }
-                    if(angular.isFunction(scope.postUpload)) {
-                        featureCollection = scope.postUpload(featureCollection);
-                    }
-                    var features = format.readFeatures(featureCollection, {
-                        featureProjection: MapService.getMap().getView().getProjection(),
-                        dataProjection: scope.srs || 'EPSG:4326'
-                    });
-                    scope.layer.clear();
-                    scope.layer.addFeatures(features);
-                };
-                fileReader.onerror = function(e) {
-                    showError(scope.errorMessages.couldNotReadFile);
-                };
-                fileReader.readAsText(files[0]);
-            });
+                    var fileReader = new FileReader();
+                    fileReader.onload = function(e) {
+                        var featureCollection;
+                        try {
+                            featureCollection = JSON.parse(e.target.result);
+                        } catch(err) {
+                            showError(scope.errorMessages.noJsonFormat);
+                            return;
+                        }
+                        if(angular.isUndefined(featureCollection.features) || !angular.isArray(featureCollection.features)) {
+                            showError(scope.errorMessages.invalidGeoJson);
+                            return;
+                        }
+                        if(featureCollection.features.length === 0) {
+                            showError(scope.errorMessages.emptyGeoJson);
+                            return;
+                        }
+                        if(angular.isFunction(scope.postUpload)) {
+                            featureCollection = scope.postUpload(featureCollection);
+                        }
+                        var features = format.readFeatures(featureCollection, {
+                            featureProjection: MapService.getMap().getView().getProjection(),
+                            dataProjection: scope.srs || 'EPSG:4326'
+                        });
+                        scope.layer.clear();
+                        scope.layer.addFeatures(features);
+                    };
+                    fileReader.onerror = function(e) {
+                        showError(scope.errorMessages.couldNotReadFile);
+                    };
+                    fileReader.readAsText(files[0]);
+                });
+            }
 
             var translate = function() {
                 $translate([
