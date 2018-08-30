@@ -56,12 +56,12 @@ angular.module('anol.overviewmap')
             var overviewmapButton = angular.element(olControl.element).find('button');
             overviewmapButton.removeAttr('title');
             // add cool tooltip
-            overviewmapButton.attr('tooltip', '{{ \'anol.overviewmap.TOOLTIP\' | translate }}');
+            overviewmapButton.attr('uib-tooltip', '{{ \'anol.overviewmap.TOOLTIP\' | translate }}');
             overviewmapButton.attr('tooltip-placement', scope.tooltipPlacement || 'right');
             overviewmapButton.attr('tooltip-append-to-body', true);
             overviewmapButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             overviewmapButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
-            overviewmapButton.attr('tooltip-trigger', 'mouseenter click');
+            overviewmapButton.attr('tooltip-trigger', 'mouseenter');
             // add icon
             // cannot use ng-class, because icon change comes to late after click
             overviewmapButton.attr('ng-click', 'updateIcon()');

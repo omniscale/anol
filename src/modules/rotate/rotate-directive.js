@@ -38,12 +38,12 @@ angular.module('anol.rotation')
             controlElement.attr('ng-style', 'ngStyle');
             var rotateButton = controlElement.find('.ol-rotate-reset');
             rotateButton.removeAttr('title');
-            rotateButton.attr('tooltip', '{{\'anol.rotate.TOOLTIP\' | translate }}');
+            rotateButton.attr('uib-tooltip', '{{\'anol.rotate.TOOLTIP\' | translate }}');
             rotateButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
             rotateButton.attr('tooltip-append-to-body', true);
             rotateButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
             rotateButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
-            rotateButton.attr('tooltip-trigger', 'mouseenter click');
+            rotateButton.attr('tooltip-trigger', 'mouseenter');
 
             $compile(controlElement)(scope);
 
