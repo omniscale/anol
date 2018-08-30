@@ -38,17 +38,6 @@ class Solr extends BaseGeocoder {
         };
         return data;
     }
-
-    extractDisplayText(result) {
-        return result.display_name;
-    }
-
-    extractCoordinate(result) {
-        return [
-            parseFloat(result.lon),
-            parseFloat(result.lat)
-        ];
-    }
 }
 
 export default Solr;

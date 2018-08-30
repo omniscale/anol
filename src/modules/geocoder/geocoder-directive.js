@@ -263,12 +263,11 @@ angular.module('anol.geocoder')
 
 
         scope.showResult = function(result) {
-          console.log(result)
           var view = MapService.getMap().getView();
           var position = transform(
             result.coordinate,
             result.projectionCode,
-            view.getProjection()
+            view.getProjection().getCode()
           );
           view.setCenter(position);
           if(angular.isDefined(scope.zoomLevel)) {
