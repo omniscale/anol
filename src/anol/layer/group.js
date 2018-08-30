@@ -19,6 +19,7 @@ class Group {
         this.name = options.name;
         this.title = options.title;
         this.layers = options.layers;
+        this.options = options;
 
         if (this.layers === undefined) {
             this.layers = []
@@ -39,7 +40,6 @@ class Group {
         });
         return visible;
     }
-
     setVisible(visible) {
         var self = this;
         $.each(self.layers, function(idx, layer) {
