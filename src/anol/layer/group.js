@@ -20,6 +20,8 @@ class Group {
         this.title = options.title;
         this.layers = options.layers;
         this.options = options;
+        
+        this.combinable = undefined;
 
         if (this.layers === undefined) {
             this.layers = []
@@ -28,7 +30,6 @@ class Group {
             layer.anolGroup = self;
         });
     }
-
     getVisible() {
         var self = this;
         var visible = false;
@@ -47,6 +48,30 @@ class Group {
                 layer.setVisible(visible);
             }
         });
+    }
+    isCombinable() {
+        // check if check was alredy done for group
+        if (combinable !== undefined) {
+            return combinable;
+        }
+        var lastClass = undefined;
+        var lastUrl = undefined;
+        var combinable = true;
+        var self = this;
+        $.each(self.layers, function(idx, layer) {
+            if(lastClass !== undefined && layer.CLASS_NAME !== lastClass) {
+                combinable = false;
+                return;
+            }
+            lastClass = layer.CLASS_NAME;
+            if(lastUrl !== undefined  && layer.olSourceOptions.url !== lastUrl) {
+                combinable = false;
+                return;
+            }
+            lastUrl = layer.olSourceOptions.url;
+        });
+        this.combinable = combinable;
+        return combinable
     }
 }
 

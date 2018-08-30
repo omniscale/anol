@@ -38,6 +38,10 @@ class BaseWMS extends AnolBaseLayer {
         if(!combinable) {
             return false;
         }
+        var combinable = other.anolGroup.isCombinable();
+        if(!combinable) {
+            return false;
+        }
         if(this.olSourceOptions.url !== other.olSourceOptions.url) {
             return false;
         }
@@ -68,7 +72,7 @@ class BaseWMS extends AnolBaseLayer {
     }
 
     removeOlLayer() {
-        if(this.combined) {
+        if(this.isCombinabled) {
             var olSource = this.olLayer.getSource();
             var anolLayers = olSource.get('anolLayers');
             var idx = anolLayers.indexOf(this);
@@ -88,16 +92,11 @@ class BaseWMS extends AnolBaseLayer {
         var self = this;
         var anolLayers = [];
         $.each(layers, function(idx, layer) {
-            if (self.isCombinable(layer)) {
+            if (layer.olLayer.ol_uid == self.olLayer.ol_uid) {
                 anolLayers.push(layer);
-                layerParams.push(layer.name)
-            }
-        });
-
-        var oldAnolLayers = olSource.get('anolLayers');
-        $.each(oldAnolLayers, function(idx, layer) {
-            if (anolLayers.indexOf(layer) == -1) {
-                anolLayers.push(layer);
+                if (layer.getVisible()) {
+                    layerParams.push(layer.name);
+                }
             }
         });
         olSource.set('anolLayers', anolLayers);

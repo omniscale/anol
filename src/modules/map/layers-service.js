@@ -66,7 +66,7 @@ angular.module('anol.map')
             self.nameGroupsMap = {};
 
             self.olLayers = [];
-
+            self.idx = 0;
             self.addedLayers = [];
 
             angular.forEach(layers, function(layer) {
@@ -76,6 +76,7 @@ angular.module('anol.map')
                     self.addOverlayLayer(layer);
                 }
             });
+            self.reorderGroupLayers();
 
             var activeBackgroundLayer;
             angular.forEach(self.backgroundLayers, function(backgroundLayer) {
@@ -104,16 +105,16 @@ angular.module('anol.map')
             angular.forEach(self.backgroundLayers, function(layer) {
                 self._addLayer(layer, true);
             });
-            angular.forEach(self.overlayLayers, function(layer) {
+            angular.forEach(self.overlayLayers, function(layer, idx) {
                 if(layer instanceof anol.layer.Group) {
-                    angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer) {
+                    angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer, idx) {
                         if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
-                            self._addLayer(grouppedLayer);
+                            self._addLayer(grouppedLayer, false);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
-                        self._addLayer(layer);
+                        self._addLayer(layer, false);
                     }
                 }
             });
@@ -151,8 +152,8 @@ angular.module('anol.map')
             if(self.overlayLayers.indexOf(layer) > -1) {
                 return false;
             }
-            // layers added reversed to map, so default idx is 0 to add layer "at top"
             idx = idx || 0;
+            // layers added reversed to map, so default idx is 0 to add layer "at top"
             self.overlayLayers.splice(idx, 0, layer);
             self._prepareLayer(layer);
 
@@ -302,14 +303,14 @@ angular.module('anol.map')
             // and must be added
             if(self.map !== undefined) {
                 if(layer instanceof anol.layer.Group) {
-                    angular.forEach(layer.layers, function(_layer) {
+                    angular.forEach(layer.layers, function(_layer, idx) {
                         if(self.olLayers.indexOf(_layer.olLayer) < 0) {
-                            self._addLayer(_layer);
+                            self._addLayer(_layer, false);
                         }
                     });
                 } else {
                     if(self.olLayers.indexOf(layer.olLayer) < 0) {
-                        self._addLayer(layer);
+                        self._addLayer(layer, false);
                     }
                 }
             }
@@ -399,15 +400,36 @@ angular.module('anol.map')
             return this.nameGroupsMap[name];
         };
         Layers.prototype.reorderGroupLayers = function() {
-        
+            var lastOlLayerUid = undefined;
+            var self = this;
+            self.zIndex = 0;
+            self.overlayLayers.slice().reverse().forEach(function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                    layer.layers.slice().reverse().forEach(function(grouppedLayer, idx) {
+                        if (lastOlLayerUid !== grouppedLayer.olLayer.ol_uid) {
+                            grouppedLayer.olLayer.setZIndex(self.zIndex);
+                            self.zIndex = self.zIndex + 1;
+                        }
+                        lastOlLayerUid = grouppedLayer.olLayer.ol_uid;
+                    });
+                }
+            });     
         };        
         Layers.prototype.reorderOverlayLayers = function() {
-            angular.forEach(this.overlayLayers, function(layer, idx) {
+            var lastOlLayerUid = undefined;
+            var self = this;
+            self.zIndex = 0;
+            self.overlayLayers.slice().reverse().forEach(function(layer) {
                 if(layer instanceof anol.layer.Group) {
-                    angular.forEach(layer.layers, function(grouppedLayer, idx) {
+                    layer.layers.slice().reverse().forEach(function(grouppedLayer, idx) {
                         if(grouppedLayer.combined) {
                             grouppedLayer.reOrderLayerParams(layer.layers);
                         }
+                        if (lastOlLayerUid !== grouppedLayer.olLayer.ol_uid) {
+                            grouppedLayer.olLayer.setZIndex(self.zIndex);
+                            self.zIndex = self.zIndex + 1;
+                        }
+                        lastOlLayerUid = grouppedLayer.olLayer.ol_uid;
                     });
                 }
             });                        
