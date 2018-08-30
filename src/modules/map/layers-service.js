@@ -398,6 +398,20 @@ angular.module('anol.map')
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };
+        Layers.prototype.reorderGroupLayers = function() {
+        
+        };        
+        Layers.prototype.reorderOverlayLayers = function() {
+            angular.forEach(this.overlayLayers, function(layer, idx) {
+                if(layer instanceof anol.layer.Group) {
+                    angular.forEach(layer.layers, function(grouppedLayer, idx) {
+                        if(grouppedLayer.combined) {
+                            grouppedLayer.reOrderLayerParams(layer.layers);
+                        }
+                    });
+                }
+            });                        
+        };        
         Layers.prototype.lastAddedLayer = function() {
             var idx = this.addedLayers.length - 1;
             if(idx > -1) {

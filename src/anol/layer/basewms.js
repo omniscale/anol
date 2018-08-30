@@ -82,6 +82,29 @@ class BaseWMS extends AnolBaseLayer {
     getVisible() {
         return this.visible;
     }
+    reOrderLayerParams(layers) {
+        var olSource = this.olLayer.getSource();
+        var layerParams = [];
+        var self = this;
+        var anolLayers = [];
+        $.each(layers, function(idx, layer) {
+            if (self.isCombinable(layer)) {
+                anolLayers.push(layer);
+                layerParams.push(layer.name)
+            }
+        });
+
+        var oldAnolLayers = olSource.get('anolLayers');
+        $.each(oldAnolLayers, function(idx, layer) {
+            if (anolLayers.indexOf(layer) == -1) {
+                anolLayers.push(layer);
+            }
+        });
+        olSource.set('anolLayers', anolLayers);
+        var params = olSource.getParams();
+        params.LAYERS = layerParams.reverse().join(',');
+        olSource.updateParams(params);
+    }    
     setVisible(visible) {
         if (visible == this.getVisible()) {
             return;

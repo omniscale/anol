@@ -105,6 +105,13 @@ angular.module('anol.layerswitcher')
             }
         },
         controller: function($scope, $element, $attrs) {
+            $scope.sortableLayer = {
+                'update': function(e, ui) {
+                    $timeout(function() {
+                        LayersService.reorderOverlayLayers();
+                    })
+                }
+            }
             $scope.isGroup = function(toTest) {
                 var result = toTest instanceof anol.layer.Group;
                 return result;
