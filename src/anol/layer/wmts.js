@@ -111,7 +111,7 @@ class WMTS extends AnolBaseLayer {
         return srcOptions;
     }
     isCombinable(other) {
-        var combinable = anol.layer.Layer.prototype.isCombinable.call(this, other);
+        var combinable = super.isCombinable(other);
         return false;
     }
 };
