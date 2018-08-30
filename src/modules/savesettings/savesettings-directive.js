@@ -4,8 +4,8 @@ import { defaults } from './module.js';
 
 angular.module('anol.savesettings')
 
-.directive('anolSavesettings', ['$templateRequest', '$compile', 'SaveSettingsService', 
-    function($templateRequest, $compile, SaveSettingsService) {
+.directive('anolSavesettings', ['$templateRequest', '$compile', 'SaveSettingsService', 'ProjectSettings', 'NotificationService',
+    function($templateRequest, $compile, SaveSettingsService, ProjectSettings, NotificationService) {
     return {
         restrict: 'A',
         template: function(tElement, tAttrs) {
@@ -14,30 +14,59 @@ angular.module('anol.savesettings')
             }
             return require('./templates/savemanager.html')
         },        
-        scope: {},
+        scope: {
+            modalCallBack:'&'
+        },
         link: function(scope, element, attrs, controllers) {
+            
             if (attrs.templateUrl && attrs.templateUrl !== '') {
                 $templateRequest(attrs.templateUrl).then(function(html){
                     var template = angular.element(html);
                     element.html(template);
                     $compile(template)(scope);
                 });
-            }        
-            scope.list = [];
-            scope.name = 'hello';
-            scope.save = function(name) {
-                SaveSettingsService.save(name).then(function() {
-                    // TODO show success
+            }    
+
+            scope.projectSettings = ProjectSettings;
+            scope.close = function() {
+                scope.modalCallBack();
+            }
+            scope.delete = function(id) {
+                SaveSettingsService.delete(id).then(function(data) {
+                    scope.modalCallBack();
+                    NotificationService.addInfo(data.message)
                 }, function() {
-                    // TODO show or handle error
+                    NotificationService.addError(data.message)
                 });
             };
-            scope.id = 1;
-            scope.load = function(id) {
-                SaveSettingsService.load(id).then(function(data) {
-                    // TODO show success
+            scope.save = function(name) {
+                // load project name to overwrite
+                if (name === undefined || scope.id) { 
+                    angular.forEach(scope.projectSettings, function(value) {
+                        if (value.id == scope.id) {
+                            name = value.name;
+                        }
+                    });
+                }
+                if (name == undefined || name == '') {
+                    return;
+                }
+                SaveSettingsService.save(name).then(function(data) {
+                    scope.modalCallBack();
+                    NotificationService.addInfo(data.message)
                 }, function() {
-                    // TODO show or handle error
+                    NotificationService.addError(data.message)
+                });
+            };
+            scope.load = function(id) {
+                if (id === undefined) {
+                    return;
+                }
+                SaveSettingsService.load(id).then(function(data) {
+                    scope.modalCallBack();
+                    NotificationService.addInfo(data.message)
+                }, function() {
+                    NotificationService.addError(data.message)
                 });
             };                 
         }

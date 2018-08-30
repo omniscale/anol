@@ -13,6 +13,9 @@ angular.module('anol.savesettings')
     var _saveManagerInstance;
     var _saveUrl;
     var _loadUrl;
+    var _deleteUrl;
+    var _projectName;
+
     /**
      * @ngdoc method
      * @name setSaveUrl
@@ -25,8 +28,14 @@ angular.module('anol.savesettings')
     this.setLoadUrl = function(loadUrl) {
         _loadUrl = loadUrl;
     };
-    this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService',
-        function($rootScope, $q, $http, $timeout, $translate, PermalinkService, PrintPageService) {
+    this.setDeleteUrl = function(deleteUrl) {
+        _deleteUrl = deleteUrl;
+    };    
+    this.setProjectName = function(projectName) {
+        _projectName = projectName;
+    };    
+    this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings',
+        function($rootScope, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings) {
         /**
          * @ngdoc service
          * @name anol.savemanager.SaveManagerService
@@ -34,10 +43,12 @@ angular.module('anol.savesettings')
          * @description
          * Collects changes in saveable layers and send them to given saveUrl
          */
-        var SaveSettings = function(saveUrl, loadUrl) {
+        var SaveSettings = function(saveUrl, loadUrl, deleteUrl, projectName) {
             var self = this;
             this.saveUrl = saveUrl;
             this.loadUrl = loadUrl;
+            this.deleteUrl = deleteUrl;
+            this.projectName = projectName;
 
             // this.changedLayers = {};
             // this.changedFeatures = {};
@@ -52,6 +63,28 @@ angular.module('anol.savesettings')
         };
 
         SaveSettings.prototype.applySaveSettings = function(data) {
+            if (data.new) {
+                ProjectSettings.push({
+                    'id': data.settings.id,
+                    'name': data.settings.name
+                });
+            }
+        }
+
+        SaveSettings.prototype.applyDeleteSettings = function(data) {
+            var index = -1;
+            angular.forEach(ProjectSettings, function(value, idx) {
+                if (value.id == data.settings.id) {
+                    index = idx;
+                }   
+            });
+
+            if (index > -1) {
+              ProjectSettings.splice(index, 1);
+            }
+        }
+
+        SaveSettings.prototype.applyLoadSettings = function(data) {
             PermalinkService.setPermalinkParameters(data.settings.map)
 
             // save print settings and check if print tab is open
@@ -70,7 +103,7 @@ angular.module('anol.savesettings')
             }
             var promise = $http.post(self.loadUrl, data);
             promise.then(function(response) {
-                self.applySaveSettings(response.data);
+                self.applyLoadSettings(response.data);
                 deferred.resolve(response.data);
             }, function(response) {
                 if(response.status === -1) {
@@ -98,6 +131,7 @@ angular.module('anol.savesettings')
                 'measureSrs': $rootScope.pointMeasureResultSrs
             }
             var data = {
+                'projectName': self.projectName,
                 'name': name,
                 'map': permalinkData,
                 'controls': controls,
@@ -106,6 +140,7 @@ angular.module('anol.savesettings')
     
             var promise = $http.post(self.saveUrl, data);
             promise.then(function(response) {
+                self.applySaveSettings(response.data);
                 deferred.resolve(response.data);
             }, function(response) {
                 if(response.status === -1) {
@@ -117,7 +152,29 @@ angular.module('anol.savesettings')
             
             return deferred.promise;
         };
-        _saveManagerInstance = new SaveSettings(_saveUrl, _loadUrl);
+
+        SaveSettings.prototype.delete = function(id) {
+            var self = this;
+            var deferred = $q.defer();
+            var data = {
+                'id': id
+            }
+            var promise = $http.post(self.deleteUrl, data);
+            promise.then(function(response) {
+                self.applyDeleteSettings(response.data);
+                deferred.resolve(response.data);
+            }, function(response) {
+                if(response.status === -1) {
+                    deferred.reject({'message': self.serviceUnavailableMessage});
+                } else {
+                    deferred.reject(response.data);
+                }
+            });
+            
+            return deferred.promise;
+        }; 
+
+        _saveManagerInstance = new SaveSettings(_saveUrl, _loadUrl, _deleteUrl, _projectName);
         return _saveManagerInstance;
     }];
 }]);
