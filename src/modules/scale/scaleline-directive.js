@@ -1,7 +1,9 @@
 require('angular');
 
 import { defaults } from './module.js';
-import ScaleLine from 'ol/control/ScaleLine';
+import {defaults as defaultControls, ScaleLine} from 'ol/control.js';
+import proj4 from 'proj4';
+
 
 angular.module('anol.scale')
 
@@ -28,9 +30,11 @@ angular.module('anol.scale')
                 scope.map = MapService.getMap();
                 var anolScaleLineInner = element.find('.anol-scale-line-inner');
                 var controlOptions = {
-                    target: anolScaleLineInner[0]
+                    target: anolScaleLineInner[0],
+                    units: 'metric'
                 };
                 var olControl = new ScaleLine(controlOptions);
+
                 // For placement reason we need a container control
                 var containerControl = new anol.control.Control({
                     element: element
