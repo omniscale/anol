@@ -12,7 +12,7 @@ angular.module('anol.map')
  */
 .provider('InteractionsService', [function() {
     var _interactions;
-
+    var _customInteractions;
     /**
      * @ngdoc method
      * @name setInteractions
@@ -23,6 +23,10 @@ angular.module('anol.map')
         _interactions = interactions;
     };
 
+    this.setCustomInteractions = function(interactions) {
+        _customInteractions = interactions;
+ 
+    }
     this.$get = [function() {
         /**
          * @ngdoc service
@@ -31,15 +35,16 @@ angular.module('anol.map')
          * @description
          * Stores ol interactions and add them to map, if map present
          */
-        var Interactions = function(interactions) {
+        var Interactions = function(interactions, customInteractions) {
             this.map = undefined;
 
-            if(interactions !== undefined) {
-                this.interactions = interactions;
-                return;
-
+            this.interactions = interactionDefaults(interactions);
+            var self = this;
+            if (customInteractions) {
+                angular.forEach(customInteractions, function(interaction) {
+                    self.addInteraction(interaction)
+                });
             }
-            this.interactions = interactionDefaults();
         };
         /**
          * @ngdoc method
@@ -96,12 +101,13 @@ angular.module('anol.map')
          * Removes given ol interaction
          */
         Interactions.prototype.removeInteraction = function(interaction) {
+            console.log("remove")
             this.map.removeInteraction(interaction);
             var idx = $.inArray(this.interactions, interaction);
             if(idx !== -1) {
                 this.interactions.splice(idx, 1);
             }
         };
-        return new Interactions(_interactions);
+        return new Interactions(_interactions, _customInteractions);
     }];
 }]);
