@@ -399,7 +399,45 @@ angular.module('anol.map')
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };
-        Layers.prototype.collapsedGroups = function() {
+
+        Layers.prototype.setLayerOrder = function(layers) {
+            var lastOlLayerUid = undefined;
+            var self = this;
+            self.zIndex = 0;
+            var overlayLayers = [];
+            $.each(layers, function(newIdx, layer) {
+                $.each(self.overlayLayers, function(oldIdx, overlayLayer) {
+                    if(layer.name == overlayLayer.name) {
+                        anol.helper.array_move(self.overlayLayers, oldIdx, newIdx)
+                       if(overlayLayer instanceof anol.layer.Group) {
+                            $.each(layer.layers, function(gNewIdx, grouppedLayer) {
+                                $.each(overlayLayer.layers, function(goldIdx, singleLayer) {
+                                    if(grouppedLayer == singleLayer.name) {
+                                        if (goldIdx !== gNewIdx) {
+                                            anol.helper.array_move(overlayLayer.layers, goldIdx, gNewIdx)
+                                        }
+                                    }
+                                });        
+                            });
+                        }
+                        return;
+                    }
+                });
+            });    
+            this.reorderOverlayLayers();
+        };  
+
+        Layers.prototype.setCollapsedGroups = function(groupLayers) {
+            this.overlayLayers.forEach(function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                    if(groupLayers.indexOf(layer.name) >= 0) {
+                        layer.options.collapsed = false;
+                    }
+                }
+            });  
+        };  
+
+        Layers.prototype.getCollapsedGroups = function() {
             var groups = [];
             this.overlayLayers.forEach(function(layer) {
                 if(layer instanceof anol.layer.Group) {
@@ -409,21 +447,25 @@ angular.module('anol.map')
                 }
             });  
             return groups;
-        };             
+        };      
+
         Layers.prototype.overLayersAsArray = function() {
-            var layers = [];
+            var sortedLayers = [];
+
             this.overlayLayers.forEach(function(layer) {
-                layers.push(layer.name);
+                var sortedGroupLayers = [];
                 if(layer instanceof anol.layer.Group) {
                     layer.layers.forEach(function(grouppedLayer, idx) {
-                        if (idx == 0) {
-                            layers[layer.name] = [];
-                        }
-                        layers[layer.name].push(grouppedLayer.name)
+                        sortedGroupLayers.push(grouppedLayer.name)
                     });
                 }
+                sortedLayers.push({ 
+                    'name': layer.name,
+                    'layers': sortedGroupLayers 
+                });
+
             });  
-            return layers;
+            return sortedLayers;
         };        
         Layers.prototype.reorderGroupLayers = function() {
             var lastOlLayerUid = undefined;

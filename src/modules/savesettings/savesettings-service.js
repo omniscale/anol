@@ -87,6 +87,9 @@ angular.module('anol.savesettings')
         SaveSettings.prototype.applyLoadSettings = function(data) {
             PermalinkService.setPermalinkParameters(data.settings.map)
 
+            LayersService.setLayerOrder(data.settings.layerswitcher.order);
+            LayersService.setCollapsedGroups(data.settings.layerswitcher.open);
+            
             // save print settings and check if print tab is open
             PrintPageService.loadSettings(data.settings);
         
@@ -124,7 +127,8 @@ angular.module('anol.savesettings')
             var permalinkData = PermalinkService.getSettings();
             // save all layer settings 
             var layers = LayersService.overLayersAsArray(); 
-            var groups = LayersService.collapsedGroups(); 
+
+            var groups = LayersService.getCollapsedGroups(); 
             // save print settings
             var printData = PrintPageService.getSettings();
             // save control settings

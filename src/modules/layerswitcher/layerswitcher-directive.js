@@ -64,7 +64,6 @@ angular.module('anol.layerswitcher')
                     scope.tooltipEnable : !hasTouch;
 
                 scope.backgroundLayers = LayersService.backgroundLayers;
-                var overlayLayers = [];
                 scope.overlayLayers = LayersService.overlayLayers;
                 if(angular.isObject(AnolMapController)) {
                     scope.collapsed = scope.anolLayerswitcher !== 'open';
