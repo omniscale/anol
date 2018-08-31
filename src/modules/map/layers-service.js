@@ -399,6 +399,32 @@ angular.module('anol.map')
         Layers.prototype.groupByName = function(name) {
             return this.nameGroupsMap[name];
         };
+        Layers.prototype.collapsedGroups = function() {
+            var groups = [];
+            this.overlayLayers.forEach(function(layer) {
+                if(layer instanceof anol.layer.Group) {
+                    if (!layer.options.collapsed) {
+                        groups.push(layer.name);
+                    }
+                }
+            });  
+            return groups;
+        };             
+        Layers.prototype.overLayersAsArray = function() {
+            var layers = [];
+            this.overlayLayers.forEach(function(layer) {
+                layers.push(layer.name);
+                if(layer instanceof anol.layer.Group) {
+                    layer.layers.forEach(function(grouppedLayer, idx) {
+                        if (idx == 0) {
+                            layers[layer.name] = [];
+                        }
+                        layers[layer.name].push(grouppedLayer.name)
+                    });
+                }
+            });  
+            return layers;
+        };        
         Layers.prototype.reorderGroupLayers = function() {
             var lastOlLayerUid = undefined;
             var self = this;

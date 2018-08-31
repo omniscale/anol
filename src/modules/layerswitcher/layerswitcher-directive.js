@@ -24,8 +24,8 @@ angular.module('anol.layerswitcher')
  */
  // TODO handle add / remove layer
  // TODO handle edit layers title
- .directive('anolLayerswitcher', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 'MapService',
-  function($templateRequest, $compile, LayersService, ControlsService, MapService) {
+ .directive('anolLayerswitcher', ['$timeout', '$templateRequest', '$compile', 'LayersService', 'ControlsService', 'MapService',
+  function($timeout, $templateRequest, $compile, LayersService, ControlsService, MapService) {
     return {
         restrict: 'A',
         require: '?^anolMap',
@@ -99,12 +99,19 @@ angular.module('anol.layerswitcher')
                             overlayLayers.push(layer);
                         }
                     });
-                    scope.backgroundLayers = LayersService.backgroundLayers;
                     scope.overlayLayers = overlayLayers;
+                    scope.overlayLayers = LayersService.overlayLayers;
                 });
             }
         },
         controller: function($scope, $element, $attrs) {
+            $scope.sortableGroups = {
+                'update': function() {
+                    $timeout(function() {
+                        LayersService.reorderGroupLayers();
+                    });
+                }
+            }
             $scope.sortableLayer = {
                 'update': function(e, ui) {
                     $timeout(function() {

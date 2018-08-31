@@ -34,8 +34,8 @@ angular.module('anol.savesettings')
     this.setProjectName = function(projectName) {
         _projectName = projectName;
     };    
-    this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings',
-        function($rootScope, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings) {
+    this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings', 'LayersService',
+        function($rootScope, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings, LayersService) {
         /**
          * @ngdoc service
          * @name anol.savemanager.SaveManagerService
@@ -122,10 +122,11 @@ angular.module('anol.savesettings')
 
             // save all map settings from permalink
             var permalinkData = PermalinkService.getSettings();
-
+            // save all layer settings 
+            var layers = LayersService.overLayersAsArray(); 
+            var groups = LayersService.collapsedGroups(); 
             // save print settings
             var printData = PrintPageService.getSettings();
-        
             // save control settings
             var controls = {
                 'measureSrs': $rootScope.pointMeasureResultSrs
@@ -134,6 +135,10 @@ angular.module('anol.savesettings')
                 'projectName': self.projectName,
                 'name': name,
                 'map': permalinkData,
+                'layerswitcher': {
+                    'order': layers,
+                    'open': groups
+                },
                 'controls': controls,
                 'print': printData
             }
