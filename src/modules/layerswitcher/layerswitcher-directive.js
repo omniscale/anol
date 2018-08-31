@@ -65,13 +65,7 @@ angular.module('anol.layerswitcher')
 
                 scope.backgroundLayers = LayersService.backgroundLayers;
                 var overlayLayers = [];
-
-                angular.forEach(LayersService.overlayLayers, function(layer) {
-                    if(layer.displayInLayerswitcher !== false) {
-                        overlayLayers.push(layer);
-                    }
-                });
-                scope.overlayLayers = overlayLayers;
+                scope.overlayLayers = LayersService.overlayLayers;
                 if(angular.isObject(AnolMapController)) {
                     scope.collapsed = scope.anolLayerswitcher !== 'open';
                     scope.showToggle = true;
@@ -93,13 +87,6 @@ angular.module('anol.layerswitcher')
                     }
                 });
                 MapService.getMap().getLayers().on('add', function() {
-                    var overlayLayers = [];
-                    angular.forEach(LayersService.overlayLayers, function(layer) {
-                        if(layer.displayInLayerswitcher !== false) {
-                            overlayLayers.push(layer);
-                        }
-                    });
-                    scope.overlayLayers = overlayLayers;
                     scope.overlayLayers = LayersService.overlayLayers;
                 });
             }
