@@ -108,7 +108,6 @@ angular.module('anol.urlmarkers')
         UrlMarkers.prototype.extractFeaturesFromUrl = function() {
             var self = this;
             var urlParams = $location.search();
-
             if(angular.isUndefined(urlParams.marker)) {
                 return false;
             }
