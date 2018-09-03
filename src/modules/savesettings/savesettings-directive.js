@@ -31,7 +31,6 @@ angular.module('anol.savesettings')
             }
             scope.delete = function(id) {
                 SaveSettingsService.delete(id).then(function(data) {
-                    scope.modalCallBack();
                     NotificationService.addInfo(data.message)
                 }, function() {
                     NotificationService.addError(data.message)
