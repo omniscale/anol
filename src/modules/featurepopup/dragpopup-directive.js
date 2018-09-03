@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js'
 import Control from 'ol/control/Control';
 

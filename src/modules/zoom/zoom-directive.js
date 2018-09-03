@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import { TOUCH as hasTouch } from 'ol/has'
 import Zoom from 'ol/control/Zoom';

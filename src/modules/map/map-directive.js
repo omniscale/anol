@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js'
 import { PinchRotate, DragPan } from 'ol/interaction.js'
 import { Control } from 'ol/control.js'

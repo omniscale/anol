@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import Stroke from 'ol/style/Stroke';
 import SelectCluster from 'ol-ext/interaction/SelectCluster.js';

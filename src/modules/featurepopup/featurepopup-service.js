@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js'
 
 // TODO rename to popup

@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import Rotate from 'ol/control/Rotate';
 import { TOUCH as hasTouch } from 'ol/has';

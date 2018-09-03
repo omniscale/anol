@@ -5,7 +5,6 @@
  * Base anol module
  */
 
-require('angular');
 require('angular-ui-bootstrap');
 require('angular-translate');
 require('angular-sanitize');

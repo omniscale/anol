@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import { LayersService } from './layers-service.js'
 import { ControlsService } from './controls-service.js'

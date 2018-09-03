@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';

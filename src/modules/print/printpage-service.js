@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';

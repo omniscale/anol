@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import Overlay from 'ol/Overlay';
 import WMSGetFeatureInfo from 'ol/format/WMSGetFeatureInfo';

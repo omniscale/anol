@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js'
 import { ClusterSelectService } from './cluster-select-service.js'
 

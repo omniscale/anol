@@ -4,7 +4,6 @@
  * @description
  * Module providing the geocoder directive
  */
-require('angular');
 
 import { anol } from '../../anol/anol.js'
  

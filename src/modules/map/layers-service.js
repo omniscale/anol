@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js'
 import { PopupsService } from '../featurepopup/featurepopup-service.js'
 

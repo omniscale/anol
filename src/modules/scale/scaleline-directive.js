@@ -1,5 +1,3 @@
-require('angular');
-
 import { defaults } from './module.js';
 import {defaults as defaultControls, ScaleLine} from 'ol/control.js';
 import proj4 from 'proj4';
