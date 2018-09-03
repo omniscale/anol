@@ -104,6 +104,7 @@ angular.module('anol.catalog')
                     layer.refresh();
                 }
                 this.addedLayers.push(layer);
+                layer.olLayer.setZIndex(LayersService.zIndex + this.addedLayers.length)
             }
         };
         /**
