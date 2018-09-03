@@ -38,9 +38,12 @@ class BaseWMS extends AnolBaseLayer {
         if(!combinable) {
             return false;
         }
-        var combinable = other.anolGroup.isCombinable();
-        if(!combinable) {
-            return false;
+
+        if (other.anolGroup !== undefined) {
+            var combinable = other.anolGroup.isCombinable();
+            if(!combinable) {
+                return false;
+            }
         }
         if(this.olSourceOptions.url !== other.olSourceOptions.url) {
             return false;
