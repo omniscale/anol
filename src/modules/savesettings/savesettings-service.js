@@ -61,7 +61,7 @@ angular.module('anol.savesettings')
         };
 
         SaveSettings.prototype.applySaveSettings = function(data) {
-            if (data.new) {
+            if (data.settings.new) {
                 ProjectSettings.push({
                     'id': data.settings.id,
                     'name': data.settings.name
