@@ -91,11 +91,13 @@ angular.module('anol.legend')
                             if(overlayLayer.legend !== false) {
                                 layers.push(overlayLayer);
                             }
-                        });                        
-                        scope.legendLayers.push({
-                            'group': layer,
-                            'content': layers
-                        });
+                        });   
+                        if (layers.length >= 1) {
+                            scope.legendLayers.push({
+                                'group': layer,
+                                'content': layers
+                            });
+                        }
                     } else {
                         if(layer.legend !== false) {
                             scope.legendLayers.push(layer);
@@ -108,7 +110,7 @@ angular.module('anol.legend')
                     var layer = this;
                     if(layer.permalink === true) {
                         var layerName = layer.name;
-                        if(angular.isDefined(layerName) && layer.getVisible()) {
+                        if(angular.isDefined(layerName) && layer.getVisible() && layer.legend !== false) {
                             scope.visibleLayerNames.push(layerName);
                         } else {
                             var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
@@ -142,7 +144,7 @@ angular.module('anol.legend')
                                     if(groupLayer.permalink === true) {
                                         groupLayer.offVisibleChange(scope.handleVisibleChange);
                                         groupLayer.onVisibleChange(scope.handleVisibleChange, self);
-                                        if (groupLayer.getVisible()) {
+                                        if (groupLayer.getVisible() && groupLayer.legend !== false) {
                                             scope.visibleLayerNames.push(groupLayer.name);
                                         }
                                     }
@@ -151,7 +153,8 @@ angular.module('anol.legend')
                                 if(layer.permalink === true) {
                                     layer.offVisibleChange(scope.handleVisibleChange);
                                     layer.onVisibleChange(scope.handleVisibleChange, self);
-                                    if (layer.getVisible()) {
+                                    console.log(layer, layer.legend)
+                                    if (layer.getVisible() && layer.legend !== false) {
                                         scope.visibleLayerNames.push(layer.name);
                                     }
                                 }
@@ -167,7 +170,7 @@ angular.module('anol.legend')
                         angular.forEach(newVal, function(layer) {
                             layer.offVisibleChange(scope.handleVisibleChange);
                             layer.onVisibleChange(scope.handleVisibleChange, self);
-                            if (layer.getVisible()) {
+                            if (layer.getVisible() && layer.legend !== false) {
                                 scope.visibleLayerNames.push(layer.name);
                             }
                         });
