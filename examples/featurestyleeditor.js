@@ -1,6 +1,6 @@
 require('angular');
 
-import View from 'ol/View.js';
+import View from 'ol/View';
 import GeoJSON from 'ol/format/GeoJSON.js'
 
 angular.module('example', ['anol.featurepopup', 'anol.featurestyleeditor', 'anol.zoom'])

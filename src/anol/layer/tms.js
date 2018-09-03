@@ -18,7 +18,7 @@ import AnolBaseLayer from '../layer.js'
 
 import Extent from 'ol'
     
-import {getWidth, getHeight, getBottomLeft} from 'ol/extent.js';
+import {getWidth, getHeight, getBottomLeft} from 'ol/extent';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import TileGrid from 'ol/tilegrid/TileGrid';

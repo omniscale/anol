@@ -1,6 +1,6 @@
 require('angular');
 
-import View from 'ol/View.js';
+import View from 'ol/View';
 
 angular.module('example', ['anol.geolocation', 'anol.zoom', 'anol.featurepopup'])
 .config(['MapServiceProvider', 'LayersServiceProvider',

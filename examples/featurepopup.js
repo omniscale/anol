@@ -1,6 +1,6 @@
 require('angular');
 
-import View from 'ol/View.js';
+import View from 'ol/View';
 import Polygon from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 

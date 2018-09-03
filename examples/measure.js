@@ -1,6 +1,6 @@
 require('angular');
 
-import View from 'ol/View.js';
+import View from 'ol/View';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
 

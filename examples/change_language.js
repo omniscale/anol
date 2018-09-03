@@ -1,7 +1,7 @@
 require('angular');
 require('angular-translate');
 
-import View from 'ol/View.js';
+import View from 'ol/View';
 import GeoJSON from 'ol/format/GeoJSON.js'
 
 angular.module('example', ['anol', 'anol.map', 'anol.featurepopup', 'anol.zoom', 'anol.attribution', 'anol.layerswitcher', 'anol.draw', 'anol.featurestyleeditor'])

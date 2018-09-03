@@ -25,7 +25,7 @@ import {bbox as bboxStrategy} from 'ol/loadingstrategy';
 import Style from 'ol/style/Style';
 import Text from 'ol/style/Text';
 import Stroke from 'ol/style/Stroke';
-import {containsCoordinate} from 'ol/extent.js';
+import {containsCoordinate} from 'ol/extent';
 
 import GeoJSON from 'ol/format/GeoJSON';
 
