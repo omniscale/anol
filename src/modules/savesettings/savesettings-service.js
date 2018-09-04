@@ -47,7 +47,6 @@ angular.module('anol.savesettings')
             this.loadUrl = loadUrl;
             this.deleteUrl = deleteUrl;
             this.projectName = projectName;
-
             // this.changedLayers = {};
             // this.changedFeatures = {};
             var translate = function() {
@@ -57,7 +56,7 @@ angular.module('anol.savesettings')
                 });
             };
             $rootScope.$on('$translateChangeSuccess', translate);
-            translate();            
+            translate();
         };
 
         SaveSettings.prototype.applySaveSettings = function(data) {
@@ -82,18 +81,18 @@ angular.module('anol.savesettings')
             }
         }
 
-        SaveSettings.prototype.applyLoadSettings = function(data) {
-            PermalinkService.setPermalinkParameters(data.settings.map)
+        SaveSettings.prototype.applyLoadSettings = function(settings) {
+            PermalinkService.setPermalinkParameters(settings.map)
 
-            LayersService.setLayerOrder(data.settings.layerswitcher.order);
-            LayersService.setCollapsedGroups(data.settings.layerswitcher.open);
+            LayersService.setLayerOrder(settings.layerswitcher.order);
+            LayersService.setCollapsedGroups(settings.layerswitcher.open);
             
             // save print settings and check if print tab is open
-            PrintPageService.loadSettings(data.settings);
+            PrintPageService.loadSettings(settings);
         
-            $rootScope.$broadcast("updateSidebar", data.settings);
+            $rootScope.$broadcast("updateSidebar", settings);
             // load control settings
-            $rootScope.pointMeasureResultSrs = data.settings.controls.measureSrs;
+            $rootScope.pointMeasureResultSrs = settings.controls.measureSrs;
         };
 
         SaveSettings.prototype.load = function(id) {
@@ -104,7 +103,7 @@ angular.module('anol.savesettings')
             }
             var promise = $http.post(self.loadUrl, data);
             promise.then(function(response) {
-                self.applyLoadSettings(response.data);
+                self.applyLoadSettings(response.data.settings);
                 deferred.resolve(response.data);
             }, function(response) {
                 if(response.status === -1) {
