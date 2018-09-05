@@ -98,7 +98,6 @@ angular.module('anol.map')
          * Removes given ol interaction
          */
         Interactions.prototype.removeInteraction = function(interaction) {
-            console.log("remove")
             this.map.removeInteraction(interaction);
             var idx = $.inArray(this.interactions, interaction);
             if(idx !== -1) {
