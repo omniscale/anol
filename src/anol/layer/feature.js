@@ -562,7 +562,7 @@ class FeatureLayer extends AnolBaseLayer {
         srcOptions = super._createSourceOptions(srcOptions);
         this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
         this.OL_SOURCE_CLASS = Cluster;
-        
+
         return {
             source: this.unclusteredSource,
             distance: 50

@@ -29,7 +29,7 @@ import {containsCoordinate} from 'ol/extent';
 
 import GeoJSON from 'ol/format/GeoJSON';
 
-class DynamicGeoJSON  extends StaticGeoJSON {
+class DynamicGeoJSON extends StaticGeoJSON {
 
     constructor(_options) {
         super(_options);
@@ -41,6 +41,11 @@ class DynamicGeoJSON  extends StaticGeoJSON {
             this.additionalRequestParameters = _options.olLayer.source.additionalParameters;
         }
         this.CLASS_NAME = 'anol.layer.DynamicGeoJSON';
+    
+        this.olSourceOptions = this._createSourceOptions(_options.olLayer.source);
+        delete _options.olLayer.source;
+        this.olLayerOptions = _options.olLayer;
+        this.olLayer = undefined;
     }
 
     setOlLayer(olLayer) {
