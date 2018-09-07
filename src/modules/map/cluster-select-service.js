@@ -72,17 +72,23 @@ angular.module('anol.map')
             this.selectRevealedFeatureCallbacks.push(f);
         };
 
-        ClusterSelect.prototype.handleLayerVisibleChange = function(e) {
+        ClusterSelect.prototype.handleLayerVisibleChange = function(e, test) {
             this.selectClusterInteraction.clear();
         };
 
         ClusterSelect.prototype.addLayer = function(layer) {
-            layer.olLayer.on('change:visible', this.handleLayerVisibleChange, this);
+            var self = this;
+            layer.olLayer.on('change:visible', function() {
+                self.handleLayerVisibleChange(self);
+            })
             this.clusterLayers.push(layer);
         };
 
         ClusterSelect.prototype.removeLayer = function(layer) {
-            layer.olLayer.un('change:visible', this.handleLayerVisibleChange, this);
+            var self = this;
+            layer.olLayer.un('change:visible', function() {
+                self.handleLayerVisibleChange(self);
+            })
             var idx = this.clusterLayers.indexOf(layer);
             if(idx > -1) {
                 this.clusterLayers.splice(idx, 1);
