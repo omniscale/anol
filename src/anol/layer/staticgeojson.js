@@ -34,8 +34,9 @@ class StaticGeoJSON extends FeatureLayer {
     }
 
     setOlLayer(olLayer) {
+        super.setOlLayer(olLayer);
+        
         var self = this;
-        anol.layer.Feature.prototype.setOlLayer.call(this, olLayer);
         olLayer.getSource().once('change', function() {
             self.loaded = true;
         });
