@@ -167,11 +167,9 @@ class DynamicGeoJSON extends StaticGeoJSON {
     }
 
     createStyle(feature, resolution) {
-        var parentFunc = anol.layer.StaticGeoJSON.prototype.createStyle;
-
         // call parent func when feature is undefined
         if(feature === undefined) {
-            return parentFunc.call(this, feature, resolution);
+            return super.createStyle(feature, resolution);
         }
 
         var features = feature.get('features');
@@ -182,7 +180,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
             if(feature.get('__layer__') !== this.name) {
                 return new Style();
             } else {
-                return parentFunc.call(this, feature, resolution);
+                return super.createStyle(feature, resolution);
             }
         }
 
@@ -191,7 +189,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
         // cluster with one feature
         if(features.length === 1) {
             if(features[0].get('__layer__') === this.name) {
-                return parentFunc.call(this, features[0], resolution);
+               return super.createStyle(features[0], resolution);
             } else {
                 return new Style();
             }
@@ -211,7 +209,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
         }
 
         // cluster with more than one feature
-        return parentFunc.call(this, feature, resolution);
+        return super.createStyle(feature, resolution);
     }
 
     createClusterStyle(clusterFeature) {
@@ -259,9 +257,8 @@ class DynamicGeoJSON extends StaticGeoJSON {
             if(angular.isFunction(defaultStyle)) {
                 defaultStyle = defaultStyle()[0];
             }
-
+            var styleDefinition = angular.extend({}, value.layer.style);
             if(objCount > 1) {
-                var styleDefinition = angular.extend({}, value.layer.style);
                 if(i % 2 === 0) {
                     styleDefinition.graphicXAnchor = lastXAnchor + i;
                 } else {
@@ -272,7 +269,6 @@ class DynamicGeoJSON extends StaticGeoJSON {
 
                 styleDefinition.graphicXAnchor += even ? 1.0 : 0.5;
                 styleDefinition.graphicXAnchor *= styleDefinition.graphicWidth;
-
                 styles.push(
                     new Style({
                         image: self.createIconStyle(styleDefinition, defaultStyle.getImage()),
@@ -286,12 +282,16 @@ class DynamicGeoJSON extends StaticGeoJSON {
                 );
             } else {
                 styles.push(defaultStyle);
+                if (styleDefinition.fontOffsetY === undefined) {
+                    styleDefinition.fontOffsetY = value.layer.style.graphicHeight;
+                } 
                 styles.push(new Style({
-                    text: new Text({
-                        text: value.count.toString(),
-                        offsetY: value.layer.style.graphicHeight,
-                        stroke: new Stroke({color: '#fff', width: 2})
-                    })
+                    text: self.createTextStyle(
+                        styleDefinition,
+                        null,
+                        undefined,
+                        value.count.toString()
+                    )
                 }));
             }
             i++;

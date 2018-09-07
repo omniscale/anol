@@ -448,7 +448,7 @@ class FeatureLayer extends AnolBaseLayer {
         }
         return feature.get(labelKey);
     }
-    createTextStyle(style, defaultTextStyle, feature) {
+    createTextStyle(style, defaultTextStyle, feature, label) {
         var fontWeight = this.DEFAULT_FONT_WEIGHT;
         var fontFace = this.DEFAULT_FONT_FACE;
         var fontSize = this.DEFAULT_FONT_SIZE;
@@ -471,11 +471,14 @@ class FeatureLayer extends AnolBaseLayer {
         var styleOptions = {};
         if(style.text !== undefined) {
             styleOptions.text = style.text;
-        } else if(style.propertyLabel !== undefined) {
+        } else if(style.propertyLabel !== undefined && feature !== undefined) {
             styleOptions.text = this.getLabel(feature, style.propertyLabel);
         } else if(defaultText !== undefined) {
             styleOptions.text = defaultText;
         }
+        if (label !== undefined) {
+            styleOptions.text = label;
+        } 
         if(styleOptions.text === undefined && feature !== undefined) {
             return;
         }
