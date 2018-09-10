@@ -84,14 +84,15 @@ angular.module('anol.legend')
             post: function(scope, element, attrs) {
                 scope.legendLayers = [];
                 scope.visibleLayerNames = [];
-                angular.forEach(LayersService.overlayLayers, function(layer) {
+
+                function addLegendLayer(layer) {
                     if(layer instanceof anol.layer.Group) {
                         var layers = [];
                         angular.forEach(layer.layers, function(overlayLayer) {
                             if(overlayLayer.legend !== false) {
                                 layers.push(overlayLayer);
                             }
-                        });   
+                        }); 
                         if (layers.length >= 1) {
                             scope.legendLayers.push({
                                 'group': layer,
@@ -103,7 +104,7 @@ angular.module('anol.legend')
                             scope.legendLayers.push(layer);
                         }
                     }
-                });
+                }
 
                 scope.handleVisibleChange = function(evt) {
                     var self = evt.data.context;
@@ -119,7 +120,6 @@ angular.module('anol.legend')
                             }
                         }
                     }
-
                     if(layer.catalogLayer == true) {
                         var layerName = layer.name;
                         if(angular.isDefined(layerName) && layer.getVisible()) {
@@ -138,7 +138,11 @@ angular.module('anol.legend')
                     return LayersService.overlayLayers;
                 }, function(newVal) {
                     if(angular.isDefined(newVal)) {
+                        // reset legendLayers
+                        scope.legendLayers = [];
+                        scope.visibleLayerNames = [];
                         angular.forEach(newVal, function(layer) {
+                            addLegendLayer(layer);
                             if(layer instanceof anol.layer.Group) {
                                 angular.forEach(layer.layers, function(groupLayer) {
                                     if(groupLayer.permalink === true) {
@@ -153,7 +157,6 @@ angular.module('anol.legend')
                                 if(layer.permalink === true) {
                                     layer.offVisibleChange(scope.handleVisibleChange);
                                     layer.onVisibleChange(scope.handleVisibleChange, self);
-                                    console.log(layer, layer.legend)
                                     if (layer.getVisible() && layer.legend !== false) {
                                         scope.visibleLayerNames.push(layer.name);
                                     }
