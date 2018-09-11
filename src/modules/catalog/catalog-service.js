@@ -28,6 +28,7 @@ angular.module('anol.catalog')
             this.nameLayersMap = {};
             this.sortedLayers = {};
             this.firstLetters = [];
+            
             angular.forEach(catalogLayers, function(_layer) {
                 self.addCatalogLayer(_layer);
                 if(_layer.name !== undefined) {

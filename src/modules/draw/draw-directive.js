@@ -5,7 +5,7 @@ import Select from 'ol/interaction/Select';
 import Modify from 'ol/interaction/Modify';
 import Snap from 'ol/interaction/Snap';
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom';
-import {never as neverCondition} from 'ol/events/condition'
+import {never as neverCondition, singleClick} from 'ol/events/condition'
 
 angular.module('anol.draw')
 /**
@@ -150,13 +150,10 @@ angular.module('anol.draw')
                     }
                 });
                 var modifyInteraction = new Modify({
-                    features: selectInteraction.getFeatures()
-                });
-                modifyInteraction.on('modifystart', function() {
-                    MapService.removeCursorPointerCondition(changeCursorCondition);
-                });
-                modifyInteraction.on('modifyend', function() {
-                    MapService.addCursorPointerCondition(changeCursorCondition);
+                    features: selectInteraction.getFeatures(),
+                    deleteCondition: mapBrowserEvent => {
+                        return singleClick(mapBrowserEvent);
+                    }
                 });
                 var snapInteraction = new Snap({
                     source: layer.getSource()
