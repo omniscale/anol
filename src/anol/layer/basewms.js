@@ -56,6 +56,9 @@ class BaseWMS extends AnolBaseLayer {
         if(!angular.equals(thisParams, otherParams)) {
             return false;
         }
+        if(!angular.equals(this.anolGroup, other.anolGroup)) {
+            return false;
+        }
         return true;
     }
 
