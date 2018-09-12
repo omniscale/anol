@@ -116,15 +116,15 @@ class BBOXGeoJSON  extends StaticGeoJSON {
         var sourceFeatures = self.olLayer.getSource().getFeatures();
         for(var i = 0; i < sourceFeatures.length; i++) {
             self.olLayer.getSource().removeFeature(sourceFeatures[i]);
-        }
+        }  
 
         var format = new GeoJSON({
-            defaultDataProjection: dataProjection,
+            dataProjection: dataProjection.getCode(),
         });
         var features = format.readFeatures(
           response, {
-            defaultDataProjection: dataProjection,
-            featureProjection: featureProjection
+            dataProjection: dataProjection.getCode(),
+            featureProjection: featureProjection.getCode()
           }
         );
         self.olLayer.getSource().addFeatures(features);
