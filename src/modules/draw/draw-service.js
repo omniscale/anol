@@ -6,21 +6,21 @@ angular.module('anol.draw')
  * @ngdoc object
  * @name anol.draw.DrawServiceProvider
  */
-.provider('DrawService', ['LayersServiceProvider', function(LayersServiceProvider) {
-    var _drawServiceInstance;
-    var _editableLayers = [];
+    .provider('DrawService', ['LayersServiceProvider', function(LayersServiceProvider) {
+        var _drawServiceInstance;
+        var _editableLayers = [];
 
-    LayersServiceProvider.registerAddLayerHandler(function(layer) {
-        if(layer.editable !== true) {
-            return;
-        }
-        if(_drawServiceInstance !== undefined) {
-            _drawServiceInstance.addLayer(layer);
-        } else {
-            _editableLayers.push(layer);
-        }
-    });
-    this.$get = [function() {
+        LayersServiceProvider.registerAddLayerHandler(function(layer) {
+            if(layer.editable !== true) {
+                return;
+            }
+            if(_drawServiceInstance !== undefined) {
+                _drawServiceInstance.addLayer(layer);
+            } else {
+                _editableLayers.push(layer);
+            }
+        });
+        this.$get = [function() {
         /**
          * @ngdoc service
          * @name anol.draw.DrawService
@@ -28,15 +28,15 @@ angular.module('anol.draw')
          * @description
          * Handles current draw layer
          */
-        var DrawService = function(editableLayers) {
-            var self = this;
-            this.layers = [];
-            this.activeLayer = undefined;
-            angular.forEach(editableLayers, function(layer) {
-                self.addLayer(layer);
-            });
-        };
-        /**
+            var DrawService = function(editableLayers) {
+                var self = this;
+                this.layers = [];
+                this.activeLayer = undefined;
+                angular.forEach(editableLayers, function(layer) {
+                    self.addLayer(layer);
+                });
+            };
+            /**
          * @ngdoc method
          * @name addLayer
          * @methodOf anol.draw.DrawService
@@ -44,10 +44,10 @@ angular.module('anol.draw')
          * @description
          * Adds a draw layer
          */
-        DrawService.prototype.addLayer = function(layer) {
-            this.layers.push(layer);
-        };
-        /**
+            DrawService.prototype.addLayer = function(layer) {
+                this.layers.push(layer);
+            };
+            /**
          * @ngdoc method
          * @name changeLayer
          * @methodOf anol.draw.drawService
@@ -55,11 +55,11 @@ angular.module('anol.draw')
          * @description
          * Sets current draw layer
          */
-        DrawService.prototype.changeLayer = function(layer) {
-            if(layer === undefined || this.layers.indexOf(layer) !== -1) {
-                this.activeLayer = layer;
-            }
-        };
-        return new DrawService(_editableLayers);
-    }];
-}]);
+            DrawService.prototype.changeLayer = function(layer) {
+                if(layer === undefined || this.layers.indexOf(layer) !== -1) {
+                    this.activeLayer = layer;
+                }
+            };
+            return new DrawService(_editableLayers);
+        }];
+    }]);

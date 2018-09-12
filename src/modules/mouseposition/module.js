@@ -4,6 +4,6 @@
  * @description
  * Module containing mouseposition directive
  */
-import { anol } from '../../anol/anol.js'
+import { anol } from '../../anol/anol.js';
 
 angular.module('anol.mouseposition', ['anol.map']);

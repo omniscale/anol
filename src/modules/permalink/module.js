@@ -5,6 +5,6 @@
  * Module containing permalink service
  */
 
-import { anol } from '../../anol/anol.js'
+import { anol } from '../../anol/anol.js';
 
 angular.module('anol.permalink', ['anol.map']);

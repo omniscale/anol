@@ -1,5 +1,5 @@
 import { defaults } from './module.js';
-import { TOUCH as hasTouch } from 'ol/has'
+import { TOUCH as hasTouch } from 'ol/has';
 import { asString as colorAsString } from 'ol/color';
 import VectorLayer from 'ol/layer/Vector';
 
@@ -24,165 +24,165 @@ angular.module('anol.legend')
  * @description
  * Adds a legend to map
  */
-.directive('anolLegend', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 'CatalogService',  
-    function($templateRequest, $compile, LayersService, ControlsService, CatalogService) {
-    return {
-        restrict: 'A',
-        require: '?^anolMap',
-        transclude: true,
-        template: function(tElement, tAttrs) {
-            if (tAttrs.templateUrl) {
-                return '<div></div>';
-            }
-            return require('./templates/legend.html')
-        },           
-        scope: {
-            anolLegend: '@',
-            // TODO compare with featurepopup openCallback. Why a callback wrapper is added here?
-            customTargetFilled: '&',
-            tooltipPlacement: '@',
-            tooltipDelay: '@',
-            tooltipEnable: '@',
-            showInactive: '@'
-        },
-        link: {
-            pre: function(scope, element, attrs, AnolMapController) {
-                if (attrs.templateUrl && attrs.templateUrl !== '') {
-                    $templateRequest(attrs.templateUrl).then(function(html){
-                        var template = angular.element(html);
-                        element.html(template);
-                        $compile(template)(scope);
-                    });
-                }                 
-                scope.collapsed = false;
-                scope.showToggle = false;
-
-                //attribute defaults
-                scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
-                    scope.tooltipPlacement : 'left';
-                scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
-                    scope.tooltipDelay : 500;
-                scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                    scope.tooltipEnable : !hasTouch;
-                scope.showInactive = (scope.showInactive === true || scope.showInactive === 'true');
-
-                // get callback from wrapper function
-                if(angular.isFunction(scope.customTargetFilled())) {
-                    scope.customTargetCallback = scope.customTargetFilled();
-                }
-                if(angular.isObject(AnolMapController)) {
-                    scope.collapsed = scope.anolLegend !== 'open';
-                    scope.showToggle = true;
-                    element.addClass('anol-legend');
-                    ControlsService.addControl(
-                        new anol.control.Control({
-                            element: element
-                        })
-                    );
-                }
-            },
-            post: function(scope, element, attrs) {
-                scope.legendLayers = [];
-                scope.visibleLayerNames = [];
-
-                function addLegendLayer(layer) {
-                    if(layer instanceof anol.layer.Group) {
-                        var layers = [];
-                        angular.forEach(layer.layers, function(overlayLayer) {
-                            if(overlayLayer.legend !== false) {
-                                layers.push(overlayLayer);
-                            }
-                        }); 
-                        if (layers.length >= 1) {
-                            scope.legendLayers.push({
-                                'group': layer,
-                                'content': layers
+    .directive('anolLegend', ['$templateRequest', '$compile', 'LayersService', 'ControlsService', 'CatalogService',  
+        function($templateRequest, $compile, LayersService, ControlsService, CatalogService) {
+            return {
+                restrict: 'A',
+                require: '?^anolMap',
+                transclude: true,
+                template: function(tElement, tAttrs) {
+                    if (tAttrs.templateUrl) {
+                        return '<div></div>';
+                    }
+                    return require('./templates/legend.html');
+                },           
+                scope: {
+                    anolLegend: '@',
+                    // TODO compare with featurepopup openCallback. Why a callback wrapper is added here?
+                    customTargetFilled: '&',
+                    tooltipPlacement: '@',
+                    tooltipDelay: '@',
+                    tooltipEnable: '@',
+                    showInactive: '@'
+                },
+                link: {
+                    pre: function(scope, element, attrs, AnolMapController) {
+                        if (attrs.templateUrl && attrs.templateUrl !== '') {
+                            $templateRequest(attrs.templateUrl).then(function(html){
+                                var template = angular.element(html);
+                                element.html(template);
+                                $compile(template)(scope);
                             });
-                        }
-                    } else {
-                        if(layer.legend !== false) {
-                            scope.legendLayers.push(layer);
-                        }
-                    }
-                }
+                        }                 
+                        scope.collapsed = false;
+                        scope.showToggle = false;
 
-                scope.handleVisibleChange = function(evt) {
-                    var self = evt.data.context;
-                    var layer = this;
-                    if(layer.permalink === true) {
-                        var layerName = layer.name;
-                        if(angular.isDefined(layerName) && layer.getVisible() && layer.legend !== false) {
-                            scope.visibleLayerNames.push(layerName);
-                        } else {
-                            var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
-                            if(layerNameIdx > -1) {
-                                scope.visibleLayerNames.splice(layerNameIdx, 1);
-                            }
-                        }
-                    }
-                    if(layer.catalogLayer == true) {
-                        var layerName = layer.name;
-                        if(angular.isDefined(layerName) && layer.getVisible()) {
-                            scope.visibleLayerNames.push(layerName);
-                        } else {
-                            var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
-                            if(layerNameIdx > -1) {
-                                scope.visibleLayerNames.splice(layerNameIdx, 1);
-                            }
-                        }
-                    }
-                };
+                        //attribute defaults
+                        scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
+                            scope.tooltipPlacement : 'left';
+                        scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
+                            scope.tooltipDelay : 500;
+                        scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
+                            scope.tooltipEnable : !hasTouch;
+                        scope.showInactive = (scope.showInactive === true || scope.showInactive === 'true');
 
-                var self = this;
-                scope.$watchCollection(function() {
-                    return LayersService.overlayLayers;
-                }, function(newVal) {
-                    if(angular.isDefined(newVal)) {
-                        // reset legendLayers
+                        // get callback from wrapper function
+                        if(angular.isFunction(scope.customTargetFilled())) {
+                            scope.customTargetCallback = scope.customTargetFilled();
+                        }
+                        if(angular.isObject(AnolMapController)) {
+                            scope.collapsed = scope.anolLegend !== 'open';
+                            scope.showToggle = true;
+                            element.addClass('anol-legend');
+                            ControlsService.addControl(
+                                new anol.control.Control({
+                                    element: element
+                                })
+                            );
+                        }
+                    },
+                    post: function(scope, element, attrs) {
                         scope.legendLayers = [];
                         scope.visibleLayerNames = [];
-                        angular.forEach(newVal, function(layer) {
-                            addLegendLayer(layer);
+
+                        function addLegendLayer(layer) {
                             if(layer instanceof anol.layer.Group) {
-                                angular.forEach(layer.layers, function(groupLayer) {
-                                    if(groupLayer.permalink === true) {
-                                        groupLayer.offVisibleChange(scope.handleVisibleChange);
-                                        groupLayer.onVisibleChange(scope.handleVisibleChange, self);
-                                        if (groupLayer.getVisible() && groupLayer.legend !== false) {
-                                            scope.visibleLayerNames.push(groupLayer.name);
+                                var layers = [];
+                                angular.forEach(layer.layers, function(overlayLayer) {
+                                    if(overlayLayer.legend !== false) {
+                                        layers.push(overlayLayer);
+                                    }
+                                }); 
+                                if (layers.length >= 1) {
+                                    scope.legendLayers.push({
+                                        'group': layer,
+                                        'content': layers
+                                    });
+                                }
+                            } else {
+                                if(layer.legend !== false) {
+                                    scope.legendLayers.push(layer);
+                                }
+                            }
+                        }
+
+                        scope.handleVisibleChange = function(evt) {
+                            var self = evt.data.context;
+                            var layer = this;
+                            if(layer.permalink === true) {
+                                var layerName = layer.name;
+                                if(angular.isDefined(layerName) && layer.getVisible() && layer.legend !== false) {
+                                    scope.visibleLayerNames.push(layerName);
+                                } else {
+                                    var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
+                                    if(layerNameIdx > -1) {
+                                        scope.visibleLayerNames.splice(layerNameIdx, 1);
+                                    }
+                                }
+                            }
+                            if(layer.catalogLayer == true) {
+                                var layerName = layer.name;
+                                if(angular.isDefined(layerName) && layer.getVisible()) {
+                                    scope.visibleLayerNames.push(layerName);
+                                } else {
+                                    var layerNameIdx = $.inArray(layerName, scope.visibleLayerNames);
+                                    if(layerNameIdx > -1) {
+                                        scope.visibleLayerNames.splice(layerNameIdx, 1);
+                                    }
+                                }
+                            }
+                        };
+
+                        var self = this;
+                        scope.$watchCollection(function() {
+                            return LayersService.overlayLayers;
+                        }, function(newVal) {
+                            if(angular.isDefined(newVal)) {
+                                // reset legendLayers
+                                scope.legendLayers = [];
+                                scope.visibleLayerNames = [];
+                                angular.forEach(newVal, function(layer) {
+                                    addLegendLayer(layer);
+                                    if(layer instanceof anol.layer.Group) {
+                                        angular.forEach(layer.layers, function(groupLayer) {
+                                            if(groupLayer.permalink === true) {
+                                                groupLayer.offVisibleChange(scope.handleVisibleChange);
+                                                groupLayer.onVisibleChange(scope.handleVisibleChange, self);
+                                                if (groupLayer.getVisible() && groupLayer.legend !== false) {
+                                                    scope.visibleLayerNames.push(groupLayer.name);
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        if(layer.permalink === true) {
+                                            layer.offVisibleChange(scope.handleVisibleChange);
+                                            layer.onVisibleChange(scope.handleVisibleChange, self);
+                                            if (layer.getVisible() && layer.legend !== false) {
+                                                scope.visibleLayerNames.push(layer.name);
+                                            }
                                         }
                                     }
                                 });
-                            } else {
-                                if(layer.permalink === true) {
+                            }
+                        });
+
+                        scope.$watchCollection(function() {
+                            return CatalogService.addedCatalogLayers();
+                        }, function(newVal) {
+                            if(angular.isDefined(newVal)) {
+                                angular.forEach(newVal, function(layer) {
                                     layer.offVisibleChange(scope.handleVisibleChange);
                                     layer.onVisibleChange(scope.handleVisibleChange, self);
                                     if (layer.getVisible() && layer.legend !== false) {
                                         scope.visibleLayerNames.push(layer.name);
                                     }
-                                }
+                                });
                             }
                         });
                     }
-                });
-
-                scope.$watchCollection(function() {
-                    return CatalogService.addedCatalogLayers();
-                }, function(newVal) {
-                    if(angular.isDefined(newVal)) {
-                        angular.forEach(newVal, function(layer) {
-                            layer.offVisibleChange(scope.handleVisibleChange);
-                            layer.onVisibleChange(scope.handleVisibleChange, self);
-                            if (layer.getVisible() && layer.legend !== false) {
-                                scope.visibleLayerNames.push(layer.name);
-                            }
-                        });
-                    }
-                });
-            }
-        }
-    };
-}])
+                }
+            };
+        }])
 
 /**
  * @ngdoc directive
@@ -205,97 +205,97 @@ angular.module('anol.legend')
  * For raster layers, if layer.legend.target points to a html element class or id, a button is rendered instead of legend image. After button pressed
  * legend image is shown in element with given id/class.
  */
-.directive('anolLegendImage', ['$compile', function($compile) {
-    return {
-        restrict: 'A',
-        scope: {
-            legendLayer: '=anolLegendImage',
-            customTargetFilled: '&',
-            prepend: '=',
-            size: '='
-        },
-        link: function(scope, element, attrs) {
-            var VectorLegend = {
-                createCanvas: function() {
-                    var canvas = angular.element('<canvas></canvas>');
-                    canvas.addClass('anol-legend-item-image');
-                    canvas[0].width = scope.width;
-                    canvas[0].height = scope.height;
-                    return canvas;
-                },
-                drawPointLegend: function(style) {
-                    var ratio;
-                    var canvas = VectorLegend.createCanvas();
-                    var ctx = canvas[0].getContext('2d');
+    .directive('anolLegendImage', ['$compile', function($compile) {
+        return {
+            restrict: 'A',
+            scope: {
+                legendLayer: '=anolLegendImage',
+                customTargetFilled: '&',
+                prepend: '=',
+                size: '='
+            },
+            link: function(scope, element, attrs) {
+                var VectorLegend = {
+                    createCanvas: function() {
+                        var canvas = angular.element('<canvas></canvas>');
+                        canvas.addClass('anol-legend-item-image');
+                        canvas[0].width = scope.width;
+                        canvas[0].height = scope.height;
+                        return canvas;
+                    },
+                    drawPointLegend: function(style) {
+                        var ratio;
+                        var canvas = VectorLegend.createCanvas();
+                        var ctx = canvas[0].getContext('2d');
 
-                    if(angular.isFunction(style.getImage().getSrc)) {
-                        var width, height;
-                        var iconSize = style.getImage().getSize();
-                        if(scope.width >= scope.height) {
-                            ratio = iconSize[0] / iconSize[1];
-                            width = scope.width * ratio;
-                            height = scope.height;
+                        if(angular.isFunction(style.getImage().getSrc)) {
+                            var width, height;
+                            var iconSize = style.getImage().getSize();
+                            if(scope.width >= scope.height) {
+                                ratio = iconSize[0] / iconSize[1];
+                                width = scope.width * ratio;
+                                height = scope.height;
+                            } else {
+                                ratio = iconSize[1] / iconSize[0];
+                                height = scope.height * ratio;
+                                width = scope.width;
+                            }
+                            var img = new Image();
+                            img.src = style.getImage().getSrc();
+
+                            var positionLeft = (scope.width - width) / 2;
+                            var positionTop = (scope.height - height) / 2;
+                            img.onload = function() {
+                                ctx.drawImage(img, positionLeft, positionTop, width, height);
+                            };
                         } else {
-                            ratio = iconSize[1] / iconSize[0];
-                            height = scope.height * ratio;
-                            width = scope.width;
+                            var x = scope.width / 2;
+                            var y = scope.height / 2;
+                            var r = (Math.min(scope.width, scope.height) / 2) - 2;
+                            ratio = r / style.getImage().getRadius();
+                            ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+                            ctx.strokeStyle = colorAsString(style.getImage().getStroke().getColor());
+                            ctx.lineWidth = style.getImage().getStroke().getWidth() * ratio;
+                            ctx.fillStyle = colorAsString(style.getImage().getFill().getColor());
+                            ctx.fill();
+                            ctx.stroke();
                         }
-                        var img = new Image();
-                        img.src = style.getImage().getSrc();
-
-                        var positionLeft = (scope.width - width) / 2;
-                        var positionTop = (scope.height - height) / 2;
-                        img.onload = function() {
-                            ctx.drawImage(img, positionLeft, positionTop, width, height);
-                        };
-                    } else {
-                        var x = scope.width / 2;
+                        return canvas;
+                    },
+                    drawLineLegend: function(style) {
+                        var canvas = VectorLegend.createCanvas();
+                        var ctx = canvas[0].getContext('2d');
+                        var minX = 2;
+                        var maxX = scope.width - 2;
                         var y = scope.height / 2;
-                        var r = (Math.min(scope.width, scope.height) / 2) - 2;
-                        ratio = r / style.getImage().getRadius();
-                        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-                        ctx.strokeStyle = colorAsString(style.getImage().getStroke().getColor());
-                        ctx.lineWidth = style.getImage().getStroke().getWidth() * ratio;
-                        ctx.fillStyle = colorAsString(style.getImage().getFill().getColor());
+                        ctx.moveTo(minX, y);
+                        ctx.lineTo(maxX, y);
+                        ctx.strokeStyle = colorAsString(style.getStroke().getColor());
+                        ctx.lineWidth = style.getStroke().getWidth();
+                        ctx.stroke();
+                        return canvas;
+                    },
+                    drawPolygonLegend: function(style) {
+                        var canvas = VectorLegend.createCanvas();
+                        var ctx = canvas[0].getContext('2d');
+
+                        var minX = 1;
+                        var minY = 1;
+                        var maxX = scope.width - 2;
+                        var maxY = scope.height - 2;
+                        ctx.rect(minX, minY, maxX, maxY);
+                        ctx.fillStyle = colorAsString(style.getFill().getColor());
+                        ctx.strokeStyle = colorAsString(style.getStroke().getColor());
+                        ctx.lineWidth = style.getStroke().getWidth();
                         ctx.fill();
                         ctx.stroke();
-                    }
-                    return canvas;
-                },
-                drawLineLegend: function(style) {
-                    var canvas = VectorLegend.createCanvas();
-                    var ctx = canvas[0].getContext('2d');
-                    var minX = 2;
-                    var maxX = scope.width - 2;
-                    var y = scope.height / 2;
-                    ctx.moveTo(minX, y);
-                    ctx.lineTo(maxX, y);
-                    ctx.strokeStyle = colorAsString(style.getStroke().getColor());
-                    ctx.lineWidth = style.getStroke().getWidth();
-                    ctx.stroke();
-                    return canvas;
-                },
-                drawPolygonLegend: function(style) {
-                    var canvas = VectorLegend.createCanvas();
-                    var ctx = canvas[0].getContext('2d');
-
-                    var minX = 1;
-                    var minY = 1;
-                    var maxX = scope.width - 2;
-                    var maxY = scope.height - 2;
-                    ctx.rect(minX, minY, maxX, maxY);
-                    ctx.fillStyle = colorAsString(style.getFill().getColor());
-                    ctx.strokeStyle = colorAsString(style.getStroke().getColor());
-                    ctx.lineWidth = style.getStroke().getWidth();
-                    ctx.fill();
-                    ctx.stroke();
-                    return canvas;
-                },
-                createLegendEntry: function(title, type, style) {
-                    if(angular.isFunction(style)) {
-                        style = style()[0];
-                    }
-                    switch(type) {
+                        return canvas;
+                    },
+                    createLegendEntry: function(title, type, style) {
+                        if(angular.isFunction(style)) {
+                            style = style()[0];
+                        }
+                        switch(type) {
                         case 'point':
                             return VectorLegend.drawPointLegend(style);
                         case 'line':
@@ -304,80 +304,80 @@ angular.module('anol.legend')
                             return VectorLegend.drawPolygonLegend(style);
                         default:
                             return;
+                        }
                     }
-                }
-            };
+                };
 
-            var RasterLegend = {
-                createLegendEntry: function(layer) {
-                    var legendImages = $('<div></div>');
-                    if(layer.getLegendGraphicUrl === undefined) {
-                        return;
+                var RasterLegend = {
+                    createLegendEntry: function(layer) {
+                        var legendImages = $('<div></div>');
+                        if(layer.getLegendGraphicUrl === undefined) {
+                            return;
+                        }
+                        var legendImage = $('<img>');
+                        legendImage.addClass('anol-legend-item-image');
+                        legendImage.attr('src', layer.getLegendGraphicUrl());
+                        legendImages.append(legendImage);
+
+                        // Display in element with given id
+                        if (angular.isDefined(layer.legend.target)) {
+                            var target = angular.element(layer.legend.target);
+                            var showLegendButton = angular.element('<button>{{ \'anol.legend.SHOW\' | translate }}</button>');
+                            showLegendButton.addClass('btn');
+                            showLegendButton.addClass('btn-sm');
+                            showLegendButton.on('click', function() {
+                                target.empty();
+                                target.append(legendImages);
+                                if(angular.isFunction(scope.customTargetCallback)) {
+                                    scope.customTargetCallback();
+                                }
+                            });
+                            return $compile(showLegendButton)(scope);
+                            // Display in legend control
+                        } else {
+                            return legendImages;
+                        }
                     }
-                    var legendImage = $('<img>');
-                    legendImage.addClass('anol-legend-item-image');
-                    legendImage.attr('src', layer.getLegendGraphicUrl());
-                    legendImages.append(legendImage);
+                };
 
-                    // Display in element with given id
-                    if (angular.isDefined(layer.legend.target)) {
-                        var target = angular.element(layer.legend.target);
-                        var showLegendButton = angular.element('<button>{{ \'anol.legend.SHOW\' | translate }}</button>');
-                        showLegendButton.addClass('btn');
-                        showLegendButton.addClass('btn-sm');
-                        showLegendButton.on('click', function() {
-                            target.empty();
-                            target.append(legendImages);
-                            if(angular.isFunction(scope.customTargetCallback)) {
-                                scope.customTargetCallback();
-                            }
-                        });
-                        return $compile(showLegendButton)(scope);
-                    // Display in legend control
-                    } else {
-                        return legendImages;
+                var ImageLegend = {
+                    createLegendEntry: function(title, url) {
+                        var legendImage = angular.element('<img>');
+                        legendImage.addClass('anol-legend-item-image');
+                        legendImage[0].src = url;
+                        return legendImage;
                     }
+                };
+
+                if(angular.isFunction(scope.customTargetFilled())) {
+                    scope.customTargetCallback = scope.customTargetFilled();
                 }
-            };
-
-            var ImageLegend = {
-                createLegendEntry: function(title, url) {
-                    var legendImage = angular.element('<img>');
-                    legendImage.addClass('anol-legend-item-image');
-                    legendImage[0].src = url;
-                    return legendImage;
+                if(angular.isArray(scope.size)) {
+                    scope.width = scope.size[0];
+                    scope.height = scope.size[1];
+                } else {
+                    scope.width = 20;
+                    scope.height = 20;
                 }
-            };
 
-            if(angular.isFunction(scope.customTargetFilled())) {
-                scope.customTargetCallback = scope.customTargetFilled();
-            }
-            if(angular.isArray(scope.size)) {
-                scope.width = scope.size[0];
-                scope.height = scope.size[1];
-            } else {
-                scope.width = 20;
-                scope.height = 20;
-            }
+                var legendItem;
 
-            var legendItem;
-
-            if(scope.legendLayer.legend.url !== undefined) {
-                legendItem = ImageLegend.createLegendEntry(scope.legendLayer.title, scope.legendLayer.legend.url);
-            } else if(scope.legendLayer.olLayer instanceof VectorLayer) {
-                legendItem = VectorLegend.createLegendEntry(
-                    scope.legendLayer.title,
-                    scope.legendLayer.legend.type,
-                    scope.legendLayer.olLayer.getStyle()
-                );
-            } else {
-                legendItem = RasterLegend.createLegendEntry(scope.legendLayer);
+                if(scope.legendLayer.legend.url !== undefined) {
+                    legendItem = ImageLegend.createLegendEntry(scope.legendLayer.title, scope.legendLayer.legend.url);
+                } else if(scope.legendLayer.olLayer instanceof VectorLayer) {
+                    legendItem = VectorLegend.createLegendEntry(
+                        scope.legendLayer.title,
+                        scope.legendLayer.legend.type,
+                        scope.legendLayer.olLayer.getStyle()
+                    );
+                } else {
+                    legendItem = RasterLegend.createLegendEntry(scope.legendLayer);
+                }
+                if(scope.prepend === true) {
+                    element.prepend(legendItem);
+                } else {
+                    element.append(legendItem);
+                }
             }
-            if(scope.prepend === true) {
-                element.prepend(legendItem);
-            } else {
-                element.append(legendItem);
-            }
-        }
-    };
-}]);
+        };
+    }]);

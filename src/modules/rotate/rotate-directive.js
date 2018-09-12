@@ -17,35 +17,35 @@ angular.module('anol.rotation')
  * @description
  * Provides zoom buttons
  */
-.directive('anolRotation', ['$compile', 'ControlsService',
-    function($compile, ControlsService) {
-    return {
-        restrict: 'A',
-        scope: {
-            tooltipPlacement: '@',
-            tooltipDelay: '@',
-            tooltipEnable: '@',
-            ngStyle: '='
-        },
-        link: function(scope, element, attrs) {
-            var olControl = new Rotate();
-            var control = new anol.control.Control({
-                olControl: olControl
-            });
-            var controlElement = angular.element(olControl.element);
-            controlElement.attr('ng-style', 'ngStyle');
-            var rotateButton = controlElement.find('.ol-rotate-reset');
-            rotateButton.removeAttr('title');
-            rotateButton.attr('uib-tooltip', '{{\'anol.rotate.TOOLTIP\' | translate }}');
-            rotateButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
-            rotateButton.attr('tooltip-append-to-body', true);
-            rotateButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
-            rotateButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
-            rotateButton.attr('tooltip-trigger', 'mouseenter');
+    .directive('anolRotation', ['$compile', 'ControlsService',
+        function($compile, ControlsService) {
+            return {
+                restrict: 'A',
+                scope: {
+                    tooltipPlacement: '@',
+                    tooltipDelay: '@',
+                    tooltipEnable: '@',
+                    ngStyle: '='
+                },
+                link: function(scope, element, attrs) {
+                    var olControl = new Rotate();
+                    var control = new anol.control.Control({
+                        olControl: olControl
+                    });
+                    var controlElement = angular.element(olControl.element);
+                    controlElement.attr('ng-style', 'ngStyle');
+                    var rotateButton = controlElement.find('.ol-rotate-reset');
+                    rotateButton.removeAttr('title');
+                    rotateButton.attr('uib-tooltip', '{{\'anol.rotate.TOOLTIP\' | translate }}');
+                    rotateButton.attr('tooltip-placement', scope.zoomInTooltipPlacement || 'right');
+                    rotateButton.attr('tooltip-append-to-body', true);
+                    rotateButton.attr('tooltip-popup-delay', scope.tooltipDelay || 500);
+                    rotateButton.attr('tooltip-enable', scope.tooltipEnable === undefined ? !hasTouch : scope.tooltipEnable);
+                    rotateButton.attr('tooltip-trigger', 'mouseenter');
 
-            $compile(controlElement)(scope);
+                    $compile(controlElement)(scope);
 
-            ControlsService.addControl(control);
-        }
-    };
-}]);
+                    ControlsService.addControl(control);
+                }
+            };
+        }]);

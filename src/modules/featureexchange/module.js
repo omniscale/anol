@@ -1,3 +1,3 @@
-import { anol } from '../../anol/anol.js'
+import { anol } from '../../anol/anol.js';
 
 angular.module('anol.featureexchange', ['anol.map']);

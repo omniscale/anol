@@ -4,6 +4,6 @@
  * @description
  * Module providing the draw directive
  */
-import { anol } from '../../anol/anol.js'
+import { anol } from '../../anol/anol.js';
 
 angular.module('anol.draw', ['anol.map']);

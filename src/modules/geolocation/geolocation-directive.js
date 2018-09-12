@@ -1,5 +1,5 @@
 import { defaults } from './module.js';
-import { TOUCH as hasTouch } from 'ol/has'
+import { TOUCH as hasTouch } from 'ol/has';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Select from 'ol/interaction/Select';
@@ -26,151 +26,151 @@ angular.module('anol.geolocation')
  * @description
  * Get current position and center map on it.
  */
-.directive('anolGeolocation', ['$templateRequest', '$compile', '$translate', '$timeout', 'MapService', 'ControlsService', 'LayersService', 'InteractionsService',
-  function($templateRequest, $compile, $translate, $timeout, MapService, ControlsService, LayersService, InteractionsService) {
-    return {
-      scope: {
-        anolGeolocation: '@',
-        disableButton: '@',
-        zoom: '@',
-        tooltipPlacement: '@',
-        tooltipDelay: '@',
-        tooltipEnable: '@',
-        showPosition: '@',
-        highlight: '@',
-        resultStyle: '=?'
-      },
-      template: function(tElement, tAttrs) {
-        if (tAttrs.templateUrl) {
-                return '<div></div>';
-        }
-        return require('./templates/geolocation.html')
-      },           
-      link: function(scope, element, attrs) {
-        if (attrs.templateUrl && attrs.templateUrl !== '') {
-            $templateRequest(attrs.templateUrl).then(function(html){
-                var template = angular.element(html);
-                element.html(template);
-                $compile(template)(scope);
-            });
-        }         
-        scope.anolGeolocation = 'false' !== scope.anolGeolocation;
-        scope.showPosition = 'false' !== scope.showPosition;
-        scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
+    .directive('anolGeolocation', ['$templateRequest', '$compile', '$translate', '$timeout', 'MapService', 'ControlsService', 'LayersService', 'InteractionsService',
+        function($templateRequest, $compile, $translate, $timeout, MapService, ControlsService, LayersService, InteractionsService) {
+            return {
+                scope: {
+                    anolGeolocation: '@',
+                    disableButton: '@',
+                    zoom: '@',
+                    tooltipPlacement: '@',
+                    tooltipDelay: '@',
+                    tooltipEnable: '@',
+                    showPosition: '@',
+                    highlight: '@',
+                    resultStyle: '=?'
+                },
+                template: function(tElement, tAttrs) {
+                    if (tAttrs.templateUrl) {
+                        return '<div></div>';
+                    }
+                    return require('./templates/geolocation.html');
+                },           
+                link: function(scope, element, attrs) {
+                    if (attrs.templateUrl && attrs.templateUrl !== '') {
+                        $templateRequest(attrs.templateUrl).then(function(html){
+                            var template = angular.element(html);
+                            element.html(template);
+                            $compile(template)(scope);
+                        });
+                    }         
+                    scope.anolGeolocation = 'false' !== scope.anolGeolocation;
+                    scope.showPosition = 'false' !== scope.showPosition;
+                    scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
 
-        // attribute defaults
-        scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
-          scope.tooltipPlacement : 'right';
-        scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
-          scope.tooltipDelay : 500;
-        scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-          scope.tooltipEnable : !hasTouch;
-        if(scope.showPosition) {
-          var geolocationLayer = new anol.layer.Feature({
-            name: 'geolocationLayer',
-            displayInLayerswitcher: false,
-            style: scope.resultStyle
-          });
-          var geolocationOlLayerOptions = geolocationLayer.olLayerOptions;
-          geolocationOlLayerOptions.source = new geolocationLayer.OL_SOURCE_CLASS(geolocationLayer.olSourceOptions);
-          geolocationLayer.setOlLayer(new geolocationLayer.OL_LAYER_CLASS(geolocationOlLayerOptions));
+                    // attribute defaults
+                    scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
+                        scope.tooltipPlacement : 'right';
+                    scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
+                        scope.tooltipDelay : 500;
+                    scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
+                        scope.tooltipEnable : !hasTouch;
+                    if(scope.showPosition) {
+                        var geolocationLayer = new anol.layer.Feature({
+                            name: 'geolocationLayer',
+                            displayInLayerswitcher: false,
+                            style: scope.resultStyle
+                        });
+                        var geolocationOlLayerOptions = geolocationLayer.olLayerOptions;
+                        geolocationOlLayerOptions.source = new geolocationLayer.OL_SOURCE_CLASS(geolocationLayer.olSourceOptions);
+                        geolocationLayer.setOlLayer(new geolocationLayer.OL_LAYER_CLASS(geolocationOlLayerOptions));
 
-          LayersService.addSystemLayer(geolocationLayer);
-        }
+                        LayersService.addSystemLayer(geolocationLayer);
+                    }
 
-        if('true' !== scope.disableButton) {
-          var button = $('');
-          element.addClass('anol-geolocation');
-          element.append($compile(button)(scope));
-        }
+                    if('true' !== scope.disableButton) {
+                        var button = $('');
+                        element.addClass('anol-geolocation');
+                        element.append($compile(button)(scope));
+                    }
 
-        var changeCursorCondition = function(pixel) {
-            return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
-                return geolocationLayer === layer.get('anolLayer');
-            });
-        };
+                    var changeCursorCondition = function(pixel) {
+                        return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
+                            return geolocationLayer === layer.get('anolLayer');
+                        });
+                    };
 
-        var addGeolocationFeatures = function(accuracyGeometry, position) {
-          var features = [];
-          if(accuracyGeometry !== undefined && accuracyGeometry !== null) {
-            features.push(new Feature({
-              geometry: accuracyGeometry
-            }));
-          }
-          if(position !== undefined && position !== null) {
-            features.push(new Feature({
-              geometry: new Point(position)
-            }));
-          }
-          if(features.length > 0) {
-            geolocationLayer.addFeatures(features);
+                    var addGeolocationFeatures = function(accuracyGeometry, position) {
+                        var features = [];
+                        if(accuracyGeometry !== undefined && accuracyGeometry !== null) {
+                            features.push(new Feature({
+                                geometry: accuracyGeometry
+                            }));
+                        }
+                        if(position !== undefined && position !== null) {
+                            features.push(new Feature({
+                                geometry: new Point(position)
+                            }));
+                        }
+                        if(features.length > 0) {
+                            geolocationLayer.addFeatures(features);
 
-            if(scope.highlight > 0) {
-              $timeout(function() {
-                geolocationLayer.clear();
-              }, scope.highlight);
-            } else {
-              var removeGeolocationFeaturesInteraction = new Select({
-                layers: [geolocationLayer.olLayer]
-              });
-              removeGeolocationFeaturesInteraction.on('select', function(evt) {
-                if(evt.selected.length > 0) {
-                  removeGeolocationFeaturesInteraction.getFeatures().clear();
-                  geolocationLayer.clear();
-                  InteractionsService.removeInteraction(removeGeolocationFeaturesInteraction);
-                  MapService.removeCursorPointerCondition(changeCursorCondition);
-                  removeGeolocationFeaturesInteraction = undefined;
+                            if(scope.highlight > 0) {
+                                $timeout(function() {
+                                    geolocationLayer.clear();
+                                }, scope.highlight);
+                            } else {
+                                var removeGeolocationFeaturesInteraction = new Select({
+                                    layers: [geolocationLayer.olLayer]
+                                });
+                                removeGeolocationFeaturesInteraction.on('select', function(evt) {
+                                    if(evt.selected.length > 0) {
+                                        removeGeolocationFeaturesInteraction.getFeatures().clear();
+                                        geolocationLayer.clear();
+                                        InteractionsService.removeInteraction(removeGeolocationFeaturesInteraction);
+                                        MapService.removeCursorPointerCondition(changeCursorCondition);
+                                        removeGeolocationFeaturesInteraction = undefined;
+                                    }
+                                });
+                                InteractionsService.addInteraction(removeGeolocationFeaturesInteraction);
+                                MapService.addCursorPointerCondition(changeCursorCondition);
+                            }
+                        }
+                    };
+
+                    var view = MapService.getMap().getView();
+                    var geolocation = new Geolocation({
+                        projection: view.getProjection(),
+                        tracking: scope.anolGeolocation,
+                        trackingOptions: {
+                            enableHighAccuracy: true,
+                            maximumAge: 0
+                        }
+                    });
+
+                    geolocation.on('change:accuracyGeometry', function() {
+                        geolocation.setTracking(false);
+                        var position = geolocation.getPosition();
+                        var accuracyGeometry = geolocation.getAccuracyGeometry();
+                        var constrainedPosition = view.constrainCenter(position);
+                        if(position[0] !== constrainedPosition[0] || position[1] !== constrainedPosition[1]) {
+                            $translate('anol.geolocation.POSITION_OUT_OF_MAX_EXTENT').then(function(translation) {
+                                scope.$emit('anol.geolocation', {'message': translation, 'type': 'error'});
+                            });
+                            return;
+                        }
+                        if(scope.showPosition) {
+                            addGeolocationFeatures(accuracyGeometry, position);
+                        }
+                        view.setCenter(position);
+                        view.fit(accuracyGeometry.getExtent(), MapService.getMap().getSize());
+                        if(angular.isDefined(scope.zoom) && parseInt(scope.zoom) < view.getZoom()) {
+                            view.setZoom(parseInt(scope.zoom));
+                        }
+                    });
+
+                    scope.locate = function() {
+                        if(scope.showPosition) {
+                            geolocationLayer.clear();
+                        }
+                        geolocation.setTracking(true);
+                    };
+
+                    element.addClass('ol-control');
+
+                    ControlsService.addControl(new anol.control.Control({
+                        element: element
+                    }));
                 }
-              });
-              InteractionsService.addInteraction(removeGeolocationFeaturesInteraction);
-              MapService.addCursorPointerCondition(changeCursorCondition);
-            }
-          }
-        };
-
-        var view = MapService.getMap().getView();
-        var geolocation = new Geolocation({
-          projection: view.getProjection(),
-          tracking: scope.anolGeolocation,
-          trackingOptions: {
-            enableHighAccuracy: true,
-            maximumAge: 0
-          }
-        });
-
-        geolocation.on('change:accuracyGeometry', function() {
-          geolocation.setTracking(false);
-          var position = geolocation.getPosition();
-          var accuracyGeometry = geolocation.getAccuracyGeometry();
-          var constrainedPosition = view.constrainCenter(position);
-          if(position[0] !== constrainedPosition[0] || position[1] !== constrainedPosition[1]) {
-            $translate('anol.geolocation.POSITION_OUT_OF_MAX_EXTENT').then(function(translation) {
-              scope.$emit('anol.geolocation', {'message': translation, 'type': 'error'});
-            });
-            return;
-          }
-          if(scope.showPosition) {
-            addGeolocationFeatures(accuracyGeometry, position);
-          }
-          view.setCenter(position);
-          view.fit(accuracyGeometry.getExtent(), MapService.getMap().getSize());
-          if(angular.isDefined(scope.zoom) && parseInt(scope.zoom) < view.getZoom()) {
-            view.setZoom(parseInt(scope.zoom));
-          }
-        });
-
-        scope.locate = function() {
-          if(scope.showPosition) {
-            geolocationLayer.clear();
-          }
-          geolocation.setTracking(true);
-        };
-
-        element.addClass('ol-control');
-
-        ControlsService.addControl(new anol.control.Control({
-          element: element
-        }));
-      }
-    };
-}]);
+            };
+        }]);
