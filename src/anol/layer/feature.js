@@ -11,7 +11,7 @@
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
 
-import AnolBaseLayer from '../layer.js'
+import AnolBaseLayer from '../layer.js';
 
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
@@ -89,19 +89,19 @@ class FeatureLayer extends AnolBaseLayer {
             image: new CircleStyle({
                 radius: 5,
                 stroke: new Stroke({
-                    color: "rgba(0,255,255,1)",
+                    color: 'rgba(0,255,255,1)',
                     width: 1
                 }),
                 fill: new Fill({
-                    color: "rgba(0,255,255,0.3)"
+                    color: 'rgba(0,255,255,0.3)'
                 })
             }),
             stroke: new Stroke({
-                color: "rgba(0,255,255,1)",
+                color: 'rgba(0,255,255,1)',
                 width: 1
             }),
             fill: new Fill({
-                color: "rgba(0,255,255,0.3)"
+                color: 'rgba(0,255,255,0.3)'
             })
         });
 
@@ -109,21 +109,21 @@ class FeatureLayer extends AnolBaseLayer {
             image: new CircleStyle({
                 radius: 10,
                 stroke: new Stroke({
-                    color: "rgba(255,255,0,1)",
+                    color: 'rgba(255,255,0,1)',
                     width: 1
                 }),
                 fill: new Fill({
-                    color: "rgba(255,255,0,0.3)"
+                    color: 'rgba(255,255,0,0.3)'
                 })
             }),
             stroke: new Stroke({
-                color: "rgba(255,255,0,1)",
+                color: 'rgba(255,255,0,1)',
                 width: 1
             }),
             fill: new Fill({
-                color: "rgba(255,255,0,0.3)"
+                color: 'rgba(255,255,0,0.3)'
             })
-        })
+        });
     }   
 
     setOlLayer(olLayer) {
@@ -260,7 +260,7 @@ class FeatureLayer extends AnolBaseLayer {
         styleOptions.text = this.createTextStyle(featureStyle, defaultStyle.getText(), feature);
         return new Style(styleOptions);
     }
-    createClusterStyle(features) {
+    createClusterStyle() {
         return this.DEFAULT_CLUSTERED_STYLE;
     }
     createImageStyle(style, defaultImageStyle) {
@@ -420,20 +420,20 @@ class FeatureLayer extends AnolBaseLayer {
         var w = strokeWidth;
         var str = strokeDashstyle;
         switch (str) {
-            case 'dot':
-                return [1, 4 * w];
-            case 'dash':
-                return [4 * w, 4 * w];
-            case 'dashdot':
-                return [4 * w, 4 * w, 1, 4 * w];
-            case 'longdash':
-                return [8 * w, 4 * w];
-            case 'longdashdot':
-                return [8 * w, 4 * w, 1, 4 * w];
+        case 'dot':
+            return [1, 4 * w];
+        case 'dash':
+            return [4 * w, 4 * w];
+        case 'dashdot':
+            return [4 * w, 4 * w, 1, 4 * w];
+        case 'longdash':
+            return [8 * w, 4 * w];
+        case 'longdashdot':
+            return [8 * w, 4 * w, 1, 4 * w];
             // also matches 'solid'
-            default:
-                return undefined;
-          }
+        default:
+            return undefined;
+        }
     }
     // return function for labelKey from feature if feature is undefined
     // used for default layer style
@@ -539,7 +539,7 @@ class FeatureLayer extends AnolBaseLayer {
             text: this.createTextStyle(styleDefinition, defaultStyle.getText())
         });
         if(styleDefinition.text === '__num_features__') {
-            return function(feature, resolution) {
+            return function(feature) {
                 style.getText().setText(feature.get('features').length.toString());
                 return [style];
             };
@@ -560,7 +560,7 @@ class FeatureLayer extends AnolBaseLayer {
             return srcOptions;
         }
         if (this.OL_SOURCE_CLASS === undefined) {
-            return srcOptions
+            return srcOptions;
         }
         srcOptions = super._createSourceOptions(srcOptions);
         this.unclusteredSource = new this.OL_SOURCE_CLASS(srcOptions);
@@ -582,6 +582,6 @@ class FeatureLayer extends AnolBaseLayer {
     }
     // TODO add getProperties method including handling of hidden properties like style
     // TODO add hasProperty method
-};
+}
 
 export default FeatureLayer;

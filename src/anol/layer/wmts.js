@@ -17,13 +17,13 @@
  * The default value is 22.
  */
 
-import AnolBaseLayer from '../layer.js'
+import AnolBaseLayer from '../layer.js';
 
 import TileLayer from 'ol/layer/Tile';
 import { default as WMTSSource} from 'ol/source/WMTS';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import { getWidth, getHeight, getTopLeft} from 'ol/extent';
-import { DEVICE_PIXEL_RATIO } from 'ol/has'
+import { DEVICE_PIXEL_RATIO } from 'ol/has';
 
 class WMTS extends AnolBaseLayer {
     
@@ -60,7 +60,7 @@ class WMTS extends AnolBaseLayer {
             }
             if(useHq) {
                 options.olLayer.source.tilePixelRatio = 2;
-             }
+            }
         }
         super(options);
         this.CLASS_NAME = 'anol.layer.WMTS';
@@ -110,10 +110,9 @@ class WMTS extends AnolBaseLayer {
 
         return srcOptions;
     }
-    isCombinable(other) {
-        var combinable = super.isCombinable(other);
+    isCombinable() {
         return false;
     }
-};
+}
 
-export default WMTS 
+export default WMTS; 

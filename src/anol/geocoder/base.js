@@ -31,13 +31,13 @@ class BaseGeocoder {
             data: self.getData(searchString),
             method: self.options.method
         })
-        .done(function(response) {
-                    var results = self.handleResponse(response);
-                    deferred.resolve(results);
-                })
-        .fail(function() {
-            deferred.resolve([]);
-        });
+            .done(function(response) {
+                var results = self.handleResponse(response);
+                deferred.resolve(results);
+            })
+            .fail(function() {
+                deferred.resolve([]);
+            });
         return deferred.promise();
     }
 
@@ -52,6 +52,6 @@ class BaseGeocoder {
     getData() {
         throw 'Not implemented';
     }
-};
+}
 
 export default BaseGeocoder;

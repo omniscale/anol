@@ -17,7 +17,7 @@
  * anol.control.Control is designed to work with anol.map.ControlsService.
  */
 
-import { Control as OlControl} from 'ol/control'
+import { Control as OlControl} from 'ol/control';
 
 class Control {
     

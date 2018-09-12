@@ -10,7 +10,7 @@
  * Nominatim geocoder. See http://wiki.openstreetmap.org/wiki/Nominatim
  */
 
-import BaseGeocoder from './base.js'
+import BaseGeocoder from './base.js';
 
 class Nominatim extends BaseGeocoder {
 

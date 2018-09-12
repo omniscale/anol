@@ -1,4 +1,4 @@
-import BaseGeocoder from './base.js'
+import BaseGeocoder from './base.js';
 
 class Solr extends BaseGeocoder {
 
@@ -7,11 +7,11 @@ class Solr extends BaseGeocoder {
             super();
             return;
         }
-	    var defaults = {};
-	    var options = $.extend({},
-	        defaults,
-	        _options
-	    );        
+        var defaults = {};
+        var options = $.extend({},
+            defaults,
+            _options
+        );        
         super(options);
         this.options = options;
         this.CLASS_NAME = 'anol.geocoder.Solr';

@@ -19,7 +19,7 @@
  * Ask *url* with current projection and bbox.
  */
 
-import StaticGeoJSON from './staticgeojson.js'
+import StaticGeoJSON from './staticgeojson.js';
 import GeoJSON from 'ol/format/GeoJSON';
 import {bbox as bboxStrategy} from 'ol/loadingstrategy';
 
@@ -98,9 +98,9 @@ class BBOXGeoJSON  extends StaticGeoJSON {
             url: url + params.join('&'),
             dataType: 'json'
         })
-        .done(function(response) {
-            self.responseHandler(response, featureProjection, dataProjection);
-        });
+            .done(function(response) {
+                self.responseHandler(response, featureProjection, dataProjection);
+            });
     }
     responseHandler(response, featureProjection, dataProjection) {
         var self = this;
@@ -122,10 +122,10 @@ class BBOXGeoJSON  extends StaticGeoJSON {
             dataProjection: dataProjection.getCode(),
         });
         var features = format.readFeatures(
-          response, {
-            dataProjection: dataProjection.getCode(),
-            featureProjection: featureProjection.getCode()
-          }
+            response, {
+                dataProjection: dataProjection.getCode(),
+                featureProjection: featureProjection.getCode()
+            }
         );
         self.olLayer.getSource().addFeatures(features);
     }
@@ -133,6 +133,6 @@ class BBOXGeoJSON  extends StaticGeoJSON {
         this.olLayer.getSource().clear();
         this.olLayer.getSource().refresh();
     }
-};
+}
 
 export default BBOXGeoJSON;

@@ -12,7 +12,7 @@
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
 
-import FeatureLayer from './feature.js'
+import FeatureLayer from './feature.js';
 
 import GeoJSON from 'ol/format/GeoJSON';
 import VectorSource from 'ol/source/Vector';

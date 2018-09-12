@@ -14,10 +14,8 @@
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
 
-import AnolBaseLayer from '../layer.js'
-
-import Extent from 'ol'
-    
+import AnolBaseLayer from '../layer.js';
+   
 import {getWidth, getHeight, getBottomLeft} from 'ol/extent';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -35,9 +33,9 @@ class TMS extends AnolBaseLayer {
         };
         var options = $.extend(true, {}, defaults, _options);
         super(options);
-        this.CLASS_NAME = 'anol.layer.TMS'
-        this.OL_LAYER_CLASS = TileLayer
-        this.OL_SOURCE_CLASS = XYZ
+        this.CLASS_NAME = 'anol.layer.TMS';
+        this.OL_LAYER_CLASS = TileLayer;
+        this.OL_SOURCE_CLASS = XYZ;
     }
 
     /**
@@ -50,7 +48,7 @@ class TMS extends AnolBaseLayer {
     _createSourceOptions(srcOptions) {
         var self = this;
         srcOptions = super._createSourceOptions(srcOptions);
-        srcOptions.tileUrlFunction = function(tileCoord, pixelRatio, projection) {
+        srcOptions.tileUrlFunction = function(tileCoord) {
             return self.tileUrlFunction(
                 tileCoord,
                 srcOptions.baseUrl,
@@ -62,9 +60,9 @@ class TMS extends AnolBaseLayer {
             srcOptions.tileGrid === undefined &&
             srcOptions.extent !== undefined
         ) {
-            var w = getWidth(extent);
-            var h = getHeight(extent);
-            var minRes = Math.max(w / sourceOpts.tileSize[0], h / sourceOpts.tileSize[1]);
+            var w = getWidth(srcOptions.extent);
+            var h = getHeight(srcOptions.extent);
+            var minRes = Math.max(w / srcOptions.tileSize[0], h / srcOptions.tileSize[1]);
             srcOptions.tileGrid = new TileGrid({
                 origin: getBottomLeft(srcOptions.extent),
                 resolutions: self._createResolutions(
@@ -98,10 +96,9 @@ class TMS extends AnolBaseLayer {
         }
         return url;
     }
-    isCombinable(other) {
-        var combinable = super.isCombinable(other);
+    isCombinable() {
         return false;
     }
 }
 
-export default TMS
+export default TMS;

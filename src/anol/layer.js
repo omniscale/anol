@@ -44,7 +44,7 @@
 
 import BaseLayer from 'ol/layer/Base';
 import Source from 'ol/source/Source';
-import { DEVICE_PIXEL_RATIO } from 'ol/has'
+import { DEVICE_PIXEL_RATIO } from 'ol/has';
 
 class AnolBaseLayer {
 
@@ -59,7 +59,7 @@ class AnolBaseLayer {
             olLayer: {
                 source: {}
             }
-        }
+        };
         options = $.extend(true, {}, this.DEFAULT_OPTIONS, options);
 
         this.name = options.name;
@@ -77,9 +77,9 @@ class AnolBaseLayer {
         this.unclusteredSource = undefined;
         this.selectClusterControl = undefined;
         
-        this.catalog = options.catalog || false;
+        this.catalog = options.catalog || false;
         this.catalogLayer = options.catalogLayer || false;
-        this.metadataUrl = options.metadataUrl || false;
+        this.metadataUrl = options.metadataUrl || false;
 
         if(this.displayInLayerswitcher === false) {
             this.permalink = false;
@@ -114,7 +114,7 @@ class AnolBaseLayer {
     isClustered() {
         return false;
     }
-    getCombinedSource(other) {
+    getCombinedSource() {
         return undefined;
     }
     removeFromCombinedSource() {}

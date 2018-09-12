@@ -9,7 +9,7 @@
  * @description
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
-import BaseWMS from './basewms.js'
+import BaseWMS from './basewms.js';
 
 import ImageLayer from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS';

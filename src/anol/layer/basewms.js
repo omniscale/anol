@@ -10,7 +10,7 @@
  * Inherits from {@link anol.layer.Layer anol.layer.Layer}.
  */
 
-import AnolBaseLayer from '../layer.js'
+import AnolBaseLayer from '../layer.js';
 
 class BaseWMS extends AnolBaseLayer {
     constructor(_options) {
@@ -40,7 +40,7 @@ class BaseWMS extends AnolBaseLayer {
         }
 
         if (other.anolGroup !== undefined) {
-            var combinable = other.anolGroup.isCombinable();
+            combinable = other.anolGroup.isCombinable();
             if(!combinable) {
                 return false;
             }
@@ -136,7 +136,7 @@ class BaseWMS extends AnolBaseLayer {
         params.LAYERS = layers.reverse().join(',');
         source.updateParams(params);
         this.visible = visible;
-        super.setVisible(layers.length > 0)
+        super.setVisible(layers.length > 0);
     }
     getLegendGraphicUrl() {
         var requestParams = {
@@ -180,7 +180,7 @@ class BaseWMS extends AnolBaseLayer {
             coordinate, resolution, projection, requestParams
         );
     }
-};
+}
 
 export default BaseWMS;
 

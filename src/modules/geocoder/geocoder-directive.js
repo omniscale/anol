@@ -24,8 +24,8 @@ angular.module('anol.geocoder')
  * @description
  * Search for a location string on given geocoder, display and select results
  */
-.directive('anolGeocoderSearchbox', ['$templateRequest', '$compile', '$timeout', '$location', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'UrlMarkersService',
-  function($templateRequest, $compile, $timeout, $location, MapService, ControlsService, InteractionsService, LayersService, UrlMarkersService) {
+.directive('anolGeocoderSearchbox', ['$templateRequest', '$compile', '$timeout', '$location', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService',
+  function($templateRequest, $compile, $timeout, $location, MapService, ControlsService, InteractionsService, LayersService) {
     return {
       restrict: 'A',
       require: '?^anolMap',
@@ -121,14 +121,14 @@ angular.module('anol.geocoder')
           if(scope.urlMarkerWithLabel === 'true') {
             urlMarker.label = label;
           }
-          var urlMarkerParams = [];
-          angular.forEach(urlMarker, function(v, k) {
-            urlMarkerParams.push(k + UrlMarkersService.keyValueDelimiter + v);
-          });
-          var urlMarkerString = urlMarkerParams.join(UrlMarkersService.propertiesDelimiter);
-          urlMarkers.push(urlMarkerString);
-          $location.search('marker', urlMarkers);
-          scope.urlMarkerAdded = true;
+          // var urlMarkerParams = [];
+          // angular.forEach(urlMarker, function(v, k) {
+          //   urlMarkerParams.push(k + UrlMarkersService.keyValueDelimiter + v);
+          // });
+          // var urlMarkerString = urlMarkerParams.join(UrlMarkersService.propertiesDelimiter);
+          // urlMarkers.push(urlMarkerString);
+          // $location.search('marker', urlMarkers);
+          // scope.urlMarkerAdded = true;
         };
 
         var removeUrlMarker = function() {

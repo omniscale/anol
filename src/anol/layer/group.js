@@ -24,7 +24,7 @@ class Group {
         this.combinable = undefined;
 
         if (this.layers === undefined) {
-            this.layers = []
+            this.layers = [];
         }
         angular.forEach(this.layers, function(layer) {
             layer.anolGroup = self;
@@ -71,7 +71,7 @@ class Group {
             lastUrl = layer.olSourceOptions.url;
         });
         this.combinable = combinable;
-        return combinable
+        return combinable;
     }
 }
 
