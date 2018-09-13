@@ -129,26 +129,26 @@ angular.module('anol.layerswitcher')
                     };
                     $scope.layerIsVisibleByName = function(name) {
                         var layer = LayersService.layerByName(name);
-                        if(layer !== undefined) {
+                        if(angular.isDefined(layer)) {
                             return layer.getVisible();
                         }
                         return false;
                     };
                     $scope.toggleLayerVisibleByName = function(name) {
                         var layer = LayersService.layerByName(name);
-                        if(layer !== undefined) {
+                        if(angular.isDefined(layer)) {
                             layer.setVisible(!layer.getVisible());
                         }
                     };
                     $scope.toggleGroupVisibleByName = function(name) {
                         var group = LayersService.groupByName(name);
-                        if(group !== undefined) {
+                        if(angular.isDefined(group)) {
                             group.setVisible(!group.getVisible());
                         }
                     };
                     $scope.groupIsVisibleByName = function(name) {
                         var group = LayersService.groupByName(name);
-                        if(group !== undefined) {
+                        if(angular.isDefined(group)) {
                             return group.getVisible();
                         }
                         return false;

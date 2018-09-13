@@ -92,12 +92,12 @@ angular.module('anol.geolocation')
 
                     var addGeolocationFeatures = function(accuracyGeometry, position) {
                         var features = [];
-                        if(accuracyGeometry !== undefined && accuracyGeometry !== null) {
+                        if(angular.isDefined(accuracyGeometry) && accuracyGeometry !== null) {
                             features.push(new Feature({
                                 geometry: accuracyGeometry
                             }));
                         }
-                        if(position !== undefined && position !== null) {
+                        if(angular.isDefined(position) && position !== null) {
                             features.push(new Feature({
                                 geometry: new Point(position)
                             }));

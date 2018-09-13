@@ -67,7 +67,7 @@ angular.module('anol.getfeatureinfo')
                         scope.customTargetCallback = scope.customTargetFilled();
                         scope.beforeRequest = scope.beforeRequest();
 
-                        if(scope.waitingMarkerSrc !== undefined) {
+                        if(angular.isDefined(scope.waitingMarkerSrc)) {
                             scope.waitingOverlayElement = element.find('#get-featureinfo-waiting-overlay');
                             $compile(scope.waitingOverlayElement)(scope);
                             scope.waitingOverlay = new Overlay({
@@ -236,7 +236,7 @@ angular.module('anol.getfeatureinfo')
                                                 requestDeferred.resolve();
                                             }
                                         },
-                                        function(response) {
+                                        function() {
                                             requestDeferred.resolve();
                                         }
                                     );
@@ -268,7 +268,7 @@ angular.module('anol.getfeatureinfo')
                                         function(response) {
                                             gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, gmlData: response.data});
                                         },
-                                        function(response) {
+                                        function() {
                                             gmlRequestDeferred.resolve();
                                         }
                                     );
@@ -279,13 +279,13 @@ angular.module('anol.getfeatureinfo')
                         };
 
                         scope.hideWaitingOverlay = function() {
-                            if(scope.waitingMarkerSrc !== undefined) {
+                            if(angular.isDefined(scope.waitingMarkerSrc)) {
                                 scope.waitingOverlay.setPosition(undefined);
                             }
                         };
 
                         scope.showWaitingOverlay = function(coordinate) {
-                            if(scope.waitingMarkerSrc !== undefined) {
+                            if(angular.isDefined(scope.waitingMarkerSrc)) {
                                 scope.waitingOverlay.setPosition(coordinate);
                             }
                         };

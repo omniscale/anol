@@ -18,7 +18,7 @@ angular.module('anol.attribution')
                 if(!layer.getVisible()) {
                     return;
                 }
-                if(layer.attribution === undefined || layer.attribution === null) {
+                if(angular.isUndefined(layer.attribution) || layer.attribution === null) {
                     return;
                 }
                 if(founds[layer.attribution] === true) {

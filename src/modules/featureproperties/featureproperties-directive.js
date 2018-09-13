@@ -109,7 +109,7 @@ angular.module('anol.featureproperties')
 
                     var featureChangeHandler = function(feature) {
                         var propertiesCollection = [];
-                        if(scope.layer === undefined || !angular.isObject(scope.layer.featureinfo)) {
+                        if(angular.isUndefined(scope.layer) || !angular.isObject(scope.layer.featureinfo)) {
                             scope.propertiesCollection = propertiesCollection;
                         } else {
                             var properties = propertiesFromFeature(feature, scope.layer.name, scope.layer.featureinfo.properties);
@@ -156,7 +156,7 @@ angular.module('anol.featureproperties')
             scope: {
                 url: '=value'
             },
-            link: function(scope, element, attrs) {
+            link: function(scope, element) {
                 var isUrl = function(s) {
                     var regexp = /(http:\/\/|https:\/\/|www\.)/;
                     return regexp.test(s);

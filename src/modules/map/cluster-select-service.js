@@ -127,7 +127,7 @@ angular.module('anol.map')
                 var interactionOptions = $.extend({}, defaultClusterOptions, this.clusterSelectOptions, {
                     layers: function(layer) {
                         var anolLayer = layer.get('anolLayer');
-                        if(anolLayer === undefined || !anolLayer.isClustered()) {
+                        if(angular.isUndefined(anolLayer) || !anolLayer.isClustered()) {
                             return false;
                         }
                         return self.clusterLayers.indexOf(anolLayer) > -1;
@@ -222,7 +222,7 @@ angular.module('anol.map')
                         }
                         if(revealedFeature.get('features').length > 1) {
                         // cluster with multiple features selected. cluster open
-                            if(selectedCluster !== undefined) {
+                            if(angular.isDefined(selectedCluster)) {
                                 selectedCluster.setStyle(null);
                             }
                             selectedCluster = revealedFeature;
@@ -232,7 +232,7 @@ angular.module('anol.map')
                         }
                         if(revealedFeature.get('features').length === 1) {
                         // cluster with one feature selected. clear selectedCluster style
-                            if(selectedCluster !== undefined) {
+                            if(angular.isDefined(selectedCluster)) {
                                 selectedCluster.setStyle(null);
                                 selectedCluster = undefined;
                             }

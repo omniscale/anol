@@ -14,7 +14,7 @@ angular.module('anol.draw')
             if(layer.editable !== true) {
                 return;
             }
-            if(_drawServiceInstance !== undefined) {
+            if(angular.isDefined(_drawServiceInstance)) {
                 _drawServiceInstance.addLayer(layer);
             } else {
                 _editableLayers.push(layer);
@@ -56,7 +56,7 @@ angular.module('anol.draw')
          * Sets current draw layer
          */
             DrawService.prototype.changeLayer = function(layer) {
-                if(layer === undefined || this.layers.indexOf(layer) !== -1) {
+                if(angular.isUndefined(layer) || this.layers.indexOf(layer) !== -1) {
                     this.activeLayer = layer;
                 }
             };

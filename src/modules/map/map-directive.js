@@ -90,7 +90,7 @@ angular.module('anol.map')
                                 };
 
                                 var handleTouchMove = function(e) {
-                                    if(useKeyControl === undefined) {
+                                    if(angular.isUndefined(useKeyControl)) {
                                         useKeyControl = createOverlayControl();
                                         scope.map.addControl(useKeyControl);
                                     }
@@ -99,12 +99,12 @@ angular.module('anol.map')
                                 var handleTouchStart = function(e) {
                                     pointers++;
                                     if(pointers > 1) {
-                                        if(dragPan === undefined) {
+                                        if(angular.isUndefined(dragPan)) {
                                             dragPan = new DragPan();
                                             scope.map.addInteraction(dragPan);
                                         }
                                         viewport.off('touchmove', handleTouchMove);
-                                        if(useKeyControl !== undefined) {
+                                        if(angular.isDefined(useKeyControl)) {
                                             scope.map.removeControl(useKeyControl);
                                             useKeyControl = undefined;
                                         }
@@ -120,7 +120,7 @@ angular.module('anol.map')
                                 var handleTouchEnd = function(e) {
                                     pointers--;
                                     pointers = Math.max(0, pointers);
-                                    if(pointers <= 1 && useKeyControl !== undefined) {
+                                    if(pointers <= 1 && angular.isDefined(useKeyControl)) {
                                         scope.map.removeControl(useKeyControl);
                                         useKeyControl = undefined;
                                     }

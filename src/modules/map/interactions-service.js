@@ -67,7 +67,7 @@ angular.module('anol.map')
          * Adds an ol interaction
          */
             Interactions.prototype.addInteraction = function(interaction) {
-                if(this.map !== undefined) {
+                if(angular.isDefined(this.map)) {
                     this.map.addInteraction(interaction);
                 }
                 this.interactions.push(interaction);
@@ -82,7 +82,7 @@ angular.module('anol.map')
          */
             Interactions.prototype.addInteractions = function(interactions) {
                 var self = this;
-                if(this.map !== undefined) {
+                if(angular.isDefined(this.map)) {
                     angular.forEach(interactions, function(interaction) {
                         self.map.addInteraction(interaction);
                     });

@@ -114,7 +114,7 @@ angular.module('anol.draw')
                                 }
                             });
                         });
-                        if(scope.continueDrawing === false && control !== undefined) {
+                        if(scope.continueDrawing === false && angular.isDefined(control)) {
                             postDrawActions.push(function() {
                                 control.deactivate();
                             });
@@ -277,7 +277,7 @@ angular.module('anol.draw')
                     };
 
                     scope.remove = function() {
-                        if(selectedFeature !== undefined) {
+                        if(angular.isDefined(selectedFeature)) {
                             scope.activeLayer.olLayer.getSource().removeFeature(selectedFeature);
                             modifyControl.interactions[0].getFeatures().clear();
                             selectedFeature = undefined;
@@ -287,7 +287,7 @@ angular.module('anol.draw')
                     // extra action for a realy custumised draw experience
                     scope.drawCustom = function(drawType, postDrawCallback) {
                         // skip when no active layer present
-                        if(scope.activeLayer === undefined) {
+                        if(angular.isUndefined(scope.activeLayer)) {
                             return;
                         }
                         // deactivate other controls
@@ -324,7 +324,7 @@ angular.module('anol.draw')
                             postDrawCallback(scope.activeLayer, evt.feature);
                         };
                         // remove custom draw after draw finish
-                        var postDrawRemoveCustomDraw = function(evt) {
+                        var postDrawRemoveCustomDraw = function() {
                             // TODO remove when https://github.com/openlayers/ol3/issues/3610/ resolved
                             $timeout(function() {
                                 removeCustomDraw();
@@ -333,9 +333,6 @@ angular.module('anol.draw')
 
                         // third param is control we don't need for this action
                         customInteractions = createDrawInteractions(drawType, source, undefined, olLayer, [postDrawAction, postDrawRemoveCustomDraw]);
-
-                        // first one is always the drawInteraction
-                        var customDrawInteraction = customInteractions[0];
 
                         // remove custom draw when active layer changes
                         deregisterActiveLayerChange = scope.$watch(function() {
@@ -462,7 +459,7 @@ angular.module('anol.draw')
                         modifyControl.disable();
                         modifyControl.interactions = [];
 
-                        if(visibleDewatcher !== undefined) {
+                        if(angular.isDefined(visibleDewatcher)) {
                             visibleDewatcher();
                         }
 
@@ -475,10 +472,10 @@ angular.module('anol.draw')
                         if(newActiveLayer === scope.activeLayer) {
                             return;
                         }
-                        if(oldActiveLayer !== undefined) {
+                        if(angular.isDefined(oldActiveLayer)) {
                             unbindActiveLayer();
                         }
-                        if(newActiveLayer !== undefined) {
+                        if(angular.isDefined(newActiveLayer)) {
                             bindActiveLayer(newActiveLayer);
                         }
                     });

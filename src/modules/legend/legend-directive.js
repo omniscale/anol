@@ -311,7 +311,7 @@ angular.module('anol.legend')
                 var RasterLegend = {
                     createLegendEntry: function(layer) {
                         var legendImages = $('<div></div>');
-                        if(layer.getLegendGraphicUrl === undefined) {
+                        if(angular.isUndefined(layer.getLegendGraphicUrl)) {
                             return;
                         }
                         var legendImage = $('<img>');
@@ -362,7 +362,7 @@ angular.module('anol.legend')
 
                 var legendItem;
 
-                if(scope.legendLayer.legend.url !== undefined) {
+                if(angular.isDefined(scope.legendLayer.legend.url)) {
                     legendItem = ImageLegend.createLegendEntry(scope.legendLayer.title, scope.legendLayer.legend.url);
                 } else if(scope.legendLayer.olLayer instanceof VectorLayer) {
                     legendItem = VectorLegend.createLegendEntry(

@@ -51,13 +51,13 @@ angular.module('anol.featurepropertieseditor')
                     };
 
                     var registerPropertyWatcher = function(key) {
-                        if(ignoreProperty(key) || propertyWatchers[key] !== undefined) {
+                        if(ignoreProperty(key) || angular.isDefined(propertyWatchers[key])) {
                             return;
                         }
                         var watcher = scope.$watch(function() {
                             return scope.properties[key];
                         }, function(n) {
-                            if(n === undefined) {
+                            if(angular.isUndefined(n)) {
                                 scope.feature.unset(key);
                             } else if(n !== scope.feature.get(key)) {
                                 scope.feature.set(key, n);
@@ -105,7 +105,7 @@ angular.module('anol.featurepropertieseditor')
                     scope.$watch('feature', function(feature) {
                         clearPropertyWatchers();
                         scope.properties = {};
-                        if(feature !== undefined) {
+                        if(angular.isDefined(feature)) {
                             scope.properties = feature.getProperties();
                         }
                     });

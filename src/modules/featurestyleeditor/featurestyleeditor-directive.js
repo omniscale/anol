@@ -22,19 +22,19 @@ angular.module('anol.featurestyleeditor')
         function($templateRequest, $compile, $rootScope, $translate) {
             var prepareStyleProperties = function(_style) {
                 var style = angular.copy(_style);
-                if(style.radius !== undefined) {
+                if(angular.isDefined(style.radius)) {
                     style.radius = parseInt(style.radius);
                 }
-                if(style.strokeWidth !== undefined) {
+                if(angular.isDefined(style.strokeWidth)) {
                     style.strokeWidth = parseInt(style.strokeWidth);
                 }
-                if(style.strokeOpacity !== undefined) {
+                if(angular.isDefined(style.strokeOpacity)) {
                     style.strokeOpacity = parseFloat(style.strokeOpacity);
                 }
-                if(style.fillOpacity !== undefined) {
+                if(angular.isDefined(style.fillOpacity)) {
                     style.fillOpacity = parseFloat(style.fillOpacity);
                 }
-                if(style.graphicRotation !== undefined) {
+                if(angular.isDefined(style.graphicRotation)) {
                     style.graphicRotation = parseFloat(style.graphicRotation);
                 }
                 return style;
@@ -43,7 +43,7 @@ angular.module('anol.featurestyleeditor')
             var purgeStyle = function(_style) {
                 var style = {};
                 angular.forEach(_style, function(value, key) {
-                    if(value === undefined || value === '' || value === null) {
+                    if(angular.isUndefined(value) || value === '' || value === null) {
                         style[key] = undefined;
                     } else {
                         style[key] = value;
@@ -78,16 +78,16 @@ angular.module('anol.featurestyleeditor')
                         element.addClass('anol-styleeditor');
                         var unregisterStyleWatcher;
                         scope.$watch('feature', function(feature) {
-                            if(unregisterStyleWatcher !== undefined) {
+                            if(angular.isDefined(unregisterStyleWatcher)) {
                                 unregisterStyleWatcher();
                                 unregisterStyleWatcher = undefined;
                             }
                             var layerStyle = {};
-                            if(scope.layer !== undefined && scope.layer.options !== undefined) {
+                            if(angular.isDefined(scope.layer) && angular.isDefined(scope.layer.options)) {
                                 layerStyle = prepareStyleProperties(scope.layer.options.style || {});
                             }
 
-                            if(feature !== undefined) {
+                            if(angular.isDefined(feature)) {
                                 scope.style = prepareStyleProperties(
                                     $.extend(true, {}, layerStyle, feature.get('style'))
                                 );
@@ -120,7 +120,7 @@ angular.module('anol.featurestyleeditor')
                         var disableOverlay;
                         var addOverlay = function() {
                             disableOverlay = angular.element('<div class="anol-styleeditor-disabled-overlay"></div>');
-                            if(scope.disabledText !== undefined) {
+                            if(angular.isDefined(scope.disabledText)) {
                                 var disabledText = angular.element('<p class="anol-styleeditor-disabled-text">' + scope.disabledText + '</p>');
                                 disableOverlay.append(disabledText);
                             }

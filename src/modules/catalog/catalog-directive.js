@@ -39,7 +39,7 @@ angular.module('anol.catalog')
                         CatalogService.removeFromMap(layer);
                     };
                     scope.toggleLayerVisible = function(layer) {
-                        if(layer !== undefined) {
+                        if(angular.isDefined(layer)) {
                             layer.setVisible(!layer.getVisible());
                         }
                     };

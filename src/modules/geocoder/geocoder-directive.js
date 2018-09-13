@@ -104,7 +104,7 @@ angular.module('anol.geocoder')
 
                         var urlMarkers = [];
 
-                        if(!angular.isUndefined(urlParams.marker)) {
+                        if(angular.isDefined(urlParams.marker)) {
                             if(angular.isArray(urlParams.marker)) {
                                 urlMarkers = urlParams.marker;
                             } else {

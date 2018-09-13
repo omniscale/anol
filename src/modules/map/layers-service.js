@@ -176,7 +176,7 @@ angular.module('anol.map')
                 var layers = [layer];
                 if(layer instanceof anol.layer.Group) {
                     layers = layer.layers;
-                    if(layer.name !== undefined) {
+                    if(angular.isDefined(layer.name)) {
                         delete self.nameGroupsMap[layer.name];
                     }
                 }
@@ -193,7 +193,7 @@ angular.module('anol.map')
                         self.overlayLayers.splice(overlayLayerIdx, 1);
                     }
 
-                    if(self.map !== undefined) {
+                    if(angular.isDefined(self.map)) {
                         var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
                         if(olLayerIdx > -1) {
                             self.map.removeLayer(_layer.olLayer);
@@ -228,14 +228,14 @@ angular.module('anol.map')
             Layers.prototype.createOlLayer = function(layer) {
                 var olSource;
                 var lastAddedLayer = this.lastAddedLayer();
-                if(lastAddedLayer !== undefined && lastAddedLayer.isCombinable(layer)) {
+                if(angular.isDefined(lastAddedLayer) && lastAddedLayer.isCombinable(layer)) {
                     olSource = lastAddedLayer.getCombinedSource(layer);
                     if(layer instanceof anol.layer.DynamicGeoJSON && layer.isClustered()) {
                         layer.unclusteredSource = lastAddedLayer.unclusteredSource;
                     }
                     layer.combined = true;
                 }
-                if(olSource === undefined) {
+                if(angular.isUndefined(olSource)) {
                     var sourceOptions = angular.extend({}, layer.olSourceOptions);
                     if(layer.isClustered()) {
                         sourceOptions.distance = this.clusterDistance;
@@ -271,14 +271,14 @@ angular.module('anol.map')
 
                 var layers = [layer];
                 if(layer instanceof anol.layer.Group) {
-                    if(layer.name !== undefined) {
+                    if(angular.isDefined(layer.name)) {
                         self.nameGroupsMap[layer.name] = layer;
                     }
                     layers = layer.layers;
                 }
 
                 angular.forEach(layers, function(_layer) {
-                    if(_layer.name !== undefined) {
+                    if(angular.isDefined(_layer.name)) {
                         self.nameLayersMap[_layer.name] = _layer;
                     }
                 });
@@ -299,7 +299,7 @@ angular.module('anol.map')
                 // after that, this.map is registered
                 // so, when map is defined, added layers are not in map
                 // and must be added
-                if(self.map !== undefined) {
+                if(angular.isDefined(self.map)) {
                     if(layer instanceof anol.layer.Group) {
                         angular.forEach(layer.layers, function(_layer, idx) {
                             if(self.olLayers.indexOf(_layer.olLayer) < 0) {

@@ -37,7 +37,7 @@ angular.module('anol.map')
                 self.exclusiveControls = [];
                 self.subordinateControls = [];
                 self.map = undefined;
-                if(controls === undefined) {
+                if(angular.isUndefined(controls)) {
                 // Zoom-, Rotate and AttributionControls provided by corresponding directives
                     var defaultControls = controlDefaults({
                         attribution: false,
@@ -67,7 +67,7 @@ angular.module('anol.map')
                 self.map = map;
                 // get cluster select control from service. undefined when no clustered layer present
                 var selectClusterControl = ClusterSelectService.getControl();
-                if(selectClusterControl !== undefined) {
+                if(angular.isDefined(selectClusterControl)) {
                     self.addControl(selectClusterControl);
                 }
 
@@ -84,7 +84,7 @@ angular.module('anol.map')
          * Adds a single control
          */
             Controls.prototype.addControl = function(control) {
-                if(this.map !== undefined && control.olControl instanceof Control) {
+                if(angular.isDefined(this.map) && control.olControl instanceof Control) {
                     this.map.addControl(control.olControl);
                 }
                 this.controls.push(control);
@@ -134,7 +134,7 @@ angular.module('anol.map')
                 if(subordinateIdx > -1) {
                     this.subordinateControls.splice(subordinateIdx, 1);
                 }
-                if(this.map !== undefined && control.olControl instanceof Control) {
+                if(angular.isDefined(this.map) && control.olControl instanceof Control) {
                     this.map.removeControl(control.olControl);
                 }
             };

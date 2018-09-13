@@ -24,7 +24,7 @@ angular.module('anol.featurepopup')
                 }
                 return require('./templates/dragpopup.html');
             },         
-            link: function(scope, element, attrs) {
+            link: function(scope, element) {
                 element.css('display', 'none');
                 scope.feature = undefined;
                 scope.layer = undefined;
@@ -55,10 +55,10 @@ angular.module('anol.featurepopup')
                             element: element[0]
                         })
                     });
-                    if(options.selects !== undefined && !angular.equals({}, options.selects)) {
+                    if(angular.isDefined(options.selects) && !angular.equals({}, options.selects)) {
                         scope.selects = options.selects;
                     }
-                    if(options.feature !== undefined) {
+                    if(angular.isDefined(options.feature)) {
                         scope.feature = options.feature;
                     }
                     scope.layer = options.layer;

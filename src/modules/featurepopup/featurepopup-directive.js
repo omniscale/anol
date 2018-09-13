@@ -104,14 +104,14 @@ angular.module('anol.featurepopup')
                         autoPanMargin: scope.autoPanMargin
                     };
 
-                    if(scope.coordinate !== undefined) {
+                    if(angular.isDefined(scope.coordinate)) {
                         scope.overlayOptions.position = scope.coordinate;
                     }
-                    if(scope.offset !== undefined) {
+                    if(angular.isDefined(scope.offset)) {
                         scope.overlayOptions.offset = scope.offset;
                     }
 
-                    if (scope.closeOnZoom !== undefined) {
+                    if (angular.isDefined(scope.closeOnZoom)) {
                         scope.map.getView().on('change:resolution', function() {
                             scope.coordinate = undefined;
                         }, this);
@@ -129,7 +129,7 @@ angular.module('anol.featurepopup')
                     }
 
                     var updateOffset = function(featureLayerList) {
-                        if(scope.offset !== undefined) {
+                        if(angular.isDefined(scope.offset)) {
                             return;
                         }
                         var offset = [0, 0];
@@ -221,7 +221,7 @@ angular.module('anol.featurepopup')
                             found = false;
                             var featureLayerList = [];
                             scope.map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
-                                if(layer === undefined || layer === null) {
+                                if(angular.isUndefined(layer) || layer === null) {
                                     return;
                                 }
 
@@ -241,7 +241,7 @@ angular.module('anol.featurepopup')
                                 }
 
                                 if(multiselect !== true) {
-                                    if(scope.layer === undefined && scope.feature === undefined) {
+                                    if(angular.isUndefined(scope.layer) && angular.isUndefined(scope.feature)) {
                                         scope.layer = anolLayer;
                                         scope.feature = feature;
                                         featureLayerList.push([feature, layer]);
@@ -249,7 +249,7 @@ angular.module('anol.featurepopup')
                                     }
                                     return;
                                 }
-                                if(scope.selects[anolLayer.name] === undefined) {
+                                if(angular.isUndefined(scope.selects[anolLayer.name])) {
                                     scope.selects[anolLayer.name] = {
                                         layer: anolLayer,
                                         features: []
@@ -284,9 +284,9 @@ angular.module('anol.featurepopup')
                     };
 
                     var bindCursorChange = function() {
-                        if(scope.layers === undefined || scope.layers.length === 0) {
+                        if(angular.isUndefined(scope.layers) || scope.layers.length === 0) {
                             MapService.removeCursorPointerCondition(changeCursorCondition);
-                        } else if(scope.layers !== undefined && scope.layers.length !== 0) {
+                        } else if(angular.isDefined(scope.layers) && scope.layers.length !== 0) {
                             MapService.addCursorPointerCondition(changeCursorCondition);
                         }
                     };
@@ -317,7 +317,7 @@ angular.module('anol.featurepopup')
 
                     scope.$watch('layers', bindCursorChange);
                     scope.$watch('coordinate', function(coordinate) {
-                        if(coordinate === undefined) {
+                        if(angular.isUndefined(coordinate)) {
                             scope.selects = {};
                             scope.layer = undefined;
                             scope.feature = undefined;
@@ -356,11 +356,11 @@ angular.module('anol.featurepopup')
 
                             if('coordinate' in openFor) {
                                 scope.coordinate = openFor.coordinate;
-                            } else if(scope.feature !== undefined) {
+                            } else if(angular.isDefined(scope.feature)) {
                                 scope.coordinate = scope.feature.getGeometry().getLastCoordinate();
                             }
 
-                            if(openFor.content !== undefined) {
+                            if(angular.isDefined(openFor.content)) {
                                 element.find('.anol-popup-content').empty().append(openFor.content);
                             }
                             scope.openFor = undefined;
@@ -388,9 +388,9 @@ angular.module('anol.featurepopup')
                         PopupsService.makeDraggable(scope, [x, y], scope.feature, scope.layer, scope.selects, event);
                     };
                 },
-                controller: function($scope, $element, $attrs) {
+                controller: function($scope) {
                     this.close = function() {
-                        if($scope.coordinate !== undefined) {
+                        if(angular.isDefined($scope.coordinate)) {
                             $scope.coordinate = undefined;
                         }
                     };

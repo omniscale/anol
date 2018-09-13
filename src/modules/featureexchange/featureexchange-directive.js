@@ -91,7 +91,6 @@ angular.module('anol.featureexchange')
                         if(scope.layer instanceof anol.layer.Feature) {
                             uploadErrorElement.addClass('hide');
                             uploadErrorElement.empty();
-                            console.log(fileselector);
                             fileselector.val('');
                             fileselector[0].click();
                         }
@@ -130,7 +129,7 @@ angular.module('anol.featureexchange')
                                 scope.layer.clear();
                                 scope.layer.addFeatures(features);
                             };
-                            fileReader.onerror = function(e) {
+                            fileReader.onerror = function() {
                                 showError(scope.errorMessages.couldNotReadFile);
                             };
                             fileReader.readAsText(files[0]);
