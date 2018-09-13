@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 // TODO rename to popup
 angular.module('anol.featurepopup')

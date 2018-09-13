@@ -28,7 +28,7 @@ class SingleTileWMS extends BaseWMS {
 
     _createSourceOptions(srcOptions) {
         srcOptions = super._createSourceOptions(srcOptions);
-        if(srcOptions.ratio === undefined) {
+        if(angular.isUndefined(srcOptions.ratio)) {
             srcOptions.ratio = 1;
         }
         return srcOptions;

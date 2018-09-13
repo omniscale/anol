@@ -1,8 +1,10 @@
-import { defaults } from './module.js';
+import './module.js';
+
 import { LayersService } from './layers-service.js';
 import { ControlsService } from './controls-service.js';
 import { InteractionsService } from './interactions-service.js';
-import { Map, View } from 'ol';
+
+import { Map } from 'ol';
 import { TOUCH as hasTouch } from 'ol/has';
 
 angular.module('anol.map')

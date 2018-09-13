@@ -9,7 +9,7 @@ class Helper {
      * Returns v or d if v undefined
      */
     getValue(v, d) {
-        return v === undefined ? d : v;
+        return angular.isUndefined(v) ? d : v;
     }
     /**
      * Returns a without elements of b
@@ -51,7 +51,7 @@ class Helper {
      * When at is undefined, append b to a
      */
     concat(a, b, at) {
-        if(at !== undefined) {
+        if(angular.isDefined(at)) {
             a.splice.apply(a, [at, 0].concat(b));
         } else {
             a = a.concat(b);
@@ -72,7 +72,7 @@ class Helper {
         var keys = Object.keys(b || {});
         for(var i = 0; i < keys.length; i++) {
             var key  = keys[i];
-            if(a[key] === undefined) {
+            if(angular.isUndefined(a[key])) {
                 a[key] = b[key];
                 continue;
             }

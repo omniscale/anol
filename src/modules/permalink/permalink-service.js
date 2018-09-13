@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { transform } from 'ol/proj';
 
 angular.module('anol.permalink')
@@ -52,15 +52,15 @@ angular.module('anol.permalink')
                     'center': [parseFloat(mapParams[1]), parseFloat(mapParams[2])],
                     'crs': mapParams[3]
                 };
-                if(layers !== undefined) {
+                if(angular.isDefined(layers)) {
                     result.layers = layers;
                 }
 
-                if(catalogLayers !== undefined) {
+                if(angular.isDefined(catalogLayers)) {
                     result.catalogLayers = catalogLayers;
                 }
 
-                if(visibleCatalogLayers !== undefined) {
+                if(angular.isDefined(visibleCatalogLayers)) {
                     result.visibleCatalogLayers = visibleCatalogLayers;
                 }
                 return result;
@@ -120,7 +120,7 @@ angular.module('anol.permalink')
                     self.visibleCatalogLayerNames = [];
                     self.catalogLayerNames = [];
                     self.urlCrs = urlCrs;
-                    if (self.urlCrs === undefined) {
+                    if (angular.isUndefined(self.urlCrs)) {
                         var projection = self.view.getProjection();
                         self.urlCrs = projection.getCode();
                     }
@@ -186,14 +186,14 @@ angular.module('anol.permalink')
 
                 };
                 /**
-         * @private
-         */
+                 * @private
+                 */
                 Permalink.prototype.handleVisibleChange = function(evt) {
                     var self = evt.data.context;
                     // this in this context is the layer, visiblie changed for
                     var layer = this;
+                    var layerName = layer.name;
                     if(layer.permalink === true) {
-                        var layerName = layer.name;
                         if(angular.isDefined(layerName) && layer.getVisible()) {
                             self.visibleLayerNames.push(layerName);
                         } else {
@@ -206,7 +206,6 @@ angular.module('anol.permalink')
                     }
 
                     if(layer.catalogLayer == true) {
-                        var layerName = layer.name;
                         if(angular.isDefined(layerName) && layer.getVisible()) {
                             self.visibleCatalogLayerNames.push(layerName);
                         } else {
@@ -219,13 +218,13 @@ angular.module('anol.permalink')
                     }
                 };
                 /**
-         * @private
-         * @name moveendHandler
-         * @methodOf anol.permalink.PermalinkService
-         * @param {Object} evt ol3 event object
-         * @description
-         * Get lat, lon and zoom after map stoped moving
-         */
+                 * @private
+                 * @name moveendHandler
+                 * @methodOf anol.permalink.PermalinkService
+                 * @param {Object} evt ol3 event object
+                 * @description
+                 * Get lat, lon and zoom after map stoped moving
+                 */
                 Permalink.prototype.moveendHandler = function() {
                     var self = this;
                     var center = transform(self.view.getCenter(), self.view.getProjection().getCode(), self.urlCrs);
@@ -238,16 +237,16 @@ angular.module('anol.permalink')
                     });
                 };
                 /**
-         * @private
-         * @name generatePermalink
-         * @methodOf anol.permalink.PermalinkService
-         * @param {Object} evt ol3 event object
-         * @description
-         * Builds the permalink url addon
-         */
-                Permalink.prototype.generatePermalink = function(evt) {
+                 * @private
+                 * @name generatePermalink
+                 * @methodOf anol.permalink.PermalinkService
+                 * @param {Object} evt ol3 event object
+                 * @description
+                 * Builds the permalink url addon
+                 */
+                Permalink.prototype.generatePermalink = function() {
                     var self = this;
-                    if(self.zoom === undefined || self.lon === undefined || self.lat === undefined) {
+                    if(angular.isUndefined(self.zoom) || angular.isUndefined(self.lon) || angular.isUndefined(self.lat)) {
                         return;
                     }
                     $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
@@ -296,7 +295,7 @@ angular.module('anol.permalink')
                     if (mapParams.catalogLayers !== false) {
                         angular.forEach(mapParams.catalogLayers, function(layerName) {
                             var layer = CatalogService.layerByName(layerName);
-                            if (layer !== undefined) {
+                            if (angular.isDefined(layer)) {
                                 CatalogService.addToMap(layer);
                                 var visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
                                 layer.setVisible(visible);

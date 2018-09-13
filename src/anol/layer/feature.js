@@ -42,7 +42,7 @@ class FeatureLayer extends AnolBaseLayer {
         this.style = options.style;
         this.minResolution = (options.style || {}).minResolution;
         this.maxResolution = (options.style || {}).maxResolution;
-        this.hasPropertyLabel = (options.style || {}).propertyLabel !== undefined;
+        this.hasPropertyLabel = angular.isDefined((options.style || {}).propertyLabel);
 
         this.externalGraphicPrefix = options.externalGraphicPrefix;
         this.hasPropertyLabel = false;
@@ -136,8 +136,8 @@ class FeatureLayer extends AnolBaseLayer {
                 defaultStyle = defaultStyle()[0];
             }
 
-            if(this.style !== undefined) {
-                var createImageStyleFunction = this.style.externalGraphic !== undefined ? this.createIconStyle : this.createCircleStyle;
+            if(angular.isDefined(this.style)) {
+                var createImageStyleFunction = angular.isDefined(this.style.externalGraphic) ? this.createIconStyle : this.createCircleStyle;
 
                 this.defaultStyle = new Style({
                     image: createImageStyleFunction.call(this, this.style, defaultStyle.getImage()),
@@ -209,7 +209,7 @@ class FeatureLayer extends AnolBaseLayer {
         return this.olLayer.getSource().getFeatures();
     }
     createStyle(feature, resolution) {
-        if(this.clusterOptions !== false && feature !== undefined) {
+        if(this.clusterOptions !== false && angular.isDefined(feature)) {
             // when clustering, a features have a features array containing features clustered into this feature
             // so when feature don't have features or only one we draw in normal layer style instead of cluster
             // style
@@ -220,7 +220,7 @@ class FeatureLayer extends AnolBaseLayer {
         }
         var defaultStyle = angular.isFunction(this.defaultStyle) ?
             this.defaultStyle(feature, resolution)[0] : this.defaultStyle;
-        if(feature === undefined) {
+        if(angular.isUndefined(feature)) {
             return defaultStyle;
         }
         var geometryType = feature.getGeometry().getType();
@@ -228,8 +228,8 @@ class FeatureLayer extends AnolBaseLayer {
         if(
             angular.equals(featureStyle, {}) &&
             !this.hasPropertyLabel &&
-            this.minResolution === undefined &&
-            this.maxResolution === undefined
+            angular.isUndefined(this.minResolution) &&
+            angular.isUndefined(this.maxResolution)
         ) {
             return defaultStyle;
         }
@@ -267,8 +267,8 @@ class FeatureLayer extends AnolBaseLayer {
         var radius = style.radius;
         var externalGraphic = style.externalGraphic;
 
-        var isCircle = radius !== undefined;
-        var isIcon = externalGraphic !== undefined;
+        var isCircle = angular.isDefined(radius);
+        var isIcon = angular.isDefined(externalGraphic);
         var isDefaultCircle = defaultImageStyle instanceof CircleStyle;
         var isDefaultIcon = defaultImageStyle instanceof Icon;
 
@@ -290,7 +290,7 @@ class FeatureLayer extends AnolBaseLayer {
         }
 
         var _radius = style.radius;
-        if(_radius !== undefined) {
+        if(angular.isDefined(_radius)) {
             radius = parseFloat(_radius);
         }
         return new CircleStyle({
@@ -310,21 +310,21 @@ class FeatureLayer extends AnolBaseLayer {
             styleOptions.imgSize = defaultIconStyle.getSize();
         }
 
-        if(style.externalGraphic !== undefined) {
-            if(this.externalGraphicPrefix !== undefined) {
+        if(angular.isDefined(style.externalGraphic)) {
+            if(angular.isDefined(this.externalGraphicPrefix)) {
                 styleOptions.src = this.externalGraphicPrefix + style.externalGraphic;
             } else {
                 styleOptions.src = style.externalGraphic;
             }
         }
 
-        if(style.graphicRotation !== undefined) {
+        if(angular.isDefined(style.graphicRotation)) {
             styleOptions.rotation = this._degreeToRad(parseFloat(style.graphicRotation));
-        } else if (this.style !== undefined && this.style.graphicRotation !== undefined) {
+        } else if (angular.isDefined(this.style) && angular.isDefined(this.style.graphicRotation)) {
             styleOptions.rotation = this._degreeToRad(parseFloat(this.style.graphicRotation));
         }
 
-        if(style.graphicWidth !== undefined && style.graphicHeight !== undefined) {
+        if(angular.isDefined(style.graphicWidth) && angular.isDefined(style.graphicHeight)) {
             styleOptions.size = [
                 parseInt(style.graphicWidth),
                 parseInt(style.graphicHeight)
@@ -335,32 +335,32 @@ class FeatureLayer extends AnolBaseLayer {
             ];
         }
 
-        if(style.graphicColor !== undefined) {
+        if(angular.isDefined(style.graphicColor)) {
             styleOptions.color = style.graphicColor;
         }
 
-        if(style.anchorOrigin !== undefined) {
+        if(angular.isDefined(style.anchorOrigin)) {
             styleOptions.anchorOrigin = style.anchorOrigin;
         }
 
         var anchor = [0.5, 0.5];
-        if(style.graphicXAnchor !== undefined) {
+        if(angular.isDefined(style.graphicXAnchor)) {
             anchor[0] = parseFloat(style.graphicXAnchor);
             styleOptions.anchorXUnits = 'pixel';
         }
-        if(style.anchorXUnits !== undefined) {
+        if(angular.isDefined(style.anchorXUnits)) {
             styleOptions.anchorXUnits = style.anchorXUnits;
         }
-        if(style.graphicYAnchor !== undefined) {
+        if(angular.isDefined(style.graphicYAnchor)) {
             anchor[1] = parseFloat(style.graphicYAnchor);
             styleOptions.anchorYUnits = 'pixel';
         }
-        if(style.anchorYUnits !== undefined) {
+        if(angular.isDefined(style.anchorYUnits)) {
             styleOptions.anchorYUnits = style.anchorYUnits;
         }
         styleOptions.anchor = anchor;
 
-        if(style.graphicScale !== undefined) {
+        if(angular.isDefined(style.graphicScale)) {
             styleOptions.scale = parseFloat(style.graphicScale);
         }
         return new Icon(styleOptions);
@@ -368,14 +368,14 @@ class FeatureLayer extends AnolBaseLayer {
     createFillStyle(style, defaultFillStyle) {
         var color = colorAsArray(defaultFillStyle.getColor()).slice();
         var fillColor = style.fillColor;
-        if (fillColor !== undefined) {
+        if (angular.isDefined(fillColor)) {
             fillColor = colorAsArray(fillColor);
             color[0] = fillColor[0];
             color[1] = fillColor[1];
             color[2] = fillColor[2];
         }
         var fillOpacity = style.fillOpacity;
-        if(fillOpacity !== undefined) {
+        if(angular.isDefined(fillOpacity)) {
             color[3] = parseFloat(fillOpacity);
         }
         return new Fill({
@@ -388,22 +388,22 @@ class FeatureLayer extends AnolBaseLayer {
         var strokeDashstyle = defaultStrokeStyle.getLineDash();
 
         var strokeColor = style.strokeColor;
-        if(strokeColor !== undefined) {
+        if(angular.isDefined(strokeColor)) {
             strokeColor = colorAsArray(strokeColor);
             color[0] = strokeColor[0];
             color[1] = strokeColor[1];
             color[2] = strokeColor[2];
         }
         var strokeOpacity = style.strokeOpacity;
-        if(strokeOpacity !== undefined) {
+        if(angular.isDefined(strokeOpacity)) {
             color[3] = parseFloat(strokeOpacity);
         }
         var _strokeWidth = style.strokeWidth;
-        if(_strokeWidth !== undefined) {
+        if(angular.isDefined(_strokeWidth)) {
             strokeWidth = parseFloat(_strokeWidth);
         }
         var _strokeDashstyle = style.strokeDashstyle;
-        if(_strokeDashstyle !== undefined) {
+        if(angular.isDefined(_strokeDashstyle)) {
             strokeDashstyle = this.createDashStyle(strokeWidth, _strokeDashstyle);
         }
 
@@ -438,9 +438,9 @@ class FeatureLayer extends AnolBaseLayer {
     // return function for labelKey from feature if feature is undefined
     // used for default layer style
     getLabel(feature, labelKey) {
-        if(feature === undefined) {
+        if(angular.isUndefined(feature)) {
             return function(_feature) {
-                if(_feature === undefined) {
+                if(angular.isUndefined(_feature)) {
                     return '';
                 }
                 return _feature.get(labelKey);
@@ -464,64 +464,64 @@ class FeatureLayer extends AnolBaseLayer {
             defaultTextFillStyle = defaultTextStyle.getFill();
             defaultText = defaultTextStyle.getText();
             defaultTextRotation = defaultTextStyle.getRotation();
-            if(angular.isFunction(defaultText) && feature !== undefined) {
+            if(angular.isFunction(defaultText) && angular.isDefined(feature)) {
                 defaultText = defaultText.call(this, feature);
             }
         }
         var styleOptions = {};
-        if(style.text !== undefined) {
+        if(angular.isDefined(style.text)) {
             styleOptions.text = style.text;
-        } else if(style.propertyLabel !== undefined && feature !== undefined) {
+        } else if(angular.isDefined(style.propertyLabel) && angular.isDefined(feature)) {
             styleOptions.text = this.getLabel(feature, style.propertyLabel);
-        } else if(defaultText !== undefined) {
+        } else if(angular.isDefined(defaultText)) {
             styleOptions.text = defaultText;
         }
-        if (label !== undefined) {
+        if (angular.isDefined(label)) {
             styleOptions.text = label;
         } 
-        if(styleOptions.text === undefined && feature !== undefined) {
+        if(angular.isUndefined(styleOptions.text) && angular.isDefined(feature)) {
             return;
         }
-        if(style.fontWeight !== undefined) {
+        if(angular.isDefined(style.fontWeight)) {
             fontWeight = style.fontWeight;
         }
-        if(style.fontSize !== undefined) {
+        if(angular.isDefined(style.fontSize)) {
             fontSize = style.fontSize;
         }
-        if(style.fontFace !== undefined) {
+        if(angular.isDefined(style.fontFace)) {
             fontFace = style.fontFace;
         }
         styleOptions.font = [fontWeight, fontSize, fontFace].join(' ');
 
-        if(style.fontOffsetX !== undefined) {
+        if(angular.isDefined(style.fontOffsetX)) {
             styleOptions.offsetX = style.fontOffsetX;
         }
-        if(style.fontOffsetY !== undefined) {
+        if(angular.isDefined(style.fontOffsetY)) {
             styleOptions.offsetY = style.fontOffsetY;
         }
-        if(style.fontRotation !== undefined) {
+        if(angular.isDefined(style.fontRotation)) {
             styleOptions.rotation = this._degreeToRad(parseFloat(style.fontRotation));
-        } else if(defaultTextRotation !== undefined) {
+        } else if(angular.isDefined(defaultTextRotation)) {
             styleOptions.rotation = defaultTextRotation;
         }
 
         var fontColor = [];
-        if(defaultTextFillStyle !== undefined && defaultTextFillStyle !== null) {
+        if(angular.isDefined(defaultTextFillStyle) && defaultTextFillStyle !== null) {
             var defaultFontColor = defaultTextFillStyle.getColor();
-            if(defaultFontColor !== undefined) {
+            if(angular.isDefined(defaultFontColor)) {
                 fontColor = colorAsArray(defaultFontColor).slice();
             }
         }
-        if(style.fontColor !== undefined) {
+        if(angular.isDefined(style.fontColor)) {
             var _fontColor = colorAsArray(style.fontColor).slice();
-            if(_fontColor !== undefined) {
+            if(angular.isDefined(_fontColor)) {
                 fontColor[0] = _fontColor[0];
                 fontColor[1] = _fontColor[1];
                 fontColor[2] = _fontColor[2];
                 fontColor[3] = _fontColor[3] || fontColor[3] || 1;
             }
         }
-        if(fontColor !== undefined && fontColor.length === 4) {
+        if(angular.isDefined(fontColor) && fontColor.length === 4) {
             styleOptions.fill = new Fill({
                 color: fontColor
             });
@@ -556,10 +556,10 @@ class FeatureLayer extends AnolBaseLayer {
         return Math.PI * (degree / 180);
     }
     _createSourceOptions(srcOptions) {
-        if(this.clusterOptions === false || this.clusterOptions == undefined) {
+        if(this.clusterOptions === false || angular.isUndefined(this.clusterOptions)) {
             return srcOptions;
         }
-        if (this.OL_SOURCE_CLASS === undefined) {
+        if (angular.isUndefined(this.OL_SOURCE_CLASS)) {
             return srcOptions;
         }
         srcOptions = super._createSourceOptions(srcOptions);
@@ -572,10 +572,10 @@ class FeatureLayer extends AnolBaseLayer {
         };
     }
     _prepareClusterStyles(clusterOptions) {
-        if(clusterOptions.clusterStyle !== undefined && !(clusterOptions.clusterStyle instanceof Style)) {
+        if(angular.isDefined(clusterOptions.clusterStyle) && !(clusterOptions.clusterStyle instanceof Style)) {
             clusterOptions.clusterStyle = this.createClusterStyleFromDefinition(clusterOptions.clusterStyle, this.DEFAULT_UNCLUSTERED_STYLE);
         }
-        if(clusterOptions.selectClusterStyle !== undefined && !(clusterOptions.selectClusterStyle instanceof Style)) {
+        if(angular.isDefined(clusterOptions.selectClusterStyle) && !(clusterOptions.selectClusterStyle instanceof Style)) {
             clusterOptions.selectClusterStyle = this.createClusterStyleFromDefinition(clusterOptions.selectClusterStyle, this.DEFAULT_SELECT_CLUSTER_STYLE);
         }
         return clusterOptions;

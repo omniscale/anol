@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import Overlay from 'ol/Overlay';
 import WMSGetFeatureInfo from 'ol/format/WMSGetFeatureInfo';
 import VectorLayer from 'ol/layer/Vector';

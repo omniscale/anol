@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { defaults as interactionDefaults } from 'ol/interaction';
 
 angular.module('anol.map')

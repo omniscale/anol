@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
@@ -199,7 +199,7 @@ angular.module('anol.print')
                             self.previousCursor_ = element.style.cursor;
                             element.style.cursor = self.cursor_;
                         }
-                    } else if (self.previousCursor_ !== undefined) {
+                    } else if (angular.isDefined(self.previousCursor_)) {
                         element.style.cursor = self.previousCursor_;
                         self.previousCursor_ = undefined;
                     }
@@ -248,11 +248,11 @@ angular.module('anol.print')
                 geometry.translate(deltaX, deltaY);
                 this.coordinate_[0] = evt.coordinate[0];
                 this.coordinate_[1] = evt.coordinate[1];
-                if(this.dragCallback !== undefined) {
+                if(angular.isDefined(this.dragCallback)) {
                     this.dragCallback();
                 }
             };
-            DragPrintPageInteraction.prototype.handleUpEvent = function(evt) {
+            DragPrintPageInteraction.prototype.handleUpEvent = function() {
                 this.coordinate_ = null;
                 this.feature_ = null;
                 return false;
@@ -438,10 +438,10 @@ angular.module('anol.print')
                 // if(_modify !== undefined) {
                 //     InteractionsService.removeInteraction(_modify);
                 // }
-                if(_drag !== undefined) {
+                if(angular.isDefined(_drag)) {
                     InteractionsService.removeInteraction(_drag);
                 }
-                if(_cursorPointer !== undefined) {
+                if(angular.isDefined(_cursorPointer)) {
                     InteractionsService.removeInteraction(_cursorPointer);
                 }
                 // var modifyFeatures = new ol.Collection();
@@ -637,7 +637,7 @@ angular.module('anol.print')
                     [left, top]
                 ]];
 
-                if(_printArea !== undefined) {
+                if(angular.isDefined(_printArea)) {
                     _printArea.getGeometry().setCoordinates(coords);
                 } else {
                     _printArea = new Feature(new Polygon(coords));
@@ -675,7 +675,7 @@ angular.module('anol.print')
          * Create or update print page geometry by given pageSize and scale
          */
             PrintPage.prototype.addFeatureFromPageSize = function(pageSize, scale) {
-                if(!this.isValidPageSize(pageSize) || scale === undefined || isNaN(scale)) {
+                if(!this.isValidPageSize(pageSize) || angular.isUndefined(scale) || isNaN(scale)) {
                     return;
                 }
                 this.createPrintArea(pageSize, scale);
@@ -710,23 +710,23 @@ angular.module('anol.print')
             };
 
             PrintPage.prototype.validSize = function(size) {
-                if(size === undefined) {
+                if(angular.isUndefined(size)) {
                     return false;
                 }
                 if(isNaN(size)) {
                     return false;
                 }
-                if(this.minPageSize !== undefined && size < this.minPageSize) {
+                if(angular.isDefined(this.minPageSize) && size < this.minPageSize) {
                     return false;
                 }
-                if(this.maxPageSize !== undefined && size > this.maxPageSize) {
+                if(angular.isDefined(this.maxPageSize) && size > this.maxPageSize) {
                     return false;
                 }
                 return true;
             };
 
             PrintPage.prototype.isValidPageSize = function(pageSize) {
-                if(pageSize === undefined) {
+                if(angular.isUndefined(pageSize)) {
                     return false;
                 }
                 if(pageSize.length === 0) {
@@ -748,7 +748,7 @@ angular.module('anol.print')
             };
 
             PrintPage.prototype.getSizeErrors = function(pageSize) {
-                if(pageSize === undefined || pageSize.length === 0) {
+                if(angular.isUndefined(pageSize) || pageSize.length === 0) {
                     return {
                         'width': this.requiredWidthText,
                         'height': this.requiredHeightText
@@ -756,30 +756,30 @@ angular.module('anol.print')
                 }
 
                 var widthError;
-                if(pageSize[0] === undefined || pageSize[0] === null ) {
+                if(angular.isUndefined(pageSize[0]) || pageSize[0] === null ) {
                     widthError = this.requiredWidthText;
                 }
-                if(widthError === undefined && isNaN(pageSize[0])) {
+                if(angular.isUndefined(widthError) && isNaN(pageSize[0])) {
                     widthError = this.invalidWidthText;
                 }
-                if(widthError === undefined && this.minPageSize !== undefined && pageSize[0] < this.minPageSize) {
+                if(angular.isUndefined(widthError) && angular.isDefined(this.minPageSize) && pageSize[0] < this.minPageSize) {
                     widthError = this.widthTooSmallText + Math.round(this.minPageSize) + 'mm';
                 }
-                if(widthError === undefined && this.maxPageSize !== undefined && pageSize[0] > this.maxPageSize) {
+                if(angular.isUndefined(widthError) && angular.isDefined(this.maxPageSize) && pageSize[0] > this.maxPageSize) {
                     widthError = this.widthTooBigText + Math.round(this.maxPageSize) + 'mm';
                 }
 
                 var heightError;
-                if(pageSize[1] === undefined || pageSize[1] === null) {
+                if(angular.isUndefined(pageSize[1]) || pageSize[1] === null) {
                     heightError = this.requiredHeightText;
                 }
-                if(heightError === undefined && isNaN(pageSize[1])) {
+                if(angular.isUndefined(heightError) && isNaN(pageSize[1])) {
                     heightError = this.invalidHeightText;
                 }
-                if(heightError === undefined && this.minPageSize !== undefined && pageSize[1] < this.minPageSize) {
+                if(angular.isUndefined(heightError) && angular.isDefined(this.minPageSize) && pageSize[1] < this.minPageSize) {
                     heightError = this.heightTooSmallText + Math.round(this.minPageSize) + 'mm';
                 }
-                if(heightError === undefined && this.maxPageSize !== undefined && pageSize[1] > this.maxPageSize) {
+                if(angular.isUndefined(heightError) && angular.isDefined(this.maxPageSize) && pageSize[1] > this.maxPageSize) {
                     heightError = this.heightTooBigText + Math.round(this.maxPageSize) + 'mm';
                 }
                 return {

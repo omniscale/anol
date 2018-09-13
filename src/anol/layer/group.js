@@ -23,7 +23,7 @@ class Group {
         
         this.combinable = undefined;
 
-        if (this.layers === undefined) {
+        if (angular.isUndefined(this.layers)) {
             this.layers = [];
         }
         angular.forEach(this.layers, function(layer) {
@@ -51,7 +51,7 @@ class Group {
     }
     isCombinable() {
         // check if check was alredy done for group
-        if (combinable !== undefined) {
+        if (angular.isDefined(combinable)) {
             return combinable;
         }
         var lastClass = undefined;
@@ -59,12 +59,12 @@ class Group {
         var combinable = true;
         var self = this;
         $.each(self.layers, function(idx, layer) {
-            if(lastClass !== undefined && layer.CLASS_NAME !== lastClass) {
+            if(angular.isDefined(lastClass) && layer.CLASS_NAME !== lastClass) {
                 combinable = false;
                 return;
             }
             lastClass = layer.CLASS_NAME;
-            if(lastUrl !== undefined  && layer.olSourceOptions.url !== lastUrl) {
+            if(angular.isDefined(lastUrl)  && layer.olSourceOptions.url !== lastUrl) {
                 combinable = false;
                 return;
             }

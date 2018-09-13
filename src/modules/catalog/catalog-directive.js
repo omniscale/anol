@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 angular.module('anol.catalog')
 /**

@@ -78,7 +78,7 @@ class BBOXGeoJSON  extends StaticGeoJSON {
 
     loader(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
         var self = this;
-        if (extentProjection !== undefined) {
+        if (angular.isDefined(extentProjection)) {
             extent = transformExtent(extent, projection.getCode(), extentProjection.getCode());
         } 
         var params = [

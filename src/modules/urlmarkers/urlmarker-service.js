@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 
@@ -63,7 +63,7 @@ angular.module('anol.urlmarkers')
      * @description When not using popup a label text is added. This can be styled by markerStyle
      */
         this.setUsePopup = function(usePopup) {
-            _usePopup = usePopup === undefined ? _usePopup : usePopup;
+            _usePopup = angular.isUndefined(usePopup) ? _usePopup : usePopup;
         };
 
         /**
@@ -73,7 +73,7 @@ angular.module('anol.urlmarkers')
      * @param {Array.<number>} popupOffset Offset of placed popup. First value is x- second value is y-offset in px
      */
         this.setPopupOffset = function(popupOffset) {
-            _popupOffset = popupOffset === undefined ? _popupOffset : popupOffset;
+            _popupOffset = angular.isUndefined(popupOffset) ? _popupOffset : popupOffset;
         };
 
         this.$get = ['$location', 'MapService', 'LayersService', function($location, MapService, LayersService) {
@@ -139,7 +139,7 @@ angular.module('anol.urlmarkers')
                             marker[kv[0]] = kv[1];
                         }
                     });
-                    if(marker.geometry === undefined) {
+                    if(angular.isUndefined(marker.geometry)) {
                         return;
                     }
                     marker.geometry.transform(
@@ -147,7 +147,7 @@ angular.module('anol.urlmarkers')
                         MapService.view.getProjection().getCode()
                     );
                     marker.style = angular.merge({}, self.style, style);
-                    if(!self.usePopup && marker.label !== undefined) {
+                    if(!self.usePopup && angular.isDefined(marker.label)) {
                         marker.style.text = marker.label;
                     }
                     self.features.push(new Feature(marker));

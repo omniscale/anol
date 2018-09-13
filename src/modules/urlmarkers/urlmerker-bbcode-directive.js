@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 angular.module('anol.urlmarkers')
     .directive('bbcode', [function() {
@@ -9,7 +9,7 @@ angular.module('anol.urlmarkers')
         };
 
         return {
-            link: function(scope, element, attrs) {
+            link: function(scope, element) {
                 scope.$watch(function() {
                     var contents = element.html().replace(/^\s+|\s+$/i, '');
 

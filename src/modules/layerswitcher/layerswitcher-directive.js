@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { TOUCH as hasTouch } from 'ol/has';
 
 angular.module('anol.layerswitcher')

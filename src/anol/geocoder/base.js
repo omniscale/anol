@@ -2,7 +2,7 @@
 class BaseGeocoder {
 
     constructor(_options) {
-        if(_options === undefined) {
+        if(angular.isUndefined(_options)) {
             return;
         }
         this.url = _options.url;

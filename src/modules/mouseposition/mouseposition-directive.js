@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 import { get as getProj } from 'ol/proj';
 import MousePosition from 'ol/control/MousePosition';
@@ -40,7 +40,7 @@ angular.module('anol.mouseposition')
                 projectionCode: '='
             },
             link: {
-                pre: function(scope, element, attrs) {
+                pre: function(scope, element) {
                     $compile(element.contents())(scope);
                     scope.map = MapService.getMap();
                     if(angular.isDefined(scope.projectionCode)) {

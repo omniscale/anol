@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import Stroke from 'ol/style/Stroke';
 import SelectCluster from 'ol-ext/interaction/SelectCluster.js';
 import Style from 'ol/style/Style';

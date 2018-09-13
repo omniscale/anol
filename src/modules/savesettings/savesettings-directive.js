@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 angular.module('anol.savesettings')
 
@@ -15,7 +15,7 @@ angular.module('anol.savesettings')
                 scope: {
                     modalCallBack:'&'
                 },
-                link: function(scope, element, attrs, controllers) {
+                link: function(scope, element, attrs) {
             
                     if (attrs.templateUrl && attrs.templateUrl !== '') {
                         $templateRequest(attrs.templateUrl).then(function(html){
@@ -32,37 +32,37 @@ angular.module('anol.savesettings')
                     scope.delete = function(id) {
                         SaveSettingsService.delete(id).then(function(data) {
                             NotificationService.addInfo(data.message);
-                        }, function() {
+                        }, function(data) {
                             NotificationService.addError(data.message);
                         });
                     };
                     scope.save = function(name) {
                         // load project name to overwrite
-                        if (name === undefined || scope.id) { 
+                        if (angular.isUndefined(name) || scope.id) { 
                             angular.forEach(scope.projectSettings, function(value) {
                                 if (value.id == scope.id) {
                                     name = value.name;
                                 }
                             });
                         }
-                        if (name == undefined || name == '') {
+                        if (angular.isUndefined(name) || name == '') {
                             return;
                         }
                         SaveSettingsService.save(name).then(function(data) {
                             scope.modalCallBack();
                             NotificationService.addInfo(data.message);
-                        }, function() {
+                        }, function(data) {
                             NotificationService.addError(data.message);
                         });
                     };
                     scope.load = function(id) {
-                        if (id === undefined) {
+                        if (angular.isUndefined(id)) {
                             return;
                         }
                         SaveSettingsService.load(id).then(function(data) {
                             scope.modalCallBack();
                             NotificationService.addInfo(data.message);
-                        }, function() {
+                        }, function(data) {
                             NotificationService.addError(data.message);
                         });
                     };                 

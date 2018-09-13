@@ -22,7 +22,7 @@ import { Control as OlControl} from 'ol/control';
 class Control {
     
     constructor(options) {
-        if(options === undefined) {
+        if(angular.isUndefined(options)) {
             return;
         }
 
@@ -33,13 +33,13 @@ class Control {
         this.element = options.element;
         this.interactions = options.interactions || [];
 
-        if(options.olControl === undefined) {
+        if(angular.isUndefined(options.olControl)) {
             var controlElement;
-            if(this.element !== undefined) {
+            if(angular.isDefined(this.element)) {
                 controlElement = this.element[0];
             }
             var target;
-            if(options.target !== undefined) {
+            if(angular.isDefined(options.target)) {
                 target = options.target[0];
             }
             this.olControl = new OlControl({
@@ -63,14 +63,14 @@ class Control {
         }
         this.active = true;
         this.addClass('active');
-        $(this).triggerHandler('anol.control.activate');
+        angular.element(this).triggerHandler('anol.control.activate');
     }
     onActivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
-        $(this).on('anol.control.activate', handler);
+        angular.element(this).on('anol.control.activate', handler);
         return handler;
     }
     oneActivate(func, context) {
@@ -78,11 +78,11 @@ class Control {
         var handler = function() {
             func(targetControl, context);
         };
-        $(this).one('anol.control.activate', handler);
+        angular.element(this).one('anol.control.activate', handler);
         return handler;
     }
     unActivate(handler) {
-        $(this).off('anol.control.activate', handler);
+        angular.element(this).off('anol.control.activate', handler);
     }
     deactivate() {
         if(this.active === false) {
@@ -90,14 +90,14 @@ class Control {
         }
         this.active = false;
         this.removeClass('active');
-        $(this).triggerHandler('anol.control.deactivate');
+        angular.element(this).triggerHandler('anol.control.deactivate');
     }
     onDeactivate(func, context) {
         var targetControl = this;
         var handler = function() {
             func(targetControl, context);
         };
-        $(this).on('anol.control.deactivate', handler);
+        angular.element(this).on('anol.control.deactivate', handler);
         return handler;
     }
     oneDeactivate(func, context) {
@@ -105,11 +105,11 @@ class Control {
         var handler = function() {
             func(targetControl, context);
         };
-        $(this).one('anol.control.deactivate', handler);
+        angular.element(this).one('anol.control.deactivate', handler);
         return handler;
     }
     unDeactivate(handler) {
-        $(this).off('anol.control.deactivate', handler);
+        angular.element(this).off('anol.control.deactivate', handler);
     }
     disable() {
         this.deactivate();
@@ -121,12 +121,12 @@ class Control {
         this.removeClass('disabled');
     }
     addClass(className) {
-        if(this.element !== undefined) {
+        if(angular.isDefined(this.element)) {
             this.element.addClass(className);
         }
     }
     removeClass(className) {
-        if(this.element !== undefined) {
+        if(angular.isDefined(this.element)) {
             this.element.removeClass(className);
         }
     }

@@ -19,7 +19,7 @@ class BaseWMS extends AnolBaseLayer {
         this.OL_LAYER_CLASS = undefined;
         this.OL_SOURCE_CLASS = undefined;
 
-        if(_options === undefined) {
+        if(angular.isUndefined(_options)) {
             return;
         }
 
@@ -39,7 +39,7 @@ class BaseWMS extends AnolBaseLayer {
             return false;
         }
 
-        if (other.anolGroup !== undefined) {
+        if (angular.isDefined(other.anolGroup)) {
             combinable = other.anolGroup.isCombinable();
             if(!combinable) {
                 return false;
@@ -147,13 +147,13 @@ class BaseWMS extends AnolBaseLayer {
             FORMAT: 'image/png',
             LAYER: this.wmsSourceLayers.join(',')
         };
-        if(this.legend.version !== undefined) {
+        if(angular.isDefined(this.legend.version)) {
             requestParams.VERSION = this.legend.version;
         }
-        if(this.legend.sldVersion !== undefined) {
+        if(angular.isDefined(this.legend.sldVersion)) {
             requestParams.SLD_VERSION = this.legend.sldVersion;
         }
-        if(this.legend.format !== undefined) {
+        if(angular.isDefined(this.legend.format)) {
             requestParams.FORMAT = this.legend.format;
         }
 

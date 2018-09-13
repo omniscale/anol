@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import GeoJSON from 'ol/format/GeoJSON';
 
 angular.module('anol.savemanager')
@@ -23,10 +23,10 @@ angular.module('anol.savemanager')
             var self = this;
 
             var _register = function(type, handler, key) {
-                if(handler === undefined) {
+                if(angular.isUndefined(handler)) {
                     return;
                 }
-                if(key !== undefined) {
+                if(angular.isDefined(key)) {
                     self.source.unByKey(key);
                 }
                 return self.source.on(
@@ -55,15 +55,15 @@ angular.module('anol.savemanager')
         };
         LayerListener.prototype.unregister = function() {
             var self = this;
-            if(self.addListenerKey !== undefined) {
+            if(angular.isDefined(self.addListenerKey)) {
                 self.source.unByKey(self.addListenerKey);
                 self.addListenerKey = undefined;
             }
-            if(self.changeListenerKey !== undefined) {
+            if(angular.isDefined(self.changeListenerKey)) {
                 self.source.unByKey(self.changeListenerKey);
                 self.changeListenerKey = undefined;
             }
-            if(self.removeListenerKey !== undefined) {
+            if(angular.isDefined(self.removeListenerKey)) {
                 self.source.unByKey(self.removeListenerKey);
                 self.removeListenerKey = undefined;
             }
@@ -86,7 +86,7 @@ angular.module('anol.savemanager')
             if(layer.saveable !== true) {
                 return;
             }
-            if(_saveManagerInstance !== undefined) {
+            if(angular.isDefined(_saveManagerInstance)) {
                 _saveManagerInstance.addLayer(layer);
             } else {
                 _saveableLayers.push(layer);

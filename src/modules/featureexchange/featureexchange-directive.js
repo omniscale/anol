@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import GeoJSON from 'ol/format/GeoJSON';
 
 angular.module('anol.featureexchange')

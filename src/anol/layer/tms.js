@@ -57,8 +57,8 @@ class TMS extends AnolBaseLayer {
             );
         };
         if(
-            srcOptions.tileGrid === undefined &&
-            srcOptions.extent !== undefined
+            angular.isUndefined(srcOptions.tileGrid) &&
+            angular.isDefined(srcOptions.extent)
         ) {
             var w = getWidth(srcOptions.extent);
             var h = getHeight(srcOptions.extent);

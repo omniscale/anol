@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import Control from 'ol/control/Control';
 
 // TODO rename to popup

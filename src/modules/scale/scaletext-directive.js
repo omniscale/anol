@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 angular.module('anol.scale')
 
@@ -68,7 +68,7 @@ angular.module('anol.scale')
 
                         scope.scale = calculateScale(scope.view);
                     },
-                    post: function(scope, element, attrs) {
+                    post: function(scope) {
                         scope.view.on('change:resolution', function() {
                             // used $timeout instead of $apply to avoid "$apply already in progress"-error
                             $timeout(function() {

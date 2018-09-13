@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 angular.module('anol.print')
 /**
@@ -150,10 +150,10 @@ angular.module('anol.print')
                             if(scope.prepareDownload === true) {
                                 return false;
                             }
-                            if(scope.printAttributes.scale === undefined || scope.printAttributes.scale <= 0) {
+                            if(angular.isUndefined(scope.printAttributes.scale) || scope.printAttributes.scale <= 0) {
                                 return false;
                             }
-                            if(scope.printAttributes.outputFormat === undefined) {
+                            if(angular.isUndefined(scope.printAttributes.outputFormat)) {
                                 return false;
                             }
                             if(!angular.equals(scope.isPrintableAttributes, {})) {

@@ -119,20 +119,20 @@ class AnolBaseLayer {
     }
     removeFromCombinedSource() {}
     getVisible() {
-        if(this.olLayer === undefined) {
+        if(angular.isUndefined(this.olLayer)) {
             return false;
         }
         return this.olLayer.getVisible();
     }
     setVisible(visible)  {
         this.olLayer.setVisible(visible);
-        $(this).triggerHandler('anol.layer.visible:change', [this]);
+        angular.element(this).triggerHandler('anol.layer.visible:change', [this]);
     }
     onVisibleChange(func, context) {
-        $(this).on('anol.layer.visible:change', {'context': context}, func);
+        angular.element(this).on('anol.layer.visible:change', {'context': context}, func);
     }
     offVisibleChange(func) {
-        $(this).off('anol.layer.visible:change', func);
+        angular.element(this).off('anol.layer.visible:change', func);
     }
     refresh() {
         if(this.olLayer instanceof BaseLayer && this.olLayer.getSource() instanceof Source) {
@@ -142,7 +142,7 @@ class AnolBaseLayer {
     }
     _createSourceOptions(srcOptions) {
         srcOptions = srcOptions || {};
-        if(srcOptions.tilePixelRatio !== undefined) {
+        if(angular.isDefined(srcOptions.tilePixelRatio)) {
             srcOptions.tilePixelRatio = DEVICE_PIXEL_RATIO > 1 ? srcOptions.tilePixelRatio : 1;
         }
         return srcOptions;

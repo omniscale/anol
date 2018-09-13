@@ -1,6 +1,5 @@
-import { defaults } from './module.js';
-import {defaults as defaultControls, ScaleLine} from 'ol/control.js';
-import proj4 from 'proj4';
+import './module.js';
+import {ScaleLine} from 'ol/control.js';
 
 
 angular.module('anol.scale')
@@ -24,7 +23,7 @@ angular.module('anol.scale')
             template: '<div class="anol-scale-line ol-unselectable"><div class="anol-scale-line-inner ol-control"></div></div>',
             scope: {},
             link: {
-                post: function(scope, element, attrs) {
+                post: function(scope, element) {
                     scope.map = MapService.getMap();
                     var anolScaleLineInner = element.find('.anol-scale-line-inner');
                     var controlOptions = {

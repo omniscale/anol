@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { ClusterSelectService } from './cluster-select-service.js';
 
 import { defaults as controlDefaults, Control } from 'ol/control';

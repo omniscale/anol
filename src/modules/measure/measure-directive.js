@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
@@ -65,7 +65,7 @@ angular.module('anol.measure')
                 })
             });
 
-            var calculateCoordinate = function(geometry, projection, geodesic) {
+            var calculateCoordinate = function(geometry) {
                 return geometry.getCoordinates();
             };
 
@@ -101,7 +101,7 @@ angular.module('anol.measure')
                 return area;
             };
 
-            var formatCoordinateResult = function(geometry, projection, geodesic) {
+            var formatCoordinateResult = function(geometry, projection) {
                 var coord = transform(geometry.getCoordinates(),
                     projection.getCode(),
                     'EPSG:4326');
@@ -189,7 +189,7 @@ angular.module('anol.measure')
                 var modify = new Modify({
                     features: measureSource.getFeaturesCollection()
                 });
-                modify.on('modifyend', function(evt) {
+                modify.on('modifyend', function() {
                     var resultFormatter, resultCalculator;
                     switch(measureType) {
                     case 'point':
@@ -306,7 +306,7 @@ angular.module('anol.measure')
                     deactivatedCallback: '=?',
                     title: '@'
                 },
-                template: function(tElement, tAttrs) {
+                template: function() {
                     return require('./templates/measure.html');
                 },
                 link: function(scope, element, attrs, AnolMapController) {

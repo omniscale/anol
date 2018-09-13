@@ -1,5 +1,4 @@
-import { defaults } from './module.js';
-import GeoJSON from 'ol/format/GeoJSON';
+import './module.js';
 
 angular.module('anol.savesettings')
 
@@ -7,7 +6,7 @@ angular.module('anol.savesettings')
  * @ngdoc object
  * @name anol.savemanager.SaveManagerServiceProvider
  */
-    .provider('SaveSettingsService', ['LayersServiceProvider', function(LayersServiceProvider) {
+    .provider('SaveSettingsService', [function() {
         var _saveManagerInstance;
         var _saveUrl;
         var _loadUrl;

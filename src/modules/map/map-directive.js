@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { PinchRotate, DragPan } from 'ol/interaction.js';
 import { Control } from 'ol/control.js';
 import { TOUCH as hasTouch } from 'ol/has.js';

@@ -25,6 +25,7 @@
     "buble": "^0.19.3",
     "buble-loader": "^0.5.1",
     "canonical-path": "0.0.2",
+    "eslint-config-angular": "^0.5.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "html-loader": "^0.5.5",
     "jasmine-core": "2.4.1",
@@ -46,7 +47,6 @@
   },
   "scripts": {
     "pretest": "npm run lint",
-    "test": "npm run karma -- --single-run",
     "serve-examples": "webpack-dev-server --config examples/webpack/config.js --mode development --watch",
     "build-examples": "webpack --config examples/webpack/config.js --mode production",
     "build": "webpack --config webpack.config.js --mode production",
@@ -54,6 +54,10 @@
   },
   "devDependencies": {
     "css-loader": "^1.0.0",
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-angular": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
     "file-loader": "^1.1.11",
     "front-matter": "^2.3.0",
     "handlebars": "^4.0.11",

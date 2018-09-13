@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { PopupsService } from '../featurepopup/featurepopup-service.js';
 
 angular.module('anol.map')

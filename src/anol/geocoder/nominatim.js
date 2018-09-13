@@ -15,7 +15,7 @@ import BaseGeocoder from './base.js';
 class Nominatim extends BaseGeocoder {
 
     constructor(_options) {
-        if(_options === undefined) {
+        if(angular.isUndefined(_options)) {
             super();
             return;
         }
@@ -40,12 +40,12 @@ class Nominatim extends BaseGeocoder {
         var data = {
             q: searchString,
             format: 'json',
-            limit: this.options.limit !== undefined ? this.options.limit : 10
+            limit: angular.isDefined(this.options.limit) ? this.options.limit : 10
         };
-        if(this.options.key !== undefined) {
+        if(angular.isDefined(this.options.key)) {
             data.key = this.options.key;
         }
-        if(this.options.viewbox !== undefined) {
+        if(angular.isDefined(this.options.viewbox)) {
             data.bounded = 1;
             data.viewbox = this.options.viewbox.join(',');
         }

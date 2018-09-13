@@ -3,7 +3,7 @@ import BaseGeocoder from './base.js';
 class Solr extends BaseGeocoder {
 
     constructor(_options) {
-        if(_options === undefined) {
+        if(angular.isUndefined(_options)) {
             super();
             return;
         }

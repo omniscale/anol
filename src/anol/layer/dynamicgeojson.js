@@ -168,14 +168,14 @@ class DynamicGeoJSON extends StaticGeoJSON {
 
     createStyle(feature, resolution) {
         // call parent func when feature is undefined
-        if(feature === undefined) {
+        if(angular.isUndefined(feature)) {
             return super.createStyle(feature, resolution);
         }
 
         var features = feature.get('features');
 
         // normal feature
-        if(features === undefined) {
+        if(angular.isUndefined(features)) {
             // return empty style if feature not belongs to this layer
             if(feature.get('__layer__') !== this.name) {
                 return new Style();
@@ -204,7 +204,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
             }
         }
 
-        if(styleLayer !== undefined && styleLayer !== this) {
+        if(angular.isDefined(styleLayer) && styleLayer !== this) {
             return new Style();
         }
 
@@ -221,7 +221,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
             return new Style();
         }
         var cachedStyle = clusterFeature.get('cachedStyle');
-        if(cachedStyle !== null && cachedStyle !== undefined) {
+        if(cachedStyle !== null && angular.isDefined(cachedStyle)) {
             return cachedStyle;
         }
         var self = this;
@@ -233,7 +233,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
             layers.forEach(function(layer) {
                 if(layer.unclusteredSource.getFeatures().indexOf(feature) > -1) {
                     if(layer.name === feature.get('__layer__')) {
-                        if(legendItems[layer.name] === undefined) {
+                        if(angular.isUndefined(legendItems[layer.name])) {
                             legendItems[layer.name] = {
                                 layer: layer,
                                 count: 0
@@ -282,7 +282,7 @@ class DynamicGeoJSON extends StaticGeoJSON {
                 );
             } else {
                 styles.push(defaultStyle);
-                if (styleDefinition.fontOffsetY === undefined) {
+                if (angular.isUndefined(styleDefinition.fontOffsetY)) {
                     styleDefinition.fontOffsetY = value.layer.style.graphicHeight;
                 } 
                 styles.push(new Style({

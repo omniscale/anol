@@ -1,4 +1,4 @@
-import { defaults } from './module.js';
+import './module.js';
 import { transform } from 'ol/proj';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
