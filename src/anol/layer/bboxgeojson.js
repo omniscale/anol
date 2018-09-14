@@ -52,7 +52,11 @@ class BBOXGeoJSON  extends StaticGeoJSON {
      */
     _createSourceOptions(srcOptions) {
         var self = this;
-        srcOptions.format = new GeoJSON();
+        srcOptions.format = new GeoJSON(
+            {
+                dataProjection: srcOptions.dataProjection
+            }
+        );
         srcOptions.strategy = bboxStrategy;
         srcOptions.loader = function(extent, resolution, projection) {
             var additionalParameters = {};
@@ -72,7 +76,6 @@ class BBOXGeoJSON  extends StaticGeoJSON {
                 additionalParameters
             );
         };
-
         return super._createSourceOptions(srcOptions);
     }
 

@@ -48,13 +48,47 @@ class StaticGeoJSON extends FeatureLayer {
      * - dataProjection
      */
     _createSourceOptions(srcOptions) {
-        // TODO load dataProjection from received GeoJSON
+        var self = this;
         srcOptions.format = new GeoJSON({
-            defaultDataProjection: srcOptions.dataProjection
+            dataProjection: srcOptions.dataProjection
         });
+        if (!angular.isFunction(srcOptions.loader)) {
+            srcOptions.loader = function() {
+                self.loader(
+                    srcOptions.url,
+                    srcOptions.featureProjection,
+                    srcOptions.dataProjection
+                );
+            };
+        }
         return super._createSourceOptions(srcOptions);
     }
-
+    loader(url, featureProjection, dataProjection) {
+        var self = this;
+        $.ajax({
+            url: url,
+            dataType: 'json'
+        }).done(function(response) {
+            self.responseHandler(response, featureProjection, dataProjection);
+        });
+    }
+    responseHandler(response, featureProjection, dataProjection) {
+        var self = this;
+        var sourceFeatures = self.olLayer.getSource().getFeatures();
+        for(var i = 0; i < sourceFeatures.length; i++) {
+            self.olLayer.getSource().removeFeature(sourceFeatures[i]);
+        }  
+        var format = new GeoJSON({
+            dataProjection: dataProjection,
+        });
+        var features = format.readFeatures(
+            response, {
+                dataProjection: dataProjection,
+                featureProjection: featureProjection
+            }
+        );
+        self.olLayer.getSource().addFeatures(features);
+    }
     /**
      * Replaces source by new one with given url
      * - url
