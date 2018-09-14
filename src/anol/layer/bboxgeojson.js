@@ -79,10 +79,10 @@ class BBOXGeoJSON  extends StaticGeoJSON {
     loader(url, extent, resolution, projection, featureProjection, extentProjection, dataProjection, additionalParameters) {
         var self = this;
         if (angular.isDefined(extentProjection)) {
-            extent = transformExtent(extent, projection.getCode(), extentProjection.getCode());
+            extent = transformExtent(extent, projection.getCode(), extentProjection);
         } 
         var params = [
-            'srs=' + extentProjection.getCode(),
+            'srs=' + extentProjection,
             'bbox=' + extent.join(','),
             'resolution=' + resolution,
             'zoom=' + self.map.getView().getZoom()
@@ -97,10 +97,9 @@ class BBOXGeoJSON  extends StaticGeoJSON {
         $.ajax({
             url: url + params.join('&'),
             dataType: 'json'
-        })
-            .done(function(response) {
-                self.responseHandler(response, featureProjection, dataProjection);
-            });
+        }).done(function(response) {
+            self.responseHandler(response, featureProjection, dataProjection);
+        });
     }
     responseHandler(response, featureProjection, dataProjection) {
         var self = this;
@@ -119,12 +118,12 @@ class BBOXGeoJSON  extends StaticGeoJSON {
         }  
 
         var format = new GeoJSON({
-            dataProjection: dataProjection.getCode(),
+            dataProjection: dataProjection,
         });
         var features = format.readFeatures(
             response, {
-                dataProjection: dataProjection.getCode(),
-                featureProjection: featureProjection.getCode()
+                dataProjection: dataProjection,
+                featureProjection: featureProjection
             }
         );
         self.olLayer.getSource().addFeatures(features);

@@ -138,10 +138,9 @@ class DynamicGeoJSON extends StaticGeoJSON {
         $.ajax({
             url: url + params.join('&'),
             dataType: 'json'
-        })
-            .done(function(response) {
-                self.responseHandler(response, featureProjection);
-            });
+        }).done(function(response) {
+            self.responseHandler(response, featureProjection);
+        });
     }
 
     responseHandler(response, featureProjection) {
@@ -183,8 +182,6 @@ class DynamicGeoJSON extends StaticGeoJSON {
                 return super.createStyle(feature, resolution);
             }
         }
-
-        // only for cluster features
 
         // cluster with one feature
         if(features.length === 1) {
