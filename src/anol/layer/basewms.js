@@ -48,7 +48,9 @@ class BaseWMS extends AnolBaseLayer {
         if(this.olSourceOptions.url !== other.olSourceOptions.url) {
             return false;
         }
-
+        if (this.isBackground) {
+            return false;
+        }
         var thisParams = $.extend(true, {}, this.olSourceOptions.params);
         delete thisParams.LAYERS;
         var otherParams = $.extend(true, {}, other.olSourceOptions.params);
