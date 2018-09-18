@@ -286,9 +286,9 @@ angular.module('anol.map')
                 angular.forEach(layers, function(_layer) {
                     self.createOlLayer(_layer);
                     self.addedLayers.push(_layer);
-                    // if (_layer.options !== undefined && _layer.options.visible) {
-                    //     _layer.setVisible(true);
-                    // }
+                    if (_layer.options !== undefined && _layer.options.visible) {
+                        _layer.setVisible(true);
+                    }
                     angular.forEach(self.addLayerHandlers, function(handler) {
                         handler(_layer);
                     });
