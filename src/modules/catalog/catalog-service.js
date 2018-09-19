@@ -48,11 +48,16 @@ angular.module('anol.catalog')
                 }
             });
 
-            self.sortedLayers = Object.keys(self.sortedLayers)
-                .sort()
-                .reduce((acc, key) => ({
-                    ...acc, [key]: self.sortedLayers[key]
-                }), {});
+            var sortedLayers = {};
+            Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
+                if (angular.isDefined(acc)) {
+                    sortedLayers[acc] = self.sortedLayers[acc];
+                }
+                if (angular.isDefined(key)) {
+                    sortedLayers[key] = self.sortedLayers[key];
+                }
+            }) 
+            self.sortedLayers = sortedLayers;
         };
 
         /**
