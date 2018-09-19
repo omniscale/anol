@@ -327,7 +327,7 @@ angular.module('anol.measure')
                     var _measureLayer = new VectorLayer({
                         source: measureSource,
                         style: scope.style || measureStyle,
-                        zIndex: 2
+                        zIndex: 2000
                     });
 
                     var layerOptions = {
