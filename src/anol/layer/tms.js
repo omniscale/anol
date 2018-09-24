@@ -97,6 +97,7 @@ class TMS extends AnolBaseLayer {
         return url;
     }
     isCombinable() {
+        this.combinable = false;
         return false;
     }
 }

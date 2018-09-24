@@ -80,7 +80,7 @@ class BaseWMS extends AnolBaseLayer {
     }
 
     removeOlLayer() {
-        if(this.isCombinabled) {
+        if(this.combined) {
             var olSource = this.olLayer.getSource();
             var anolLayers = olSource.get('anolLayers');
             var idx = anolLayers.indexOf(this);
@@ -88,8 +88,18 @@ class BaseWMS extends AnolBaseLayer {
                 anolLayers.splice(idx, 1);
             }
             olSource.set('anolLayers', anolLayers);
-        }
-        super.removeOlLayer();
+
+            // update layer params 
+            var layerParams = [];
+            angular.forEach(anolLayers, function(layer) {
+                if (layer.getVisible()) {
+                    layerParams.push(layer.name);
+                }
+            })
+            var params = olSource.getParams();
+            params.LAYERS = layerParams.reverse().join(',');
+            olSource.updateParams(params);
+        } 
     }
     getVisible() {
         return this.visible;

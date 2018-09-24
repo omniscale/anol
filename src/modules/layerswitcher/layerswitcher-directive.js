@@ -36,6 +36,7 @@ angular.module('anol.layerswitcher')
                 },
                 scope: {
                     anolLayerswitcher: '@anolLayerswitcher',
+                    removeLayerEnabled: '=',
                     tooltipPlacement: '@',
                     tooltipDelay: '@',
                     tooltipEnable: '@'
@@ -52,6 +53,8 @@ angular.module('anol.layerswitcher')
 
                         scope.collapsed = false;
                         scope.showToggle = false;
+
+                        scope.removeLayerEnabled = scope.removeLayerEnabled;
 
                         // attribute defaults
                         scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
@@ -153,6 +156,9 @@ angular.module('anol.layerswitcher')
                         }
                         return false;
                     };
+                    $scope.removeLayer = function(layer) {
+                        LayersService.removeOverlayLayer(layer);
+                    };                    
                 }
             };
         }]);

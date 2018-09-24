@@ -170,41 +170,88 @@ angular.module('anol.map')
             };
             Layers.prototype.removeOverlayLayer = function(layer) {
                 var self = this;
-                if(self.overlayLayers.indexOf(layer) === -1) {
-                    return false;
-                }
-                var layers = [layer];
+
                 if(layer instanceof anol.layer.Group) {
-                    layers = layer.layers;
-                    if(angular.isDefined(layer.name)) {
-                        delete self.nameGroupsMap[layer.name];
+                    var group = layer;
+                    if(self.overlayLayers.indexOf(group) === -1) {
+                        return false;
                     }
-                }
+                    if(angular.isDefined(group.name)) {
+                        delete self.nameGroupsMap[group.name];
+                    }
 
-
-                angular.forEach(layers, function(_layer) {
-                    var addedLayersIdx = self.addedLayers.indexOf(_layer);
+                    var overlayLayerIdx = self.overlayLayers.indexOf(group);
+                    if(overlayLayerIdx > -1) {
+                        self.overlayLayers.splice(overlayLayerIdx, 1);
+                    }   
+                    angular.forEach(group.layers, function(_layer) {
+                        _layer.setVisible(false);
+                        if(angular.isDefined(self.map)) {
+                            var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
+                            if(olLayerIdx > -1) {
+                                self.map.removeLayer(_layer.olLayer);
+                                self.olLayers.splice(olLayerIdx, 1);
+                            }
+                        }
+                        angular.forEach(self.removeLayerHandlers, function(handler) {
+                            handler(_layer);
+                        });
+                        _layer.removeOlLayer();
+                    });
+                    return true;
+                } else {
+                    var addedLayersIdx = self.addedLayers.indexOf(layer);
                     if(addedLayersIdx > -1) {
                         self.addedLayers.splice(addedLayersIdx, 1);
                     }
+                    layer.setVisible(false);
+                    angular.forEach(self.overlayLayers, function(_layer) {
+                        if(_layer instanceof anol.layer.Group) {
+                            angular.forEach(_layer.layers, function(__layer) {
+                                if (angular.equals(__layer, layer)) {
+                                    var overlayLayerIdx = _layer.layers.indexOf(layer);
+                                    if(overlayLayerIdx > -1) {
+                                        if (!layer.combined) {
+                                            // remove not combined layer directly
+                                            var olLayerIdx = self.olLayers.indexOf(layer.olLayer);
+                                            if(olLayerIdx > -1) {
+                                                self.map.removeLayer(layer.olLayer);
+                                                self.olLayers.splice(olLayerIdx, 1);
+                                            }
+                                        }
+                                        _layer.layers.splice(overlayLayerIdx, 1);
+                                    }
+                                    layer.removeOlLayer();
+                                }
+                            });
+                        }
+                    });
 
-                    var overlayLayerIdx = self.overlayLayers.indexOf(_layer);
-                    if(overlayLayerIdx > -1) {
-                        self.overlayLayers.splice(overlayLayerIdx, 1);
-                    }
-
-                    if(angular.isDefined(self.map)) {
-                        var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
-                        if(olLayerIdx > -1) {
-                            self.map.removeLayer(_layer.olLayer);
-                            self.olLayers.splice(olLayerIdx, 1);
+                    // remove empty combined openlayers layer
+                    var olSource = layer.olLayer.getSource();
+                    var anolLayers = olSource.get('anolLayers');
+                    if (anolLayers.length === 0) {
+                        if(angular.isDefined(self.map)) {
+                            var olLayerIdx = self.olLayers.indexOf(layer.olLayer);
+                            if(olLayerIdx > -1) {
+                                self.map.removeLayer(layer.olLayer);
+                                self.olLayers.splice(olLayerIdx, 1);
+                            }
                         }
                     }
-                    angular.forEach(self.removeLayerHandlers, function(handler) {
-                        handler(_layer);
+
+                    angular.forEach(self.overlayLayers, function(layer, idx) {
+                        if(layer instanceof anol.layer.Group) {
+                            if (layer.layers.length === 0) {
+                                self.overlayLayers.splice(idx, 1);
+                            }
+                        };
                     });
-                    _layer.removeOlLayer();
-                });
+
+                    angular.forEach(self.removeLayerHandlers, function(handler) {
+                        handler(layer);
+                    });
+                }
             };
             /**
          * @ngdoc method
@@ -234,6 +281,7 @@ angular.module('anol.map')
                         layer.unclusteredSource = lastAddedLayer.unclusteredSource;
                     }
                     layer.combined = true;
+                    lastAddedLayer.combined = true;
                 }
                 if(angular.isUndefined(olSource)) {
                     var sourceOptions = angular.extend({}, layer.olSourceOptions);
