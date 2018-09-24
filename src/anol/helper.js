@@ -99,6 +99,16 @@ class Helper {
         arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
         return arr; // for testing
     } 
+
+    uniq(a) {
+        var r = [];
+        a.forEach(function(item) {
+             if(r.indexOf(item) < 0) {
+                 r.push(item);
+             }
+        }); 
+        return r;
+    }
 }
 
 export default Helper;

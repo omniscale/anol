@@ -249,6 +249,8 @@ angular.module('anol.permalink')
                     if(angular.isUndefined(self.zoom) || angular.isUndefined(self.lon) || angular.isUndefined(self.lat)) {
                         return;
                     }
+
+                    self.visibleLayerNames = anol.helper.uniq(self.visibleLayerNames);
                     $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
                     $location.search('layers', self.visibleLayerNames.join(','));
                     $location.search('visibleCatalogLayers', self.visibleCatalogLayerNames.join(','));
@@ -262,7 +264,8 @@ angular.module('anol.permalink')
                     self.view.setCenter(center);
                     self.view.setZoom(mapParams.zoom);
                     if(mapParams.layers !== false) {
-                        self.visibleLayerNames = mapParams.layers;
+                        // remove duplicate from visible Layers
+                        self.visibleLayerNames = anol.helper.uniq(mapParams.layers);
                         var backgroundLayerAdded = false;
                         angular.forEach(LayersService.layers(), function(layer) {
                             // only overlay layers are grouped
