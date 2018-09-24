@@ -49,15 +49,17 @@ angular.module('anol.catalog')
             });
 
             var sortedLayers = {};
-            Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
-                if (angular.isDefined(acc)) {
-                    sortedLayers[acc] = self.sortedLayers[acc];
-                }
-                if (angular.isDefined(key)) {
-                    sortedLayers[key] = self.sortedLayers[key];
-                }
-            }) 
-            self.sortedLayers = sortedLayers;
+            if (!angular.equals({}, self.sortedLayers)) {
+                Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
+                    if (angular.isDefined(acc)) {
+                        sortedLayers[acc] = self.sortedLayers[acc];
+                    }
+                    if (angular.isDefined(key)) {
+                        sortedLayers[key] = self.sortedLayers[key];
+                    }
+                }) 
+                self.sortedLayers = sortedLayers;
+            }
         };
 
         /**
