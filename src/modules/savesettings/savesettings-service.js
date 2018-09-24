@@ -82,7 +82,7 @@ angular.module('anol.savesettings')
 
                 SaveSettings.prototype.applyLoadSettings = function(settings) {
                     PermalinkService.setPermalinkParameters(settings.map);
-
+                    LayersService.deleteLayers(settings.layerswitcher.deleted);
                     LayersService.setLayerOrder(settings.layerswitcher.order);
                     LayersService.setCollapsedGroups(settings.layerswitcher.open);
             
@@ -123,6 +123,7 @@ angular.module('anol.savesettings')
                     var permalinkData = PermalinkService.getSettings();
                     // save all layer settings 
                     var layers = LayersService.overLayersAsArray(); 
+                    var deletedLayers = LayersService.deletedOverlayLayers;
 
                     var groups = LayersService.getCollapsedGroups(); 
                     // save print settings
@@ -137,6 +138,7 @@ angular.module('anol.savesettings')
                         'map': permalinkData,
                         'layerswitcher': {
                             'order': layers,
+                            'deleted': deletedLayers,
                             'open': groups
                         },
                         'controls': controls,

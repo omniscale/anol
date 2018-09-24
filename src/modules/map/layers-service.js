@@ -58,6 +58,8 @@ angular.module('anol.map')
                 self.backgroundLayers = [];
                 // contains all anol overlay layers or groups
                 self.overlayLayers = [];
+                // contains all deleted anol overlay layers or groups
+                self.deletedOverlayLayers = [];
                 // contains all anol layers used internaly by modules
                 self.systemLayers = [];
                 self.nameLayersMap = {};
@@ -183,6 +185,7 @@ angular.module('anol.map')
                     var overlayLayerIdx = self.overlayLayers.indexOf(group);
                     if(overlayLayerIdx > -1) {
                         self.overlayLayers.splice(overlayLayerIdx, 1);
+                        self.deletedOverlayLayers.push(group.name)
                     }   
                     angular.forEach(group.layers, function(_layer) {
                         _layer.setVisible(false);
@@ -197,6 +200,7 @@ angular.module('anol.map')
                             handler(_layer);
                         });
                         _layer.removeOlLayer();
+                        self.deletedOverlayLayers.push(_layer.name);
                     });
                     return true;
                 } else {
@@ -237,6 +241,7 @@ angular.module('anol.map')
                                         _layer.layers.splice(overlayLayerIdx, 1);
                                     }
                                     layer.removeOlLayer();
+                                    self.deletedOverlayLayers.push(layer.name);
                                 }
                             });
                         }
@@ -460,11 +465,26 @@ angular.module('anol.map')
             Layers.prototype.groupByName = function(name) {
                 return this.nameGroupsMap[name];
             };
+            
+            Layers.prototype.deleteLayers = function(deletedLayers) {
+                var self = this;
+                if (angular.isUndefined(deletedLayers)) {
+                    return;
+                }
+                angular.forEach(deletedLayers, function(overlayLayer, overlayLayerIdx) {
+                    var layer = self.layerByName(overlayLayer);
+                    if (angular.isUndefined(layer)) {
+                        layer = self.groupByName(overlayLayer);
+                    }
+                    self.removeOverlayLayer(layer)
+                });
+            };
 
-            Layers.prototype.setLayerOrder = function(layers) {
+            Layers.prototype.setLayerOrder = function(layers, deleteLayers) {
                 var lastOlLayerUid = undefined;
                 var self = this;
                 self.zIndex = 0;
+
                 var overlayLayers = [];
                 $.each(layers, function(newIdx, layer) {
                     $.each(self.overlayLayers, function(oldIdx, overlayLayer) {
@@ -484,7 +504,7 @@ angular.module('anol.map')
                             return;
                         }
                     });
-                });    
+                });  
                 this.reorderOverlayLayers();
             };  
 
@@ -522,7 +542,7 @@ angular.module('anol.map')
                     }
                     sortedLayers.push({ 
                         'name': layer.name,
-                        'layers': sortedGroupLayers 
+                        'layers': sortedGroupLayers
                     });
 
                 });  
