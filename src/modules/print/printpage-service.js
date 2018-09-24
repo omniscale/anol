@@ -157,7 +157,7 @@ angular.module('anol.print')
             var _printLayer = new VectorLayer({
                 source: _printSource,
                 style: defaultStyle,
-                zIndex: 3
+                zIndex: 2001
             });
           
             // TODO replace ol3 styling by anol.layerFeature styling
