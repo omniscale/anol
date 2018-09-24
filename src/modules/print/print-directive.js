@@ -182,15 +182,20 @@ angular.module('anol.print')
                             scope.printAttributes = {
                                 pageSize: printData.pageSize,
                                 layout: printData.layout,
-                                scale: printData.scale
+                                scale: printData.scale,
+                                cellsY: printData.cellsY,
+                                cellsX: printData.cellsX,
+                                streetIndex: printData.streetIndex
                             };
 
-                            if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
-                                angular.forEach(scope.outputFormats, function(format, idx) {
-                                    if (format.value == printData.outputFormat.value) { 
-                                        scope.printAttributes.outputFormat = scope.outputFormats[idx];
-                                    }
-                                });
+                            if (angular.isDefined(printData.outputFormat)) {
+                                if(angular.isArray(scope.outputFormats) && scope.outputFormats.length > 0) {
+                                    angular.forEach(scope.outputFormats, function(format, idx) {
+                                        if (format.value == printData.outputFormat.value) { 
+                                            scope.printAttributes.outputFormat = scope.outputFormats[idx];
+                                        }
+                                    });
+                                }
                             }
                             if (data.sidebar == print) {
                                 scope.setPageLayout(printData.pageSize, printData.layout);

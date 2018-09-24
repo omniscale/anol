@@ -793,7 +793,10 @@ angular.module('anol.print')
                     'scale': attr.scale,
                     'outputFormat': attr.outputFormat,
                     'layout': attr.layout,
-                    'pageSize': attr.pageSize 
+                    'pageSize': attr.pageSize,
+                    'streetIndex': attr.streetIndex,
+                    'cellsX': attr.cellsX,
+                    'cellsY': attr.cellsY
                 };
             };
 
