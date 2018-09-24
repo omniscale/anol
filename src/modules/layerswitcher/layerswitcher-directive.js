@@ -22,8 +22,8 @@ angular.module('anol.layerswitcher')
  */
 // TODO handle add / remove layer
 // TODO handle edit layers title
-    .directive('anolLayerswitcher', ['$timeout', '$templateRequest', '$compile', 'LayersService', 'ControlsService', 'MapService',
-        function($timeout, $templateRequest, $compile, LayersService, ControlsService, MapService) {
+    .directive('anolLayerswitcher', ['$timeout', '$templateRequest', '$compile', 'LayersService', 'ControlsService', 'MapService', 'CatalogService',
+        function($timeout, $templateRequest, $compile, LayersService, ControlsService, MapService, CatalogService) {
             return {
                 restrict: 'A',
                 require: '?^anolMap',
@@ -157,7 +157,11 @@ angular.module('anol.layerswitcher')
                         return false;
                     };
                     $scope.removeLayer = function(layer) {
-                        LayersService.removeOverlayLayer(layer);
+                        if (layer.catalog) {
+                            CatalogService.removeFromMap(layer);
+                        } else {
+                            LayersService.removeOverlayLayer(layer);
+                        }
                     };                    
                 }
             };
