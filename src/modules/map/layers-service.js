@@ -154,7 +154,7 @@ angular.module('anol.map')
                 }
                 idx = idx || 0;
                 // layers added reversed to map, so default idx is 0 to add layer "at top"
-                self.overlayLayers.splice(idx, 0, layer);
+                self.overlayLayers.push(layer)
                 self._prepareLayer(layer);
 
                 if(layer instanceof anol.layer.Group) {
