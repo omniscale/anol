@@ -31,8 +31,8 @@ angular.module('anol.savesettings')
         this.setProjectName = function(projectName) {
             _projectName = projectName;
         };    
-        this.$get = ['$rootScope', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings', 'LayersService',
-            function($rootScope, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings, LayersService) {
+        this.$get = ['$rootScope', '$window', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings', 'LayersService',
+            function($rootScope, $window, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings, LayersService) {
                 /**
          * @ngdoc service
          * @name anol.savemanager.SaveManagerService
@@ -97,12 +97,20 @@ angular.module('anol.savesettings')
                 SaveSettings.prototype.load = function(id) {
                     var self = this;
                     var deferred = $q.defer();
+                    // if ajax is false we use redirect to load page settings
+                    var ajax = false;
                     var data = {
-                        'id': id
+                        'id': id,
+                        'ajax': false,
+                        'project_name': self.projectName
                     };
                     var promise = $http.post(self.loadUrl, data);
                     promise.then(function(response) {
-                        self.applyLoadSettings(response.data.settings);
+                        if (ajax) {
+                            self.applyLoadSettings(response.data.settings);
+                        } else {  
+                            $window.location.href = response.data.redirect;
+                        }
                         deferred.resolve(response.data);
                     }, function(response) {
                         if(response.status === -1) {
