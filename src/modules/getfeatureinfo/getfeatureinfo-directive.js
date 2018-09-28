@@ -92,6 +92,7 @@ angular.module('anol.getfeatureinfo')
                         });
                         var markerOlLayerOptions = featureInfoLayer.olLayerOptions;
                         markerOlLayerOptions.source = new featureInfoLayer.OL_SOURCE_CLASS(featureInfoLayer.olSourceOptions);
+                        markerOlLayerOptions.zIndex = 2001;
                         featureInfoLayer.setOlLayer(new featureInfoLayer.OL_LAYER_CLASS(markerOlLayerOptions));
 
                         LayersService.addSystemLayer(featureInfoLayer, 0);
