@@ -135,7 +135,7 @@ angular.module('anol.legend')
 
                         var self = this;
                         scope.$watchCollection(function() {
-                            return LayersService.overlayLayers;
+                            return LayersService.layers();
                         }, function(newVal) {
                             if(angular.isDefined(newVal)) {
                                 // reset legendLayers
