@@ -95,6 +95,8 @@ angular.module('anol.catalog')
          * Adds a layer to catalog
          */
         CatalogService.prototype.addCatalogLayer = function(layer) {
+            // all catalog layers must display in layerswitcher
+            layer.displayInLayerswitcher = true;
             this.catalogLayers.push(layer);
         };
         /**
