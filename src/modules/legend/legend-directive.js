@@ -86,6 +86,10 @@ angular.module('anol.legend')
                         scope.visibleLayerNames = [];
 
                         function addLegendLayer(layer) {
+                            if (angular.isUndefined(layer)) {
+                                return true;
+                            }
+
                             if(layer instanceof anol.layer.Group) {
                                 var layers = [];
                                 angular.forEach(layer.layers, function(overlayLayer) {
@@ -142,6 +146,10 @@ angular.module('anol.legend')
                                 scope.legendLayers = [];
                                 scope.visibleLayerNames = [];
                                 angular.forEach(newVal, function(layer) {
+                                    if (angular.isUndefined(layer)) {
+                                        return true;
+                                    }
+                                    
                                     addLegendLayer(layer);
                                     if(layer instanceof anol.layer.Group) {
                                         angular.forEach(layer.layers, function(groupLayer) {

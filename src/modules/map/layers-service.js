@@ -103,9 +103,16 @@ angular.module('anol.map')
                 var self = this;
                 self.map = map;
                 angular.forEach(self.backgroundLayers, function(layer) {
+                    if (angular.isUndefined(layer)) {
+                        return true;
+                    }
                     self._addLayer(layer, true);
                 });
                 angular.forEach(self.overlayLayers, function(layer, idx) {
+                    if (angular.isUndefined(layer)) {
+                        return true;
+                    }
+
                     if(layer instanceof anol.layer.Group) {
                         angular.forEach(layer.layers.slice().reverse(), function(grouppedLayer, idx) {
                             if(self.olLayers.indexOf(grouppedLayer.olLayer) < 0) {
@@ -488,6 +495,9 @@ angular.module('anol.map')
                 var overlayLayers = [];
                 $.each(layers, function(newIdx, layer) {
                     $.each(self.overlayLayers, function(oldIdx, overlayLayer) {
+                        if (angular.isUndefined(overlayLayer)) {
+                            return true;
+                        }
                         if(layer.name == overlayLayer.name) {
                             anol.helper.array_move(self.overlayLayers, oldIdx, newIdx);
                             if(overlayLayer instanceof anol.layer.Group) {
@@ -572,6 +582,10 @@ angular.module('anol.map')
                 var self = this;
                 self.zIndex = 0;
                 self.overlayLayers.slice().reverse().forEach(function(layer) {
+                    if (angular.isUndefined(layer)) {
+                        return true;
+                    }
+
                     if(layer instanceof anol.layer.Group) {
                         layer.layers.slice().reverse().forEach(function(grouppedLayer, idx) {
                             if(grouppedLayer.combined) {

@@ -149,6 +149,10 @@ angular.module('anol.permalink')
                     }, function(newVal) {
                         if(angular.isDefined(newVal)) {
                             angular.forEach(newVal, function(layer) {
+                                if (angular.isUndefined(layer)) {
+                                    return true;
+                                }
+                                
                                 if(layer instanceof anol.layer.Group) {
                                     angular.forEach(layer.layers, function(groupLayer) {
                                         if(groupLayer.permalink === true) {
