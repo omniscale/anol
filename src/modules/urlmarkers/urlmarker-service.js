@@ -93,7 +93,6 @@ angular.module('anol.urlmarkers')
                 self.style = style;
                 self.usePopup = usePopup;
                 self.popupOffset = popupOffset;
-
                 self.extractFeaturesFromUrl();
 
                 if(self.features.length === 0) {
@@ -159,6 +158,7 @@ angular.module('anol.urlmarkers')
                 var layer = new anol.layer.Feature({
                     name: 'markersLayer',
                     olLayer: {
+                        zIndex: 2001,
                         source: {
                             features: features
                         }
