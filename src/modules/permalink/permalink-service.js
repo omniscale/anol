@@ -261,7 +261,7 @@ angular.module('anol.permalink')
                         $location.search('visibleCatalogLayers', self.visibleCatalogLayerNames.join(','));
                     }
                     if (self.catalogLayerNames.length !== 0) {
-                        $location.search('catalogLayers', self.visibleCatalogLayerNames.join(','));
+                        $location.search('catalogLayers', self.catalogLayerNames.join(','));
                     }
                     $location.replace();
                 };
