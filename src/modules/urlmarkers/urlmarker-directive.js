@@ -11,7 +11,7 @@ angular.module('anol.urlmarkers')
 
             var overlays = [];
 
-            var popupTemplate = '<div class="anol-popup top>' +
+            var popupTemplate = '<div class="anol-popup bottom">' +
                             '<span class="anol-popup-closer glyphicon glyphicon-remove" ng-mousedown="$event.stopPropagation();"></span>' +
                             '<div class="anol-popup-content" bbcode>' +
                             '</div>' +
