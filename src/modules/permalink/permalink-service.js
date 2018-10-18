@@ -257,8 +257,12 @@ angular.module('anol.permalink')
                     self.visibleLayerNames = anol.helper.uniq(self.visibleLayerNames);
                     $location.search('map', [self.zoom, self.lon, self.lat, self.urlCrs].join(','));
                     $location.search('layers', self.visibleLayerNames.join(','));
-                    $location.search('visibleCatalogLayers', self.visibleCatalogLayerNames.join(','));
-                    $location.search('catalogLayers', self.catalogLayerNames.join(','));
+                    if (self.visibleCatalogLayerNames.length !== 0) {
+                        $location.search('visibleCatalogLayers', self.visibleCatalogLayerNames.join(','));
+                    }
+                    if (self.catalogLayerNames.length !== 0) {
+                        $location.search('catalogLayers', self.visibleCatalogLayerNames.join(','));
+                    }
                     $location.replace();
                 };
 
