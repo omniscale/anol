@@ -46,7 +46,7 @@ angular.module('anol.measure')
         function($templateRequest, $compile, $timeout, ControlsService, LayersService, MapService) {
             // create a sphere whose radius is equal to the semi-major axis of the WGS84 ellipsoid
             // var wgs84Sphere = new ol.Sphere(6378137);
-            var measureStyle = function(feature) {
+            var measureStyle = function(feature, labelSegments) {
                 var geometry = feature.getGeometry();
                 var styles = [
                         new Style({
@@ -126,23 +126,24 @@ angular.module('anol.measure')
                       }));
                     }
 
-
-                var geometryType = feature.getGeometry().getType();
-                if (geometryType === 'LineString') {
-                    geometry.forEachSegment(function(start, end) {
-                        layoutSegments(start, end);
-                    });
-                }
-                if (geometryType === 'Polygon') {
-                    var coordinates = geometry.getCoordinates();
-                    var coords = coordinates[0];
-                    angular.forEach(coords, function(coord, idx) {
-                        if (idx !== coords.length - 1){ 
-                            var start = coord; 
-                            var end = coords[idx + 1];
+                if (labelSegments) {
+                    var geometryType = feature.getGeometry().getType();
+                    if (geometryType === 'LineString') {
+                        geometry.forEachSegment(function(start, end) {
                             layoutSegments(start, end);
-                        }
-                    })
+                        });
+                    }
+                    if (geometryType === 'Polygon') {
+                        var coordinates = geometry.getCoordinates();
+                        var coords = coordinates[0];
+                        angular.forEach(coords, function(coord, idx) {
+                            if (idx !== coords.length - 1){ 
+                                var start = coord; 
+                                var end = coords[idx + 1];
+                                layoutSegments(start, end);
+                            }
+                        })
+                    }
                 }
                 return styles;
             };
@@ -427,7 +428,9 @@ angular.module('anol.measure')
                     });
                     var _measureLayer = new VectorLayer({
                         source: measureSource,
-                        style: scope.style || measureStyle,
+                        style: scope.style || function(feature) {
+                            return measureStyle(feature, scope.labelSegments)
+                        },
                         zIndex: 2000
                     });
 
