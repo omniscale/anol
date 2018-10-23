@@ -70,12 +70,11 @@ angular.module('anol.measure')
 
                 function lengthAsString(start, end) {
                     var geometry = new LineString([start, end])
-                    var length;
-
-                    // map.getView().getProjection(),
-                    // var projection = 
                     var projection = MapService.getMap().getView().getProjection();
-                    var geodesic = true;
+
+                    var length;
+                    // TODO load from Service
+                    var geodesic = false;
 
                     if (geodesic) {
                         var coordinates = geometry.getCoordinates();
@@ -435,8 +434,8 @@ angular.module('anol.measure')
                     });
 
                     var layerOptions = {
-                        title: 'lineMeasureLayer',
-                        name: 'lineMeasureLayer',
+                        title: scope.measureType + 'MeasureLayer',
+                        name: scope.measureType + 'MeasureLayer',
                         displayInLayerswitcher: false,
                         olLayer: _measureLayer
                     };

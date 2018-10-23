@@ -295,6 +295,17 @@ angular.module('anol.map')
                 idx = idx || 0;
                 self.systemLayers.splice(idx, 0, layer);
             };
+
+            Layers.prototype.getSystemLayerByName = function(layername) {
+                var self = this;
+                var systemlayer = undefined;
+                angular.forEach(self.systemLayers, function(layer, idx) {
+                    if (layer.name == layername) {
+                        systemlayer = layer;
+                    }
+                });
+                return systemlayer
+            };            
             /**
          * private function
          * Creates olLayer

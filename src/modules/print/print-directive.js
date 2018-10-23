@@ -1,4 +1,5 @@
 import './module.js';
+import GeoJSON from 'ol/format/GeoJSON.js'
 
 angular.module('anol.print')
 /**
@@ -50,6 +51,7 @@ angular.module('anol.print')
                             layout: undefined,
                             scale: angular.copy(PrintPageService.defaultScale)
                         };
+
                         scope.isPrintableAttributes = {};
                         scope.availableScales = PrintPageService.availableScales;
                         scope.definedPageLayouts = PrintPageService.pageLayouts;
@@ -83,10 +85,25 @@ angular.module('anol.print')
                             var layers = [LayersService.activeBackgroundLayer()];
                             layers = layers.concat(prepareOverlays(LayersService.overlayLayers));
 
+                            // TODO load from PrintPageService
+                            scope.measureLayers = ['lineMeasureLayer', 'areaMeasureLayer'];
+                            var measure_feature_collection = {}
+
+                            angular.forEach(scope.measureLayers, function(layername) {
+                                var featureLayer = LayersService.getSystemLayerByName(layername);
+                                var geojsonFormat = new GeoJSON();
+                                if (featureLayer.olLayer.getSource().getFeatures().length !== 0) {
+                                    measure_feature_collection = geojsonFormat.writeFeaturesObject(
+                                        featureLayer.olLayer.getSource().getFeatures()
+                                    );
+                                }
+                            });
+
                             var downloadPromise = PrintService.startPrint({
                                 bbox: PrintPageService.getBounds(),
                                 projection: MapService.getMap().getView().getProjection().getCode(),
                                 layers: layers,
+                                measure_feature_collection: measure_feature_collection,
                                 templateValues: angular.copy(scope.printAttributes)
                             }
                             );
