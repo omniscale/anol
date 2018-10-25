@@ -184,7 +184,7 @@ angular.module('anol.measure')
                 return area;
             };
 
-            var formatCoordinateResult = function(geometry, projection) {
+            var formatCoordinateResult = function(geometry, projection, geodesic, labelSegments) {
                 var coord = transform(geometry.getCoordinates(),
                     projection.getCode(),
                     'EPSG:4326');
@@ -194,7 +194,7 @@ angular.module('anol.measure')
                 return output;
             };
 
-            var formatLineResult = function(geometry, projection, geodesic) {
+            var formatLineResult = function(geometry, projection, geodesic, labelSegments) {
                 var length = calculateLength(geometry, projection, geodesic);
                 var output;
                 if (length > 100) {
@@ -205,7 +205,7 @@ angular.module('anol.measure')
                 return output;
             };
 
-            var formatAreaResult = function(geometry, projection, geodesic) {
+            var formatAreaResult = function(geometry, projection, geodesic, labelSegments) {
                 var area = calculateArea(geometry, projection, geodesic);
                 var output;
                 if (area > 10000) {
@@ -216,19 +216,21 @@ angular.module('anol.measure')
                      ' ' + 'm<sup>2</sup>';
                 }
 
-                // calculate line length for area and add to label
-                var length = 0;
-                var coordinates = geometry.getCoordinates();
-                var coords = coordinates[0];
-                angular.forEach(coords, function(coord, idx) {
-                    if (idx !== coords.length - 1){ 
-                        length += calculateLength(new LineString([coord, coords[idx + 1]]));
+                if (labelSegments) {
+                    // calculate line length for area and add to label
+                    var length = 0;
+                    var coordinates = geometry.getCoordinates();
+                    var coords = coordinates[0];
+                    angular.forEach(coords, function(coord, idx) {
+                        if (idx !== coords.length - 1){ 
+                            length += calculateLength(new LineString([coord, coords[idx + 1]]));
+                        }
+                    })
+                    if (length > 100) {
+                        output += '<br>' + (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
+                    } else {
+                        output += '<br>' + (Math.round(length * 100) / 100) + ' ' + 'm';
                     }
-                })
-                if (length > 100) {
-                    output += '<br>' + (Math.round(length / 1000 * 100) / 100) + ' ' + 'km';
-                } else {
-                    output += '<br>' + (Math.round(length * 100) / 100) + ' ' + 'm';
                 }
                 return output;
             };
@@ -283,7 +285,7 @@ angular.module('anol.measure')
                 return overlay;
             };
 
-            var createModifyInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic) {
+            var createModifyInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic, labelSegments) {
                 var modify = new Modify({
                     features: measureSource.getFeaturesCollection()
                 });
@@ -313,7 +315,7 @@ angular.module('anol.measure')
                         return;
                     }
 
-                    measureOverlay.getElement().innerHTML = resultFormatter(geometry, projection, geodesic);
+                    measureOverlay.getElement().innerHTML = resultFormatter(geometry, projection, geodesic, labelSegments);
                     measureOverlay.setPosition(geometry.getLastCoordinate());
                 });
                 return modify;
@@ -457,7 +459,8 @@ angular.module('anol.measure')
                         measureOverlay,
                         scope.measureResultCallback,
                         map.getView().getProjection(),
-                        scope.geodesic);
+                        scope.geodesic, 
+                        scope.labelSegments);
 
                     scope.measure = function() {
                         if(control.active) {
