@@ -50,12 +50,14 @@ angular.module('anol.layerswitcher')
                                 $compile(template)(scope);
                             });
                         } 
-
                         scope.collapsed = false;
                         scope.showToggle = false;
-
+                        if (angular.isDefined(scope.$parent.hideMetadata)) {
+                            scope.hideMetadata = scope.$parent.hideMetadata;
+                        } else {
+                            scope.hideMetadata = false;
+                        }
                         scope.removeLayerEnabled = scope.removeLayerEnabled;
-
                         // attribute defaults
                         scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
                             scope.tooltipPlacement : 'left';

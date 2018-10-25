@@ -31,7 +31,7 @@ angular.module('anol.catalog')
                     } 
                     scope.sortedLayers = CatalogService.sortedLayers;
                     scope.addedLayers = CatalogService.addedLayers;
-
+                                        
                     scope.addToMap = function(layer) {
                         CatalogService.addToMap(layer);
                     };
