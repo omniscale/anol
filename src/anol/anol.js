@@ -28,6 +28,7 @@ import StaticGeoJSON from './layer/staticgeojson.js';
 import DynamicGeoJSON from './layer/dynamicgeojson.js';
 import BBOXGeoJSON from './layer/bboxgeojson.js';
 
+import ContextMenu from './contextmenu/base.js';
 import Control from './control.js';
 
 export var helper = new Helper() || {};
@@ -50,7 +51,8 @@ export var layer = {
 };
 
 export var control = {
-    Control: Control
+    Control: Control,
+    ContextMenu: ContextMenu
 };
 window.anol = {
     'layer': layer,

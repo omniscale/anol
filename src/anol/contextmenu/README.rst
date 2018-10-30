@@ -1,0 +1,1 @@
+ContextMenu Control based on ol-contextmenu from Jonatas Walker (https://github.com/jonataswalker/ol-contextmenu - MIT License) modified for anol. Thanks Jonatas for the great work. 
