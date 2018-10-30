@@ -3,8 +3,6 @@ import { getUniqueId } from './helpers/mix';
 
 export const CLASSNAME = {
   container       : 'ol-ctx-menu-container',
-  // separator       : 'ol-ctx-menu' + VARS.separator_class,
-  // submenu         : 'ol-ctx-menu' + VARS.submenu_class,
   hidden          : 'ol-ctx-menu-hidden',
   OL_unselectable : 'ol-unselectable'
 };
@@ -43,6 +41,8 @@ export class Html {
     } 
     // no item
     if (items.length === 0) return false;
+
+    this.container.firstChild.innerHTML = '';
     // create entries
     items.forEach(this.addMenuEntry, this);
   }
@@ -51,14 +51,27 @@ export class Html {
     this.generateHtmlAndPublish(this.container, item);
   }
 
-  generateHtmlAndPublish(parent, item, submenu) {
+  generateHtmlAndPublish(parent, item) {
     let html,
         frag,
         element,
+        url,
         separator = false;
+
     const index = getUniqueId();
     item.classname = item.classname || '';
-    html = '<span>' + item.text + '</span>';
+    if (item.link) {
+      if (typeof item.callback === 'function') {
+        const obj = this.ContextMenu.Internal.generateResponseObj();
+        url = item.callback(obj)
+      } else {
+        url = item.callback;
+      }
+      html = '<a href="'+ url +'" title="'+item.title +'" target=_blank">' + item.text + '</a>';
+    } else {
+      html = '<span>' + item.text + '</span>';
+    }
+
     frag = createFragment(html);
     element = document.createElement('li');
     element.id = index;
@@ -68,8 +81,7 @@ export class Html {
 
     this.ContextMenu.Internal.items[index] = {
       id: index,
-      submenu: submenu || 0,
-      separator: separator,
+      link: item.link || false,
       callback: item.callback,
       data: item.data || null,
     };

@@ -65,8 +65,8 @@ export class Internal {
   init(map) {
     this.map = map;
     this.viewport = map.getViewport();
+    // this.ContextMenu.Html.createMenu();
     this.setListeners();
-    this.ContextMenu.Html.createMenu();
     this.lineHeight = this.ContextMenu.container.offsetHeight / this.getItemsLength()
   }
 
@@ -99,7 +99,7 @@ export class Internal {
       w: container.offsetWidth,
       // a cheap way to recalculate container height
       // since offsetHeight is like cached
-      h: Math.round(this.lineHeight * this.getItemsLength()),
+      h: Math.round(this.ContextMenu.container.offsetHeight / this.getItemsLength() * this.getItemsLength()),
     };
     if (space_left_w >= menuSize.w) {
       container.style.right = 'auto';
@@ -108,6 +108,7 @@ export class Internal {
       container.style.left = 'auto';
       container.style.right = '15px';
     }
+
     // set top or bottom
     if (space_left_h >= menuSize.h) {
       container.style.bottom = 'auto';
@@ -121,6 +122,7 @@ export class Internal {
   }
 
   openMenu(pixel, coordinate) {
+    this.ContextMenu.Html.createMenu();
     this.ContextMenu.dispatchEvent({
       type: EVENT_TYPE.OPEN,
       pixel: pixel,
@@ -136,6 +138,7 @@ export class Internal {
     this.ContextMenu.dispatchEvent({
       type: EVENT_TYPE.CLOSE,
     });
+    this.ContextMenu.container.firstChild.innerHTML = '';
   }
 
   setListeners() {
@@ -218,7 +221,7 @@ export class Internal {
 
   setItemListener(li, index) {
     const this_ = this;
-    if (li && typeof this.items[index].callback === 'function') {
+    if (li && typeof this.items[index].callback === 'function' && this.items[index].link !== true) {
       (function (callback) {
         li.addEventListener(
           'click',
