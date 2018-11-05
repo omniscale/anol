@@ -392,7 +392,7 @@ angular.module('anol.measure')
                 replace: true,
                 scope: {
                     measureType: '@anolMeasure',
-                    geodesic: '@',
+                    geodesic: '=',
                     style: '=?',
                     tooltipPlacement: '@',
                     tooltipDelay: '@',
@@ -403,7 +403,7 @@ angular.module('anol.measure')
                     measureResultCallback: '=?',
                     activatedCallback: '=?',
                     deactivatedCallback: '=?',
-                    labelSegments: '@',
+                    labelSegments: '=',
                     title: '@'
                 },
                 template: function() {
@@ -420,7 +420,7 @@ angular.module('anol.measure')
                     scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
                     scope.labelSegments = angular.isDefined(scope.labelSegments) ?
                         scope.labelSegments : false;
-
+                    
                     var control;
 
                     // create layer to draw in
