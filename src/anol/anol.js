@@ -27,6 +27,7 @@ import Group from './layer/group.js';
 import StaticGeoJSON from './layer/staticgeojson.js';
 import DynamicGeoJSON from './layer/dynamicgeojson.js';
 import BBOXGeoJSON from './layer/bboxgeojson.js';
+import GMLLayer from './layer/gml.js';
 
 import ContextMenu from './contextmenu/base.js';
 import Control from './control.js';
@@ -47,6 +48,7 @@ export var layer = {
     StaticGeoJSON: StaticGeoJSON,
     DynamicGeoJSON: DynamicGeoJSON,
     BBOXGeoJSON: BBOXGeoJSON,
+    GML: GMLLayer,
     Layer: AnolBaseLayer
 };
 
