@@ -22,7 +22,7 @@ angular.module('anol.map')
             _controls = controls;
         };
 
-        this.$get = ['ClusterSelectService', 'MapService', function(ClusterSelectService) {
+        this.$get = ['ClusterSelectService', function(ClusterSelectService) {
         /**
          * @ngdoc service
          * @name anol.map.ControlsService
@@ -34,6 +34,7 @@ angular.module('anol.map')
                 var self = this;
                 self.olControls = [];
                 self.controls = [];
+                self.menus = [];
                 self.exclusiveControls = [];
                 self.subordinateControls = [];
                 self.map = undefined;
@@ -95,6 +96,10 @@ angular.module('anol.map')
                     control.onActivate(Controls.prototype.handleExclusiveControlActivate, this);
                     this.exclusiveControls.push(control);
                 }
+                if(control.menu === true) {
+                    control.onActivate(Controls.prototype.handleMenuControlActivate, this);
+                    this.menus.push(control);
+                }                
                 if(control.subordinate === true) {
                     this.subordinateControls.push(control);
                 }
@@ -157,6 +162,11 @@ angular.module('anol.map')
                         control.deactivate();
                     }
                 });
+                angular.forEach(self.menus, function(control) {
+                    if(control !== targetControl) {
+                        control.deactivate();
+                    }
+                });                
                 targetControl.oneDeactivate(Controls.prototype.handleExclusiveControlDeactivate, self);
             };
             /**
@@ -168,6 +178,19 @@ angular.module('anol.map')
                 var self = context;
                 angular.forEach(self.subordinateControls, function(control) {
                     control.activate();
+                });
+            };            
+            /**
+         * private function
+         *
+         * handler called on menu control activate
+         */
+            Controls.prototype.handleMenuControlActivate = function(targetControl, context) {
+                var self = context;
+                angular.forEach(self.menus, function(control) {
+                    if(control !== targetControl) {
+                        control.deactivate();
+                    }
                 });
             };
             return new Controls(_controls);

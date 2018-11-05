@@ -67,7 +67,7 @@ export class Internal {
     this.viewport = map.getViewport();
     this.setListeners();
     this.lineHeight = this.ContextMenu.container.offsetHeight / this.getItemsLength()
-    map.on('drag', closeMenu);
+    map.on('drag', this.closeMenu);
   }
 
   getItemsLength() {

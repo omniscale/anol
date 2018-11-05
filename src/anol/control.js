@@ -28,7 +28,9 @@ class Control {
 
         this.active = options.active || false;
         this.disabled = options.disabled || false;
+        this.visible = options.visible || true;
         this.exclusive = options.exclusive || false;
+        this.menu = options.menu || false;
         this.subordinate = options.subordinate || false;
         this.element = options.element;
         this.interactions = options.interactions || [];
@@ -53,6 +55,9 @@ class Control {
         if(this.disabled) {
             this.addClass('disabled');
         }
+        if(this.menu && this.active !== true) {
+            this.addClass('hide');
+        }        
         this.CLASS_NAME = 'anol.control.Control';
         this.DEFAULT_OPTIONS = {};
 
@@ -64,6 +69,10 @@ class Control {
         this.active = true;
         this.addClass('active');
         angular.element(this).triggerHandler('anol.control.activate');
+
+        if(this.menu) {
+            this.removeClass('hide');
+        }    
     }
     onActivate(func, context) {
         var targetControl = this;
@@ -91,6 +100,9 @@ class Control {
         this.active = false;
         this.removeClass('active');
         angular.element(this).triggerHandler('anol.control.deactivate');
+        if(this.menu) {
+            this.addClass('hide');
+        }    
     }
     onDeactivate(func, context) {
         var targetControl = this;
