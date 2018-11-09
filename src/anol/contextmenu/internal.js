@@ -235,5 +235,16 @@ export class Internal {
         );
       })(this.items[index].callback);
     }
+    if (li && this.items[index].link == true) {
+      (function (callback) {
+        li.addEventListener(
+          'click',
+          function (evt) {
+            this_.closeMenu();
+          },
+          false,
+        );
+      })(this.items[index].callback);
+    }
   }
 }
