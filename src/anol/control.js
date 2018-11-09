@@ -29,6 +29,7 @@ class Control {
         this.active = options.active || false;
         this.disabled = options.disabled || false;
         this.visible = options.visible || true;
+        this.keepMenuOpen = options.keepMenuOpen || false;
         this.exclusive = options.exclusive || false;
         this.menu = options.menu || false;
         this.subordinate = options.subordinate || false;

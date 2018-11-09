@@ -95,7 +95,6 @@ class WMTS extends AnolBaseLayer {
         var h = getHeight(extent);
         var minRes = Math.max(w / srcOptions.tileSize[0], h / srcOptions.tileSize[1]);
         var url = this._createRequestUrl(srcOptions);
-
         srcOptions = $.extend(true, {}, srcOptions, {
             url: url,
             tileGrid: new WMTSTileGrid({

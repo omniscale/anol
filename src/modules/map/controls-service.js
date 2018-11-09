@@ -163,7 +163,7 @@ angular.module('anol.map')
                     }
                 });
                 angular.forEach(self.menus, function(control) {
-                    if(control !== targetControl) {
+                    if(control !== targetControl && !targetControl.keepMenuOpen) {
                         control.deactivate();
                     }
                 });                
