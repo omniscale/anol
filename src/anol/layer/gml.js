@@ -77,6 +77,37 @@ class GMLLayer extends FeatureLayer {
         super(options);
         this.CLASS_NAME = 'anol.layer.GML';
     }
+
+    _createSourceOptions(srcOptions) {
+        var self = this;
+        srcOptions.loader = function() {
+            self.loader(
+                srcOptions.url
+            );
+        };
+        return super._createSourceOptions(srcOptions);
+    }
+
+    loader(url) {
+        var self = this;
+        $.ajax({
+            method: "GET",
+            url: url
+        }).done(function(response) {
+            self.responseHandler(response);
+        });
+    }
+    responseHandler(response) {
+        var self = this;
+        var sourceFeatures = self.olLayer.getSource().getFeatures();
+        for(var i = 0; i < sourceFeatures.length; i++) {
+            self.olLayer.getSource().removeFeature(sourceFeatures[i]);
+        }  
+
+        var format = new GML2();
+        var features = format.readFeatures(response);
+        self.olLayer.getSource().addFeatures(features);
+    }    
 }
 
 export default GMLLayer;
