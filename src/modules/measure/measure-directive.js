@@ -292,7 +292,14 @@ angular.module('anol.measure')
 
             var createModifyInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic, labelSegments) {
                 var modify = new Modify({
-                    features: measureSource.getFeaturesCollection()
+                    features: measureSource.getFeaturesCollection(),
+                    condition: function(e) {
+                        if (e.pointerEvent.buttons === 1) {
+                            return true;
+                        }  else {
+                            return false;
+                        }
+                    }                       
                 });
                 modify.on('modifyend', function() {
                     var resultFormatter, resultCalculator;
@@ -329,6 +336,13 @@ angular.module('anol.measure')
             var createDrawInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic, labelSegments) {
                 var draw = new Draw({
                     type: 'Point',
+                    condition: function(e) {
+                        if (e.pointerEvent.buttons === 1) {
+                            return true;
+                        }  else {
+                            return false;
+                        }
+                    },                    
                     style: new Style({})
                 });
 
