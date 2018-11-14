@@ -217,7 +217,7 @@ angular.module('anol.measure')
                     output = anol.helper.round((area / 10000), 3) +
                      ' ' + 'ha';
                 } else {
-                    output = anol.helper.round(area, 3) +
+                    output = anol.helper.round(area, 2) +
                      ' ' + 'm<sup>2</sup>';
                 }
 
