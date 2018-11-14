@@ -94,6 +94,7 @@ angular.module('anol.measure')
                     } else {
                         output = anol.helper.round(length, 2)  + ' ' + 'm';
                     }
+                    output = output.replace('.', ',')
                     return output;
                 }
 
@@ -203,6 +204,7 @@ angular.module('anol.measure')
                 } else {
                     output = anol.helper.round(length, 2)  + ' ' + 'm';
                 }
+                output = output.replace('.', ',')
                 return output;
             };
 
@@ -220,6 +222,7 @@ angular.module('anol.measure')
                     output = anol.helper.round(area, 2) +
                      ' ' + 'm<sup>2</sup>';
                 }
+                output = output.replace('.', ',')
 
                 if (labelSegments) {
                     // calculate line length for area and add to label
@@ -236,7 +239,9 @@ angular.module('anol.measure')
                     } else {
                         output += '<br>' +  anol.helper.round(length, 2)  + ' ' + 'm';
                     }
+                    output = output.replace('.', ',')
                 }
+
                 return output;
             };
 
