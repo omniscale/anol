@@ -119,8 +119,9 @@ angular.module('anol.map')
                     }));
                     this.map.setView(this.view);
                     if(angular.isDefined(_bbox)) {
-                        this.map.once('change:target', function() {
-                            this.map.getView().fit(_bbox, this.map.getSize());
+                        var self = this;
+                        this.map.once('postrender', function() {
+                            self.map.getView().fit(_bbox, self.map.getSize());
                         });
                     }
                     if(this.cursorPointerConditions.length > 0) {
