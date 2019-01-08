@@ -130,7 +130,7 @@ angular.module('anol.geolocation')
 
                     var view = MapService.getMap().getView();
                     var geolocation = new Geolocation({
-                        projection: view.getProjection(),
+                        projection: view.getProjection().getCode(),
                         tracking: scope.anolGeolocation,
                         trackingOptions: {
                             enableHighAccuracy: true,
