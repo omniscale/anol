@@ -1,1 +1,8 @@
-<div class="anol-map-scale">1 : {{ scale }}</div>
+<div class="anol-map-scale">
+	Scale 1 : 
+	<input type="text" 
+		value="{{ scale }}"
+        ng-model-options="{debounce: 250}"
+		ng-change="updateScale()" 
+		ng-model="scale" />
+</div>

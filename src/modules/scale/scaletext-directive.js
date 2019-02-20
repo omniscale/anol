@@ -11,15 +11,42 @@ angular.module('anol.scale')
  * @returns {number} current scale
  */
     .constant('calculateScale', function(view) {
-        var INCHES_PER_METER = 1000 / 25.4;
-        var DPI = 72;
-        // found at https://groups.google.com/d/msg/ol3-dev/RAJa4locqaM/4AzBrkndL9AJ
-        var resolution = view.getResolution();
-        var mpu = view.getProjection().getMetersPerUnit();
-        var scale = resolution * mpu * INCHES_PER_METER * DPI;
-        return Math.round(scale);
+        var INCHES_PER_UNIT = {
+          'm': 39.37,
+          'dd': 4374754
+        };
+        var DOTS_PER_INCH = 72;
+        var units = view.getProjection().getUnits();
+
+        var getScaleFromResolution = function(resolution, units) {
+          var scale = INCHES_PER_UNIT[units] * DOTS_PER_INCH * resolution;
+          return Math.round(scale);;
+        };
+        return getScaleFromResolution(view.getResolution(), units)
     })
 
+/**
+ * @ngdoc function
+ * @name anol.scale.function:calculateResolution
+ *
+ * @param {Object} view ol.View object
+ *
+ * @returns {number} current resolution
+ */
+    .constant('calculateResolutionFromScale', function(view, scale) {
+        var INCHES_PER_UNIT = {
+          'm': 39.37,
+          'dd': 4374754
+        };
+        var DOTS_PER_INCH = 72;
+        var units = view.getProjection().getUnits();
+
+        var getResolutionFromScale = function(scale, units) {
+          var resolution = scale / INCHES_PER_UNIT[units] / DOTS_PER_INCH;
+          return resolution;
+        };
+        return getResolutionFromScale(scale, units)
+    })
 /**
  * @ngdoc directive
  * @name anol.scale.directive:anolScaleText
@@ -33,8 +60,8 @@ angular.module('anol.scale')
  * Add scaletext to element directive is used in.
  * If element is defined inside anol-map-directive, scaletext is added to map
  */
-    .directive('anolScaleText', ['$templateRequest', '$compile', '$timeout', 'MapService', 'ControlsService', 'calculateScale', 
-        function($templateRequest, $compile, $timeout, MapService, ControlsService, calculateScale) {
+    .directive('anolScaleText', ['$templateRequest', '$compile', '$timeout', 'MapService', 'ControlsService', 'calculateScale', 'calculateResolutionFromScale',
+        function($templateRequest, $compile, $timeout, MapService, ControlsService, calculateScale, calculateResolutionFromScale) {
 
             return {
                 restrict: 'A',
@@ -69,6 +96,12 @@ angular.module('anol.scale')
                         scope.scale = calculateScale(scope.view);
                     },
                     post: function(scope) {
+                        scope.updateScale = function() {
+                            if (scope.scale > 0) {
+                                var resolution = calculateResolutionFromScale(scope.view, scope.scale) 
+                                scope.view.setResolution(resolution)
+                            }
+                        }
                         scope.view.on('change:resolution', function() {
                             // used $timeout instead of $apply to avoid "$apply already in progress"-error
                             $timeout(function() {
