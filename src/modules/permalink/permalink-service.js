@@ -24,10 +24,12 @@ angular.module('anol.permalink')
 
         var extractMapParams = function(params) {
             var mapParam = getParamString('map', params);
+            var mapParams;
             if(mapParam === false) {
-                return false;
+                mapParams = false;
+            } else {
+                mapParams = mapParam.split(',');
             }
-            var mapParams = mapParam.split(',');
 
             var layersParam = getParamString('layers', params);
             var layers;
@@ -46,26 +48,27 @@ angular.module('anol.permalink')
             if(catalogLayersParam !== false) {
                 catalogLayers = catalogLayersParam.split(',');
             }
+
+            var result = {}
             if(mapParams !== null && mapParams.length == 4) {
-                var result = {
+                result = {
                     'zoom': parseInt(mapParams[0]),
                     'center': [parseFloat(mapParams[1]), parseFloat(mapParams[2])],
                     'crs': mapParams[3]
                 };
-                if(angular.isDefined(layers)) {
-                    result.layers = layers;
-                }
-
-                if(angular.isDefined(catalogLayers)) {
-                    result.catalogLayers = catalogLayers;
-                }
-
-                if(angular.isDefined(visibleCatalogLayers)) {
-                    result.visibleCatalogLayers = visibleCatalogLayers;
-                }
-                return result;
             }
-            return false;
+            if(angular.isDefined(layers)) {
+                result.layers = layers;
+            }
+
+            if(angular.isDefined(catalogLayers)) {
+               result.catalogLayers = catalogLayers;
+            }
+
+            if(angular.isDefined(visibleCatalogLayers)) {
+                result.visibleCatalogLayers = visibleCatalogLayers;
+             }
+            return result;
         };
 
         /**
@@ -127,7 +130,6 @@ angular.module('anol.permalink')
 
                     var params = $location.search();
                     var mapParams = extractMapParams(params);
-
                     if(mapParams !== false) {
                         self.updateMapFromParameters(mapParams);
                     } else {
@@ -273,9 +275,12 @@ angular.module('anol.permalink')
 
                 Permalink.prototype.updateMapFromParameters = function(mapParams) {
                     var self = this;
-                    var center = transform(mapParams.center, mapParams.crs, self.view.getProjection().getCode());
-                    self.view.setCenter(center);
-                    self.view.setZoom(mapParams.zoom);
+                    if(mapParams.center !== undefined) {
+                        var center = transform(mapParams.center, mapParams.crs, self.view.getProjection().getCode());
+                        self.view.setCenter(center);
+                        self.view.setZoom(mapParams.zoom);
+                    }
+
                     if(mapParams.layers !== false) {
                         // remove duplicate from visible Layers
                         self.visibleLayerNames = anol.helper.uniq(mapParams.layers);
