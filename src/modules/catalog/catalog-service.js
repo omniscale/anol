@@ -37,6 +37,9 @@ angular.module('anol.catalog')
                 
                 var firstLetter = _layer.title.charAt(0).toUpperCase();
                 if (self.firstLetters.indexOf(firstLetter) === -1) {
+                    if (!_layer.catalog.visible) {
+                        return;
+                    }
                     self.firstLetters.push(firstLetter);
                     self.sortedLayers[firstLetter] = {
                         'layers':  [_layer],
@@ -44,6 +47,9 @@ angular.module('anol.catalog')
                     };
                 } 
                 else {
+                    if (!_layer.catalog.visible) {
+                        return;
+                    }
                     self.sortedLayers[firstLetter]['layers'].push(_layer);
                 }
             });
