@@ -180,9 +180,9 @@ angular.module('anol.getfeatureinfo')
 
                             if (catalog) {
                                 // add layer identifier to popup
-                                var popupContentTemp = $('<div><h3>'+ title +'</h3></div>');
+                                var popupContentTemp = $('<div><h4>'+ title +'</h4></div>');
                                 angular.forEach(layers, function(name, idx) {
-                                    var layer = $('<div ng-click="addLayerToMap(\''+name +'\')">'+ name +'</div>');
+                                    var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ name +'</a>');
                                     popupContentTemp.append(layer);
                                 })
                                 $compile(popupContentTemp)(scope);
