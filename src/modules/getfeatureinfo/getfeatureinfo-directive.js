@@ -32,8 +32,8 @@ angular.module('anol.getfeatureinfo')
  * - **target** - {string} - Target for featureinfo result. ('_blank', '_popup', [element-id])
  */
     .directive('anolGetFeatureInfo', [
-        '$templateRequest', '$http', '$window', '$q', '$compile', 'MapService', 'LayersService', 'ControlsService',
-        function($templateRequest, $http, $window, $q, $compile, MapService, LayersService, ControlsService) {
+        '$templateRequest', '$http', '$window', '$q', '$compile', 'MapService', 'LayersService', 'ControlsService', 'CatalogService',
+        function($templateRequest, $http, $window, $q, $compile, MapService, LayersService, ControlsService, CatalogService) {
             return {
                 restrict: 'A',
                 scope: {
@@ -66,6 +66,11 @@ angular.module('anol.getfeatureinfo')
                         // get callback from wrapper function
                         scope.customTargetCallback = scope.customTargetFilled();
                         scope.beforeRequest = scope.beforeRequest();
+
+                        scope.addLayerToMap = function(name) {
+                            var layer = CatalogService.layerByName(name);
+                            CatalogService.addToMap(layer);
+                        };
 
                         if(angular.isDefined(scope.waitingMarkerSrc)) {
                             scope.waitingOverlayElement = element.find('#get-featureinfo-waiting-overlay');
@@ -150,7 +155,10 @@ angular.module('anol.getfeatureinfo')
 
                         var handleGMLFeatureinfoResponses = function(responses) {
                             var format = new WMSGetFeatureInfo();
-
+                            var layers = [];
+                            var title; 
+                            var catalog = false;
+                            // add feature to feateinfolayer
                             angular.forEach(responses, function(response) {
                                 if(angular.isUndefined(response)) {
                                     return;
@@ -161,16 +169,40 @@ angular.module('anol.getfeatureinfo')
                                 var features = format.readFeatures(response.gmlData);
                                 angular.forEach(features, function(feature) {
                                     feature.set('style', response.style);
+                                    if (response.catalog) {
+                                        catalog = true;
+                                        layers.push(feature.get('layer'));
+                                        title = response.title;
+                                    }
                                 });
                                 featureInfoLayer.addFeatures(features);
                             });
+
+                            if (catalog) {
+                                // add layer identifier to popup
+                                var popupContentTemp = $('<div><h3>'+ title +'</h3></div>');
+                                angular.forEach(layers, function(name, idx) {
+                                    var layer = $('<div ng-click="addLayerToMap(\''+name +'\')">'+ name +'</div>');
+                                    popupContentTemp.append(layer);
+                                })
+                                $compile(popupContentTemp)(scope);
+
+                                scope.popupProperties = {
+                                    coordinate: scope.clickedCoordiante,
+                                    content: popupContentTemp.children()
+                                }
+                                scope.hideWaitingOverlay();
+                            }
                         };
+
 
                         scope.handleClick = function(evt) {
                             var viewResolution = view.getResolution();
                             var coordinate = evt.coordinate;
-
-                            scope.popupProperties = {coordinate: undefined};
+                            scope.clickedCoordiante = coordinate;
+                            scope.popupProperties = {
+                                coordinate: undefined
+                            };
                             featureInfoLayer.clear();
 
                             if(angular.isFunction(scope.beforeRequest)) {
@@ -206,51 +238,50 @@ angular.module('anol.getfeatureinfo')
                                     return;
                                 }
 
-                                var requestParams ={
-                                    'INFO_FORMAT': 'text/html'
-                                };
-                                if(angular.isDefined(layer.featureinfo.featureCount)) {
-                                    requestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
-                                }
+                                if(layer.featureinfo.gml !== true && layer.featureinfo.catalog !== true) {
 
-                                var url = layer.getFeatureInfoUrl(
-                                    coordinate, viewResolution, view.getProjection().getCode(), requestParams
-                                );
-                                if(angular.isDefined(scope.proxyUrl)) {
-                                    url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
-                                }
-                                if(angular.isDefined(url)) {
-                                    var requestDeferred = $q.defer();
-                                    requestPromises.push(requestDeferred.promise);
-                                    $http.get(url).then(
-                                        function(response) {
-                                            if(angular.isString(response.data) && response.data !== '' && response.data.search('^\s*<\?xml') === -1) {
-                                                requestDeferred.resolve({
-                                                    target: layer.featureinfo.target,
-                                                    width: layer.featureinfo.width,
-                                                    height: layer.featureinfo.height,
-                                                    url: url,
-                                                    response: response.data,
-                                                    coordinate: coordinate
-                                                });
-                                            } else {
+                                    var requestParams ={
+                                        'INFO_FORMAT': 'text/html'
+                                    };
+                                    if(angular.isDefined(layer.featureinfo.featureCount)) {
+                                        requestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
+                                    }
+
+                                    var url = layer.getFeatureInfoUrl(
+                                        coordinate, viewResolution, view.getProjection().getCode(), requestParams
+                                    );
+                                    if(angular.isDefined(scope.proxyUrl)) {
+                                        url = scope.proxyUrl + layer.name + '/?' + url.split('?')[1];
+                                    }
+                                    if(angular.isDefined(url)) {
+                                        var requestDeferred = $q.defer();
+                                        requestPromises.push(requestDeferred.promise);
+                                        $http.get(url).then(
+                                            function(response) {
+                                                if(angular.isString(response.data) && response.data !== '' && response.data.search('^\s*<\?xml') === -1) {
+                                                    requestDeferred.resolve({
+                                                        target: layer.featureinfo.target,
+                                                        width: layer.featureinfo.width,
+                                                        height: layer.featureinfo.height,
+                                                        url: url,
+                                                        response: response.data,
+                                                        coordinate: coordinate
+                                                    });
+                                                } else {
+                                                    requestDeferred.resolve();
+                                                }
+                                            },
+                                            function() {
                                                 requestDeferred.resolve();
                                             }
-                                        },
-                                        function() {
-                                            requestDeferred.resolve();
-                                        }
-                                    );
-                                }
-
-                                if(layer.featureinfo.gml !== true) {
+                                        );
+                                    }
                                     return;
                                 }
 
                                 var gmlRequestParams = {
                                     'INFO_FORMAT': 'application/vnd.ogc.gml'
                                 };
-
                                 if(angular.isDefined(layer.featureinfo.featureCount)) {
                                     gmlRequestParams.FEATURE_COUNT = layer.featureinfo.featureCount;
                                 }
@@ -267,7 +298,7 @@ angular.module('anol.getfeatureinfo')
                                     gmlRequestPromises.push(gmlRequestDeferred.promise);
                                     $http.get(gmlUrl).then(
                                         function(response) {
-                                            gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, gmlData: response.data});
+                                            gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, gmlData: response.data, title: layer.title, catalog: layer.featureinfo.catalog});
                                         },
                                         function() {
                                             gmlRequestDeferred.resolve();
