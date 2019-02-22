@@ -26,7 +26,7 @@ angular.module('anol.permalink')
             var mapParam = getParamString('map', params);
             var mapParams;
             if(mapParam === false) {
-                mapParams = false;
+                mapParams = null;
             } else {
                 mapParams = mapParam.split(',');
             }
@@ -281,7 +281,7 @@ angular.module('anol.permalink')
                         self.view.setZoom(mapParams.zoom);
                     }
 
-                    if(mapParams.layers !== false) {
+                    if(mapParams.layers !== undefined) {
                         // remove duplicate from visible Layers
                         self.visibleLayerNames = anol.helper.uniq(mapParams.layers);
                         var backgroundLayerAdded = false;
@@ -313,7 +313,7 @@ angular.module('anol.permalink')
                         });
                     }
 
-                    if (mapParams.catalogLayers !== false) {
+                    if (mapParams.catalogLayers !== undefined) {
                         angular.forEach(mapParams.catalogLayers, function(layerName) {
                             var layer = CatalogService.layerByName(layerName);
                             if (angular.isDefined(layer)) {
