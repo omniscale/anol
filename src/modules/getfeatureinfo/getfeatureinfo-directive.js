@@ -182,7 +182,7 @@ angular.module('anol.getfeatureinfo')
                                 // add layer identifier to popup
                                 var popupContentTemp = $('<div><h4>'+ title +'</h4></div>');
                                 angular.forEach(layers, function(name, idx) {
-                                    var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ name +'</a>');
+                                    var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ name +'</a><br>');
                                     popupContentTemp.append(layer);
                                 })
                                 $compile(popupContentTemp)(scope);
