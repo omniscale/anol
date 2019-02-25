@@ -318,8 +318,12 @@ angular.module('anol.permalink')
                             var layer = CatalogService.layerByName(layerName);
                             if (angular.isDefined(layer)) {
                                 CatalogService.addToMap(layer);
-                                var visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
-                                layer.setVisible(visible);
+                                if (mapParams.visibleCatalogLayers) {
+                                    var visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
+                                    layer.setVisible(visible);
+                                } else {
+                                    layer.setVisible(false);
+                                }
                             } 
                         });
 
