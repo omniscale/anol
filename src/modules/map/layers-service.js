@@ -160,6 +160,7 @@ angular.module('anol.map')
                     return false;
                 }
                 idx = idx || 0;
+
                 // layers added reversed to map, so default idx is 0 to add layer "at top"
                 self.overlayLayers.push(layer)
                 self._prepareLayer(layer);
@@ -573,7 +574,7 @@ angular.module('anol.map')
                 var lastOlLayerUid = undefined;
                 var self = this;
                 self.zIndex = 0;
-                self.overlayLayers.slice().forEach(function(layer) {
+                self.overlayLayers.slice().reverse().forEach(function(layer) {
                     if(layer instanceof anol.layer.Group) {
                         layer.layers.slice().reverse().forEach(function(grouppedLayer, idx) {
                             if (lastOlLayerUid !== grouppedLayer.olLayer.ol_uid) {
@@ -592,7 +593,7 @@ angular.module('anol.map')
                 var lastOlLayerUid = undefined;
                 var self = this;
                 self.zIndex = 0;
-                self.overlayLayers.slice().forEach(function(layer) {
+                self.overlayLayers.slice().reverse().forEach(function(layer) {
                     if (angular.isUndefined(layer)) {
                         return true;
                     }
