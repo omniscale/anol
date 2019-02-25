@@ -573,7 +573,7 @@ angular.module('anol.map')
                 var lastOlLayerUid = undefined;
                 var self = this;
                 self.zIndex = 0;
-                self.overlayLayers.slice().reverse().forEach(function(layer) {
+                self.overlayLayers.slice().forEach(function(layer) {
                     if(layer instanceof anol.layer.Group) {
                         layer.layers.slice().reverse().forEach(function(grouppedLayer, idx) {
                             if (lastOlLayerUid !== grouppedLayer.olLayer.ol_uid) {
@@ -592,7 +592,7 @@ angular.module('anol.map')
                 var lastOlLayerUid = undefined;
                 var self = this;
                 self.zIndex = 0;
-                self.overlayLayers.slice().reverse().forEach(function(layer) {
+                self.overlayLayers.slice().forEach(function(layer) {
                     if (angular.isUndefined(layer)) {
                         return true;
                     }

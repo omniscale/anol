@@ -95,7 +95,7 @@ angular.module('anol.layerswitcher')
                 },
                 controller: function($scope, $element, $attrs) {
                     $scope.sortableGroups = {
-                        'update': function() {
+                        'update': function(e, ui) {
                             $timeout(function() {
                                 LayersService.reorderGroupLayers();
                             });
