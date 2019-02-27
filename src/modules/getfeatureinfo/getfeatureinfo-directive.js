@@ -238,8 +238,7 @@ angular.module('anol.getfeatureinfo')
                                     return;
                                 }
 
-                                if(layer.featureinfo.gml !== true && layer.featureinfo.catalog !== true) {
-
+                                if(layer.featureinfo.catalog !== true) {
                                     var requestParams ={
                                         'INFO_FORMAT': 'text/html'
                                     };
