@@ -33,7 +33,8 @@ angular.module('anol.catalog')
                     scope.addedLayers = CatalogService.addedLayers;
                                         
                     scope.addToMap = function(layer) {
-                        CatalogService.addToMap(layer);
+                        var visible = true;
+                        CatalogService.addToMap(layer, visible);
                     };
                     scope.removeFromMap = function(layer) {
                         CatalogService.removeFromMap(layer);

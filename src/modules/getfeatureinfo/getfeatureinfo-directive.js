@@ -69,7 +69,8 @@ angular.module('anol.getfeatureinfo')
 
                         scope.addLayerToMap = function(name) {
                             var layer = CatalogService.layerByName(name);
-                            CatalogService.addToMap(layer);
+                            var visible = true;
+                            CatalogService.addToMap(layer, visible);
                         };
 
                         if(angular.isDefined(scope.waitingMarkerSrc)) {

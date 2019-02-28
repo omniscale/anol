@@ -113,10 +113,11 @@ angular.module('anol.catalog')
          * @description
          * Adds a catalog layer to map
          */
-        CatalogService.prototype.addToMap = function(layer) {
+        CatalogService.prototype.addToMap = function(layer, visible) {
             if(this.catalogLayers.indexOf(layer) > -1 && this.addedLayers.indexOf(layer) === -1) {
                 // add catalog layer to the top
                 var added = LayersService.addOverlayLayer(layer, 0);
+                layer.setVisible(visible)
                 if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
                     layer.refresh();
                 }
