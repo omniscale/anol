@@ -115,7 +115,8 @@ angular.module('anol.catalog')
          */
         CatalogService.prototype.addToMap = function(layer) {
             if(this.catalogLayers.indexOf(layer) > -1 && this.addedLayers.indexOf(layer) === -1) {
-                var added = LayersService.addOverlayLayer(layer);
+                // add catalog layer to the top
+                var added = LayersService.addOverlayLayer(layer, 0);
                 if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
                     layer.refresh();
                 }

@@ -159,10 +159,16 @@ angular.module('anol.map')
                 if(self.overlayLayers.indexOf(layer) > -1) {
                     return false;
                 }
-                idx = idx || 0;
 
                 // layers added reversed to map, so default idx is 0 to add layer "at top"
-                self.overlayLayers.push(layer)
+                if (idx === undefined) {
+                    self.overlayLayers.push(layer)
+                } else {
+                    if (idx > self.overlayLayers.length) {
+                        idx = self.overlayLayers.length;
+                    }
+                    self.overlayLayers.splice(idx, 0, layer);
+                }
                 self._prepareLayer(layer);
 
                 if(layer instanceof anol.layer.Group) {
@@ -587,7 +593,8 @@ angular.module('anol.map')
                         layer.olLayer.setZIndex(self.zIndex);
                         self.zIndex = self.zIndex + 1;
                     }
-                });     
+                });   
+  
             };        
             Layers.prototype.reorderOverlayLayers = function() {
                 var lastOlLayerUid = undefined;
@@ -606,7 +613,7 @@ angular.module('anol.map')
                             if (lastOlLayerUid !== grouppedLayer.olLayer.ol_uid) {
                                 grouppedLayer.olLayer.setZIndex(self.zIndex);
                                 self.zIndex = self.zIndex + 1;
-                            }
+                             }
                             lastOlLayerUid = grouppedLayer.olLayer.ol_uid;
                         });
                     } else {
