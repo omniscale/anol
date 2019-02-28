@@ -275,6 +275,9 @@ angular.module('anol.getfeatureinfo')
                                             }
                                         );
                                     }
+                                }
+
+                                if(layer.featureinfo.gml !== true) {
                                     return;
                                 }
 
