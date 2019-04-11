@@ -171,7 +171,6 @@ class BaseWMS extends AnolBaseLayer {
         if(angular.isDefined(this.legend.format)) {
             requestParams.FORMAT = this.legend.format;
         }
-
         var url = this.olLayer.getSource().getUrl();
         if(url.indexOf('?') === -1) {
             url += '?';
