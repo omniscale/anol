@@ -156,24 +156,26 @@ angular.module('anol.getfeatureinfo')
 
                         var handleGMLFeatureinfoResponses = function(responses) {
                             var format = new WMSGetFeatureInfo();
-                            var layers = [];
-                            var title; 
+                            var responseLayers = [];
                             var catalog = false;
                             // add feature to feateinfolayer
-                            angular.forEach(responses, function(response) {
+                            angular.forEach(responses, function(response, idx) {
                                 if(angular.isUndefined(response)) {
                                     return;
                                 }
                                 if(angular.isUndefined(response.gmlData)) {
                                     return;
                                 }
+                                responseLayers.push({
+                                    'title': response.title,
+                                    'layers': []
+                                })
                                 var features = format.readFeatures(response.gmlData);
                                 angular.forEach(features, function(feature) {
                                     feature.set('style', response.style);
                                     if (response.catalog) {
                                         catalog = true;
-                                        layers.push(feature.get('layer'));
-                                        title = response.title;
+                                        responseLayers[idx].layers.push(feature.get('layer'));
                                     }
                                 });
                                 featureInfoLayer.addFeatures(features);
@@ -181,11 +183,25 @@ angular.module('anol.getfeatureinfo')
 
                             if (catalog) {
                                 // add layer identifier to popup
-                                var popupContentTemp = $('<div><h4>'+ title +'</h4></div>');
-                                angular.forEach(layers, function(name, idx) {
-                                    var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ name +'</a><br>');
-                                    popupContentTemp.append(layer);
+                                var popupContentTemp = $('<div></div>');
+                                angular.forEach(responseLayers, function(rLayer, idx) {
+                                    if (rLayer.layers === undefined || rLayer.layers.length === 0) {
+                                        return;
+                                    }
+                                    var title = $('<h4>'+ rLayer.title +'</h4>');
+                                    popupContentTemp.append(title);
+
+                                    angular.forEach(rLayer.layers, function(name, idx) {
+                                        var title = name;
+                                        var catalogLayer = CatalogService.layerByName(name);
+                                        if (catalogLayer) {
+                                            title = catalogLayer.title;
+                                        }
+                                        var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ title +'</a><br>');
+                                        popupContentTemp.append(layer);
+                                    })
                                 })
+
                                 $compile(popupContentTemp)(scope);
 
                                 scope.popupProperties = {
