@@ -159,7 +159,7 @@ angular.module('anol.layerswitcher')
                         return false;
                     };
                     $scope.removeLayer = function(layer) {
-                        if (layer.catalog) {
+                        if (layer.catalogLayer) {
                             CatalogService.removeFromMap(layer);
                         } else {
                             LayersService.removeOverlayLayer(layer);
