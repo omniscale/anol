@@ -24,18 +24,23 @@ angular.module('anol.catalog')
                 link: function(scope, element, attrs) {
                     if (attrs.templateUrl && attrs.templateUrl !== '') {
                         $templateRequest(attrs.templateUrl).then(function(html){
-                            var template = angular.element(html);
+                            let template = angular.element(html);
                             element.html(template);
                             $compile(template)(scope);
                         });
                     } 
                     scope.sortedLayers = CatalogService.sortedLayers;
+                    scope.sortedGroups = CatalogService.sortedGroups;
+
+                    scope.addedGroups = CatalogService.addedGroups;
                     scope.addedLayers = CatalogService.addedLayers;
                                         
                     scope.addToMap = function(layer) {
-                        var visible = true;
-                        CatalogService.addToMap(layer, visible);
+                        CatalogService.addToMap(layer, true);
                     };
+                    scope.addGroupToMap = function(group) {
+                        CatalogService.addGroupToMap(group, true);
+                    };          
                     scope.removeFromMap = function(layer) {
                         CatalogService.removeFromMap(layer);
                     };

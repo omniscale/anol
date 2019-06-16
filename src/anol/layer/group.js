@@ -20,7 +20,9 @@ class Group {
         this.title = options.title;
         this.layers = options.layers;
         this.options = options;
-        
+        this.catalog = options.catalog || false;
+        this.catalogLayer = options.catalogLayer || false;
+        this.groupLayer = true;
         this.combinable = undefined;
 
         if (angular.isUndefined(this.layers)) {
@@ -43,12 +45,24 @@ class Group {
     }
     setVisible(visible) {
         var self = this;
+        var changed = false;
         $.each(self.layers, function(idx, layer) {
             if(layer.getVisible() !== visible) {
                 layer.setVisible(visible);
+                changed = true;
             }
         });
+
+        if (changed) {
+            angular.element(this).triggerHandler('anol.group.visible:change', [this]);
+        }
     }
+    onVisibleChange(func, context) {
+        angular.element(this).on('anol.group.visible:change', {'context': context}, func);
+    }
+    offVisibleChange(func) {
+        angular.element(this).off('anol.group.visible:change', func);
+    }    
     isCombinable() {
         // check if check was alredy done for group
         if (angular.isDefined(combinable)) {

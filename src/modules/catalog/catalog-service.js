@@ -8,11 +8,16 @@ angular.module('anol.catalog')
  */
 .provider('CatalogService', [function() {
     var _catalogLayers = [];
+    var _catalogGroups = [];
 
     this.setLayers = function(layers) {
         _catalogLayers = layers;
     };
 
+    this.setGroups = function(groups) {
+        _catalogGroups = groups;
+    };
+    
     this.$get = ['LayersService', function(LayersService) {
         /**
          * @ngdoc service
@@ -21,14 +26,21 @@ angular.module('anol.catalog')
          * @description
          * Handles current catalog layer
          */
-        var CatalogService = function(catalogLayers) {
+        var CatalogService = function(catalogLayers, catalogGroups) {
             var self = this;
             this.catalogLayers = [];
+            this.catalogGroups = [];
             this.addedLayers = [];
+            this.addedGroups = [];
             this.nameLayersMap = {};
+            this.nameGroupsMap = {};
             this.sortedLayers = {};
+            this.sortedGroups = {};
             this.firstLetters = [];
+            this.firstLettersGroups = [];
+            this.addedGroupsLength = 0;
             
+            // Catalog Layers
             angular.forEach(catalogLayers, function(_layer) {
                 self.addCatalogLayer(_layer);
                 if(_layer.name !== undefined) {
@@ -66,8 +78,46 @@ angular.module('anol.catalog')
                 }) 
                 self.sortedLayers = sortedLayers;
             }
-        };
 
+            // Catalog Groups
+            angular.forEach(catalogGroups, function(_group) {
+                self.addCatalogGroup(_group);
+                if(_group.name !== undefined) {
+                    self.nameGroupsMap[_group.name] = _group;
+                }   
+                
+                var firstLetter = _group.title.charAt(0).toUpperCase();
+                if (self.firstLettersGroups.indexOf(firstLetter) === -1) {
+                    if (!_group.catalog.visible) {
+                        return;
+                    }
+                    self.firstLettersGroups.push(firstLetter);
+                    self.sortedGroups[firstLetter] = {
+                        'layers':  [_group],
+                        'title': firstLetter
+                    };
+                } 
+                else {
+                    if (!_group.catalog.visible) {
+                        return;
+                    }
+                    self.sortedGroups[firstLetter]['layers'].push(_group);
+                }
+            });
+
+            var sortedGroups = {};
+            if (!angular.equals({}, self.sortedGroups)) {
+                Object.keys(self.sortedGroups).sort().reduce(function(acc, key) {
+                    if (angular.isDefined(acc)) {
+                        sortedGroups[acc] = self.sortedGroups[acc];
+                    }
+                    if (angular.isDefined(key)) {
+                        sortedGroups[key] = self.sortedGroups[key];
+                    }
+                }) 
+                self.sortedGroups = sortedGroups;
+            }
+        };
         /**
          * @ngdoc method
          * @name layerByName
@@ -81,6 +131,17 @@ angular.module('anol.catalog')
         };
         /**
          * @ngdoc method
+         * @name groupByName
+         * @methodOf anol.map.CatalogService
+         * @param {string} name
+         * @returns {anol.layer.Layer} layer
+         * @description Gets a layer by it's name
+         */
+        CatalogService.prototype.groupByName = function(name) {
+            return this.nameGroupsMap[name];
+        };        
+        /**
+         * @ngdoc method
          * @name layers
          * @methodOf anol.map.CatalogService
          * @returns {array.<anol.layer.Layer>} All layers
@@ -91,7 +152,18 @@ angular.module('anol.catalog')
             var self = this;
             return self.addedLayers;
         };
-
+        /**
+         * @ngdoc method
+         * @name groups
+         * @methodOf anol.map.CatalogService
+         * @returns {array.<anol.layer.Group>} All layers
+         * @description
+         * Get all layers managed by catalog service
+         */
+        CatalogService.prototype.addedCatalogGroups = function() {
+            var self = this;
+            return self.addedGroups;
+        };
         /**
          * @ngdoc method
          * @name addLayer
@@ -107,6 +179,45 @@ angular.module('anol.catalog')
         };
         /**
          * @ngdoc method
+         * @name addLayer
+         * @methodOf anol.catalog.CatalogService
+         * @param {Object} group anolGroup
+         * @description
+         * Adds a layer to catalog
+         */
+        CatalogService.prototype.addCatalogGroup = function(group) {
+            // all catalog layers must display in layerswitcher
+            // layer.displayInLayerswitcher = true;
+            this.catalogGroups.push(group);
+        };
+        /**
+         * @ngdoc method
+         * @name addToMap
+         * @methodOf anol.catalog.CatalogService
+         * @param {Object} layer anolLayer
+         * @description
+         * Adds a catalog layer to map
+         */
+        CatalogService.prototype.addGroupToMap = function(group, visible) {
+            var self = this;
+            if(self.catalogGroups.indexOf(group) > -1 && self.addedGroups.indexOf(group) === -1) {
+                LayersService.addOverlayLayer(group, 0);
+                group.setVisible(visible);
+
+                angular.forEach(self.addedGroups, function(_group) {
+                    angular.forEach(_group.layers, function(_layers) {
+                        self.addedGroupsLength++;
+                    });
+                });      
+                angular.forEach(group.layers, function(_layers) {
+                    self.addedGroupsLength++;
+                    _layers.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength);
+                });
+                self.addedGroups.push(group);
+            }
+        };
+        /**
+         * @ngdoc method
          * @name addToMap
          * @methodOf anol.catalog.CatalogService
          * @param {Object} layer anolLayer
@@ -114,15 +225,17 @@ angular.module('anol.catalog')
          * Adds a catalog layer to map
          */
         CatalogService.prototype.addToMap = function(layer, visible) {
-            if(this.catalogLayers.indexOf(layer) > -1 && this.addedLayers.indexOf(layer) === -1) {
+            var self = this;
+
+            if(self.catalogLayers.indexOf(layer) > -1 && self.addedLayers.indexOf(layer) === -1) {
                 // add catalog layer to the top
                 var added = LayersService.addOverlayLayer(layer, 0);
                 layer.setVisible(visible)
                 if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
                     layer.refresh();
                 }
-                this.addedLayers.push(layer);
-                layer.olLayer.setZIndex(LayersService.zIndex + this.addedLayers.length)
+                self.addedLayers.push(layer);
+                layer.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength)
             }
         };
         /**
@@ -134,12 +247,31 @@ angular.module('anol.catalog')
          * Removes a catalog layer from map
          */
         CatalogService.prototype.removeFromMap = function(layer) {
-            var layerIdx = this.addedLayers.indexOf(layer);
-            if(this.catalogLayers.indexOf(layer) > -1 &&  layerIdx > -1) {
-                LayersService.removeOverlayLayer(layer);
-                this.addedLayers.splice(layerIdx, 1);
-            }
+            if(layer instanceof anol.layer.Group) {
+                var groupIdx = this.addedGroups.indexOf(layer);
+                if(this.catalogGroups.indexOf(layer) > -1 && groupIdx > -1) {
+                    LayersService.removeOverlayLayer(layer);
+                    this.addedGroups.splice(groupIdx, 1);
+                }
+            } else {
+                var layerIdx = this.addedLayers.indexOf(layer);
+                if(this.catalogLayers.indexOf(layer) > -1 && layerIdx > -1) {
+                    LayersService.removeOverlayLayer(layer);
+                    this.addedLayers.splice(layerIdx, 1);
+                }
+
+                if (layerIdx == -1) {
+                    if (layer.anolGroup) {
+                        var group = layer.anolGroup;
+                        var groupIdx = this.addedGroups.indexOf(group);
+                        if(this.catalogGroups.indexOf(group) > -1 && groupIdx > -1) {
+                            LayersService.removeOverlayLayer(group);
+                            this.addedGroups.splice(groupIdx, 1);
+                        }
+                    }
+                }
+            } 
         };
-        return new CatalogService(_catalogLayers);
+        return new CatalogService(_catalogLayers, _catalogGroups);
     }];
 }]);

@@ -49,6 +49,18 @@ angular.module('anol.permalink')
                 catalogLayers = catalogLayersParam.split(',');
             }
 
+            var visibleCatalogGroupsParam = getParamString('visibleCatalogGroups', params);
+            var visibleCatalogGroups;
+            if(visibleCatalogGroupsParam !== false) {
+                visibleCatalogGroups = visibleCatalogGroupsParam.split(',');
+            }
+
+            var catalogGroupsParam = getParamString('catalogGroups', params);
+            var catalogGroups;
+            if(catalogGroupsParam !== false) {
+                catalogGroups = catalogGroupsParam.split(',');
+            }
+            
             var result = {}
             if(mapParams !== null && mapParams.length == 4) {
                 result = {
@@ -67,7 +79,16 @@ angular.module('anol.permalink')
 
             if(angular.isDefined(visibleCatalogLayers)) {
                 result.visibleCatalogLayers = visibleCatalogLayers;
-             }
+            }
+
+            if(angular.isDefined(catalogGroups)) {
+                result.catalogGroups = catalogGroups;
+            }
+ 
+            if(angular.isDefined(visibleCatalogGroups)) {
+                result.visibleCatalogGroups = visibleCatalogGroups;
+            }
+
             return result;
         };
 
@@ -173,6 +194,24 @@ angular.module('anol.permalink')
                     });
 
                     $rootScope.$watchCollection(function() {
+                        return CatalogService.addedCatalogGroups();
+                    }, function(newVal) {
+                        if(angular.isDefined(newVal)) {
+                            self.catalogGroupNames = [];
+                            self.visibleCatalogGroupNames = [];
+                            angular.forEach(newVal, function(group) {
+                                group.offVisibleChange(self.handleVisibleChange);
+                                group.onVisibleChange(self.handleVisibleChange, self);
+                                self.catalogGroupNames.push(group.name);
+                                if (group.getVisible()) {
+                                    self.visibleCatalogGroupNames.push(group.name);
+                                }
+                            });
+                            self.generatePermalink();
+                        }
+                    });
+
+                    $rootScope.$watchCollection(function() {
                         return CatalogService.addedCatalogLayers();
                     }, function(newVal) {
                         if(angular.isDefined(newVal)) {
@@ -191,6 +230,7 @@ angular.module('anol.permalink')
                     });
 
                 };
+                
                 /**
                  * @private
                  */
@@ -211,7 +251,21 @@ angular.module('anol.permalink')
                         self.generatePermalink();
                     }
 
-                    if(layer.catalogLayer == true) {
+                    if(layer instanceof anol.layer.Group) {
+                        if (layer.catalogLayer === true) {
+                            if(angular.isDefined(layerName) && layer.getVisible()) {
+                                self.visibleCatalogGroupNames.push(layerName);
+                            } else {
+                                var layerNameIdx = $.inArray(layerName, self.visibleCatalogGroupNames);
+                                if(layerNameIdx > -1) {
+                                    self.visibleCatalogGroupNames.splice(layerNameIdx, 1);
+                                }
+                            }
+                        }
+                        self.generatePermalink();
+                    }
+
+                    if(layer.catalogLayer === true) {
                         if(angular.isDefined(layerName) && layer.getVisible()) {
                             self.visibleCatalogLayerNames.push(layerName);
                         } else {
@@ -270,6 +324,19 @@ angular.module('anol.permalink')
                     } else {
                         $location.search('catalogLayers', null);
                     }
+
+                    if (self.visibleCatalogGroupNames.length !== 0) {
+                        $location.search('visibleCatalogGroups', self.visibleCatalogGroupNames.join(','));
+                    } else {
+                        $location.search('visibleCatalogGroups', null);
+                    }
+
+                    if (self.catalogGroupNames.length !== 0) {
+                        $location.search('catalogGroups', self.catalogGroupNames.join(','));
+                    } else {
+                        $location.search('catalogGroups', null);
+                    }
+
                     $location.replace();
                 };
 
@@ -324,6 +391,19 @@ angular.module('anol.permalink')
                                 CatalogService.addToMap(layer, visible);
                             } 
                         });
+                    }
+                    
+                    if (mapParams.catalogGroups !== undefined) {
+                        angular.forEach(mapParams.catalogGroups, function(groupName) {
+                            var group = CatalogService.groupByName(groupName);
+                            if (angular.isDefined(group)) {
+                                var visible = false;
+                                if (mapParams.visibleCatalogGroups) {
+                                    visible = mapParams.visibleCatalogGroups.indexOf(group.name) > -1;
+                                }     
+                                CatalogService.addGroupToMap(group, visible);
+                            } 
+                        });
 
                     }
                 };
@@ -339,6 +419,8 @@ angular.module('anol.permalink')
                         layers: self.visibleLayerNames,
                         catalogLayers: self.catalogLayerNames,
                         visibleCatalogLayers: self.visibleCatalogLayerNames,
+                        catalogGroups: self.catalogGroupNames,
+                        visibleCatalogGroups: self.visibleCatalogGroupNames,
                         sidebar: sidebar,
                         sidebarStatus: sidebarStatus
                     };
