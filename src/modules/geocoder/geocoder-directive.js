@@ -1,5 +1,6 @@
 import './module.js';
 import { transform } from 'ol/proj';
+import { unByKey } from 'ol/Observable.js';
 import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import Select from 'ol/interaction/Select';
@@ -83,7 +84,7 @@ angular.module('anol.geocoder')
                     scope.isScrolling = false;
                     scope.highlight = angular.isDefined(scope.highlight) ? parseInt(scope.highlight) : false;
                     scope.urlMarkerAdded = false;
-
+                    scope.map = MapService.getMap();
                     var changeCursorCondition = function(pixel) {
                         return MapService.getMap().hasFeatureAtPixel(pixel, function(layer) {
                             return markerLayer === layer.get('anolLayer');
@@ -193,9 +194,17 @@ angular.module('anol.geocoder')
                                     scope.searchResults = results;
                                     element.find('.anol-searchbox').addClass('open');
                                 }
+                               
+                                scope.handleHideElement = scope.map.on(
+                                    'singleclick', scope.hideElement, this);
                                 scope.$digest();
                             });
                     };
+
+                    scope.hideElement = function() {
+                        element.find('.anol-searchbox').removeClass('open');
+                        unByKey(scope.handleHideElement);
+                    }
 
                     scope.handleInputKeypress = function(event) {
                         event.stopPropagation();
@@ -258,8 +267,6 @@ angular.module('anol.geocoder')
                         }
                     };
 
-
-
                     scope.showResult = function(result) {
                         var view = MapService.getMap().getView();
                         var position = transform(
@@ -282,6 +289,7 @@ angular.module('anol.geocoder')
                         );
                         scope.searchResults = [];
                         element.find('.anol-searchbox').removeClass('open');
+                        unByKey(scope.handleHideElement);
                         scope.searchString = result.displayText;
                     };
 
