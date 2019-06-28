@@ -22,6 +22,7 @@ class Group {
         this.options = options;
         this.catalog = options.catalog || false;
         this.catalogLayer = options.catalogLayer || false;
+        this.singleSelect = options.singleSelect || false;
         this.groupLayer = true;
         this.combinable = undefined;
 
@@ -46,13 +47,22 @@ class Group {
     setVisible(visible) {
         var self = this;
         var changed = false;
-        $.each(self.layers, function(idx, layer) {
-            if(layer.getVisible() !== visible) {
-                layer.setVisible(visible);
-                changed = true;
-            }
-        });
-
+        if (this.singleSelect) {
+            $.each(self.layers, function(idx, layer) {
+                if(layer.getVisible() !== visible) {
+                    layer.setVisible(visible);
+                    changed = true;
+                    return false;
+                }
+            });
+        } else {
+            $.each(self.layers, function(idx, layer) {
+                if(layer.getVisible() !== visible) {
+                    layer.setVisible(visible);
+                    changed = true;
+                }
+            });
+        }
         if (changed) {
             angular.element(this).triggerHandler('anol.group.visible:change', [this]);
         }

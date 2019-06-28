@@ -119,6 +119,12 @@ class AnolBaseLayer {
         return undefined;
     }
     removeFromCombinedSource() {}
+    hasGroup() {
+        if(angular.isDefined(this.anolGroup)) {
+            return true;
+        }
+        return false;
+    }    
     getVisible() {
         if(angular.isUndefined(this.olLayer)) {
             return false;
@@ -126,6 +132,16 @@ class AnolBaseLayer {
         return this.olLayer.getVisible();
     }
     setVisible(visible)  {
+        if (visible && this.hasGroup()) {
+            if (this.anolGroup.singleSelect) {
+                $.each(this.anolGroup.layers, function(idx, layer) {
+                    if (layer.getVisible()) {
+                        this.olLayer.setVisible(false);
+                        angular.element(this).triggerHandler('anol.layer.visible:change', [layer]);
+                    }
+                });
+            }
+        }
         this.olLayer.setVisible(visible);
         angular.element(this).triggerHandler('anol.layer.visible:change', [this]);
     }
