@@ -67,7 +67,7 @@ angular.module('anol.print')
                             var _layers = [];
                             angular.forEach(layers, function(layer) {
                                 if(layer instanceof anol.layer.Group) {
-                                    _layers = _layers.concat(prepareOverlays(layer.layers.slice().reverse()));
+                                    _layers = _layers.concat(prepareOverlays(layer.layers.slice()));
                                 } else {
                                     if(layer.getVisible()) {
                                         _layers.push(layer);
