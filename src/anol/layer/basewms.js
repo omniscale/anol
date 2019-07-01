@@ -106,7 +106,7 @@ class BaseWMS extends AnolBaseLayer {
     }
     getVisible() {
         if(angular.isUndefined(this.olLayer)) {
-            return visible;
+            return this.visible;
         }
         return this.olLayer.getVisible();
     }
