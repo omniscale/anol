@@ -48,6 +48,9 @@ angular.module('anol.catalog')
                 }   
                 
                 var firstLetter = _layer.title.charAt(0).toUpperCase();
+                if (_layer.catalog && _layer.catalog.title) {
+                    firstLetter = _layer.catalog.title.charAt(0).toUpperCase();
+                }
                 if (self.firstLetters.indexOf(firstLetter) === -1) {
                     if (!_layer.catalog.visible) {
                         return;
@@ -87,6 +90,10 @@ angular.module('anol.catalog')
                 }   
                 
                 var firstLetter = _group.title.charAt(0).toUpperCase();
+                if (_group.catalog && _group.catalog.title) {
+                    firstLetter = _group.catalog.title.charAt(0).toUpperCase();
+                }
+
                 if (self.firstLettersGroups.indexOf(firstLetter) === -1) {
                     if (!_group.catalog.visible) {
                         return;
@@ -262,11 +269,16 @@ angular.module('anol.catalog')
 
                 if (layerIdx == -1) {
                     if (layer.anolGroup) {
+                        // remove group if it is the las layer
                         var group = layer.anolGroup;
-                        var groupIdx = this.addedGroups.indexOf(group);
-                        if(this.catalogGroups.indexOf(group) > -1 && groupIdx > -1) {
-                            LayersService.removeOverlayLayer(group);
-                            this.addedGroups.splice(groupIdx, 1);
+                        if (group.layers.length === 1) {
+                            var groupIdx = this.addedGroups.indexOf(group);
+                            if(this.catalogGroups.indexOf(group) > -1 && groupIdx > -1) {
+                                LayersService.removeOverlayLayer(group);
+                                this.addedGroups.splice(groupIdx, 1);
+                            }
+                        } else {
+                            LayersService.removeOverlayLayer(layer);
                         }
                     }
                 }
