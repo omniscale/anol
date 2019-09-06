@@ -130,36 +130,42 @@ class FeatureLayer extends AnolBaseLayer {
         var self = this;
         // if a style function is in layer config we don't create a style function here
         if(!angular.isFunction(self.olLayerOptions.style)) {
-            var defaultStyle = olLayer.getStyle();
-
-            if(angular.isFunction(defaultStyle)) {
-                defaultStyle = defaultStyle()[0];
-            }
-
-            if(angular.isDefined(this.style)) {
-                var createImageStyleFunction = angular.isDefined(this.style.externalGraphic) ? this.createIconStyle : this.createCircleStyle;
-
-                this.defaultStyle = new Style({
-                    image: createImageStyleFunction.call(this, this.style, defaultStyle.getImage()),
-                    fill: this.createFillStyle(this.style, defaultStyle.getFill()),
-                    stroke: this.createStrokeStyle(this.style, defaultStyle.getStroke()),
-                    text: this.createTextStyle(this.style, defaultStyle.getText())
-                });
-            } else {
-                this.defaultStyle = defaultStyle;
-            }
-            olLayer.setStyle(function(feature, resolution) {
-                var style = self.createStyle(feature, resolution);
-                if(angular.isArray(style)) {
-                    return style;
-                }
-                return [style];
-            });
+            this.setStyle(olLayer)
         }
         if(this.isClustered()) {
             this.unclusteredSource.set('anolLayers', olLayer.getSource().get('anolLayers'));
         }
         super.setOlLayer(olLayer);
+    }
+
+    setStyle(olLayer) {
+        if (angular.isUndefined(olLayer)) {
+            olLayer = this.olLayer;
+        }
+        var self = this;
+        var defaultStyle = olLayer.getStyle();
+        if(angular.isFunction(defaultStyle)) {
+            defaultStyle = defaultStyle()[0];
+        }
+        if(angular.isDefined(this.style)) {
+            var createImageStyleFunction = angular.isDefined(this.style.externalGraphic) ? this.createIconStyle : this.createCircleStyle;
+            this.defaultStyle = new Style({
+                image: createImageStyleFunction.call(this, this.style, defaultStyle.getImage()),
+                fill: this.createFillStyle(this.style, defaultStyle.getFill()),
+                stroke: this.createStrokeStyle(this.style, defaultStyle.getStroke()),
+                text: this.createTextStyle(this.style, defaultStyle.getText())
+            });
+        } else {
+            this.defaultStyle = defaultStyle;
+        }
+        
+        olLayer.setStyle(function(feature, resolution) {
+            var style = self.createStyle(feature, resolution);
+            if(angular.isArray(style)) {
+                return style;
+            }
+            return [style];
+        });
     }
 
     removeOlLayer() {
