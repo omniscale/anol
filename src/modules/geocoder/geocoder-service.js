@@ -6,51 +6,64 @@ angular.module('anol.geocoder')
  * @ngdoc object
  * @name anol.map.GeocoderServiceProvice
  */
-    .provider('GeocoderService', [function() {
+    .provider('GeocoderService', ['LayersServiceProvider', function(LayersServiceProvider) {
         var _configs = [];
 
         this.setGeocoderConfig = function(config) {
             _configs = _configs.concat(config);
         };
 
-        this.$get = ['$rootScope', 'LayersService', function($rootScope, LayersService) {
+        var addConfig = function(config, type) {
+            var found = false;
+            angular.forEach(_configs, function(conf) {
+                if (conf.name === config.name) {
+                    found = true;
+                }
+            });
+            if(!found) {
+                config.type = type;
+                _configs.push(config);
+            }
+        };
+
+        var removeConfig = function(config) {
+            var removeIdx = undefined;
+            angular.forEach(_configs, function(conf, idx) {
+                if (conf === config) {
+                    removeIdx = idx;
+                }
+            });
+
+            if (angular.isDefined(removeIdx)) {
+                _configs.splice(removeIdx, 1);
+            }
+        }
+
+        LayersServiceProvider.registerAddLayerHandler(function(layer) {
+            if (layer.searchConfig && layer.searchConfig.length > 0) {
+                angular.forEach(layer.searchConfig, function(config) {
+                    addConfig(config, 'layer');
+                });
+            }
+        });
+
+        LayersServiceProvider.registerRemoveLayerHandler(function(layer) {
+            if (layer.searchConfig && layer.searchConfig.length > 0) {
+                angular.forEach(layer.searchConfig, function(config) {
+                    removeConfig(config);
+                });
+            }
+        });
+        
+        this.$get = [function() {
         /**
          * @ngdoc service
          * @name anol.map.GeocoderService
          *
          */
-            var Geocoder = function(configs, addLayerHandlers, removeLayerHandlers) {
+            var Geocoder = function(configs) {
                 var self = this;
-                self.addLayerHandlers = addLayerHandlers;
-                self.removeLayerHandlers = removeLayerHandlers;
                 self.configs = configs;
-
-                $rootScope.$watchCollection(function() {
-                    return LayersService.layers();
-                }, function(newVal) {
-                    if(angular.isDefined(newVal)) {
-                        angular.forEach(newVal, function(layer) {
-                            if (layer.groupLayer) {
-                                angular.forEach(layer.layers, function(glayer) {
-                                    if (glayer.searchConfig && glayer.searchConfig.length > 0) {
-                                        angular.forEach(glayer.searchConfig, function(config) {
-                                            self.addConfig(config, 'layer');
-                                        });
-                                    }
-                                });
-                            }
-                            if (angular.isDefined(layer)) {
-                                if (layer.searchConfig && layer.searchConfig.length > 0) {
-                                    angular.forEach(layer.searchConfig, function(config) {
-                                        self.addConfig(config, 'layer');
-                                    });
-                                }
-                            }
-                        });
-                      }
-                    }
-                );
-
             };
 
             Geocoder.prototype.addConfig = function(config, type) {

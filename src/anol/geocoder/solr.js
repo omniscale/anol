@@ -22,16 +22,6 @@ class Solr extends BaseGeocoder {
         return result.label;
     }
     
-    extractCoordinate(result) {
-        var coordRegex = /POINT\((\d*\.?\d*) (\d*\.?\d*)\)/g;
-        var match = coordRegex.exec(result.geom);
-        var coordinate = [
-            parseFloat(match[1]),
-            parseFloat(match[2])
-        ];
-        return coordinate;
-    }
-
     getData(searchString) {
         var data = {
             term: searchString

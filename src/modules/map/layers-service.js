@@ -452,21 +452,40 @@ angular.module('anol.map')
             };
             /**
          * @ngdoc method
-         * @name activeBbackgroundLayer
+         * @name activeBackgroundLayer
          * @methodOf anol.map.LayersService
          * @returns {anol.layer.Layer} backgroundLayer visible background layer
          * @description
          * Returns the visible background layer
          */
-            Layers.prototype.activeBackgroundLayer = function() {
+        Layers.prototype.activeBackgroundLayer = function() {
+            var self = this;
+            var backgroundLayer;
+            angular.forEach(self.backgroundLayers, function(layer) {
+                if(layer.getVisible() === true) {
+                    backgroundLayer = layer;
+                }
+            });
+            return backgroundLayer;
+        };
+            /**
+         * @ngdoc method
+         * @name activeLayers
+         * @methodOf anol.map.LayersService
+         * @returns {anol.layer.Layer} 
+         * @description
+         * Returns the visible layers
+         */
+            Layers.prototype.layerIsActive = function(layerName) {
                 var self = this;
-                var backgroundLayer;
-                angular.forEach(self.backgroundLayers, function(layer) {
-                    if(layer.getVisible() === true) {
-                        backgroundLayer = layer;
+                var active = false;
+                angular.forEach(self.flattedLayers(), function(layer) {
+                    if (layer.name === layerName && layer.getVisible() === true) {
+                        active = true;
                     }
                 });
-                return backgroundLayer;
+
+                return active;
             };
             /**
          * @ngdoc method

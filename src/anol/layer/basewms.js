@@ -64,7 +64,7 @@ class BaseWMS extends AnolBaseLayer {
         if (this.catalog) {
             return false;
         }
-        return true;
+        return false;
     }
 
     getCombinedSource(other) {
@@ -131,7 +131,7 @@ class BaseWMS extends AnolBaseLayer {
     setVisible(visible) {
         if (visible == this.getVisible()) {
             return;
-        }        
+        }     
         var insertLayerIdx = 0;
         var source = this.olLayer.getSource();
         var self = this;

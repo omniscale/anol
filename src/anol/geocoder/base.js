@@ -16,7 +16,7 @@ class BaseGeocoder {
         $.each(response, function(idx, result) {
             results.push({
                 displayText: self.extractDisplayText(result),
-                coordinate: self.extractCoordinate(result),
+                wkt: result.geom,
                 projectionCode: self.RESULT_PROJECTION
             });
         });

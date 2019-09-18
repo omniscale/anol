@@ -30,12 +30,6 @@ class Nominatim extends BaseGeocoder {
         return result.display_name;
     }
 
-    extractCoordinate(result) {
-        return [
-            parseFloat(result.lon),
-            parseFloat(result.lat)
-        ];
-    }
     getData(searchString) {
         var data = {
             q: searchString,
