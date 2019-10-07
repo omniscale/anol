@@ -218,6 +218,8 @@ angular.module('anol.geocoder')
                               'strokeColor': activeGeocoder.resultMarker.strokeColor,
                               'strokeWidth': activeGeocoder.resultMarker.strokeWidth,
                               'strokeOpacity': activeGeocoder.resultMarker.strokeOpacity,
+                              'fillOpacity': activeGeocoder.resultMarker.fillOpacity,
+                              'fillColor': activeGeocoder.resultMarker.fillColor,
                             }
                         }   
                         return markerStyle;                         
@@ -225,8 +227,6 @@ angular.module('anol.geocoder')
 
                     function createMarkerLayer(activeGeocoder) {
                         var markerStyle = createMarkerStyle(activeGeocoder)
-
-                        // todo update marker style on chagne
                         var markerLayer = new anol.layer.Feature({
                             name: 'geocoderLayer',
                             displayInLayerswitcher: false,
@@ -259,8 +259,37 @@ angular.module('anol.geocoder')
 
                         return anolGeocoder;
                     };
-        
-                     scope.$watch('searchString', function(value) {
+                    
+                    scope.$watchCollection('geocoders', function(newValue, oldValue) {
+                        var found = false;
+                        var baseGeocoders = [];
+                        var layerGeocoders = [];
+
+                        angular.forEach(newValue, function(geocoder) {
+                            if (geocoder.name === scope.activeGeocoder.name) {
+                                found = true;
+                            };
+                            if (geocoder.type === 'base') {
+                                baseGeocoders.push(geocoder);
+                            } 
+                            if (geocoder.type == 'layer') {
+                                layerGeocoders.push(geocoder)
+                            }
+                        })
+
+                        if (!found) {
+                            angular.forEach(scope.geocoders, function(geocoder) {
+                                if (geocoder.selected) {
+                                    scope.activateGeocoder(geocoder)
+                                }
+                            });
+                        };
+                        
+                        scope.baseGeocoders = baseGeocoders;
+                        scope.layerGeocoders = layerGeocoders;
+                    })
+
+                    scope.$watch('searchString', function(value) {
                         if (scope.byResultList) return;
 
                         if (angular.isUndefined(value)) {
@@ -284,7 +313,7 @@ angular.module('anol.geocoder')
                         if (scope.activeGeocoder.autoSearchChars) {
                             var found = false;
                             angular.forEach(scope.searchResults, function(result) {
-                                if (result.displayText === scope.searchString) {
+                                if (result.sml === 1) {
                                     scope.showResult(result, true)
                                     found = true;
                                 }
@@ -297,13 +326,13 @@ angular.module('anol.geocoder')
                         scope.startSearch();
                     }
 
-                    scope.startSearch = function() {
+                    scope.startSearch = function(showResultDirect) {
                         scope.searchResults = [];
                         scope.noResults = false;
                         scope.markerLayer.clear();
                         removeUrlMarker();
                         element.find('.anol-searchbox').removeClass('open');
-                        if (angular.isUndefined(scope.searchString) || scope.searchString.length < 3) {
+                        if (angular.isUndefined(scope.searchString) || scope.searchString.length < scope.activeGeocoder.autoSearchChars) {
                             return;
                         }
                         scope.searchInProgress = true;
@@ -317,7 +346,14 @@ angular.module('anol.geocoder')
                                     scope.showResultList = true;
                                     element.find('.anol-searchbox').addClass('open');
                                 }
-                               
+
+                                if (angular.isDefined(showResultDirect) && showResultDirect === true) {
+                                    angular.forEach(results, function(result) {
+                                        if (result.sml === 1) {
+                                            scope.showResult(result, true)
+                                        }
+                                    });
+                                }
                                 scope.handleHideElement = scope.map.on(
                                     'singleclick', scope.hideElement, this);
                                 scope.$digest();
@@ -332,6 +368,11 @@ angular.module('anol.geocoder')
                         scope.activeGeocoder = geocoder;
                         scope.geocoder = setAnolGeocoder(scope.activeGeocoder);
                         scope.showGeocoderList = false;
+                        scope.searchResults = [];
+                        scope.showResultList = false;
+                        scope.isScrolling = false;                                
+                        scope.searchInProgress = false;
+                        scope.searchString = undefined;
 
                         // update style and clear source
                         var markerStyle = createMarkerStyle(scope.activeGeocoder);
@@ -357,7 +398,7 @@ angular.module('anol.geocoder')
                         }
                         if(event.key === 'Enter' || event.keyCode === 13) {
                             event.preventDefault();
-                            scope.startSearch();
+                            scope.startSearch(true);
                         }
                         return false;
                     };

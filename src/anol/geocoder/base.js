@@ -17,7 +17,8 @@ class BaseGeocoder {
             results.push({
                 displayText: self.extractDisplayText(result),
                 wkt: result.geom,
-                projectionCode: self.RESULT_PROJECTION
+                projectionCode: self.RESULT_PROJECTION,
+                sml: result.sml
             });
         });
         return results;
