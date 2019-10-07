@@ -92,7 +92,7 @@ angular.module('anol.print')
                             angular.forEach(scope.measureLayers, function(layername) {
                                 var featureLayer = LayersService.getSystemLayerByName(layername);
                                 var geojsonFormat = new GeoJSON();
-                                if (featureLayer.olLayer.getSource().getFeatures().length !== 0) {
+                                if (featureLayer && featureLayer.olLayer.getSource().getFeatures().length !== 0) {                                
                                     measure_feature_collection = geojsonFormat.writeFeaturesObject(
                                         featureLayer.olLayer.getSource().getFeatures()
                                     );
