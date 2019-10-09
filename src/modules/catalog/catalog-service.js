@@ -208,9 +208,8 @@ angular.module('anol.catalog')
         CatalogService.prototype.addGroupToMap = function(group, visible) {
             var self = this;
             if(self.catalogGroups.indexOf(group) > -1 && self.addedGroups.indexOf(group) === -1) {
-                LayersService.addOverlayLayer(group, 0);
                 group.setVisible(visible);
-
+                LayersService.addOverlayLayer(group, 0);
                 angular.forEach(self.addedGroups, function(_group) {
                     angular.forEach(_group.layers, function(_layers) {
                         self.addedGroupsLength++;
@@ -236,8 +235,8 @@ angular.module('anol.catalog')
 
             if(self.catalogLayers.indexOf(layer) > -1 && self.addedLayers.indexOf(layer) === -1) {
                 // add catalog layer to the top
-                var added = LayersService.addOverlayLayer(layer, 0);
                 layer.setVisible(visible)
+                var added = LayersService.addOverlayLayer(layer, 0);
                 if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
                     layer.refresh();
                 }

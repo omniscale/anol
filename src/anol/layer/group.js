@@ -47,7 +47,7 @@ class Group {
     setVisible(visible) {
         var self = this;
         var changed = false;
-        if (this.singleSelect) {
+        if (self.singleSelect) {
             $.each(self.layers, function(idx, layer) {
                 if(layer.getVisible() !== visible) {
                     layer.setVisible(visible);

@@ -140,8 +140,8 @@ angular.module('anol.legend')
                         var self = this;
                         scope.$watchCollection(function() {
                             return LayersService.layers();
-                        }, function(newVal) {
-                            if(angular.isDefined(newVal)) {
+                        }, function(newVal, oldVal) {
+                            if(angular.isDefined(newVal) && angular.isDefined(oldVal)) {
                                 // reset legendLayers
                                 scope.legendLayers = [];
                                 scope.visibleLayerNames = [];
@@ -149,7 +149,6 @@ angular.module('anol.legend')
                                     if (angular.isUndefined(layer)) {
                                         return true;
                                     }
-                                    
                                     addLegendLayer(layer);
                                     if(layer instanceof anol.layer.Group) {
                                         angular.forEach(layer.layers, function(groupLayer) {

@@ -202,7 +202,7 @@ angular.module('anol.map')
                         self.deletedOverlayLayers.push(group.name)
                     }   
                     angular.forEach(group.layers, function(_layer) {
-                        _layer.setVisible(false);
+                        // _layer.setVisible(false);
                         if(angular.isDefined(self.map)) {
                             var olLayerIdx = self.olLayers.indexOf(_layer.olLayer);
                             if(olLayerIdx > -1) {
@@ -222,7 +222,7 @@ angular.module('anol.map')
                     if(addedLayersIdx > -1) {
                         self.addedLayers.splice(addedLayersIdx, 1);
                     }                    
-                    layer.setVisible(false);
+                    // layer.setVisible(false);
 
                     // remove single layer
                     var overlayLayerIdx = self.overlayLayers.indexOf(layer);
