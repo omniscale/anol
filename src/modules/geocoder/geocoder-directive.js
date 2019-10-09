@@ -314,7 +314,7 @@ angular.module('anol.geocoder')
                             var found = false;
                             angular.forEach(scope.searchResults, function(result) {
                                 if (result.sml === 1) {
-                                    scope.showResult(result, true)
+                                    scope.showResult(result, false)
                                     found = true;
                                 }
                             })
@@ -350,7 +350,7 @@ angular.module('anol.geocoder')
                                 if (angular.isDefined(showResultDirect) && showResultDirect === true) {
                                     angular.forEach(results, function(result) {
                                         if (result.sml === 1) {
-                                            scope.showResult(result, true)
+                                            scope.showResult(result, false)
                                         }
                                     });
                                 }
@@ -454,7 +454,7 @@ angular.module('anol.geocoder')
                         }
                     };
 
-                    scope.showResult = function(result, withResultList) {
+                    scope.showResult = function(result, fromResultList) {
                         scope.byResultList = true;
                         var view = MapService.getMap().getView();
 
@@ -477,15 +477,16 @@ angular.module('anol.geocoder')
                             result.displayText
                         );
 
-                        if (angular.isUndefined(withResultList) || withResultList == false) {
+                        if (angular.isDefined(fromResultList) && fromResultList === true) {
                             scope.searchResults = [];
                             element.find('.anol-searchbox').removeClass('open');
                             unByKey(scope.handleHideElement);
                             scope.searchString = result.displayText;
-                            $timeout(function() {
-                                scope.byResultList = false;
-                            });
                           }
+                        
+                        $timeout(function() {
+                            scope.byResultList = false;
+                        });
                     };
 
                     if(angular.isObject(AnolMapController)) {
