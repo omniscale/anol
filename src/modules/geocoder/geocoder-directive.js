@@ -153,7 +153,7 @@ angular.module('anol.geocoder')
                     var addSearchResult = function(feature) {
                         var markerSource = scope.markerLayer.olLayer.getSource();
                         markerSource.addFeature(feature);
-
+                        
                         if(scope.highlight > 0) {
                             $timeout(function() {
                                 markerSource.clear();
@@ -463,6 +463,13 @@ angular.module('anol.geocoder')
                             dataProjection: result.projectionCode,
                             featureProjection: view.getProjection().getCode()
                         });
+                        
+                        // clear marker if result was selected from list
+                        if (angular.isDefined(fromResultList) && fromResultList === true) {
+                            var markerSource = scope.markerLayer.olLayer.getSource();
+                            markerSource.clear();
+                        }
+
                         addSearchResult(feature);
                         view.fit(
                             scope.markerLayer.olLayer.getSource().getExtent(), 
