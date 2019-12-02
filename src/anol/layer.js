@@ -67,6 +67,7 @@ class AnolBaseLayer {
         this.isBackground = options.isBackground || false;
         this.featureinfo = options.featureinfo || false;
         this.legend = options.legend || false;
+        this.abstract = options.abstract || undefined;
         this.attribution = options.attribution || undefined;
         this.isVector = false;
         this.options = options;

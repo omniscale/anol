@@ -20,6 +20,7 @@ class Group {
         this.title = options.title;
         this.layers = options.layers;
         this.options = options;
+        this.abstract = options.abstract || undefined;
         this.catalog = options.catalog || false;
         this.catalogLayer = options.catalogLayer || false;
         this.singleSelect = options.singleSelect || false;

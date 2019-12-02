@@ -29,6 +29,14 @@ angular.module('anol.catalog')
                             $compile(template)(scope);
                         });
                     } 
+                    scope.variant = scope.$parent.variant;
+                    scope.showLayers = scope.$parent.showLayers;
+                    if (scope.variant === 'mouseover') {
+                        scope.popoverEnabled = true;
+                    } else {
+                        scope.popoverEnabled = false;
+                    }
+                    scope.defaultAbstractLimit = 200;
                     scope.sortedLayers = CatalogService.sortedLayers;
                     scope.sortedGroups = CatalogService.sortedGroups;
 
