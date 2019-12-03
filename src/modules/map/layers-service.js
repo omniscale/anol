@@ -222,7 +222,6 @@ angular.module('anol.map')
                     if(addedLayersIdx > -1) {
                         self.addedLayers.splice(addedLayersIdx, 1);
                     }                    
-                    // layer.setVisible(false);
 
                     // remove single layer
                     var overlayLayerIdx = self.overlayLayers.indexOf(layer);

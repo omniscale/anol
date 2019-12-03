@@ -24,6 +24,7 @@ class Group {
         this.catalog = options.catalog || false;
         this.catalogLayer = options.catalogLayer || false;
         this.singleSelect = options.singleSelect || false;
+        this.singleSelectGroup = options.singleSelectGroup || false;
         this.groupLayer = true;
         this.combinable = undefined;
 
