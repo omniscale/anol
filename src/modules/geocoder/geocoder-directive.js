@@ -27,8 +27,8 @@ angular.module('anol.geocoder')
  * Search for a location string on given geocoder, display and select results
  */
 
-    .directive('anolGeocoderSearchbox', ['$templateRequest', '$compile', '$timeout', '$location', '$translate', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'GeocoderService', 'UrlMarkersService',
-        function($templateRequest, $compile, $timeout, $location, $translate, MapService, ControlsService, InteractionsService, LayersService, GeocoderService, UrlMarkersService) {
+    .directive('anolGeocoderSearchbox', ['$templateRequest', '$filter', '$compile', '$timeout', '$location', '$translate', 'MapService', 'ControlsService', 'InteractionsService', 'LayersService', 'GeocoderService', 'UrlMarkersService',
+        function($templateRequest, $filter, $compile, $timeout, $location, $translate, MapService, ControlsService, InteractionsService, LayersService, GeocoderService, UrlMarkersService) {
             return {
                 restrict: 'A',
                 require: '?^anolMap',
@@ -77,6 +77,8 @@ angular.module('anol.geocoder')
                         scope.markerLayer = createMarkerLayer(scope.activeGeocoder);
                     });
 
+                    scope.searchTerm = '';
+                    scope.searchTerms = [];
                     scope.searchResults = [];
                     scope.noResults = false;
                     scope.searchInProgress = false;
@@ -176,7 +178,7 @@ angular.module('anol.geocoder')
                             MapService.addCursorPointerCondition(changeCursorCondition);
                         }
                     };
-
+                    
                     var addMarker = function(position) {
                         var markerFeature = new Feature({
                             geometry: new Point(position)
@@ -241,7 +243,6 @@ angular.module('anol.geocoder')
 
                     function setAnolGeocoder(activeGeocoder) {
                         var geocoderOptions = angular.copy(activeGeocoder.geocoderOptions);
-
                         if(angular.isDefined(activeGeocoder.proxyUrl)) {
                             if(activeGeocoder.proxyUrl[activeGeocoder.proxyUrl.length - 1] !== '/') {
                                 activeGeocoder.proxyUrl += '/';
@@ -295,7 +296,14 @@ angular.module('anol.geocoder')
                         if (angular.isUndefined(value)) {
                             return;
                         }
-                        if (scope.activeGeocoder.autoSearchChars) {
+
+                        if (scope.geocoder.isCatalog) {
+                            if (scope.geocoder.isCatalog && scope.geocoder.step === 0) {
+                                scope.startSearch();
+                            }
+                        }
+
+                        if (scope.activeGeocoder.autoSearchChars && !scope.geocoder.isCatalog) {
                             if (value.length >= scope.activeGeocoder.autoSearchChars) {
                                 scope.noResults = false;
                                 scope.startSearch();
@@ -309,7 +317,49 @@ angular.module('anol.geocoder')
                         }
                     });
 
+                    scope.filterCatalogResults = function() {
+                        let searchString = scope.searchString.toString();
+                        var filterdResult = [];
+                        
+                        angular.forEach(scope.searchResults, function(result) {
+                            if (result.displayText.toLowerCase() === searchString.toLowerCase()) {
+                                filterdResult.push(result);
+                            }
+                        });
+
+                        if (filterdResult.length === 0){
+                            angular.forEach(scope.searchResults, function(result) {
+                                if (result.displayText.indexOf(searchString) !== -1) {
+                                    filterdResult.push(result);
+                                }
+                            });
+                        }
+                        return filterdResult;
+                    }
+                        
+                    scope.selectCatalogResult = function(result) {
+                        scope.searchString = undefined;
+                        scope.searchTerms.push(result.displayText);
+                        scope.searchTerm = result.key
+                        scope.startSearch();
+
+                    }
+
                     scope.searchButton = function() {
+                        if (scope.geocoder.isCatalog) {
+                            if (angular.isDefined(scope.searchString)) {
+                                var filterdResult = scope.filterCatalogResults();
+                                if (filterdResult.length === 1) {
+                                    if (scope.geocoder.hasNextStep()) {
+                                        scope.selectCatalogResult(filterdResult[0]);
+                                    } else {
+                                        scope.showResult(filterdResult[0], true)
+                                    }
+                                }
+                            }
+                            return;
+                        }
+
                         if (scope.activeGeocoder.autoSearchChars) {
                             var found = false;
                             angular.forEach(scope.searchResults, function(result) {
@@ -325,18 +375,35 @@ angular.module('anol.geocoder')
                         }
                         scope.startSearch();
                     }
-
+                    
+                    scope.resetSteps = function(event) {
+                        console.log(event)
+                        event.preventDefault();
+                        scope.searchTerms = [];
+                        scope.searchString = undefined;
+                        scope.geocoder.step = 0;
+                        scope.startSearch();
+                    }
+                    
                     scope.startSearch = function(showResultDirect) {
                         scope.searchResults = [];
                         scope.noResults = false;
                         scope.markerLayer.clear();
                         removeUrlMarker();
                         element.find('.anol-searchbox').removeClass('open');
-                        if (angular.isUndefined(scope.searchString) || scope.searchString.length < scope.activeGeocoder.autoSearchChars) {
-                            return;
-                        }
+                        if (!scope.geocoder.isCatalog) {
+                            if (angular.isUndefined(scope.searchString) || 
+                                scope.searchString.length < scope.activeGeocoder.autoSearchChars) {
+                                    return;
+                            }
+                        } 
                         scope.searchInProgress = true;
-                        scope.geocoder.request(scope.searchString)
+
+                        if (!scope.geocoder.isCatalog) {
+                            scope.searchTerm = scope.searchString;
+                        } 
+
+                        scope.geocoder.request(scope.searchTerm)
                             .then(function(results) {
                                 scope.searchInProgress = false;
                                 if(results.length === 0) {
@@ -357,12 +424,11 @@ angular.module('anol.geocoder')
                                 scope.handleHideElement = scope.map.on(
                                     'singleclick', scope.hideElement, this);
                                 scope.$digest();
+                                if (scope.geocoder.isCatalog) {
+                                    element.find('input').focus();
+                                }
                             });
                     };
-
-                    scope.toggleGeoCoderList = function() {
-                        scope.showGeocoderList = false;
-                    }
 
                     scope.activateGeocoder = function(geocoder) {
                         scope.activeGeocoder = geocoder;
@@ -373,6 +439,8 @@ angular.module('anol.geocoder')
                         scope.isScrolling = false;                                
                         scope.searchInProgress = false;
                         scope.searchString = undefined;
+                        scope.searchTerms = [];
+                        scope.searchTerm = undefined;
 
                         // update style and clear source
                         var markerStyle = createMarkerStyle(scope.activeGeocoder);
@@ -397,8 +465,22 @@ angular.module('anol.geocoder')
                             element.find('.dropdown-menu li a:first').focus();
                         }
                         if(event.key === 'Enter' || event.keyCode === 13) {
-                            event.preventDefault();
-                            scope.startSearch(true);
+                            if (scope.geocoder.isCatalog) {
+                                event.preventDefault();
+                                if (angular.isDefined(scope.searchString)) {
+                                    var filterdResult = scope.filterCatalogResults();
+                                    if (filterdResult.length === 1) {
+                                        if (scope.geocoder.hasNextStep()) {
+                                            scope.selectCatalogResult(filterdResult[0]);
+                                        } else {
+                                            scope.showResult(filterdResult[0], true)
+                                        }
+                                    }
+                                }
+                            } else {
+                                event.preventDefault();
+                                scope.startSearch(true);
+                            }
                         }
                         return false;
                     };
@@ -407,9 +489,19 @@ angular.module('anol.geocoder')
                             scope.showResultList = true;
                         }
                         scope.showGeocoderList = false;
+                        
+                        if (scope.geocoder.isCatalog) {
+                            if (scope.geocoder.step === 0) {
+                                scope.startSearch();
+                            } else {
+                                scope.showResultList = true;
+                                element.find('.anol-searchbox').addClass('open');
+                                scope.handleHideElement = scope.map.on(
+                                    'singleclick', scope.hideElement, this);
+                            }
+                        }
                     };
                     scope.handleInputBlur = function(event) {
-                        scope.showResultList = false;
                     };
                     scope.handleResultListMousedown = function(event) {
                         scope.isScrolling = true;
@@ -455,6 +547,11 @@ angular.module('anol.geocoder')
                     };
 
                     scope.showResult = function(result, fromResultList) {
+                        if (this.geocoder.isCatalog && this.geocoder.hasNextStep()) {
+                            scope.selectCatalogResult(result);
+                            return;
+                        }
+
                         scope.byResultList = true;
                         var view = MapService.getMap().getView();
 
@@ -483,13 +580,15 @@ angular.module('anol.geocoder')
                             result.projectionCode,
                             result.displayText
                         );
-
-                        if (angular.isDefined(fromResultList) && fromResultList === true) {
-                            scope.searchResults = [];
-                            element.find('.anol-searchbox').removeClass('open');
-                            unByKey(scope.handleHideElement);
-                            scope.searchString = result.displayText;
-                          }
+                        
+                        if (!this.geocoder.isCatalog) {
+                            if (angular.isDefined(fromResultList) && fromResultList === true) {
+                                scope.searchResults = [];
+                                element.find('.anol-searchbox').removeClass('open');
+                                unByKey(scope.handleHideElement);
+                                scope.searchString = result.displayText;
+                            }
+                        }
                         
                         $timeout(function() {
                             scope.byResultList = false;
@@ -502,5 +601,33 @@ angular.module('anol.geocoder')
                         }));
                     }
                 }
+            }
+        }])
+        .filter('searchCatalogFilter', function(){
+            return function(dataArray, searchTerm) {
+                if (!dataArray) {
+                    return;
+                }
+                else if (!searchTerm) {
+                    return dataArray;
+                }
+                else {
+                    var term = searchTerm.toLowerCase();
+                    var results = [];
+                    angular.forEach(dataArray, function(item) {
+                        if (item.displayText.toLowerCase() === term) {
+                            results.push(item)
+                        }
+                    });
+                    if (results.length === 1) {
+                        return results;
+                    }
+
+                    return dataArray.filter(function(item){
+                        var terminTitle = item.displayText.toLowerCase().indexOf(term) > -1;
+                        return terminTitle;
+                    });
+                } 
             };
-        }]);
+        });
+;

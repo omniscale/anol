@@ -7,6 +7,7 @@ class BaseGeocoder {
         }
         this.url = _options.url;
         this.options = _options;
+        this.isCatalog = false;
         this.CLASS_NAME = 'anol.geocoder.Base';
     }
 
@@ -18,7 +19,7 @@ class BaseGeocoder {
                 displayText: self.extractDisplayText(result),
                 wkt: result.geom,
                 projectionCode: self.RESULT_PROJECTION,
-                sml: result.sml
+                sml: result.sml,
             });
         });
         return results;

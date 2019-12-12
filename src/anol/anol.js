@@ -14,6 +14,7 @@ register(proj4);
 import Helper from './helper.js';
 import Nominatim from './geocoder/nominatim.js';
 import Solr from './geocoder/Solr.js';
+import Catalog from './geocoder/Catalog.js';
 
 import AnolBaseLayer from './layer.js';
 import BaseWMS from './layer/basewms.js';
@@ -35,7 +36,8 @@ import Control from './control.js';
 export var helper = new Helper() || {};
 export var geocoder = {
     Nominatim: Nominatim,
-    Solr: Solr
+    Solr: Solr,
+    Catalog: Catalog,
 };
 export var layer = {
     BaseWMS: BaseWMS,
