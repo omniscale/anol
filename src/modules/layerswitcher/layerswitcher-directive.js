@@ -148,7 +148,6 @@ angular.module('anol.layerswitcher')
                     $scope.toggleGroupVisibleByName = function(name) {
                         var group = LayersService.groupByName(name);
                         if(angular.isDefined(group)) {
-
                             if (group.singleSelectGroup && !group.getVisible()) {
                                 angular.forEach(LayersService.nameGroupsMap, function(xGroup, xName) {
                                     if (xName != name) {

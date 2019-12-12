@@ -39,7 +39,7 @@ angular.module('anol.catalog')
                     scope.defaultAbstractLimit = 200;
                     scope.sortedLayers = CatalogService.sortedLayers;
                     scope.sortedGroups = CatalogService.sortedGroups;
-
+                   
                     scope.addedGroups = CatalogService.addedGroups;
                     scope.addedLayers = CatalogService.addedLayers;
                                         
@@ -59,4 +59,27 @@ angular.module('anol.catalog')
                     };
                 }
             };
-        }]);
+        }])
+
+        .filter('catalogFilter', function(){
+            return function(dataArray, searchTerm, variant) {
+                if (!dataArray) {
+                    return;
+                }
+                else if (!searchTerm) {
+                    return dataArray;
+                }
+                else {
+                    var term = searchTerm.toLowerCase();
+                    return dataArray.filter(function(item){
+                        var terminTitle = item.catalog.title.toLowerCase().indexOf(term) > -1;
+                        if (item.abstract && variant === 'abstract') {
+                            var termInAbstract = item.abstract.toLowerCase().indexOf(term) > -1;
+                            return terminTitle || termInAbstract;
+                        } else {
+                            return terminTitle;
+                        }
+                    });
+                } 
+            };
+        });
