@@ -21,7 +21,7 @@
     "angular-translate": "~2.18.1",
     "angular-translate-loader-static-files": "~2.8.1",
     "angular-ui-bootstrap": "^2.5.6",
-    "bootstrap": "3.3.6",
+    "bootstrap": "3.4.1",
     "buble": "^0.19.3",
     "buble-loader": "^0.5.1",
     "canonical-path": "0.0.2",
