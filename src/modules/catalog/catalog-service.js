@@ -215,9 +215,10 @@ angular.module('anol.catalog')
                         self.addedGroupsLength++;
                     });
                 });      
+                var startZIndex = LayersService.zIndex + self.addedLayers.length + group.layers.length
                 angular.forEach(group.layers, function(_layers) {
-                    self.addedGroupsLength++;
-                    _layers.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength);
+                    _layers.olLayer.setZIndex(startZIndex);
+                    startZIndex--;
                 });
                 self.addedGroups.push(group);
             }
