@@ -539,7 +539,7 @@ angular.module('anol.measure')
                             exclusive: true
                         });
                     }
-
+                    
                     control.onDeactivate(deactivate);
                     control.onActivate(activate);
                     ControlsService.addControl(control);

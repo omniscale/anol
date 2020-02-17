@@ -256,7 +256,7 @@ angular.module('anol.geocoder')
                         scope.highlight = activeGeocoder.resultMarkerVisible;
                         scope.zoomLevel = activeGeocoder.zoom;
                         scope.urlMarkerColor = activeGeocoder.urlMarkerColor;
-                        scope.placeholder = scope.placeholderBase + ' ' + activeGeocoder.title;
+                        scope.placeholder = activeGeocoder.title;
 
                         return anolGeocoder;
                     };
@@ -339,10 +339,9 @@ angular.module('anol.geocoder')
                         
                     scope.selectCatalogResult = function(result) {
                         scope.searchString = undefined;
-                        scope.searchTerms.push(result.displayText);
+                        scope.searchTerms.push(result);
                         scope.searchTerm = result.key
                         scope.startSearch();
-
                     }
 
                     scope.searchButton = function() {
@@ -376,12 +375,23 @@ angular.module('anol.geocoder')
                         scope.startSearch();
                     }
                     
-                    scope.resetSteps = function(event) {
-                        console.log(event)
+                    scope.resetSteps = function(event, index) {
                         event.preventDefault();
-                        scope.searchTerms = [];
-                        scope.searchString = undefined;
-                        scope.geocoder.step = 0;
+                        if (index === -1) {
+                            scope.searchTerms = [];
+                            scope.searchString = undefined;
+                            scope.geocoder.step = 0;
+                        } else {
+                            index = index + 1;
+                            scope.geocoder.step = index;
+                            // Use Array.length to set a new size for an array
+                            // which is faster than Array.splice to mutate:
+                            scope.searchString = undefined;
+                            scope.searchTerms.length = index;
+                            if (scope.searchTerms.length >= 1) {
+                                scope.searchTerm = scope.searchTerms[scope.searchTerms.length - 1].key;
+                            }
+                        }
                         scope.startSearch();
                     }
                     
@@ -402,7 +412,6 @@ angular.module('anol.geocoder')
                         if (!scope.geocoder.isCatalog) {
                             scope.searchTerm = scope.searchString;
                         } 
-
                         scope.geocoder.request(scope.searchTerm)
                             .then(function(results) {
                                 scope.searchInProgress = false;
@@ -604,7 +613,10 @@ angular.module('anol.geocoder')
             }
         }])
         .filter('searchCatalogFilter', function(){
-            return function(dataArray, searchTerm) {
+            return function(dataArray, searchTerm, geocoder) {
+                if (geocoder && !geocoder.isCatalog) {
+                    return dataArray;
+                }
                 if (!dataArray) {
                     return;
                 }
@@ -615,10 +627,11 @@ angular.module('anol.geocoder')
                     var term = searchTerm.toLowerCase();
                     var results = [];
                     angular.forEach(dataArray, function(item) {
-                        if (item.displayText.toLowerCase() === term) {
+                        if (item.displayText.toLowerCase().indexOf(term) > -1) {
                             results.push(item)
                         }
                     });
+
                     if (results.length === 1) {
                         return results;
                     }
