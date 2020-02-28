@@ -433,116 +433,123 @@ angular.module('anol.measure')
                 template: function() {
                     return require('./templates/measure.html');
                 },
-                link: function(scope, element, attrs, AnolMapController) {
-                    //attribute defaults
-                    scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
+                link: {
+                    pre: function(scope, element) {
+                        scope.tooltipPlacement = angular.isDefined(scope.tooltipPlacement) ?
                         scope.tooltipPlacement : 'right';
-                    scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
-                        scope.tooltipDelay : 500;
-                    scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
-                        scope.tooltipEnable : !hasTouch;
-                    scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
-                    scope.labelSegments = angular.isDefined(scope.labelSegments) ?
-                        scope.labelSegments : false;
-                    
-                    var control;
+                        scope.tooltipDelay = angular.isDefined(scope.tooltipDelay) ?
+                            scope.tooltipDelay : 500;
+                        scope.tooltipEnable = angular.isDefined(scope.tooltipEnable) ?
+                            scope.tooltipEnable : !hasTouch;
+                        scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
+                        scope.labelSegments = angular.isDefined(scope.labelSegments) ?
+                            scope.labelSegments : false;
+                        
+                        // create layer to draw in
+                        scope.measureSource = new VectorSource({
+                            useSpatialIndex: false
+                        });
+                        var _measureLayer = new VectorLayer({
+                            source: scope.measureSource,
+                            style: scope.style || function(feature) {
+                                return measureStyle(feature, scope.labelSegments)
+                            },
+                            zIndex: 2000
+                        });
 
-                    // create layer to draw in
-                    var measureSource = new VectorSource({
-                        useSpatialIndex: false
-                    });
-                    var _measureLayer = new VectorLayer({
-                        source: measureSource,
-                        style: scope.style || function(feature) {
-                            return measureStyle(feature, scope.labelSegments)
-                        },
-                        zIndex: 2000
-                    });
+                        var layerOptions = {
+                            title: scope.measureType + 'MeasureLayer',
+                            name: scope.measureType + 'MeasureLayer',
+                            displayInLayerswitcher: false,
+                            olLayer: _measureLayer
+                        };
 
-                    var layerOptions = {
-                        title: scope.measureType + 'MeasureLayer',
-                        name: scope.measureType + 'MeasureLayer',
-                        displayInLayerswitcher: false,
-                        olLayer: _measureLayer
-                    };
+                        scope.map = MapService.getMap();
+                        scope.measureOverlay = createMeasureOverlay();
 
-                    var map = MapService.getMap();
+                        scope.draw = createDrawInteraction(scope.measureSource,
+                            scope.measureType,
+                            scope.measureOverlay,
+                            scope.measureResultCallback,
+                            scope.map.getView().getProjection(),
+                            scope.geodesic,
+                            scope.labelSegments
+                        );
 
-                    var measureOverlay = createMeasureOverlay();
+                        scope.modify = createModifyInteraction(scope.measureSource,
+                            scope.measureType,
+                            scope.measureOverlay,
+                            scope.measureResultCallback,
+                            scope.map.getView().getProjection(),
+                            scope.geodesic, 
+                            scope.labelSegments
+                        );
 
-                    var draw = createDrawInteraction(measureSource,
-                        scope.measureType,
-                        measureOverlay,
-                        scope.measureResultCallback,
-                        map.getView().getProjection(),
-                        scope.geodesic,
-                        scope.labelSegments
-                    );
-
-                    var modify = createModifyInteraction(measureSource,
-                        scope.measureType,
-                        measureOverlay,
-                        scope.measureResultCallback,
-                        map.getView().getProjection(),
-                        scope.geodesic, 
-                        scope.labelSegments
-                    );
-
-                    scope.measure = function() {
-                        if(control.active) {
-                            control.deactivate();
+                        scope.deactivate = function() {
+                            scope.map.removeInteraction(scope.draw);
+                            scope.map.removeInteraction(scope.modify);
+                            scope.measureSource.clear();
+                            scope.map.removeOverlay(scope.measureOverlay);
+                            scope.measureOverlay.getElement().innerHTML = '';
+                            if(angular.isFunction(scope.deactivatedCallback)) {
+                                scope.deactivatedCallback();
+                            }
+                        };
+    
+                        scope.activate = function() {
+                            scope.map.addInteraction(scope.draw);
+                            scope.map.addInteraction(scope.modify);
+                            scope.map.addOverlay(scope.measureOverlay);
+                            if(angular.isFunction(scope.activatedCallback)) {
+                                scope.activatedCallback();
+                            }
+                        };
+                        LayersService.addSystemLayer(new anol.layer.Layer(layerOptions), 0);
+                    }, 
+                    post: function(scope, AnolMapController) {
+                        var control;
+                        
+                        if(AnolMapController === null || scope.addToMap === false || scope.addToMap === 'false') {
+                            control = new anol.control.Control({
+                                exclusive: true,
+                                keepMenuOpen: true,
+                                olControl: null
+                            });
                         } else {
-                            control.activate();
+                            element.addClass('ol-control');
+                            element.addClass('anol-measure-' + scope.measureType);
+                            control = new anol.control.Control({
+                                element: element,
+                                keepMenuOpen: true,
+                                exclusive: true
+                            });
                         }
-                    };
-
-                    var deactivate = function() {
-                        map.removeInteraction(draw);
-                        map.removeInteraction(modify);
-                        measureSource.clear();
-                        map.removeOverlay(measureOverlay);
-                        measureOverlay.getElement().innerHTML = '';
-                        if(angular.isFunction(scope.deactivatedCallback)) {
-                            scope.deactivatedCallback();
-                        }
-                    };
-
-                    var activate = function() {
-                        map.addInteraction(draw);
-                        map.addInteraction(modify);
-                        map.addOverlay(measureOverlay);
-                        if(angular.isFunction(scope.activatedCallback)) {
-                            scope.activatedCallback();
-                        }
-                    };
-
-                    scope.deactivate = function() {
-                        control.deactivate();
-                    };
-
-                    scope.activate = function() {
-                        control.activate();
-                    };
-
-                    LayersService.addSystemLayer(new anol.layer.Layer(layerOptions), 0);
-
-                    if(AnolMapController === null || scope.addToMap === false || scope.addToMap === 'false') {
-                        control = new anol.control.Control({
-                            exclusive: true,
-                            olControl: null
+                        control.onDeactivate(function() {
+                            scope.deactivate();
                         });
-                    } else {
-                        element.addClass('ol-control');
-                        element.addClass('anol-measure-' + scope.measureType);
-                        control = new anol.control.Control({
-                            element: element,
-                            exclusive: true
+
+                        control.onActivate(function() {
+                            scope.activate();
                         });
+                         
+                        scope.isActive = function() {
+                            if (control.active) {
+                                return true;
+                            }
+                            return false;
+                        };
+
+                        scope.toggle = function() {
+                            if(control.active) {
+                                control.deactivate();
+                            } else {
+                                control.activate();
+                            }
+                        };
+                        ControlsService.addControl(control);
+
                     }
-                    
-                    control.onDeactivate(deactivate);
-                    control.onActivate(activate);
-                    ControlsService.addControl(control);
+
                 }
             };
         }]);

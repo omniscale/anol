@@ -31,8 +31,8 @@ angular.module('anol.savesettings')
         this.setProjectName = function(projectName) {
             _projectName = projectName;
         };    
-        this.$get = ['$rootScope', '$window', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings', 'LayersService',
-            function($rootScope, $window, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings, LayersService) {
+        this.$get = ['$rootScope', '$window', '$q', '$http', '$timeout', '$translate', 'PermalinkService', 'PrintPageService', 'ProjectSettings', 'LayersService', 'CatalogService',
+            function($rootScope, $window, $q, $http, $timeout, $translate, PermalinkService, PrintPageService, ProjectSettings, LayersService, CatalogService) {
                 /**
          * @ngdoc service
          * @name anol.savemanager.SaveManagerService
@@ -92,6 +92,10 @@ angular.module('anol.savesettings')
                     $rootScope.$broadcast('updateSidebar', settings);
                     // load control settings
                     $rootScope.pointMeasureResultSrs = settings.controls.measureSrs;
+
+                    if (settings.controls.catalogVariant) {
+                        CatalogService.setVariant(settings.controls.catalogVariant);
+                    }
                 };
 
                 SaveSettings.prototype.load = function(id) {
@@ -138,7 +142,8 @@ angular.module('anol.savesettings')
                     var printData = PrintPageService.getSettings();
                     // save control settings
                     var controls = {
-                        'measureSrs': $rootScope.pointMeasureResultSrs
+                        'measureSrs': $rootScope.pointMeasureResultSrs,
+                        'catalogVariant': CatalogService.getVariant(), 
                     };
                     var data = {
                         'projectName': self.projectName,
@@ -152,7 +157,7 @@ angular.module('anol.savesettings')
                         'controls': controls,
                         'print': printData
                     };
-    
+
                     var promise = $http.post(self.saveUrl, data);
                     promise.then(function(response) {
                         self.applySaveSettings(response.data);

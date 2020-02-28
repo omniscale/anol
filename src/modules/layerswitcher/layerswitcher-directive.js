@@ -143,14 +143,15 @@ angular.module('anol.layerswitcher')
                         var layer = LayersService.layerByName(name);
                         if(angular.isDefined(layer)) {
                             if (layer.anolGroup && layer.anolGroup.singleSelectGroup) {
-                                const groupName = layer.anolGroup.name;
-                                angular.forEach(LayersService.nameGroupsMap, function(xGroup, xName) {
-                                    if (xName != groupName) {
-                                        xGroup.setVisible(false);
+                                angular.forEach(layer.anolGroup.layers, function(xLayer) {
+                                    if (xLayer.getVisible() && layer !== xLayer) {
+                                        xLayer.setVisible(false);
                                     }
                                 });
+                                layer.setVisible(!layer.getVisible());
+                            } else {
+                                layer.setVisible(!layer.getVisible());
                             }
-                            layer.setVisible(!layer.getVisible());
                         }
                     };
                     $scope.toggleGroupVisibleByName = function(name) {

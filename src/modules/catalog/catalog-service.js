@@ -39,7 +39,8 @@ angular.module('anol.catalog')
             this.firstLetters = [];
             this.firstLettersGroups = [];
             this.addedGroupsLength = 0;
-            
+            this.variant = undefined;
+
             // Catalog Layers
             angular.forEach(catalogLayers, function(_layer) {
                 self.addCatalogLayer(_layer);
@@ -171,6 +172,29 @@ angular.module('anol.catalog')
             var self = this;
             return self.addedGroups;
         };
+                /**
+         * @ngdoc method
+         * @name setVariant
+         * @methodOf anol.map.CatalogService
+         * @param {string} variant  
+         * @description
+         * Set variant of catalog service
+         */
+        CatalogService.prototype.setVariant = function(variant) {
+            this.variant = variant;
+        };  
+        /**
+         * @ngdoc method
+         * @name getVariant
+         * @methodOf anol.map.CatalogService
+         * @returns {string} Variant
+         * @description
+         * Get variant of catalog service
+         */
+        CatalogService.prototype.getVariant = function() {
+            var self = this;
+            return self.variant;
+        };        
         /**
          * @ngdoc method
          * @name addLayer
@@ -199,16 +223,15 @@ angular.module('anol.catalog')
         };
         /**
          * @ngdoc method
-         * @name addToMap
+         * @name addGroupToMap
          * @methodOf anol.catalog.CatalogService
-         * @param {Object} layer anolLayer
+         * @param {Object} group anolGroup
          * @description
-         * Adds a catalog layer to map
+         * Adds a catalog group to map
          */
         CatalogService.prototype.addGroupToMap = function(group, visible) {
             var self = this;
             if(self.catalogGroups.indexOf(group) > -1 && self.addedGroups.indexOf(group) === -1) {
-                group.setVisible(visible);
                 LayersService.addOverlayLayer(group, 0);
                 angular.forEach(self.addedGroups, function(_group) {
                     angular.forEach(_group.layers, function(_layers) {
@@ -221,6 +244,7 @@ angular.module('anol.catalog')
                     startZIndex--;
                 });
                 self.addedGroups.push(group);
+                group.setVisible(visible);
             }
         };
         /**
@@ -233,7 +257,6 @@ angular.module('anol.catalog')
          */
         CatalogService.prototype.addToMap = function(layer, visible) {
             var self = this;
-
             if(self.catalogLayers.indexOf(layer) > -1 && self.addedLayers.indexOf(layer) === -1) {
                 // add catalog layer to the top
                 layer.setVisible(visible)

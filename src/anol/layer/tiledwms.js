@@ -21,7 +21,6 @@ class TiledWMS extends BaseWMS {
         var defaults = {};
         var options = jQuery.extend(true, {}, defaults, _options );
         super(options);
-
         this.CLASS_NAME = 'anol.layer.TiledWMS';
         this.OL_LAYER_CLASS = TileLayer;
         this.OL_SOURCE_CLASS = TileWMS;

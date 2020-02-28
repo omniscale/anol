@@ -327,6 +327,7 @@ angular.module('anol.map')
                     layer.combined = true;
                     lastAddedLayer.combined = true;
                 }
+
                 if(angular.isUndefined(olSource)) {
                     var sourceOptions = angular.extend({}, layer.olSourceOptions);
                     if(layer.isClustered()) {
@@ -340,13 +341,13 @@ angular.module('anol.map')
                 var olLayer = new layer.OL_LAYER_CLASS(layerOpts);
                 // only instances of BaseWMS are allowed to share olLayers
                 // TODO allow also DynamicGeoJSON layer to share olLayers
-                if(layer.combined && layer instanceof anol.layer.BaseWMS &&
-               angular.equals(layer.olLayerOptions,lastAddedLayer.olLayerOptions)
-                ) {
-                    layer.setOlLayer(lastAddedLayer.olLayer);
-                    // TODO add layer to anolLayers of lastAddedLayer when anolLayer refactored anolLayers
-                    return lastAddedLayer.olLayer;
-                }
+            //     if(layer.combined && layer instanceof anol.layer.BaseWMS &&
+            //    angular.equals(layer.olLayerOptions,lastAddedLayer.olLayerOptions)
+            //     ) {
+            //         layer.setOlLayer(lastAddedLayer.olLayer);
+            //         // TODO add layer to anolLayers of lastAddedLayer when anolLayer refactored anolLayers
+            //         return lastAddedLayer.olLayer;
+            //     }
                 // TODO refactor to anolLayers with list of layers
                 // HINT olLayer.anolLayer is used in featurepopup-, geocoder- and geolocation-directive
                 //      this will only affacts DynamicGeoJsonLayer

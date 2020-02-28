@@ -38,7 +38,6 @@ class BaseWMS extends AnolBaseLayer {
         if(!combinable) {
             return false;
         }
-
         if (angular.isDefined(other.anolGroup)) {
             combinable = other.anolGroup.isCombinable();
             if(!combinable) {
@@ -61,10 +60,11 @@ class BaseWMS extends AnolBaseLayer {
         if(!angular.equals(this.anolGroup, other.anolGroup)) {
             return false;
         }
+
         if (this.catalog) {
             return false;
         }
-        return false;
+        return true;
     }
 
     getCombinedSource(other) {
@@ -113,17 +113,11 @@ class BaseWMS extends AnolBaseLayer {
     reOrderLayerParams(layers) {
         var olSource = this.olLayer.getSource();
         var layerParams = [];
-        var self = this;
-        var anolLayers = [];
-        $.each(layers, function(idx, layer) {
-            if (layer.olLayer.ol_uid == self.olLayer.ol_uid) {
-                anolLayers.push(layer);
-                if (layer.getVisible()) {
-                    layerParams.push(layer.name);
-                }
+        angular.forEach(layers, function(layer) {
+            if (layer.getVisible()) {
+                layerParams.push(layer.name);
             }
-        });
-        olSource.set('anolLayers', anolLayers);
+        })
         var params = olSource.getParams();
         params.LAYERS = layerParams.reverse().join(',');
         olSource.updateParams(params);
@@ -154,7 +148,8 @@ class BaseWMS extends AnolBaseLayer {
         params.LAYERS = layers.reverse().join(',');
         source.updateParams(params);
         this.visible = visible;
-        super.setVisible(layers.length > 0);
+        super.setVisible(visible);
+        // super.setVisible(layers.length > 0);
     }
     getLegendGraphicUrl() {
         var requestParams = {

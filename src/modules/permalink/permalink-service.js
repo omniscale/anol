@@ -143,6 +143,7 @@ angular.module('anol.permalink')
                     self.visibleLayerNames = [];
                     self.visibleCatalogLayerNames = [];
                     self.catalogLayerNames = [];
+
                     self.urlCrs = urlCrs;
                     if (angular.isUndefined(self.urlCrs)) {
                         var projection = self.view.getProjection();
@@ -162,7 +163,6 @@ angular.module('anol.permalink')
                             }
                         });
                     }
-
                     self.map.on('moveend', function() {
                         self.moveendHandler();
                     }.bind(self));
@@ -228,7 +228,6 @@ angular.module('anol.permalink')
                             self.generatePermalink();
                         }
                     });
-
                 };
                 
                 /**

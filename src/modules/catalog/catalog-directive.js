@@ -8,8 +8,8 @@ angular.module('anol.catalog')
  * @description
  * Provides a catalog of layers that can be added to map
  */
-    .directive('anolCatalog', ['$templateRequest', '$compile', '$timeout', 'LayersService', 'CatalogService',
-        function($templateRequest, $compile, $timeout, LayersService, CatalogService) {
+    .directive('anolCatalog', ['$templateRequest', '$compile', '$rootScope', 'CatalogService',
+        function($templateRequest, $compile, $rootScope, CatalogService) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -42,7 +42,16 @@ angular.module('anol.catalog')
                    
                     scope.addedGroups = CatalogService.addedGroups;
                     scope.addedLayers = CatalogService.addedLayers;
-                                        
+                    
+                    scope.toggleVariant = function() {
+                        if (scope.variant === 'mouseover') {
+                            scope.variant = 'abstract';
+                        } else {
+                            scope.variant = 'mouseover';
+                        }
+                        CatalogService.setVariant(scope.variant);
+                    };
+        
                     scope.addToMap = function(layer) {
                         CatalogService.addToMap(layer, true);
                     };

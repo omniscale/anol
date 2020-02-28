@@ -20,7 +20,6 @@ class SingleTileWMS extends BaseWMS {
         var defaults = {};
         var options = $.extend(true, {}, defaults, _options);
         super(options);
-
         this.CLASS_NAME = 'anol.layer.SingleTileWMS';
         this.OL_LAYER_CLASS = ImageLayer;
         this.OL_SOURCE_CLASS = ImageWMS;
