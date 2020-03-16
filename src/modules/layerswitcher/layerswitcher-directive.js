@@ -139,21 +139,22 @@ angular.module('anol.layerswitcher')
                         }
                         return false;
                     };
+   
                     $scope.toggleLayerVisibleByName = function(name) {
                         var layer = LayersService.layerByName(name);
                         if(angular.isDefined(layer)) {
                             if (layer.anolGroup && layer.anolGroup.singleSelectGroup) {
-                                angular.forEach(layer.anolGroup.layers, function(xLayer) {
-                                    if (xLayer.getVisible() && layer !== xLayer) {
-                                        xLayer.setVisible(false);
+                                const groupName = layer.anolGroup.name;
+                                angular.forEach(LayersService.nameGroupsMap, function(xGroup, xName) {
+                                    if (xName != groupName) {
+                                        xGroup.setVisible(false);
                                     }
                                 });
-                                layer.setVisible(!layer.getVisible());
-                            } else {
-                                layer.setVisible(!layer.getVisible());
                             }
+                            layer.setVisible(!layer.getVisible());
                         }
                     };
+                    
                     $scope.toggleGroupVisibleByName = function(name) {
                         var group = LayersService.groupByName(name);
                         if(angular.isDefined(group)) {
