@@ -153,6 +153,8 @@ angular.module('anol.geocoder')
                     };
 
                     var addSearchResult = function(feature) {
+                        var layers = scope.map.getLayers();
+                        scope.markerLayer.olLayer.setZIndex(layers.getLength() + 20);
                         var markerSource = scope.markerLayer.olLayer.getSource();
                         markerSource.addFeature(feature);
                         
@@ -580,10 +582,11 @@ angular.module('anol.geocoder')
                         view.fit(
                             scope.markerLayer.olLayer.getSource().getExtent(), 
                             {
-                                duration: 1000
+                                duration: 1000,
+                                maxZoom: scope.zoomLevel,
                             }
                         );                        
-                        
+  
                         addUrlMarker(
                             feature.getGeometry().getFirstCoordinate(),
                             result.projectionCode,
