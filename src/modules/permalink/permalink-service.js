@@ -202,6 +202,14 @@ angular.module('anol.permalink')
                             angular.forEach(newVal, function(group) {
                                 group.offVisibleChange(self.handleVisibleChange);
                                 group.onVisibleChange(self.handleVisibleChange, self);
+                                    angular.forEach(group.layers, function(layer) {
+                                        layer.offVisibleChange(self.handleVisibleChange);
+                                        layer.onVisibleChange(self.handleVisibleChange, self);
+                                        if (layer.getVisible() ) {
+                                            self.visibleCatalogLayerNames.push(layer.name);
+                                        }
+                                    });
+                                
                                 self.catalogGroupNames.push(group.name);
                                 if (group.getVisible()) {
                                     self.visibleCatalogGroupNames.push(group.name);
@@ -249,9 +257,12 @@ angular.module('anol.permalink')
                         }
                         self.generatePermalink();
                     }
-
-                    if(layer instanceof anol.layer.Group) {
-                        if (layer.catalogLayer === true) {
+                    if (layer.catalogLayer === true) {
+                        if(layer instanceof anol.layer.Group || (layer.hasGroup() && layer.anolGroup.layers.length == 1)) {
+                            if (typeof layer.hasGroup == 'function' && layer.hasGroup()) {
+                                layerName = layer.anolGroup.name;
+                            }
+                            
                             if(angular.isDefined(layerName) && layer.getVisible()) {
                                 self.visibleCatalogGroupNames.push(layerName);
                             } else {
@@ -260,17 +271,15 @@ angular.module('anol.permalink')
                                     self.visibleCatalogGroupNames.splice(layerNameIdx, 1);
                                 }
                             }
-                        }
-                        self.generatePermalink();
-                    }
-
-                    if(layer.catalogLayer === true) {
-                        if(angular.isDefined(layerName) && layer.getVisible()) {
-                            self.visibleCatalogLayerNames.push(layerName);
                         } else {
-                            var layerNameIdx = $.inArray(layerName, self.visibleCatalogLayerNames);
-                            if(layerNameIdx > -1) {
-                                self.visibleCatalogLayerNames.splice(layerNameIdx, 1);
+                            
+                            if(angular.isDefined(layerName) && layer.getVisible()) {
+                                self.visibleCatalogLayerNames.push(layerName);
+                            } else {
+                                var layerNameIdx = $.inArray(layerName, self.visibleCatalogLayerNames);
+                                if(layerNameIdx > -1) {
+                                    self.visibleCatalogLayerNames.splice(layerNameIdx, 1);
+                                }
                             }
                         }
                         self.generatePermalink();
@@ -335,7 +344,6 @@ angular.module('anol.permalink')
                     } else {
                         $location.search('catalogGroups', null);
                     }
-
                     $location.replace();
                 };
 
@@ -386,7 +394,7 @@ angular.module('anol.permalink')
                                 var visible = false;
                                 if (mapParams.visibleCatalogLayers) {
                                     visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
-                                }                                
+                                }              
                                 CatalogService.addToMap(layer, visible);
                             } 
                         });
@@ -399,9 +407,17 @@ angular.module('anol.permalink')
                                 var visible = false;
                                 if (mapParams.visibleCatalogGroups) {
                                     visible = mapParams.visibleCatalogGroups.indexOf(group.name) > -1;
-                                }     
+                                } 
                                 CatalogService.addGroupToMap(group, visible);
-                            } 
+                                if (group.layers.length > 1) {
+                                    angular.forEach(group.layers, function(layer){
+                                        if (mapParams.visibleCatalogLayers) {
+                                            var visibleLayer = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
+                                            layer.setVisible(visibleLayer);
+                                        }
+                                    })
+                                }
+                            }
                         });
 
                     }

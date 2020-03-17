@@ -258,14 +258,13 @@ angular.module('anol.catalog')
         CatalogService.prototype.addToMap = function(layer, visible) {
             var self = this;
             if(self.catalogLayers.indexOf(layer) > -1 && self.addedLayers.indexOf(layer) === -1) {
-                // add catalog layer to the top
-                layer.setVisible(visible)
                 var added = LayersService.addOverlayLayer(layer, 0);
                 if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
                     layer.refresh();
                 }
                 self.addedLayers.push(layer);
                 layer.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength)
+                layer.setVisible(visible)
             }
         };
         /**
