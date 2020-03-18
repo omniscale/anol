@@ -77,6 +77,9 @@ angular.module('anol.savesettings')
                         SaveSettingsService.load(id).then(function(data) {
                             scope.modalCallBack();
                             NotificationService.addInfo(data.message);
+                            setTimeout(function() {
+                                scope.removeWaiting();
+                            }, 250);
                         }, function(data) {
                             NotificationService.addError(data.message);
                             scope.removeWaiting();
