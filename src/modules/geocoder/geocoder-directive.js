@@ -35,7 +35,7 @@ angular.module('anol.geocoder')
                 transclude: true,
                 scope: {
                     graphicFileUrl: '@',
-                    searchDropdown: '=',
+                    showSearchDropdown: '=',
                     toUrlMarker: '=?',
                 },
                 template: function(tElement, tAttrs) {
@@ -254,7 +254,6 @@ angular.module('anol.geocoder')
 
                         scope.highlight = angular.isDefined(activeGeocoder.highlight) ? parseInt(activeGeocoder.highlight) : false;
                         var anolGeocoder = new anol.geocoder[activeGeocoder.geocoder](geocoderOptions);
-                        
                         scope.highlight = activeGeocoder.resultMarkerVisible;
                         scope.zoomLevel = activeGeocoder.zoom;
                         scope.urlMarkerColor = activeGeocoder.urlMarkerColor;
@@ -263,7 +262,7 @@ angular.module('anol.geocoder')
                         return anolGeocoder;
                     };
                     
-                    scope.$watchCollection('geocoders', function(newValue, oldValue) {
+                    scope.$watchCollection('geocoders', function(newValue) {
                         var found = false;
                         var baseGeocoders = [];
                         var layerGeocoders = [];
@@ -290,6 +289,12 @@ angular.module('anol.geocoder')
                         
                         scope.baseGeocoders = baseGeocoders;
                         scope.layerGeocoders = layerGeocoders;
+                        if (newValue.length === 1) {
+                            scope.searchDropdown = false;
+                        } else {
+                            scope.searchDropdown = true;
+                        }
+
                     })
 
                     scope.$watch('searchString', function(value) {
