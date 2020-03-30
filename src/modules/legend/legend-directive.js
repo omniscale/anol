@@ -90,14 +90,14 @@ angular.module('anol.legend')
                                 return true;
                             }
                             if(layer instanceof anol.layer.Group) {
-                                var group = layer;
                                 var layers = [];
+                                var group = layer;
                                 angular.forEach(group.layers, function(overlayLayer) {
                                     if(overlayLayer.legend !== false) {
                                         layers.push(overlayLayer);
                                     }
                                 }); 
-                                if (layers.length >= 1) {
+                                if (layers.length >= 1 || group.legend) {
                                     scope.legendLayers.push({
                                         'group': group,
                                         'content': layers
