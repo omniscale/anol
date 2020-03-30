@@ -75,6 +75,7 @@ class GMLLayer extends FeatureLayer {
         };
         var options = $.extend(true, {}, defaults, _options);
         super(options);
+        this.method = options.method || 'GET';
         this.CLASS_NAME = 'anol.layer.GML';
     }
 
@@ -91,7 +92,7 @@ class GMLLayer extends FeatureLayer {
     loader(url) {
         var self = this;
         $.ajax({
-            method: "GET",
+            method: this.method,
             url: url
         }).done(function(response) {
             self.responseHandler(response);
