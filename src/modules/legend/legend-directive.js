@@ -89,17 +89,17 @@ angular.module('anol.legend')
                             if (angular.isUndefined(layer)) {
                                 return true;
                             }
-
                             if(layer instanceof anol.layer.Group) {
+                                var group = layer;
                                 var layers = [];
-                                angular.forEach(layer.layers, function(overlayLayer) {
+                                angular.forEach(group.layers, function(overlayLayer) {
                                     if(overlayLayer.legend !== false) {
                                         layers.push(overlayLayer);
                                     }
                                 }); 
                                 if (layers.length >= 1) {
                                     scope.legendLayers.push({
-                                        'group': layer,
+                                        'group': group,
                                         'content': layers
                                     });
                                 }

@@ -5,6 +5,8 @@
  * @param {Object} options AnOl group options
  * @param {string} options.name Unique group name
  * @param {string} options.title Title for group
+ * @param {Object} options.legend Stores informations for legend
+
  * @param {Array<anol.layer.Layer>} options.layers AnOl layers to group
  *
  * @description
@@ -19,6 +21,7 @@ class Group {
         this.name = options.name;
         this.title = options.title;
         this.layers = options.layers;
+        this.legend = options.legend || false;
         this.options = options;
         this.abstract = options.abstract || undefined;
         this.catalog = options.catalog || false;
