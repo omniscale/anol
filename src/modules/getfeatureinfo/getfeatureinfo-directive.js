@@ -67,10 +67,14 @@ angular.module('anol.getfeatureinfo')
                         scope.customTargetCallback = scope.customTargetFilled();
                         scope.beforeRequest = scope.beforeRequest();
 
+                        scope.addGroupToMap = function(name) {
+                            var group = CatalogService.groupByName(name);
+                            CatalogService.addGroupToMap(group, true);
+                        };
+
                         scope.addLayerToMap = function(name) {
                             var layer = CatalogService.layerByName(name);
-                            var visible = true;
-                            CatalogService.addToMap(layer, visible);
+                            CatalogService.addToMap(layer, true);
                         };
 
                         if(angular.isDefined(scope.waitingMarkerSrc)) {
@@ -158,6 +162,7 @@ angular.module('anol.getfeatureinfo')
                             var format = new WMSGetFeatureInfo();
                             var responseLayers = [];
                             var catalog = false;
+                            var group = false;
                             // add feature to feateinfolayer
                             angular.forEach(responses, function(response, idx) {
                                 if(angular.isUndefined(response)) {
@@ -165,6 +170,9 @@ angular.module('anol.getfeatureinfo')
                                 }
                                 if(angular.isUndefined(response.gmlData)) {
                                     return;
+                                }
+                                if (response.group) {
+                                    group = true;
                                 }
                                 responseLayers.push({
                                     'title': response.title,
@@ -175,29 +183,41 @@ angular.module('anol.getfeatureinfo')
                                     feature.set('style', response.style);
                                     if (response.catalog) {
                                         catalog = true;
-                                        responseLayers[idx].layers.push(feature.get('layer'));
+                                        if (response.group) {
+                                            responseLayers[idx].layers.push(feature.get('group_name'));
+                                        } else {
+                                            responseLayers[idx].layers.push(feature.get('layer'));
+                                        }
                                     }
                                 });
                                 featureInfoLayer.addFeatures(features);
                             });
-
                             if (catalog) {
                                 // add layer identifier to popup
                                 var popupContentTemp = $('<div></div>');
-                                angular.forEach(responseLayers, function(rLayer, idx) {
+                                angular.forEach(responseLayers, function(rLayer) {
                                     if (rLayer.layers === undefined || rLayer.layers.length === 0) {
                                         return;
                                     }
                                     var title = $('<h4>'+ rLayer.title +'</h4>');
                                     popupContentTemp.append(title);
 
-                                    angular.forEach(rLayer.layers, function(name, idx) {
+                                    angular.forEach(rLayer.layers, function(name) {
                                         var title = name;
-                                        var catalogLayer = CatalogService.layerByName(name);
+                                        var catalogLayer;
+                                        if (group) {
+                                            catalogLayer = CatalogService.groupByName(name);
+                                        } else {
+                                            catalogLayer = CatalogService.layerByName(name);
+                                        }
                                         if (catalogLayer) {
                                             title = catalogLayer.title;
                                         }
-                                        var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ title +'</a><br>');
+                                        if (group) {
+                                            var layer = $('<a ng-click="addGroupToMap(\''+name +'\')">'+ title +'</a><br>');
+                                        } else {
+                                            var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ title +'</a><br>');
+                                        }
                                         popupContentTemp.append(layer);
                                     })
                                 })
@@ -297,7 +317,6 @@ angular.module('anol.getfeatureinfo')
                                 if(layer.featureinfo.gml !== true) {
                                     return;
                                 }
-
                                 var gmlRequestParams = {
                                     'INFO_FORMAT': 'application/vnd.ogc.gml'
                                 };
@@ -317,7 +336,13 @@ angular.module('anol.getfeatureinfo')
                                     gmlRequestPromises.push(gmlRequestDeferred.promise);
                                     $http.get(gmlUrl).then(
                                         function(response) {
-                                            gmlRequestDeferred.resolve({style: layer.featureinfo.gmlStyle, gmlData: response.data, title: layer.title, catalog: layer.featureinfo.catalog});
+                                            gmlRequestDeferred.resolve({
+                                                style: layer.featureinfo.gmlStyle, 
+                                                gmlData: response.data, 
+                                                title: layer.title, 
+                                                catalog: layer.featureinfo.catalog,
+                                                group: layer.featureinfo.gmlGroup
+                                            });
                                         },
                                         function() {
                                             gmlRequestDeferred.resolve();
