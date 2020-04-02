@@ -54,7 +54,7 @@ class GMLLayer extends FeatureLayer {
             } else {
                 filter = '<Filter>'+ filter + '</Filter>';                
             }
-            _options.olLayer.source.url = _options.olLayer.source.url + 'FILTER=' + filter; 
+            _options.olLayer.source.filter = filter;
         }
 
         var defaults = {
@@ -83,20 +83,34 @@ class GMLLayer extends FeatureLayer {
         var self = this;
         srcOptions.loader = function() {
             self.loader(
-                srcOptions.url
+                srcOptions.url, srcOptions.params, srcOptions.filter
             );
         };
         return super._createSourceOptions(srcOptions);
     }
 
-    loader(url) {
+    loader(url, params, filter) {
         var self = this;
-        $.ajax({
-            method: this.method,
-            url: url
-        }).done(function(response) {
-            self.responseHandler(response);
-        });
+        if (this.method === 'GET') {
+            url = url + params + '&FILTER=' + filter; 
+            $.ajax({
+                method: this.method,
+                url: url
+            }).done(function(response) {
+                self.responseHandler(response);
+            });
+        } else {
+            var data = JSON.parse('{"' + params.replace(/&/g, '","').replace(/=/g,'":"') + '"}', 
+                function(key, value) { return key==="" ? value:decodeURIComponent(value) })
+            data.FILTER = filter;
+            $.ajax({
+                method: this.method,
+                url: url,
+                data: data,
+            }).done(function(response) {
+                self.responseHandler(response);
+            });
+        }
     }
     responseHandler(response) {
         var self = this;
