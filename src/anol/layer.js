@@ -101,6 +101,14 @@ class AnolBaseLayer {
             this.olLayerOptions = options.olLayer;
             this.olLayer = undefined;
         }
+
+        var pageBody = angular.element(document).find('body');
+        this.addWaiting = function() {
+            pageBody.addClass('waiting');
+        }
+        this.removeWaiting = function() {
+            pageBody.removeClass('waiting');
+        }
     }
     setOlLayer(olLayer) {
         this.olLayer = olLayer;

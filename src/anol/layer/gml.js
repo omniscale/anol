@@ -93,22 +93,26 @@ class GMLLayer extends FeatureLayer {
         var self = this;
         if (this.method === 'GET') {
             url = url + params + '&FILTER=' + filter; 
+            self.addWaiting();
             $.ajax({
                 method: this.method,
                 url: url
             }).done(function(response) {
                 self.responseHandler(response);
+                self.removeWaiting();
             });
         } else {
             var data = JSON.parse('{"' + params.replace(/&/g, '","').replace(/=/g,'":"') + '"}', 
                 function(key, value) { return key==="" ? value:decodeURIComponent(value) })
             data.FILTER = filter;
+            self.addWaiting();
             $.ajax({
                 method: this.method,
                 url: url,
                 data: data,
             }).done(function(response) {
                 self.responseHandler(response);
+                self.removeWaiting();
             });
         }
     }
