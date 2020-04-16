@@ -7,18 +7,13 @@ angular.module('anol.catalog')
  * @name anol.catalog.CatalogServiceProvider
  */
 .provider('CatalogService', [function() {
-    var _catalogLayers = [];
-    var _catalogGroups = [];
+    var _loadUrl;
 
-    this.setLayers = function(layers) {
-        _catalogLayers = layers;
+    this.setLoadUrl = function(url) {
+        _loadUrl = url;
     };
-
-    this.setGroups = function(groups) {
-        _catalogGroups = groups;
-    };
-    
-    this.$get = ['LayersService', function(LayersService) {
+   
+    this.$get = ['$q', '$http', 'LayersService', function($q, $http, LayersService) {
         /**
          * @ngdoc service
          * @name anol.catalog.CatalogService
@@ -26,12 +21,14 @@ angular.module('anol.catalog')
          * @description
          * Handles current catalog layer
          */
-        var CatalogService = function(catalogLayers, catalogGroups) {
+        var CatalogService = function(loadUrl) {
             var self = this;
             this.catalogLayers = [];
             this.catalogGroups = [];
             this.addedLayers = [];
+            this.addedLayersName = [];
             this.addedGroups = [];
+            this.addedGroupsName = [];
             this.nameLayersMap = {};
             this.nameGroupsMap = {};
             this.sortedLayers = {};
@@ -40,90 +37,107 @@ angular.module('anol.catalog')
             this.firstLettersGroups = [];
             this.addedGroupsLength = 0;
             this.variant = undefined;
+            this.loadUrl = loadUrl;
+            this.catalogLayerNames = [];
+            this.catalogGroupNames = [];
+            
+            var pageBody = angular.element(document).find('body');
+            this.addWaiting = function() {
+                pageBody.addClass('waiting');
+            }
+            this.removeWaiting = function() {
+                pageBody.removeClass('waiting');
+            }
+            $http.get(loadUrl).then(
+                    function(response) {
+                        if(response.data.layers) {
+                            self.catalogLayerNames = response.data.layers;
+                            self.createLayerCatalog();
+                        }
+                        if(response.data.groups) {
+                            self.catalogGroupNames = response.data.groups;
+                            self.createGroupCatalog();
+                        }
+               })
+      
+            self.createLayerCatalog = function() {
+                var self = this;
+                angular.forEach(self.catalogLayerNames, function(_layer) {
+                    self.addCatalogLayer(_layer);
+                    if(_layer.name !== undefined) {
+                        self.nameLayersMap[_layer.name] = _layer;
+                    }   
+                    
+                    var firstLetter = _layer.title.charAt(0).toUpperCase();
+                    if (self.firstLetters.indexOf(firstLetter) === -1) {
+                        if (!_layer.visible) {
+                            return;
+                        }
+                        self.firstLetters.push(firstLetter);
+                        self.sortedLayers[firstLetter] = {
+                            'layers':  [_layer],
+                            'title': firstLetter
+                        };
+                    } 
+                    else {
+                        if (!_layer.visible) {
+                            return;
+                        }
+                        self.sortedLayers[firstLetter]['layers'].push(_layer);
+                    }
+                });
 
-            // Catalog Layers
-            angular.forEach(catalogLayers, function(_layer) {
-                self.addCatalogLayer(_layer);
-                if(_layer.name !== undefined) {
-                    self.nameLayersMap[_layer.name] = _layer;
-                }   
-                
-                var firstLetter = _layer.title.charAt(0).toUpperCase();
-                if (_layer.catalog && _layer.catalog.title) {
-                    firstLetter = _layer.catalog.title.charAt(0).toUpperCase();
+                var sortedLayers = {};
+                if (!angular.equals({}, self.sortedLayers)) {
+                    Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
+                        if (angular.isDefined(acc)) {
+                            sortedLayers[acc] = self.sortedLayers[acc];
+                        }
+                        if (angular.isDefined(key)) {
+                            sortedLayers[key] = self.sortedLayers[key];
+                        }
+                    }) 
+                    self.sortedLayers = sortedLayers;
                 }
-                if (self.firstLetters.indexOf(firstLetter) === -1) {
-                    if (!_layer.catalog.visible) {
-                        return;
-                    }
-                    self.firstLetters.push(firstLetter);
-                    self.sortedLayers[firstLetter] = {
-                        'layers':  [_layer],
-                        'title': firstLetter
-                    };
-                } 
-                else {
-                    if (!_layer.catalog.visible) {
-                        return;
-                    }
-                    self.sortedLayers[firstLetter]['layers'].push(_layer);
-                }
-            });
-
-            var sortedLayers = {};
-            if (!angular.equals({}, self.sortedLayers)) {
-                Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
-                    if (angular.isDefined(acc)) {
-                        sortedLayers[acc] = self.sortedLayers[acc];
-                    }
-                    if (angular.isDefined(key)) {
-                        sortedLayers[key] = self.sortedLayers[key];
-                    }
-                }) 
-                self.sortedLayers = sortedLayers;
             }
 
-            // Catalog Groups
-            angular.forEach(catalogGroups, function(_group) {
-                self.addCatalogGroup(_group);
-                if(_group.name !== undefined) {
-                    self.nameGroupsMap[_group.name] = _group;
-                }   
-                
-                var firstLetter = _group.title.charAt(0).toUpperCase();
-                if (_group.catalog && _group.catalog.title) {
-                    firstLetter = _group.catalog.title.charAt(0).toUpperCase();
+            self.createGroupCatalog = function() {
+                angular.forEach(self.catalogGroupNames, function(_group) {
+                    self.addCatalogGroup(_group);
+                    if(_group.name !== undefined) {
+                        self.nameGroupsMap[_group.name] = _group;
+                    }   
+                    
+                    var firstLetter = _group.title.charAt(0).toUpperCase();
+                    if (self.firstLettersGroups.indexOf(firstLetter) === -1) {
+                        if (!_group.visible) {
+                            return;
+                        }
+                        self.firstLettersGroups.push(firstLetter);
+                        self.sortedGroups[firstLetter] = {
+                            'layers':  [_group],
+                            'title': firstLetter
+                        };
+                    } 
+                    else {
+                        if (!_group.visible) {
+                            return;
+                        }
+                        self.sortedGroups[firstLetter]['layers'].push(_group);
+                    }
+                });
+                var sortedGroups = {};
+                if (!angular.equals({}, self.sortedGroups)) {
+                    Object.keys(self.sortedGroups).sort().reduce(function(acc, key) {
+                        if (angular.isDefined(acc)) {
+                            sortedGroups[acc] = self.sortedGroups[acc];
+                        }
+                        if (angular.isDefined(key)) {
+                            sortedGroups[key] = self.sortedGroups[key];
+                        }
+                    }) 
+                    self.sortedGroups = sortedGroups;
                 }
-
-                if (self.firstLettersGroups.indexOf(firstLetter) === -1) {
-                    if (!_group.catalog.visible) {
-                        return;
-                    }
-                    self.firstLettersGroups.push(firstLetter);
-                    self.sortedGroups[firstLetter] = {
-                        'layers':  [_group],
-                        'title': firstLetter
-                    };
-                } 
-                else {
-                    if (!_group.catalog.visible) {
-                        return;
-                    }
-                    self.sortedGroups[firstLetter]['layers'].push(_group);
-                }
-            });
-
-            var sortedGroups = {};
-            if (!angular.equals({}, self.sortedGroups)) {
-                Object.keys(self.sortedGroups).sort().reduce(function(acc, key) {
-                    if (angular.isDefined(acc)) {
-                        sortedGroups[acc] = self.sortedGroups[acc];
-                    }
-                    if (angular.isDefined(key)) {
-                        sortedGroups[key] = self.sortedGroups[key];
-                    }
-                }) 
-                self.sortedGroups = sortedGroups;
             }
         };
         /**
@@ -229,23 +243,70 @@ angular.module('anol.catalog')
          * @description
          * Adds a catalog group to map
          */
-        CatalogService.prototype.addGroupToMap = function(group, visible) {
+        CatalogService.prototype.addGroupToMap = function(groupName, visible) {
             var self = this;
-            if(self.catalogGroups.indexOf(group) > -1 && self.addedGroups.indexOf(group) === -1) {
-                LayersService.addOverlayLayer(group, 0);
-                angular.forEach(self.addedGroups, function(_group) {
-                    angular.forEach(_group.layers, function(_layers) {
-                        self.addedGroupsLength++;
-                    });
-                });      
-                var startZIndex = LayersService.zIndex + self.addedLayers.length + group.layers.length
-                angular.forEach(group.layers, function(_layers) {
-                    _layers.olLayer.setZIndex(startZIndex);
-                    startZIndex--;
-                });
-                self.addedGroups.push(group);
-                group.setVisible(visible);
+            if(self.addedGroupsName.indexOf(groupName) !== -1 ) {
+                return;
             }
+            self.addWaiting();
+            return $q(function(resolve) {
+                var loadUrl = self.loadUrl + '/group/' + groupName;
+                $http.get(loadUrl).then(
+                    function(response) {
+                        angular.forEach(response.data.groups, function(cGroup) {
+                            var groupLayers = [];
+                            angular.forEach(cGroup.layers, function(cLayer) {
+                                var anolLayer = undefined;
+                                if (cLayer['type'] == 'wms') {
+                                    anolLayer = new anol.layer.SingleTileWMS(cLayer)
+                                } else if (cLayer['type'] == 'tiledwms') {
+                                    anolLayer = new anol.layer.TiledWMS(cLayer)
+                                } else if (cLayer['type'] == 'wmts') {
+                                    anolLayer = new anol.layer.WMTS(cLayer)
+                                } else if (cLayer['type'] == 'dynamic_geojson') {
+                                    anolLayer = new anol.layer.DynamicGeoJSON(cLayer)
+                                } else if (cLayer['type'] == 'static_geojson' ||cLayer['type'] == 'digitize') {
+                                    anolLayer  = new anol.layer.StaticGeoJSON(cLayer)
+                                }
+                                groupLayers.push(anolLayer)
+                            });
+                            cGroup.layers = groupLayers;
+                            var anolGroup = new anol.layer.Group({
+                                layers: groupLayers,
+                                catalog: cGroup['catalog'],
+                                catalogLayer: cGroup['catalogLayer'],
+                                showGroup: cGroup['showGroup'],
+                                metadataUrl: cGroup['metadataUrl'],
+                                abstract: cGroup['abstract'],
+                                collapsed: true,
+                                singleSelect: cGroup['singleSelect'],
+                                singleSelectGroup: cGroup['singleSelectGroup'],
+                                name: cGroup['name'],
+                                title: cGroup['title'],
+                                legend: cGroup['legend']
+                            });
+                            
+                            LayersService.addOverlayLayer(anolGroup, 0);
+                            angular.forEach(self.addedGroups, function(_group) {
+                                angular.forEach(_group.layers, function(_layers) {
+                                    self.addedGroupsLength++;
+                                });
+                            });      
+                            var startZIndex = LayersService.zIndex + self.addedLayers.length + anolGroup.layers.length
+                            angular.forEach(anolGroup.layers, function(_layers) {
+                                _layers.olLayer.setZIndex(startZIndex);
+                                startZIndex--;
+                            });
+                            self.catalogGroups.push(anolGroup);
+                            self.addedGroupsName.push(groupName)
+                            self.addedGroups.push(anolGroup);
+                            anolGroup.setVisible(visible);
+                            resolve(anolGroup);
+                        });
+                        self.removeWaiting();
+                    }
+                );
+            });
         };
         /**
          * @ngdoc method
@@ -255,17 +316,43 @@ angular.module('anol.catalog')
          * @description
          * Adds a catalog layer to map
          */
-        CatalogService.prototype.addToMap = function(layer, visible) {
+        CatalogService.prototype.addToMap = function(layerName, visible) {
             var self = this;
-            if(self.catalogLayers.indexOf(layer) > -1 && self.addedLayers.indexOf(layer) === -1) {
-                var added = LayersService.addOverlayLayer(layer, 0);
-                if(layer instanceof anol.layer.DynamicGeoJSON && added === true) {
-                    layer.refresh();
-                }
-                self.addedLayers.push(layer);
-                layer.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength)
-                layer.setVisible(visible)
+            if(self.addedLayersName.indexOf(layerName) !== -1 ) {
+                return;
             }
+            self.addWaiting();
+            var loadUrl = this.loadUrl + '/layer/' + layerName;
+            $http.get(loadUrl).then(
+                function(response) {
+                    angular.forEach(response.data.layers, function(clayer) {
+                        var anolLayer = undefined;
+                        if (clayer['type'] == 'wms') {
+                            anolLayer = new anol.layer.SingleTileWMS(clayer)
+                        } else if (clayer['type'] == 'tiledwms') {
+                            anolLayer = new anol.layer.TiledWMS(clayer)
+                        } else if (clayer['type'] == 'wmts') {
+                            anolLayer = new anol.layer.WMTS(clayer)
+                        } else if (clayer['type'] == 'dynamic_geojson') {
+                            anolLayer = new anol.layer.DynamicGeoJSON(clayer)
+                        } else if (clayer['type'] == 'static_geojson' || clayer['type'] == 'digitize') {
+                            anolLayer = new anol.layer.StaticGeoJSON(clayer)
+                        }
+                        LayersService.addOverlayLayer(anolLayer, 0);
+                        if(anolLayer instanceof anol.layer.DynamicGeoJSON && added === true) {
+                            anolLayer.refresh();
+                        }
+                        self.addedLayersName.push(layerName);
+                        self.catalogLayers.push(anolLayer);
+                        self.addedLayers.push(anolLayer);
+                        anolLayer.olLayer.setZIndex(LayersService.zIndex + self.addedLayers.length + self.addedGroupsLength)
+                        anolLayer.setVisible(visible);
+                    });
+                    self.removeWaiting();
+                }
+            )
+           
+
         };
         /**
          * @ngdoc method
@@ -281,23 +368,32 @@ angular.module('anol.catalog')
                 if(this.catalogGroups.indexOf(layer) > -1 && groupIdx > -1) {
                     LayersService.removeOverlayLayer(layer);
                     this.addedGroups.splice(groupIdx, 1);
+
+                    var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
+                    this.addedGroupsName.splice(groupNameIdx, 1)
                 }
             } else {
                 var layerIdx = this.addedLayers.indexOf(layer);
                 if(this.catalogLayers.indexOf(layer) > -1 && layerIdx > -1) {
                     LayersService.removeOverlayLayer(layer);
                     this.addedLayers.splice(layerIdx, 1);
+
+                    var layerNameIdx = this.addedLayersName.indexOf(layer.name);
+                    this.addedLayersName.splice(layerNameIdx, 1)
                 }
 
                 if (layerIdx == -1) {
                     if (layer.anolGroup) {
-                        // remove group if it is the las layer
+                        // remove group if it is the last layer
                         var group = layer.anolGroup;
                         if (group.layers.length === 1) {
                             var groupIdx = this.addedGroups.indexOf(group);
                             if(this.catalogGroups.indexOf(group) > -1 && groupIdx > -1) {
                                 LayersService.removeOverlayLayer(group);
                                 this.addedGroups.splice(groupIdx, 1);
+
+                                var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
+                                this.addedGroupsName.splice(groupNameIdx, 1);
                             }
                         } else {
                             LayersService.removeOverlayLayer(layer);
@@ -306,6 +402,6 @@ angular.module('anol.catalog')
                 }
             } 
         };
-        return new CatalogService(_catalogLayers, _catalogGroups);
+        return new CatalogService(_loadUrl);
     }];
 }]);

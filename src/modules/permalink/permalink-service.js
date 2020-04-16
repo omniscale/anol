@@ -199,6 +199,7 @@ angular.module('anol.permalink')
                         if(angular.isDefined(newVal)) {
                             self.catalogGroupNames = [];
                             self.visibleCatalogGroupNames = [];
+                            self.visibleCatalogLayerNames = [];
                             angular.forEach(newVal, function(group) {
                                 group.offVisibleChange(self.handleVisibleChange);
                                 group.onVisibleChange(self.handleVisibleChange, self);
@@ -389,26 +390,22 @@ angular.module('anol.permalink')
 
                     if (mapParams.catalogLayers !== undefined) {
                         angular.forEach(mapParams.catalogLayers, function(layerName) {
-                            var layer = CatalogService.layerByName(layerName);
-                            if (angular.isDefined(layer)) {
-                                var visible = false;
-                                if (mapParams.visibleCatalogLayers) {
-                                    visible = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
-                                }              
-                                CatalogService.addToMap(layer, visible);
-                            } 
+                            var visible = false;
+                            if (mapParams.visibleCatalogLayers) {
+                                visible = mapParams.visibleCatalogLayers.indexOf(layerName) > -1;
+                            }              
+                            CatalogService.addToMap(layerName, visible);
                         });
                     }
                     
                     if (mapParams.catalogGroups !== undefined) {
                         angular.forEach(mapParams.catalogGroups, function(groupName) {
-                            var group = CatalogService.groupByName(groupName);
-                            if (angular.isDefined(group)) {
-                                var visible = false;
-                                if (mapParams.visibleCatalogGroups) {
-                                    visible = mapParams.visibleCatalogGroups.indexOf(group.name) > -1;
-                                } 
-                                CatalogService.addGroupToMap(group, visible);
+                            var visible = false;
+                            if (mapParams.visibleCatalogGroups) {
+                                visible = mapParams.visibleCatalogGroups.indexOf(groupName) > -1;
+                            } 
+                            var group = CatalogService.addGroupToMap(groupName, visible);
+                            group.then(function(group) {
                                 if (group.layers.length > 1) {
                                     angular.forEach(group.layers, function(layer){
                                         if (mapParams.visibleCatalogLayers) {
@@ -417,9 +414,8 @@ angular.module('anol.permalink')
                                         }
                                     })
                                 }
-                            }
+                            });
                         });
-
                     }
                 };
 

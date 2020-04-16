@@ -53,10 +53,10 @@ angular.module('anol.catalog')
                     };
         
                     scope.addToMap = function(layer) {
-                        CatalogService.addToMap(layer, true);
+                        CatalogService.addToMap(layer.name, true);
                     };
                     scope.addGroupToMap = function(group) {
-                        CatalogService.addGroupToMap(group, true);
+                        CatalogService.addGroupToMap(group.name, true);
                     };          
                     scope.removeFromMap = function(layer) {
                         CatalogService.removeFromMap(layer);
@@ -81,7 +81,7 @@ angular.module('anol.catalog')
                 else {
                     var term = searchTerm.toLowerCase();
                     return dataArray.filter(function(item){
-                        var terminTitle = item.catalog.title.toLowerCase().indexOf(term) > -1;
+                        var terminTitle = item.title.toLowerCase().indexOf(term) > -1;
                         if (item.abstract && variant === 'abstract') {
                             var termInAbstract = item.abstract.toLowerCase().indexOf(term) > -1;
                             return terminTitle || termInAbstract;

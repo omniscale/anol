@@ -636,7 +636,6 @@ angular.module('anol.print')
                     [left, bottom],
                     [left, top]
                 ]];
-
                 if(angular.isDefined(_printArea)) {
                     _printArea.getGeometry().setCoordinates(coords);
                 } else {

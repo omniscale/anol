@@ -67,14 +67,12 @@ angular.module('anol.getfeatureinfo')
                         scope.customTargetCallback = scope.customTargetFilled();
                         scope.beforeRequest = scope.beforeRequest();
 
-                        scope.addGroupToMap = function(name) {
-                            var group = CatalogService.groupByName(name);
-                            CatalogService.addGroupToMap(group, true);
+                        scope.addGroupToMap = function(groupName) {
+                            CatalogService.addGroupToMap(groupName, true);
                         };
 
-                        scope.addLayerToMap = function(name) {
-                            var layer = CatalogService.layerByName(name);
-                            CatalogService.addToMap(layer, true);
+                        scope.addLayerToMap = function(layerName) {
+                            CatalogService.addToMap(layerName, true);
                         };
 
                         if(angular.isDefined(scope.waitingMarkerSrc)) {
