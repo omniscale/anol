@@ -29,6 +29,10 @@ angular.module('anol.catalog')
                             $compile(template)(scope);
                         });
                     } 
+                    var pageBody = angular.element(document).find('body');
+                    scope.removeWaiting = function() {
+                        pageBody.removeClass('waiting');
+                    }
                     scope.variant = scope.$parent.variant;
                     scope.showLayers = scope.$parent.showLayers;
                     if (scope.variant === 'mouseover') {
@@ -37,9 +41,13 @@ angular.module('anol.catalog')
                         scope.popoverEnabled = false;
                     }
                     scope.defaultAbstractLimit = 200;
-                    scope.sortedLayers = CatalogService.sortedLayers;
-                    scope.sortedGroups = CatalogService.sortedGroups;
-                   
+                    var promiseLayers = CatalogService.getSortedCatalog();
+                    promiseLayers.then(function(sorted) {
+                        scope.sortedGroups = sorted.groups;
+                        scope.sortedLayers = sorted.layers;
+                        scope.removeWaiting();
+                    });
+
                     scope.addedGroups = CatalogService.addedGroups;
                     scope.addedLayers = CatalogService.addedLayers;
                     

@@ -48,20 +48,23 @@ angular.module('anol.catalog')
             this.removeWaiting = function() {
                 pageBody.removeClass('waiting');
             }
+            this.deferred = $q.defer();
+
             $http.get(loadUrl).then(
-                    function(response) {
-                        if(response.data.layers) {
-                            self.catalogLayerNames = response.data.layers;
-                            self.createLayerCatalog();
-                        }
-                        if(response.data.groups) {
-                            self.catalogGroupNames = response.data.groups;
-                            self.createGroupCatalog();
-                        }
-               })
+                function(response) {
+                    if(response.data.layers) {
+                        self.catalogLayerNames = response.data.layers;
+                       self.createLayerCatalog();
+                    }
+                    if(response.data.groups) {
+                        self.catalogGroupNames = response.data.groups;
+                        self.createGroupCatalog();
+                    }
+            })
       
             self.createLayerCatalog = function() {
                 var self = this;
+                var sortedLayers = {};
                 angular.forEach(self.catalogLayerNames, function(_layer) {
                     self.addCatalogLayer(_layer);
                     if(_layer.name !== undefined) {
@@ -74,7 +77,7 @@ angular.module('anol.catalog')
                             return;
                         }
                         self.firstLetters.push(firstLetter);
-                        self.sortedLayers[firstLetter] = {
+                        sortedLayers[firstLetter] = {
                             'layers':  [_layer],
                             'title': firstLetter
                         };
@@ -83,25 +86,31 @@ angular.module('anol.catalog')
                         if (!_layer.visible) {
                             return;
                         }
-                        self.sortedLayers[firstLetter]['layers'].push(_layer);
+                        sortedLayers[firstLetter]['layers'].push(_layer);
                     }
                 });
 
-                var sortedLayers = {};
-                if (!angular.equals({}, self.sortedLayers)) {
-                    Object.keys(self.sortedLayers).sort().reduce(function(acc, key) {
+                var reSortedLayers = {};
+                if (!angular.equals({}, sortedLayers)) {
+                    Object.keys(sortedLayers).sort().reduce(function(acc, key) {
                         if (angular.isDefined(acc)) {
-                            sortedLayers[acc] = self.sortedLayers[acc];
+                            reSortedLayers[acc] = sortedLayers[acc];
                         }
                         if (angular.isDefined(key)) {
-                            sortedLayers[key] = self.sortedLayers[key];
+                            reSortedLayers[key] = sortedLayers[key];
                         }
                     }) 
-                    self.sortedLayers = sortedLayers;
+                    if (!angular.equals({}, reSortedLayers)) {
+                        self.sortedLayers = reSortedLayers;
+                    } else {
+                        self.sortedLayers = sortedLayers;
+                    }
                 }
             }
 
             self.createGroupCatalog = function() {
+                var sortedGroups = {};
+
                 angular.forEach(self.catalogGroupNames, function(_group) {
                     self.addCatalogGroup(_group);
                     if(_group.name !== undefined) {
@@ -114,7 +123,7 @@ angular.module('anol.catalog')
                             return;
                         }
                         self.firstLettersGroups.push(firstLetter);
-                        self.sortedGroups[firstLetter] = {
+                        sortedGroups[firstLetter] = {
                             'layers':  [_group],
                             'title': firstLetter
                         };
@@ -123,23 +132,42 @@ angular.module('anol.catalog')
                         if (!_group.visible) {
                             return;
                         }
-                        self.sortedGroups[firstLetter]['layers'].push(_group);
+                        sortedGroups[firstLetter]['layers'].push(_group);
                     }
                 });
-                var sortedGroups = {};
-                if (!angular.equals({}, self.sortedGroups)) {
-                    Object.keys(self.sortedGroups).sort().reduce(function(acc, key) {
+                var reSortedGroups = {};
+                if (!angular.equals({}, sortedGroups)) {
+                    Object.keys(sortedGroups).sort().reduce(function(acc, key) {
                         if (angular.isDefined(acc)) {
-                            sortedGroups[acc] = self.sortedGroups[acc];
+                            reSortedGroups[acc] = sortedGroups[acc];
                         }
                         if (angular.isDefined(key)) {
-                            sortedGroups[key] = self.sortedGroups[key];
+                            reSortedGroups[key] = sortedGroups[key];
                         }
                     }) 
-                    self.sortedGroups = sortedGroups;
+                    if (!angular.equals({}, reSortedGroups)) {
+                        self.sortedGroups = reSortedGroups;
+                    }else {
+                        self.sortedGroups = sortedGroups;
+                    }
                 }
+                self.deferred.resolve({
+                    'groups': self.sortedGroups, 
+                    'layers': self.sortedLayers
+                });
             }
         };
+        /**
+         * @ngdoc method
+         * @name getSortedCatalog
+         * @methodOf anol.map.CatalogService
+         * @description Gets a all layers and sorted
+         */
+        CatalogService.prototype.getSortedCatalog = function() {
+            this.addWaiting();
+            return this.deferred.promise;
+        };
+
         /**
          * @ngdoc method
          * @name layerByName
@@ -243,7 +271,7 @@ angular.module('anol.catalog')
          * @description
          * Adds a catalog group to map
          */
-        CatalogService.prototype.addGroupToMap = function(groupName, visible) {
+        CatalogService.prototype.addGroupToMap = function(groupName, visible, group) {
             var self = this;
             if(self.addedGroupsName.indexOf(groupName) !== -1 ) {
                 return;
@@ -257,6 +285,7 @@ angular.module('anol.catalog')
                             var groupLayers = [];
                             angular.forEach(cGroup.layers, function(cLayer) {
                                 var anolLayer = undefined;
+                                cLayer.olLayer.visible = false;
                                 if (cLayer['type'] == 'wms') {
                                     anolLayer = new anol.layer.SingleTileWMS(cLayer)
                                 } else if (cLayer['type'] == 'tiledwms') {
@@ -283,9 +312,8 @@ angular.module('anol.catalog')
                                 singleSelectGroup: cGroup['singleSelectGroup'],
                                 name: cGroup['name'],
                                 title: cGroup['title'],
-                                legend: cGroup['legend']
+                                legend: cGroup['legend'],
                             });
-                            
                             LayersService.addOverlayLayer(anolGroup, 0);
                             angular.forEach(self.addedGroups, function(_group) {
                                 angular.forEach(_group.layers, function(_layers) {
@@ -308,7 +336,34 @@ angular.module('anol.catalog')
                 );
             });
         };
+
+                /**
+         * @ngdoc method
+         * @name addToMap
+         * @methodOf anol.catalog.CatalogService
+         * @param {Object} layer anolLayer
+         * @description
+         * Adds a catalog layer to map
+         */
+        CatalogService.prototype.loadNamesfromServer = function(names) {
+            var self = this;
+            self.addWaiting();
+            var defer = $q.defer();
+            var data = {
+                'names': names
+            };
+            var loadUrl = this.loadUrl + '/load_names';
+            $http.post(loadUrl, data).then(
+                function(response) {
+                    self.removeWaiting();
+                    defer.resolve(response.data); 
+                }
+            )
+            return defer.promise;
+        };
+
         /**
+         * 
          * @ngdoc method
          * @name addToMap
          * @methodOf anol.catalog.CatalogService
@@ -351,9 +406,8 @@ angular.module('anol.catalog')
                     self.removeWaiting();
                 }
             )
-           
-
         };
+
         /**
          * @ngdoc method
          * @name removeFromMap
