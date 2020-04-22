@@ -95,6 +95,7 @@ angular.module('anol.featurepopup')
                             });
                         });
                     }
+
                     scope.overlayOptions = {
                         element: element[0],
                         autoPan: true,
@@ -161,7 +162,6 @@ angular.module('anol.featurepopup')
                                     offset[0] = Math.min(offset[0], size[0] / 2);
                                     break;
                                 }
-
                             }
                         });
                         scope.popup.setOffset(offset);
@@ -346,6 +346,8 @@ angular.module('anol.featurepopup')
                             }
                         }
                         $timeout(function() {
+                            element.css('height', 'auto')
+                            element.css('width', 'auto')
                             scope.popup.setPosition(coordinate);
                         });
                     });

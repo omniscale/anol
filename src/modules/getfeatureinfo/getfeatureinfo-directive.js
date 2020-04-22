@@ -107,7 +107,6 @@ angular.module('anol.getfeatureinfo')
 
                         var handleFeatureinfoResponses = function(featureInfoObjects) {
                             var divTargetCleared = false;
-                            var popupContentTemp = $('<div></div>');
                             var popupCoordinate;
                             angular.forEach(featureInfoObjects, function(featureInfoObject) {
                                 if(angular.isUndefined(featureInfoObject)) {
@@ -118,50 +117,50 @@ angular.module('anol.getfeatureinfo')
                                     iframe = $('<iframe seamless src="' + featureInfoObject.url + '"></iframe>');
                                 }
                                 switch(featureInfoObject.target) {
-                                case '_blank':
-                                    $window.open(featureInfoObject.url, '_blank');
-                                    break;
-                                case '_popup':
-                                    iframe.css('width', featureInfoObject.width || 300);
-                                    iframe.css('height', featureInfoObject.height || 150);
-                                    popupContentTemp.append(iframe);
-                                    popupCoordinate = featureInfoObject.coordinate;
-                                    break;
-                                default:
-                                    var temp = $('<div></div>');
-                                    var target = angular.element(featureInfoObject.target);
-                                    if(divTargetCleared === false) {
-                                        target.empty();
-                                        divTargetCleared = true;
-                                    }
-                                    var content = angular.element(featureInfoObject.response);
-                                    temp.append(content);
-                                    temp.find('meta').remove();
-                                    temp.find('link').remove();
-                                    temp.find('title').remove();
-                                    temp.find('script').remove();
-                                    target.append(temp.children());
-                                    if(angular.isFunction(scope.customTargetCallback)) {
-                                        scope.customTargetCallback();
-                                    }
-                                    break;
+                                    case '_blank':
+                                        $window.open(featureInfoObject.url, '_blank');
+                                        break;
+                                    case '_popup':
+                                        iframe.css('width', featureInfoObject.width || 300);
+                                        iframe.css('height', featureInfoObject.height || 150);
+                                        scope.popupContentTemp.append(iframe);
+                                        popupCoordinate = featureInfoObject.coordinate;
+                                        break;
+                                    default:
+                                        var temp = $('<div></div>');
+                                        var target = angular.element(featureInfoObject.target);
+                                        if(divTargetCleared === false) {
+                                            target.empty();
+                                            divTargetCleared = true;
+                                        }
+                                        var content = angular.element(featureInfoObject.response);
+                                        temp.append(content);
+                                        temp.find('meta').remove();
+                                        temp.find('link').remove();
+                                        temp.find('title').remove();
+                                        temp.find('script').remove();
+                                        target.append(temp.children());
+                                        if(angular.isFunction(scope.customTargetCallback)) {
+                                            scope.customTargetCallback();
+                                        }
+                                        break;
                                 }
                             });
-                            if(angular.isDefined(popupCoordinate)) {
-                                scope.popupProperties = {
-                                    coordinate: popupCoordinate,
-                                    content: popupContentTemp.children()
-                                };
-                            }
+
                             scope.hideWaitingOverlay();
+                            scope.coordinate = popupCoordinate;
+                            return {
+                                'coordinate': popupCoordinate,
+                                'content': scope.popupContentTemp.children()
+                            }
                         };
 
                         var handleGMLFeatureinfoResponses = function(responses) {
                             var format = new WMSGetFeatureInfo();
                             var responseLayers = [];
                             var catalog = false;
-                            var group = false;
-                            // add feature to feateinfolayer
+                            var gmlLayerIdx = 0;
+                            // add feature to feature infolayer
                             angular.forEach(responses, function(response, idx) {
                                 if(angular.isUndefined(response)) {
                                     return;
@@ -169,64 +168,79 @@ angular.module('anol.getfeatureinfo')
                                 if(angular.isUndefined(response.gmlData)) {
                                     return;
                                 }
-                                if (response.group) {
-                                    group = true;
-                                }
-                                responseLayers.push({
-                                    'title': response.title,
-                                    'layers': []
-                                })
                                 var features = format.readFeatures(response.gmlData);
+                                if (features.length > 0) {
+                                    responseLayers.push({
+                                        'title': response.title,
+                                        'layers': []
+                                    });
+                                }
                                 angular.forEach(features, function(feature) {
                                     feature.set('style', response.style);
                                     if (response.catalog) {
                                         catalog = true;
                                         if (response.group) {
-                                            responseLayers[idx].layers.push(feature.get('group_name'));
+                                            responseLayers[gmlLayerIdx].layers.push(feature.get('group_name'));
                                         } else {
-                                            responseLayers[idx].layers.push(feature.get('layer'));
+                                            responseLayers[gmlLayerIdx].layers.push(feature.get('layer'));
                                         }
                                     }
                                 });
+                                if (features.length > 0) {
+                                    gmlLayerIdx++;
+                                }
                                 featureInfoLayer.addFeatures(features);
                             });
+
                             if (catalog) {
                                 // add layer identifier to popup
-                                var popupContentTemp = $('<div></div>');
-                                angular.forEach(responseLayers, function(rLayer) {
-                                    if (rLayer.layers === undefined || rLayer.layers.length === 0) {
-                                        return;
+                                function createPopUpContent(responseLayers) {
+                                    var defer = $q.defer();
+                                    var count = 0;
+                                    angular.forEach(responseLayers, function(rLayer) {
+                                        if (rLayer.layers === undefined || rLayer.layers.length === 0) {
+                                            return;
+                                        }
+                                        
+                                        var names = [];
+                                        angular.forEach(rLayer.layers, function(lname) {
+                                            names.push(lname)
+                                        });
+                                        CatalogService.loadNamesfromServer(names).then(function(data){
+                                            var title = $('<h4>'+ rLayer.title +'</h4>');
+                                            scope.popupContentTemp.append(title);
+
+                                            angular.forEach(data.groups, function(group) {
+                                                var name = group.name
+                                                var title = group.title;
+                                                var element = $('<a ng-click="addGroupToMap(\''+name +'\')">'+ title +'</a><br>');
+                                                scope.popupContentTemp.append(element)
+                                            });
+                                    
+                                            angular.forEach(data.layers, function(layer) {
+                                                var name = layer.name
+                                                var title = layer.title;
+                                                var element = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ title +'</a><br>');
+                                                scope.popupContentTemp.append(element)
+                                            });
+                                            count++;
+                                            if (responseLayers.length == count) {
+                                                defer.resolve(scope.popupContentTemp); 
+                                            }
+                                        });
+                                    });
+                                    return defer.promise;
+                                } 
+                                var data = createPopUpContent(responseLayers).then(function() {
+                                    scope.hideWaitingOverlay();
+                                    scope.coordinate = scope.clickedCoordiante;
+                                    $compile(scope.popupContentTemp)(scope);
+                                    return {
+                                        'coordinate': scope.clickedCoordiante,
+                                        'content': scope.popupContentTemp.children()
                                     }
-                                    var title = $('<h4>'+ rLayer.title +'</h4>');
-                                    popupContentTemp.append(title);
-
-                                    angular.forEach(rLayer.layers, function(name) {
-                                        var title = name;
-                                        var catalogLayer;
-                                        if (group) {
-                                            catalogLayer = CatalogService.groupByName(name);
-                                        } else {
-                                            catalogLayer = CatalogService.layerByName(name);
-                                        }
-                                        if (catalogLayer) {
-                                            title = catalogLayer.title;
-                                        }
-                                        if (group) {
-                                            var layer = $('<a ng-click="addGroupToMap(\''+name +'\')">'+ title +'</a><br>');
-                                        } else {
-                                            var layer = $('<a ng-click="addLayerToMap(\''+name +'\')">'+ title +'</a><br>');
-                                        }
-                                        popupContentTemp.append(layer);
-                                    })
-                                })
-
-                                $compile(popupContentTemp)(scope);
-
-                                scope.popupProperties = {
-                                    coordinate: scope.clickedCoordiante,
-                                    content: popupContentTemp.children()
-                                }
-                                scope.hideWaitingOverlay();
+                                });
+                                return data;
                             }
                         };
 
@@ -239,7 +253,7 @@ angular.module('anol.getfeatureinfo')
                                 coordinate: undefined
                             };
                             featureInfoLayer.clear();
-
+                            scope.popupContentTemp = $('<div></div>');
                             if(angular.isFunction(scope.beforeRequest)) {
                                 scope.beforeRequest();
                             }
@@ -259,8 +273,18 @@ angular.module('anol.getfeatureinfo')
                             var gmlRequestPromises = [];
                             var gmlRequestsDeferred = $q.defer();
                             gmlRequestsDeferred.promise.then(function() {
-                                $q.all(requestPromises.concat(gmlRequestPromises)).then(handleGMLFeatureinfoResponses);
+                                var content = $q.all(requestPromises.concat(gmlRequestPromises)).then(handleGMLFeatureinfoResponses);
+                                content.then(function(data) {
+                                    renderPopupContent();
+                                })
                             });
+
+                            function renderPopupContent() {
+                                scope.popupProperties = {
+                                    'coordinate': scope.coordinate,
+                                    'content': scope.popupContentTemp.children()
+                                }
+                            };
 
                             angular.forEach(LayersService.flattedLayers(), function(layer) {
                                 if(!layer.getVisible()) {
