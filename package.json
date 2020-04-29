@@ -27,7 +27,7 @@
     "canonical-path": "0.0.2",
     "html-loader": "^0.5.5",
     "jasmine-core": "2.4.1",
-    "jquery": "3.3.1",
+    "jquery": "3.5.0",
     "karma": "0.13.x",
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
