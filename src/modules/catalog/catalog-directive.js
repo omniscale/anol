@@ -48,8 +48,8 @@ angular.module('anol.catalog')
                         scope.removeWaiting();
                     });
 
-                    scope.addedGroups = CatalogService.addedGroups;
-                    scope.addedLayers = CatalogService.addedLayers;
+                    scope.addedGroups = CatalogService.addedGroupsName;
+                    scope.addedLayers = CatalogService.addedLayersName;
                     
                     scope.toggleVariant = function() {
                         if (scope.variant === 'mouseover') {

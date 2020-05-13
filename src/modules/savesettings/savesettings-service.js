@@ -81,10 +81,11 @@ angular.module('anol.savesettings')
                 };
 
                 SaveSettings.prototype.applyLoadSettings = function(settings) {
-                    PermalinkService.setPermalinkParameters(settings.map);
-                    LayersService.deleteLayers(settings.layerswitcher.deleted);
-                    LayersService.setLayerOrder(settings.layerswitcher.order);
-                    LayersService.setCollapsedGroups(settings.layerswitcher.open);
+                    PermalinkService.setPermalinkParameters(settings.map).then(function(data) {
+                        LayersService.deleteLayers(settings.layerswitcher.deleted);
+                        LayersService.setLayerOrder(settings.layerswitcher.order);
+                        LayersService.setCollapsedGroups(settings.layerswitcher.open);
+                    })
             
                     // save print settings and check if print tab is open
                     PrintPageService.loadSettings(settings);

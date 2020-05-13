@@ -7,13 +7,13 @@ angular.module('anol.catalog')
  * @name anol.catalog.CatalogServiceProvider
  */
 .provider('CatalogService', [function() {
-    var _loadUrl;
+    var _loadUrl  = undefined;
 
     this.setLoadUrl = function(url) {
         _loadUrl = url;
     };
    
-    this.$get = ['$q', '$http', 'LayersService', function($q, $http, LayersService) {
+    this.$get = ['$q', '$http', '$rootScope', 'LayersService', function($q, $http, $rootScope, LayersService) {
         /**
          * @ngdoc service
          * @name anol.catalog.CatalogService
@@ -48,8 +48,11 @@ angular.module('anol.catalog')
             this.removeWaiting = function() {
                 pageBody.removeClass('waiting');
             }
+            if (angular.isUndefined(this.loadUrl)) {
+                return;
+            }
             this.deferred = $q.defer();
-
+            
             $http.get(loadUrl).then(
                 function(response) {
                     if(response.data.layers) {
@@ -116,7 +119,9 @@ angular.module('anol.catalog')
                     if(_group.name !== undefined) {
                         self.nameGroupsMap[_group.name] = _group;
                     }   
-                    
+                    if (_group.predefined) {
+                        self.addedGroupsName.push(_group.name);
+                    }
                     var firstLetter = _group.title.charAt(0).toUpperCase();
                     if (self.firstLettersGroups.indexOf(firstLetter) === -1) {
                         if (!_group.visible) {
@@ -156,6 +161,24 @@ angular.module('anol.catalog')
                     'layers': self.sortedLayers
                 });
             }
+
+            $rootScope.$watchCollection(function() {
+                return LayersService.layers();
+            }, function(newVal, oldVal) {
+                self.addedGroupsName = [];
+                self.addedLayersName = [];
+                angular.forEach(newVal, function(layer) {
+                    if (layer.isBackground) {
+                        return;
+                    }
+                    if(layer instanceof anol.layer.Group) {
+                        self.addedGroupsName.push(layer.name)
+                    } else {
+                        self.addedLayersName.push(layer.name)
+                    }                    
+                })
+            });
+
         };
         /**
          * @ngdoc method
@@ -273,10 +296,15 @@ angular.module('anol.catalog')
          */
         CatalogService.prototype.addGroupToMap = function(groupName, visible, group) {
             var self = this;
-            if(self.addedGroupsName.indexOf(groupName) !== -1 ) {
+            if(self.addedGroupsName.indexOf(groupName) !== -1) {
+                return;
+            }
+            var exist = LayersService.groupByName(groupName);
+            if (exist) {
                 return;
             }
             self.addWaiting();
+
             return $q(function(resolve) {
                 var loadUrl = self.loadUrl + '/group/' + groupName;
                 $http.get(loadUrl).then(
@@ -325,8 +353,8 @@ angular.module('anol.catalog')
                                 _layers.olLayer.setZIndex(startZIndex);
                                 startZIndex--;
                             });
+                            self.addedGroupsName.push(groupName);
                             self.catalogGroups.push(anolGroup);
-                            self.addedGroupsName.push(groupName)
                             self.addedGroups.push(anolGroup);
                             anolGroup.setVisible(visible);
                             resolve(anolGroup);
@@ -339,7 +367,7 @@ angular.module('anol.catalog')
 
                 /**
          * @ngdoc method
-         * @name addToMap
+         * @name loadNamesfromServer
          * @methodOf anol.catalog.CatalogService
          * @param {Object} layer anolLayer
          * @description
@@ -376,6 +404,11 @@ angular.module('anol.catalog')
             if(self.addedLayersName.indexOf(layerName) !== -1 ) {
                 return;
             }
+            var exist = LayersService.layerByName(layerName);
+            if (exist) {
+                return;
+            }
+
             self.addWaiting();
             var loadUrl = this.loadUrl + '/layer/' + layerName;
             $http.get(loadUrl).then(
@@ -423,8 +456,8 @@ angular.module('anol.catalog')
                     LayersService.removeOverlayLayer(layer);
                     this.addedGroups.splice(groupIdx, 1);
 
-                    var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
-                    this.addedGroupsName.splice(groupNameIdx, 1)
+                    // var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
+                    // this.addedGroupsName.splice(groupNameIdx, 1)
                 }
             } else {
                 var layerIdx = this.addedLayers.indexOf(layer);
@@ -432,8 +465,8 @@ angular.module('anol.catalog')
                     LayersService.removeOverlayLayer(layer);
                     this.addedLayers.splice(layerIdx, 1);
 
-                    var layerNameIdx = this.addedLayersName.indexOf(layer.name);
-                    this.addedLayersName.splice(layerNameIdx, 1)
+                    // var layerNameIdx = this.addedLayersName.indexOf(layer.name);
+                    // this.addedLayersName.splice(layerNameIdx, 1)
                 }
 
                 if (layerIdx == -1) {
@@ -446,8 +479,8 @@ angular.module('anol.catalog')
                                 LayersService.removeOverlayLayer(group);
                                 this.addedGroups.splice(groupIdx, 1);
 
-                                var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
-                                this.addedGroupsName.splice(groupNameIdx, 1);
+                                // var groupNameIdx = this.addedGroupsName.indexOf(layer.name);
+                                // this.addedGroupsName.splice(groupNameIdx, 1);
                             }
                         } else {
                             LayersService.removeOverlayLayer(layer);

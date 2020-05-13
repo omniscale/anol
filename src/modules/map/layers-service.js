@@ -39,7 +39,7 @@ angular.module('anol.map')
             _removeLayerHandlers.push(handler);
         };
 
-        this.$get = ['$rootScope', 'MapService', 'PopupsService', function($rootScope, MapService, PopupsService) {
+        this.$get = ['PopupsService', function( PopupsService) {
         /**
          * @ngdoc service
          * @name anol.map.LayersService
@@ -186,7 +186,7 @@ angular.module('anol.map')
             };
             Layers.prototype.removeOverlayLayer = function(layer) {
                 var self = this;
-
+               
                 if(layer instanceof anol.layer.Group) {
                     var group = layer;
                     if(self.overlayLayers.indexOf(group) === -1) {
@@ -259,20 +259,20 @@ angular.module('anol.map')
                             });
                         }
                     });
-
                     // remove empty combined openlayers layer
-                    var olSource = layer.olLayer.getSource();
-                    var anolLayers = olSource.get('anolLayers');
-                    if (anolLayers.length === 0) {
-                        if(angular.isDefined(self.map)) {
-                            var olLayerIdx = self.olLayers.indexOf(layer.olLayer);
-                            if(olLayerIdx > -1) {
-                                self.map.removeLayer(layer.olLayer);
-                                self.olLayers.splice(olLayerIdx, 1);
+                    if (layer.olLayer) {
+                        var olSource = layer.olLayer.getSource();
+                        var anolLayers = olSource.get('anolLayers');
+                        if (anolLayers.length === 0) {
+                            if(angular.isDefined(self.map)) {
+                                var olLayerIdx = self.olLayers.indexOf(layer.olLayer);
+                                if(olLayerIdx > -1) {
+                                    self.map.removeLayer(layer.olLayer);
+                                    self.olLayers.splice(olLayerIdx, 1);
+                                }
                             }
                         }
                     }
-
                     angular.forEach(self.overlayLayers, function(layer, idx) {
                         if(layer instanceof anol.layer.Group) {
                             if (layer.layers.length === 0) {
@@ -515,7 +515,7 @@ angular.module('anol.map')
                 if (angular.isUndefined(deletedLayers)) {
                     return;
                 }
-                angular.forEach(deletedLayers, function(overlayLayer, overlayLayerIdx) {
+                angular.forEach(deletedLayers, function(overlayLayer) {
                     var layer = self.layerByName(overlayLayer);
                     if (angular.isUndefined(layer)) {
                         layer = self.groupByName(overlayLayer);
@@ -524,12 +524,9 @@ angular.module('anol.map')
                 });
             };
 
-            Layers.prototype.setLayerOrder = function(layers, deleteLayers) {
-                var lastOlLayerUid = undefined;
+            Layers.prototype.setLayerOrder = function(layers) {
                 var self = this;
                 self.zIndex = 0;
-
-                var overlayLayers = [];
                 $.each(layers, function(newIdx, layer) {
                     $.each(self.overlayLayers, function(oldIdx, overlayLayer) {
                         if (angular.isUndefined(overlayLayer)) {

@@ -116,8 +116,8 @@ angular.module('anol.permalink')
             _precision = precision;
         };
 
-        this.$get = ['$rootScope', '$location', 'MapService', 'LayersService', 'CatalogService', 
-            function($rootScope, $location, MapService, LayersService, CatalogService) {
+        this.$get = ['$rootScope', '$q', '$location', 'MapService', 'LayersService', 'CatalogService', 
+            function($rootScope, $q, $location, MapService, LayersService, CatalogService) {
                 /**
          * @ngdoc service
          * @name anol.permalink.PermalinkService
@@ -138,6 +138,7 @@ angular.module('anol.permalink')
                     self.zoom = undefined;
                     self.lon = undefined;
                     self.lat = undefined;
+                    self.deferred = undefined;
                     self.map = MapService.getMap();
                     self.view = self.map.getView();
                     self.visibleLayerNames = [];
@@ -397,7 +398,8 @@ angular.module('anol.permalink')
                             CatalogService.addToMap(layerName, visible);
                         });
                     }
-                    
+
+                    var catalogGroups = [];
                     if (mapParams.catalogGroups !== undefined) {
                         angular.forEach(mapParams.catalogGroups, function(groupName) {
                             var visible = false;
@@ -405,17 +407,30 @@ angular.module('anol.permalink')
                                 visible = mapParams.visibleCatalogGroups.indexOf(groupName) > -1;
                             } 
                             var group = CatalogService.addGroupToMap(groupName, visible);
-                            group.then(function(group) {
-                                if (group.layers.length > 1) {
-                                    angular.forEach(group.layers, function(layer){
-                                        if (mapParams.visibleCatalogLayers) {
-                                            var visibleLayer = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
-                                            layer.setVisible(visibleLayer);
-                                        }
-                                    })
-                                }
-                            });
+                            catalogGroups.push(group);
+                            if (group) { 
+                                group.then(function(group) {
+                                    if (group.layers.length > 1) {
+                                        angular.forEach(group.layers, function(layer){
+                                            if (mapParams.visibleCatalogLayers) {
+                                                var visibleLayer = mapParams.visibleCatalogLayers.indexOf(layer.name) > -1;
+                                                layer.setVisible(visibleLayer);
+                                            }
+                                        })
+                                    }
+                                });
+                            }
                         });
+                    }
+                    
+                    if (angular.isDefined(self.deferred)) {
+                        if (catalogGroups.length !== 0) {
+                            $q.all(catalogGroups).then(function() {
+                                self.deferred.resolve();
+                            });
+                        } else {
+                            self.deferred.resolve();
+                        }
                     }
                 };
 
@@ -449,7 +464,9 @@ angular.module('anol.permalink')
 
                 Permalink.prototype.setPermalinkParameters = function(params) {
                     var self = this;
+                    self.deferred = $q.defer();
                     self.updateMapFromParameters(params);
+                    return self.deferred.promise;;
                 };
         
                 return new Permalink(_urlCrs, _precision);
