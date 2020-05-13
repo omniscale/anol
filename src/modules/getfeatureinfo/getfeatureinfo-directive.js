@@ -121,6 +121,10 @@ angular.module('anol.getfeatureinfo')
                                         $window.open(featureInfoObject.url, '_blank');
                                         break;
                                     case '_popup':
+                                        // check if reponse is empty e.g. on arc gis gfi
+                                        if (featureInfoObject.response.includes("<body></body>")) {
+                                            return;
+                                        }
                                         iframe.css('width', featureInfoObject.width || 300);
                                         iframe.css('height', featureInfoObject.height || 150);
                                         scope.popupContentTemp.append(iframe);
