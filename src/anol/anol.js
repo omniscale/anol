@@ -13,8 +13,8 @@ register(proj4);
 
 import Helper from './helper.js';
 import Nominatim from './geocoder/nominatim.js';
-import Solr from './geocoder/Solr.js';
-import Catalog from './geocoder/Catalog.js';
+import Solr from './geocoder/solr.js';
+import Catalog from './geocoder/catalog.js';
 
 import AnolBaseLayer from './layer.js';
 import BaseWMS from './layer/basewms.js';
@@ -64,5 +64,3 @@ window.anol = {
     'helper': helper,
     'geocoder': geocoder
 };
-
-
