@@ -199,7 +199,9 @@ angular.module('anol.map')
                     var overlayLayerIdx = self.overlayLayers.indexOf(group);
                     if(overlayLayerIdx > -1) {
                         self.overlayLayers.splice(overlayLayerIdx, 1);
-                        self.deletedOverlayLayers.push(group.name)
+                        if (!layer.catalogLayer) {
+                            self.deletedOverlayLayers.push(group.name)
+                        }
                     }   
                     angular.forEach(group.layers, function(_layer) {
                         // _layer.setVisible(false);
@@ -214,7 +216,9 @@ angular.module('anol.map')
                             handler(_layer);
                         });
                         _layer.removeOlLayer();
-                        self.deletedOverlayLayers.push(_layer.name);
+                        if (!layer.catalogLayer) {
+                            self.deletedOverlayLayers.push(_layer.name);
+                        }
                     });
                     return true;
                 } else {
@@ -254,7 +258,9 @@ angular.module('anol.map')
                                         _layer.layers.splice(overlayLayerIdx, 1);
                                     }
                                     layer.removeOlLayer();
-                                    self.deletedOverlayLayers.push(layer.name);
+                                    if (!layer.catalogLayer) {
+                                        self.deletedOverlayLayers.push(layer.name);
+                                    }
                                 }
                             });
                         }
@@ -520,7 +526,9 @@ angular.module('anol.map')
                     if (angular.isUndefined(layer)) {
                         layer = self.groupByName(overlayLayer);
                     }
-                    self.removeOverlayLayer(layer)
+                    if (angular.isDefined(layer)) {
+                        self.removeOverlayLayer(layer)
+                    }
                 });
             };
 
@@ -548,7 +556,7 @@ angular.module('anol.map')
                             return;
                         }
                     });
-                });  
+                });
                 this.reorderOverlayLayers();
             };  
 
