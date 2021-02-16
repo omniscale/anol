@@ -1,0 +1,45 @@
+<button ng-click="drawPoint()"
+        class="draw-button draw-point"
+        uib-tooltip="{{ 'anol.geoeditor.TOOLTIP_POINT' | translate }}"
+        tooltip-placement="{{ pointTooltipPlacement }}"
+        tooltip-append-to-body="true"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
+        tooltip-trigger="mouseenter">
+</button>
+<button ng-click="drawLine()"
+        class="draw-button draw-line"
+        uib-tooltip="{{ 'anol.geoeditor.TOOLTIP_LINE' | translate }}"
+        tooltip-placement="{{ lineTooltipPlacement }}"
+        tooltip-append-to-body="true"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
+        tooltip-trigger="mouseenter">
+</button>
+<button ng-click="drawPolygon()"
+        class="draw-button draw-polygon"
+        uib-tooltip="{{ 'anol.geoeditor.TOOLTIP_POLYGON' | translate }}"
+        tooltip-placement="{{ polygonTooltipPlacement }}"
+        tooltip-append-to-body="true"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
+        tooltip-trigger="mouseenter">
+</button>
+<button ng-click="modify()"
+        class="draw-button draw-modify"
+        uib-tooltip="{{ 'anol.geoeditor.TOOLTIP_MODIFY' | translate }}"
+        tooltip-placement="{{ polygonTooltipPlacement }}"
+        tooltip-append-to-body="true"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
+        tooltip-trigger="mouseenter">
+</button>
+<button ng-click="remove()"
+        class="draw-button draw-remove"
+        uib-tooltip="{{ 'anol.geoeditor.TOOLTIP_REMOVE' | translate }}"
+        tooltip-placement="{{ polygonTooltipPlacement }}"
+        tooltip-append-to-body="true"
+        tooltip-popup-delay="{{ tooltipDelay }}"
+        tooltip-enable="{{ tooltipEnable }}"
+        tooltip-trigger="mouseenter">
+</button>

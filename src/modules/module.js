@@ -67,6 +67,12 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'NO_RESULTS': 'No results found',
                     'SEARCH_IN_PROGRESS': 'Search in progress'
                 },
+                'geoeditor': {
+                    'TOOLTIP_POINT': 'Draw point',
+                    'TOOLTIP_LINE': 'Draw line',
+                    'TOOLTIP_POLYGON': 'Draw polygon',
+                    'LAYER_TITLE': 'Draw layer'
+                },
                 'geolocation': {
                     'TOOLTIP': 'Start geolocation',
                     'POSITION_OUT_OF_MAX_EXTENT': 'Your position is not in map extent'
@@ -149,6 +155,12 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'DASHDOT': 'Gestrichelt und gepunktet',
                     'LONGDASH': 'Lang gestrichelt',
                     'LONGDASHDOT': 'Lang gestrichelt und gepunktet'
+                },
+                'geoeditor': {
+                    'TOOLTIP_DRAW_POINT': 'Punkt zeichnen',
+                    'TOOLTIP_DRAW_LINE': 'Linie zeichnen',
+                    'TOOLTIP_DRAW_POLYGON': 'Polygon zeichnen',
+                    'DRAW_LAYER_TITLE': 'Zeichenlayer'
                 },
                 'zoom': {
                     'TOOLTIP_ZOOM_IN': 'Hineinzoomen',
