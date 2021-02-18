@@ -38,6 +38,8 @@ angular.module('anol.draw')
                 restrict: 'A',
                 require: '?^anolMap',
                 scope: {
+                    geometries: '=',
+                    style: '=geometriesStyle',
                     continueDrawing: '@',
                     postDrawAction: '&',
                     freeDrawing: '@',
@@ -62,6 +64,7 @@ angular.module('anol.draw')
                         });
                     } 
                     // attribute defaults
+                    scope.geometriesConfig = applyGeometriesConfig(scope.geometries);
                     scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
                         scope.continueDrawing : false;
                     scope.freeDrawing = angular.isDefined(scope.freeDrawing) ?
@@ -86,6 +89,22 @@ angular.module('anol.draw')
                     // disabled by default. Will be enabled, when feature selected
                     var removeButtonElement = element.find('.draw-remove');
                     removeButtonElement.addClass('disabled');
+
+                    function applyGeometriesConfig(geometries = {}) {
+                        var defaultVals = {
+                            enabled: true,
+                            min: 0,
+                            max: Infinity
+                        };
+
+                        var defaultGeometries = {
+                            point: angular.copy(defaultVals),
+                            line: angular.copy(defaultVals),
+                            polygon: angular.copy(defaultVals)
+                        };
+
+                        return angular.merge(defaultGeometries, geometries);
+                    }
 
                     var executePostDrawCallback = function(evt) {
                         scope.postDrawAction()(scope.activeLayer, evt.feature);
@@ -414,9 +433,21 @@ angular.module('anol.draw')
                             .concat(modifyControl.interactions);
                     };
 
+                    var setContinueDrawing = function() {
+                        var pointCount = DrawService.countFeaturesFor('Point');
+                        var lineCount = DrawService.countFeaturesFor('LineString');
+                        var polygonCount = DrawService.countFeaturesFor('Polygon');
+                        scope.continueDrawingPoints = pointCount < scope.geometriesConfig.point.max;
+                        scope.continueDrawingLines = lineCount < scope.geometriesConfig.line.max;
+                        scope.continueDrawingPolygons = polygonCount < scope.geometriesConfig.polygon.max;
+                    };
+
                     var visibleDewatcher;
 
                     var bindActiveLayer = function(layer) {
+                        layer.style = scope.style;
+                        layer.setStyle();
+
                         drawPointControl.interactions = createDrawInteractions(
                             'Point', layer.olLayer.getSource(), drawPointControl, layer.olLayer);
                         drawPointControl.enable();
@@ -433,7 +464,11 @@ angular.module('anol.draw')
                             scope.map.addInteraction(interaction);
                         });
 
-                        scope.activeLayer = layer;
+                        scope.activeLayer = layer
+                        // inital setup in case the active layer already contains features
+                        setContinueDrawing();
+
+                        scope.activeLayer.olLayer.getSource().on('change', setContinueDrawing);
 
                         visibleDewatcher = scope.$watch(function() {
                             return scope.activeLayer.getVisible();
@@ -459,8 +494,13 @@ angular.module('anol.draw')
                         modifyControl.disable();
                         modifyControl.interactions = [];
 
+
                         if(angular.isDefined(visibleDewatcher)) {
                             visibleDewatcher();
+                        }
+
+                        if (scope.activeLayer && scope.activeLayer.olLayer) {
+                            scope.activeLayer.olLayer.getSource().un('change', setContinueDrawing);
                         }
 
                         scope.activeLayer = undefined;
