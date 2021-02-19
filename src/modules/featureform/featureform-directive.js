@@ -25,7 +25,9 @@ angular.module('anol.featureform')
      * @param {string} templateUrl Url to template to use instead of default one
      * @param {ol.Feature} feature Feature to show properties for
      * @param {anol.layer.Feature} layer Layer of feature
-     * @param {FormField[]} formFields The options for each form field
+     * @param {FormField[]} pointFields The form fields for points
+     * @param {FormField[]} lineFields The form fields for lines
+     * @param {FormField[]} polygonFields TThe form fields for polygons
      * @param {Object<string, string>} formValues The values for each form field
      *
      * @description
@@ -40,7 +42,9 @@ angular.module('anol.featureform')
                 scope: {
                     'feature': '=',
                     'layer': '=', // TODO: is this needed?
-                    'formFields': '='
+                    'pointFields': '=',
+                    'lineFields': '=',
+                    'polygonFields': '='
                 },
                 template: function(tElement, tAttrs) {
                     if (tAttrs.templateUrl) {
@@ -57,26 +61,47 @@ angular.module('anol.featureform')
                         });
                     }
 
+                    scope.formFields = [];
                     scope.properties = {};
+
+                    var propertyWatchers = [];
 
                     /**
                      * @param {ol.Feature} feature
                      */
                     var featureChangeHandler = function (feature) {
+                        clearPropertiesWatchers();
                         if (feature) {
                             scope.properties = feature.getProperties();
+                            const geomType = feature.getGeometry().getType();
+                            if (geomType === 'Point') {
+                                scope.formFields = scope.pointFields;
+                            } else if (geomType === 'LineString') {
+                                scope.formFields = scope.lineFields;
+                            } else if (geomType === 'Polygon') {
+                                scope.formFields = scope.polygonFields;
+                            }
+                            setupPropertiesWatchers(scope.formFields);
                         }
                     };
 
                     /**
                      * @param {FormField[]} formFields
                      */
-                    var formFieldChangeHandler = function (formFields) {
+                    var setupPropertiesWatchers = function (formFields) {
                         formFields.forEach(function (field) {
-                            scope.$watch('properties["' + field.name + '"]', function (value) {
+                            var watcher = scope.$watch('properties["' + field.name + '"]', function (value) {
                                 scope.feature.set(field.name, value);
                             });
+                            propertyWatchers.push(watcher);
                         });
+                    };
+
+                    var clearPropertiesWatchers = function () {
+                        propertyWatchers.forEach(function (dewatch) {
+                            dewatch();
+                        });
+                        propertyWatchers = [];
                     };
 
                     /**
@@ -96,8 +121,6 @@ angular.module('anol.featureform')
                     };
 
                     scope.$watch('feature', featureChangeHandler);
-
-                    scope.$watch('formFields', formFieldChangeHandler);
                 }
             };
         }]);
