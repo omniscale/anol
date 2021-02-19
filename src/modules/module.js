@@ -6,10 +6,11 @@
  */
 
 require('angular-ui-bootstrap');
+require('ui-select');
 require('angular-translate');
 require('angular-sanitize');
 
-angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
+angular.module('anol', ['ui.bootstrap', 'ui.select', 'pascalprecht.translate', 'ngSanitize'])
 /**
  * @ngdoc object
  * @name anol.constant:DefaultMapName
@@ -44,6 +45,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'INVALID_GEOJSON': 'No valid geojson given',
                     'EMPTY_GEOJSON': 'Empty geojson given',
                     'COULD_NOT_READ_FILE': 'Could not read file'
+                },
+                'featureform': {
+                    'PLEASE_CHOOSE': 'Please choose ...'
                 },
                 'featurepropertieseditor': {
                     'NEW_PROPERTY': 'New property'
@@ -134,6 +138,9 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'TOOLTIP_REMOVE': 'Ausgewählte Geometrie entfernen',
                     'DRAW_LAYER_TITLE': 'Zeichenlayer'
                 },
+                'featureform': {
+                    'PLEASE_CHOOSE': 'Bitte auswählen ...'
+                },
                 'featurestyleeditor': {
                     'EDIT_FEATURE_STYLE': 'Feature Style bearbeiten',
                     'OK': 'OK',
@@ -160,6 +167,6 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
             'CHANGE_LANGUAGE': 'Sprache wechseln',
             'ENGLISH': 'Englisch',
             'GERMAN': 'Deutsch'
-        });    
+        });
         $translateProvider.preferredLanguage('en_US');
     }]);
