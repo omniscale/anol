@@ -6,7 +6,6 @@
  */
 
 require('angular-ui-bootstrap');
-require('ui-select');
 require('angular-translate');
 require('angular-sanitize');
 
