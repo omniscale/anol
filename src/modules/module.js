@@ -36,6 +36,7 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'TOOLTIP_POINT': 'Draw point',
                     'TOOLTIP_LINE': 'Draw line',
                     'TOOLTIP_POLYGON': 'Draw polygon',
+                    'TOOLTIP_REMOVE': 'Remove selected geometry',
                     'LAYER_TITLE': 'Draw layer'
                 },
                 'featureexchange': {
@@ -130,6 +131,7 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'TOOLTIP_DRAW_POINT': 'Punkt zeichnen',
                     'TOOLTIP_DRAW_LINE': 'Linie zeichnen',
                     'TOOLTIP_DRAW_POLYGON': 'Polygon zeichnen',
+                    'TOOLTIP_REMOVE': 'Ausgewählte Geometrie entfernen',
                     'DRAW_LAYER_TITLE': 'Zeichenlayer'
                 },
                 'featurestyleeditor': {

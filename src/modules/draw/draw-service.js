@@ -60,6 +60,26 @@ angular.module('anol.draw')
                     this.activeLayer = layer;
                 }
             };
+
+            /**
+             * @ngdoc method
+             * @name countFeaturesFor
+             * @methodOf anol.draw.DrawService
+             * @param {String} geometryType Geometry type (e.g. 'Point', 'LineString')
+             * @description
+             * Counts the features in this.activeLayer for the given geometry type.
+             */
+            DrawService.prototype.countFeaturesFor = function(geometryType) {
+                if (angular.isUndefined(this.activeLayer) || angular.isUndefined(geometryType)) {
+                    return;
+                }
+
+                var features = this.activeLayer.olLayer.getSource().getFeatures();
+                return features.filter(function(feature) {
+                    return geometryType === feature.getGeometry().getType();
+                }).length;
+            };
+
             return new DrawService(_editableLayers);
         }];
     }]);
