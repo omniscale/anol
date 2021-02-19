@@ -1,0 +1,11 @@
+<form class="container-fluid" style="padding-top: 2em">
+    <div ng-repeat="field in formFields" class="form-group">
+        <label for="input-{{field.name}}">{{ field.label }}</label>
+        <input ng-if="field.type !== 'select'" class="form-control" type="{{field.type}}" id="input-{{field.name}}" ng-model="formValues[field.name]"/>
+        <select ng-if="field.type === 'select'" class="form-control" id="input-{{field.name}}"  ng-model="formValues[field.name]">
+            <option value="">{{ 'anol.featureform.PLEASE_CHOOSE' | translate }}</option>
+            <option ng-repeat="option in field.select" ng-value="option.value">{{ option.label }}</option>
+        </select>
+    </div>
+</form>
+
