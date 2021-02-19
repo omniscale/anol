@@ -19,6 +19,8 @@ angular.module('anol.draw')
  * @requires anol.map.ControlsSerivce
  * @requries anol.map.DrawService
  *
+ * @param {object} geometries The configuration of the geometries (e.g. min/max values).
+ * @param {object} style The style for the geometries.
  * @param {boolean} continueDrawing Don't deactivate drawing after feature is added
  * @param {function} postDrawAction Action to call after feature is drawn. Draw control will be deactivated when postDrawAction defined.
  * @param {boolean} freeDrawing Deactivate snapped drawing
