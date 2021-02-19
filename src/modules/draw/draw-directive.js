@@ -445,8 +445,10 @@ angular.module('anol.draw')
                     var visibleDewatcher;
 
                     var bindActiveLayer = function(layer) {
-                        layer.style = scope.style;
-                        layer.setStyle();
+                        if (angular.isDefined(scope.style)) {
+                            layer.style = scope.style;
+                            layer.setStyle();
+                        }
 
                         drawPointControl.interactions = createDrawInteractions(
                             'Point', layer.olLayer.getSource(), drawPointControl, layer.olLayer);
