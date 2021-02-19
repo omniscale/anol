@@ -468,7 +468,7 @@ angular.module('anol.draw')
                             scope.map.addInteraction(interaction);
                         });
 
-                        scope.activeLayer = layer
+                        scope.activeLayer = layer;
                         // inital setup in case the active layer already contains features
                         setContinueDrawing();
 
