@@ -47,7 +47,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                 },
                 'featureform': {
                     'PLEASE_CHOOSE': 'Please choose ...',
-                    'IS_REQUIRED': 'This field is required'
+                    'IS_REQUIRED': 'This field is required',
+                    'INPUT_NOT_SUPPORTED': 'The following configured input type is not supported: '
                 },
                 'featurepropertieseditor': {
                     'NEW_PROPERTY': 'New property'
@@ -140,7 +141,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                 },
                 'featureform': {
                     'PLEASE_CHOOSE': 'Bitte auswählen ...',
-                    'IS_REQUIRED': 'Dies ist ein Pflichtfeld'
+                    'IS_REQUIRED': 'Dies ist ein Pflichtfeld',
+                    'INPUT_NOT_SUPPORTED': 'Der folgende konfigurierte Inputtyp ist nicht unterstützt: '
                 },
                 'featurestyleeditor': {
                     'EDIT_FEATURE_STYLE': 'Feature Style bearbeiten',

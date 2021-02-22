@@ -2,17 +2,31 @@
     <div ng-repeat="field in formFields"
          class="form-group"
          ng-class="{ 'has-error': highlightInvalid && !isValid(field) }"
+         ng-switch="field.type"
     >
         <label for="input-{{field.name}}">
             {{ field.label || field.name }}{{ field.required ? ' (*)' : ''}}
         </label>
-        <input ng-if="field.type !== 'select'"
+        <input ng-switch-when="text"
                id="input-{{field.name}}"
                class="form-control"
-               type="{{field.type}}"
+               type="text"
                ng-model="properties[field.name]"
         />
-        <select ng-if="field.type === 'select'"
+        <input ng-switch-when="int"
+               id="input-{{field.name}}"
+               class="form-control"
+               type="number"
+               ng-model="properties[field.name]"
+        />
+        <input ng-switch-when="float"
+               id="input-{{field.name}}"
+               class="form-control"
+               type="number"
+               step="any"
+               ng-model="properties[field.name]"
+        />
+        <select ng-switch-when="select"
                 id="input-{{field.name}}"
                 class="form-control"
                 ng-model="properties[field.name]"
@@ -26,6 +40,9 @@
                 {{ getOptionLabel(option) }}
             </option>
         </select>
+        <div ng-switch-default>
+            {{ 'anol.featureform.INPUT_NOT_SUPPORTED' | translate }}"{{ field.type }}"
+        </div>
         <small ng-if="highlightInvalid && !isValid(field)"
                class="help-block">
             {{ 'anol.featureform.IS_REQUIRED' | translate }}

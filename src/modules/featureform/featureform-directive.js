@@ -45,7 +45,7 @@ angular.module('anol.featureform')
                     'pointFields': '=?',
                     'lineFields': '=?',
                     'polygonFields': '=?',
-                    'highlightInvalid': '=?'
+                    'highlightInvalid': '<?'
                 },
                 template: function(tElement, tAttrs) {
                     if (tAttrs.templateUrl) {
@@ -127,7 +127,15 @@ angular.module('anol.featureform')
                      */
                     scope.isValid = function (field) {
                         if (field.required) {
-                            return !!scope.properties[field.name];
+                            const value = scope.properties[field.name];
+                            switch (field.type) {
+                            case 'int':
+                            case 'float':
+                                return angular.isNumber(value);
+                            case 'text':
+                            case 'select':
+                                return angular.isString(value) && value !== '';
+                            }
                         }
                         return true;
                     };
