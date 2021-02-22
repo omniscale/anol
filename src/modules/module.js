@@ -6,11 +6,10 @@
  */
 
 require('angular-ui-bootstrap');
-require('ui-select');
 require('angular-translate');
 require('angular-sanitize');
 
-angular.module('anol', ['ui.bootstrap', 'ui.select', 'pascalprecht.translate', 'ngSanitize'])
+angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
 /**
  * @ngdoc object
  * @name anol.constant:DefaultMapName
