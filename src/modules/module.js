@@ -9,7 +9,7 @@ require('angular-ui-bootstrap');
 require('angular-translate');
 require('angular-sanitize');
 
-angular.module('anol', ['ui.bootstrap', 'ui.select', 'pascalprecht.translate', 'ngSanitize'])
+angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
 /**
  * @ngdoc object
  * @name anol.constant:DefaultMapName
@@ -46,7 +46,9 @@ angular.module('anol', ['ui.bootstrap', 'ui.select', 'pascalprecht.translate', '
                     'COULD_NOT_READ_FILE': 'Could not read file'
                 },
                 'featureform': {
-                    'PLEASE_CHOOSE': 'Please choose ...'
+                    'PLEASE_CHOOSE': 'Please choose ...',
+                    'IS_REQUIRED': 'This field is required',
+                    'INPUT_NOT_SUPPORTED': 'The following configured input type is not supported: '
                 },
                 'featurepropertieseditor': {
                     'NEW_PROPERTY': 'New property'
@@ -138,7 +140,9 @@ angular.module('anol', ['ui.bootstrap', 'ui.select', 'pascalprecht.translate', '
                     'DRAW_LAYER_TITLE': 'Zeichenlayer'
                 },
                 'featureform': {
-                    'PLEASE_CHOOSE': 'Bitte auswählen ...'
+                    'PLEASE_CHOOSE': 'Bitte auswählen ...',
+                    'IS_REQUIRED': 'Dies ist ein Pflichtfeld',
+                    'INPUT_NOT_SUPPORTED': 'Der folgende konfigurierte Inputtyp ist nicht unterstützt: '
                 },
                 'featurestyleeditor': {
                     'EDIT_FEATURE_STYLE': 'Feature Style bearbeiten',
