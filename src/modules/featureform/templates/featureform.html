@@ -1,11 +1,35 @@
 <form class="container-fluid" style="padding-top: 2em">
-    <div ng-repeat="field in formFields" class="form-group">
-        <label for="input-{{field.name}}">{{ field.label || field.name }}</label>
-        <input ng-if="field.type !== 'select'" class="form-control" type="{{field.type}}" id="input-{{field.name}}" ng-model="properties[field.name]"/>
-        <select ng-if="field.type === 'select'" class="form-control" id="input-{{field.name}}" ng-model="properties[field.name]">
-            <option value="">{{ 'anol.featureform.PLEASE_CHOOSE' | translate }}</option>
-            <option ng-repeat="option in field.select" ng-value="getOptionValue(option)">{{ getOptionLabel(option) }}</option>
+    <div ng-repeat="field in formFields"
+         class="form-group"
+         ng-class="{ 'has-error': highlightInvalid && !isValid(field) }"
+    >
+        <label for="input-{{field.name}}">
+            {{ field.label || field.name }}{{ field.required ? ' (*)' : ''}}
+        </label>
+        <input ng-if="field.type !== 'select'"
+               id="input-{{field.name}}"
+               class="form-control"
+               type="{{field.type}}"
+               ng-model="properties[field.name]"
+        />
+        <select ng-if="field.type === 'select'"
+                id="input-{{field.name}}"
+                class="form-control"
+                ng-model="properties[field.name]"
+        >
+            <option value="">
+                {{ 'anol.featureform.PLEASE_CHOOSE' | translate }}
+            </option>
+            <option ng-repeat="option in field.select"
+                    ng-value="getOptionValue(option)"
+            >
+                {{ getOptionLabel(option) }}
+            </option>
         </select>
+        <small ng-if="highlightInvalid && !isValid(field)"
+               class="help-block">
+            {{ 'anol.featureform.IS_REQUIRED' | translate }}
+        </small>
     </div>
 </form>
 

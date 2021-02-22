@@ -46,7 +46,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'COULD_NOT_READ_FILE': 'Could not read file'
                 },
                 'featureform': {
-                    'PLEASE_CHOOSE': 'Please choose ...'
+                    'PLEASE_CHOOSE': 'Please choose ...',
+                    'IS_REQUIRED': 'This field is required'
                 },
                 'featurepropertieseditor': {
                     'NEW_PROPERTY': 'New property'
@@ -138,7 +139,8 @@ angular.module('anol', ['ui.bootstrap', 'pascalprecht.translate', 'ngSanitize'])
                     'DRAW_LAYER_TITLE': 'Zeichenlayer'
                 },
                 'featureform': {
-                    'PLEASE_CHOOSE': 'Bitte auswählen ...'
+                    'PLEASE_CHOOSE': 'Bitte auswählen ...',
+                    'IS_REQUIRED': 'Dies ist ein Pflichtfeld'
                 },
                 'featurestyleeditor': {
                     'EDIT_FEATURE_STYLE': 'Feature Style bearbeiten',

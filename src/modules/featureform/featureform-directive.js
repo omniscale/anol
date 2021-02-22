@@ -27,8 +27,8 @@ angular.module('anol.featureform')
      * @param {anol.layer.Feature} layer Layer of feature
      * @param {FormField[]} pointFields The form fields for points
      * @param {FormField[]} lineFields The form fields for lines
-     * @param {FormField[]} polygonFields TThe form fields for polygons
-     * @param {Object<string, string>} formValues The values for each form field
+     * @param {FormField[]} polygonFields The form fields for polygons
+     * @param {boolean} [highlightInvalid] show if fields are invalid
      *
      * @description
      * Creates a form to edit defined feature properties.
@@ -42,9 +42,10 @@ angular.module('anol.featureform')
                 scope: {
                     'feature': '=',
                     'layer': '=', // TODO: is this needed?
-                    'pointFields': '=',
-                    'lineFields': '=',
-                    'polygonFields': '='
+                    'pointFields': '=?',
+                    'lineFields': '=?',
+                    'polygonFields': '=?',
+                    'highlightInvalid': '=?'
                 },
                 template: function(tElement, tAttrs) {
                     if (tAttrs.templateUrl) {
@@ -118,6 +119,17 @@ angular.module('anol.featureform')
                      */
                     scope.getOptionLabel = function (option) {
                         return angular.isObject(option) ? option.label || option.value : option;
+                    };
+
+                    /**
+                     * @param {FormField} field
+                     * @return {boolean}
+                     */
+                    scope.isValid = function (field) {
+                        if (field.required) {
+                            return !!scope.properties[field.name];
+                        }
+                        return true;
                     };
 
                     scope.$watch('feature', featureChangeHandler);
