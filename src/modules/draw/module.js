@@ -6,4 +6,4 @@
  */
 import { anol } from '../../anol/anol.js';
 
-angular.module('anol.draw', ['anol.map']);
+angular.module('anol.draw', ['anol.map', 'anol.measure']);
