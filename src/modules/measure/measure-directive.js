@@ -1,20 +1,15 @@
 import './module.js';
 
-import {Circle as CircleStyle, Fill, Stroke, Style, Text} from 'ol/style.js';
+import {Style} from 'ol/style.js';
 import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
 import Modify from 'ol/interaction/Modify';
 import Polygon from 'ol/geom/Polygon';
 import Draw from 'ol/interaction/Draw';
-import Overlay from 'ol/Overlay';
 import { TOUCH as hasTouch } from 'ol/has';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { transform } from 'ol/proj';
-import MultiPoint from 'ol/geom/MultiPoint.js';
-import MultiLineString from 'ol/geom/MultiLineString';
-
-import {getArea as getSphereArea, getDistance} from 'ol/sphere';
 
 angular.module('anol.measure')
 /**
@@ -42,149 +37,19 @@ angular.module('anol.measure')
  * @description
  * Point, Line or area measurement
  */
-    .directive('anolMeasure', ['$templateRequest', '$compile', '$timeout', 'ControlsService', 'LayersService', 'MapService', 
-        function($templateRequest, $compile, $timeout, ControlsService, LayersService, MapService) {
+    .directive('anolMeasure', ['$templateRequest', '$compile', '$timeout', 'ControlsService', 'LayersService', 'MapService', 'MeasureService',
+        function($templateRequest, $compile, $timeout, ControlsService, LayersService, MapService, MeasureService) {
             // create a sphere whose radius is equal to the semi-major axis of the WGS84 ellipsoid
             // var wgs84Sphere = new ol.Sphere(6378137);
-            var measureStyle = function(feature, labelSegments) {
-                var geometry = feature.getGeometry();
-                var styles = [
-                        new Style({
-                         fill: new Fill({
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        }),
-                        stroke: new Stroke({
-                            color: 'rgba(0, 0, 0, 0.5)',
-                            lineDash: [10, 10],
-                            width: 2,
-                            opacity: 0.5
-                        }),
-                        image: new CircleStyle({
-                            radius: 5,
-                            stroke: new Stroke({
-                                color: 'rgba(0, 0, 0, 0.7)'
-                            })
-                        })
-                    })                
-                ];
-
-                function lengthAsString(start, end) {
-                    var geometry = new LineString([start, end])
-                    var projection = MapService.getMap().getView().getProjection();
-
-                    var length;
-                    // TODO load from Service
-                    var geodesic = false;
-
-                    if (geodesic) {
-                        var coordinates = geometry.getCoordinates();
-                        length = 0;
-                        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-                            var c1 = transform(coordinates[i], projection.getCode(), 'EPSG:4326');
-                            var c2 = transform(coordinates[i + 1], projection.getCode(), 'EPSG:4326');
-                            length += getDistance(c1, c2);
-                        }
-                    } else {
-                        length = Math.round(geometry.getLength() * 100) / 100;
-                    }
-
-                    var output;
-                    if (length > 1000) {
-                        output = anol.helper.round((length / 1000), 3) + ' ' + 'km';
-                    } else {
-                        output = anol.helper.round(length, 2)  + ' ' + 'm';
-                    }
-                    output = output.replace('.', ',')
-                    return output;
-                }
-
-                function layoutSegments(start, end) {
-                      var newXY = [(end[0] + start[0]) / 2, (end[1] + start[1]) / 2];
-                      // text
-                      styles.push(new Style({
-                        geometry: new Point(newXY),
-                        text: new Text({
-                            font: '14px Calibri,sans-serif',
-                            fill: new Fill({
-                                color: '#000'
-                            }),
-                            stroke: new Stroke({
-                                color: '#fff', 
-                                width: 2
-                            }),
-                            text: lengthAsString(start, end)
-                        })                    
-                      }));
-                      // points
-                      styles.push(new Style({
-                        geometry: new MultiPoint([start, end]),
-                        image: new CircleStyle({
-                            radius: 5,
-                            fill: new Fill({
-                              color: 'grey'
-                            })
-                        })                 
-                      }));
-                    }
-
-                if (labelSegments) {
-                    var geometryType = feature.getGeometry().getType();
-                    if (geometryType === 'LineString') {
-                        geometry.forEachSegment(function(start, end) {
-                            layoutSegments(start, end);
-                        });
-                    }
-                    if (geometryType === 'Polygon') {
-                        var coordinates = geometry.getCoordinates();
-                        var coords = coordinates[0];
-                        angular.forEach(coords, function(coord, idx) {
-                            if (idx !== coords.length - 1){ 
-                                var start = coord; 
-                                var end = coords[idx + 1];
-                                layoutSegments(start, end);
-                            }
-                        })
-                    }
-                }
-                return styles;
-            };
+            var measureStyle = MeasureService.measureStyle;
 
 
             var calculateCoordinate = function(geometry) {
                 return geometry.getCoordinates();
             };
 
-            var calculateLength = function(geometry, projection, geodesic) {
-                if(geometry.getType() !== 'LineString') {
-                    return 0;
-                }
-                var length;
-                if (geodesic) {
-                    var coordinates = geometry.getCoordinates();
-                    length = 0;
-                    for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
-                        var c1 = transform(coordinates[i], projection.getCode(), 'EPSG:4326');
-                        var c2 = transform(coordinates[i + 1], projection.getCode(), 'EPSG:4326');
-                        length += getDistance(c1, c2);
-                    }
-                } else {
-                    length = Math.round(geometry.getLength() * 100) / 100;
-                }
-                return length;
-            };
-
-            var calculateArea = function(geometry, projection, geodesic) {
-                if(geometry.getType() !== 'Polygon') {
-                    return 0.0;
-                }
-                var area;
-                if (geodesic) {
-                    area = getSphereArea(geometry);
-                } else {
-                    area = geometry.getArea();
-                }
-                return area;
-            };
+            var calculateLength = MeasureService.calculateLength;
+            var calculateArea = MeasureService.calculateArea;
 
             var formatCoordinateResult = function(geometry, projection, geodesic, labelSegments) {
                 var coord = transform(geometry.getCoordinates(),
@@ -196,54 +61,8 @@ angular.module('anol.measure')
                 return output;
             };
 
-            var formatLineResult = function(geometry, projection, geodesic, labelSegments) {
-                var length = calculateLength(geometry, projection, geodesic);
-                var output;
-                if (length > 1000) {
-                    output = anol.helper.round((length / 1000), 3) + ' ' + 'km';
-                } else {
-                    output = anol.helper.round(length, 2)  + ' ' + 'm';
-                }
-                output = output.replace('.', ',')
-                return output;
-            };
-
-            var formatAreaResult = function(geometry, projection, geodesic, labelSegments) {
-                var area = calculateArea(geometry, projection, geodesic);
-                if (area === 0) {
-                    return ''; 
-                }
-
-                var output;
-                if (area > 100000) {
-                    output = anol.helper.round((area / 10000), 3) +
-                     ' ' + 'ha';
-                } else {
-                    output = anol.helper.round(area, 2) +
-                     ' ' + 'm<sup>2</sup>';
-                }
-                output = output.replace('.', ',')
-
-                if (labelSegments) {
-                    // calculate line length for area and add to label
-                    var length = 0;
-                    var coordinates = geometry.getCoordinates();
-                    var coords = coordinates[0];
-                    angular.forEach(coords, function(coord, idx) {
-                        if (idx !== coords.length - 1){ 
-                            length += calculateLength(new LineString([coord, coords[idx + 1]]));
-                        }
-                    })
-                    if (length > 1000) {
-                        output += '<br>' +  anol.helper.round((length / 1000), 3) + ' ' + 'km';
-                    } else {
-                        output += '<br>' +  anol.helper.round(length, 2)  + ' ' + 'm';
-                    }
-                    output = output.replace('.', ',')
-                }
-
-                return output;
-            };
+            var formatLineResult = MeasureService.formatLineResult;
+            var formatAreaResult = MeasureService.formatAreaResult;
 
             var handlePointMeasure = function(geometry, coordinate) {
                 return new Point(coordinate);
@@ -283,18 +102,6 @@ angular.module('anol.measure')
                 }
             };
 
-            var createMeasureOverlay = function() {
-                var element = angular.element('<div></div>');
-                element.addClass('anol-overlay');
-                element.addClass('anol-measure-overlay');
-                var overlay = new Overlay({
-                    element: element[0],
-                    offset: [0, -15],
-                    positioning: 'bottom-center'
-                });
-                return overlay;
-            };
-
             var createModifyInteraction = function(measureSource, measureType, measureOverlay, measureResultCallback, projection, geodesic, labelSegments) {
                 var modify = new Modify({
                     features: measureSource.getFeaturesCollection(),
@@ -304,7 +111,7 @@ angular.module('anol.measure')
                         }  else {
                             return false;
                         }
-                    }                       
+                    }
                 });
                 modify.on('modifyend', function() {
                     var resultFormatter, resultCalculator;
@@ -347,7 +154,7 @@ angular.module('anol.measure')
                         }  else {
                             return false;
                         }
-                    },                    
+                    },
                     style: new Style({})
                 });
 
@@ -444,7 +251,7 @@ angular.module('anol.measure')
                         scope.geodesic = scope.geodesic === true || scope.geodesic === 'true';
                         scope.labelSegments = angular.isDefined(scope.labelSegments) ?
                             scope.labelSegments : false;
-                        
+
                         // create layer to draw in
                         scope.measureSource = new VectorSource({
                             useSpatialIndex: false
@@ -465,7 +272,7 @@ angular.module('anol.measure')
                         };
 
                         scope.map = MapService.getMap();
-                        scope.measureOverlay = createMeasureOverlay();
+                        scope.measureOverlay = MeasureService.createMeasureOverlay();
 
                         scope.draw = createDrawInteraction(scope.measureSource,
                             scope.measureType,
@@ -481,7 +288,7 @@ angular.module('anol.measure')
                             scope.measureOverlay,
                             scope.measureResultCallback,
                             scope.map.getView().getProjection(),
-                            scope.geodesic, 
+                            scope.geodesic,
                             scope.labelSegments
                         );
 
@@ -495,7 +302,7 @@ angular.module('anol.measure')
                                 scope.deactivatedCallback();
                             }
                         };
-    
+
                         scope.activate = function() {
                             scope.map.addInteraction(scope.draw);
                             scope.map.addInteraction(scope.modify);
@@ -505,10 +312,10 @@ angular.module('anol.measure')
                             }
                         };
                         LayersService.addSystemLayer(new anol.layer.Layer(layerOptions), 0);
-                    }, 
+                    },
                     post: function(scope, AnolMapController) {
                         var control;
-                        
+
                         if(AnolMapController === null || scope.addToMap === false || scope.addToMap === 'false') {
                             control = new anol.control.Control({
                                 exclusive: true,
@@ -531,7 +338,7 @@ angular.module('anol.measure')
                         control.onActivate(function() {
                             scope.activate();
                         });
-                         
+
                         scope.isActive = function() {
                             if (control.active) {
                                 return true;

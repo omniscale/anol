@@ -17,7 +17,7 @@ angular.module('anol.draw')
  * @requires $translate
  * @requires anol.map.MapService
  * @requires anol.map.ControlsSerivce
- * @requries anol.map.DrawService
+ * @requires anol.map.DrawService
  *
  * @param {object} geometries The configuration of the geometries (e.g. min/max values).
  * @param {object} style The style for the geometries.
@@ -29,13 +29,14 @@ angular.module('anol.draw')
  * @param {string} polygonTooltipPlacement Position of polygon tooltip
  * @param {number} tooltipDelay Time in milisecounds to wait before display tooltip
  * @param {boolean} tooltipEnable Enable tooltips. Default true for non-touch screens, default false for touchscreens
+ * @param {boolean} liveMeasure Display length / area information, default: false
  * @param {string} templateUrl Url to template to use instead of default one
  *
  * @description
  * Provides controls to draw points, lines and polygons, modify and remove them
  */
-    .directive('anolDraw', ['$templateRequest', '$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'MapService', 'DrawService',
-        function($templateRequest, $compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService) {
+    .directive('anolDraw', ['$templateRequest', '$compile', '$rootScope', '$translate', '$timeout', 'ControlsService', 'MapService', 'DrawService', 'MeasureService',
+        function($templateRequest, $compile, $rootScope, $translate, $timeout, ControlsService, MapService, DrawService, MeasureService) {
             return {
                 restrict: 'A',
                 require: '?^anolMap',
@@ -49,7 +50,8 @@ angular.module('anol.draw')
                     tooltipEnable: '@',
                     pointTooltipPlacement: '@',
                     lineTooltipPlacement: '@',
-                    polygonTooltipPlacement: '@'
+                    polygonTooltipPlacement: '@',
+                    liveMeasure: '@'
                 },
                 template: function(tElement, tAttrs) {
                     if (tAttrs.templateUrl) {
@@ -64,7 +66,7 @@ angular.module('anol.draw')
                             element.html(template);
                             $compile(template)(scope);
                         });
-                    } 
+                    }
                     // attribute defaults
                     scope.geometriesConfig = applyGeometriesConfig(scope.geometries);
                     scope.continueDrawing = angular.isDefined(scope.continueDrawing) ?
@@ -112,12 +114,46 @@ angular.module('anol.draw')
                         scope.postDrawAction()(scope.activeLayer, evt.feature);
                     };
 
+                    let overlayAdded = false;
+                    function ensureMeasureOverlayAdded () {
+                        if (!overlayAdded) {
+                            scope.map.addOverlay(scope.measureOverlay);
+                        }
+                        overlayAdded = true;
+                    };
+                    function ensureMeasureOverlayRemoved () {
+                        if (overlayAdded) {
+                            scope.map.removeOverlay(scope.measureOverlay);
+                            overlayAdded = false;
+                        }
+                    };
+
                     var createDrawInteractions = function(drawType, source, control, layer, postDrawActions) {
                         postDrawActions = postDrawActions || [];
                         // create draw interaction
                         var draw = new Draw({
                             source: source,
-                            type: drawType
+                            type: drawType,
+                            style: scope.liveMeasure !== 'true' ? undefined : function (feature) {
+                                const geometry = feature.getGeometry();
+                                if (geometry.getType() === 'Point' && draw.sketchFeature_) {
+                                    const sketchGeometry = draw.sketchFeature_.getGeometry();
+                                    const projection = MapService.getMap().getView().getProjection();
+                                    if (drawType === 'LineString') {
+                                        scope.measureOverlay.getElement().innerHTML =
+                                            MeasureService.formatLineResult(sketchGeometry, projection, false);
+                                    } else if (drawType === 'Polygon') {
+                                        scope.measureOverlay.getElement().innerHTML =
+                                            MeasureService.formatAreaResult(sketchGeometry, projection, false, true);
+                                    }
+                                    scope.measureOverlay.setPosition(geometry.getLastCoordinate());
+                                    ensureMeasureOverlayAdded();
+                                }
+                                return MeasureService.measureStyle(feature, true);
+                            }
+                        });
+                        draw.on('drawend', function () {
+                            ensureMeasureOverlayRemoved();
                         });
 
                         if(angular.isFunction(scope.postDrawAction) && angular.isFunction(scope.postDrawAction())) {
@@ -159,12 +195,29 @@ angular.module('anol.draw')
                     var createModifyInteractions = function(layer) {
                         var selectInteraction = new Select({
                             toggleCondition: neverCondition,
-                            layers: [layer]
+                            layers: [layer],
+                            style: scope.liveMeasure !== 'true' ? undefined : function (feature) {
+                                const geometry = feature.getGeometry();
+                                if (geometry.getType() !== 'Point') {
+                                    const projection = MapService.getMap().getView().getProjection();
+                                    if (geometry.getType()  === 'LineString') {
+                                        scope.measureOverlay.getElement().innerHTML =
+                                            MeasureService.formatLineResult(geometry, projection, false);
+                                    } else if (geometry.getType()  === 'Polygon') {
+                                        scope.measureOverlay.getElement().innerHTML =
+                                            MeasureService.formatAreaResult(geometry, projection, false, true);
+                                    }
+                                    ensureMeasureOverlayAdded();
+                                    scope.measureOverlay.setPosition(geometry.getLastCoordinate());
+                                }
+                                return MeasureService.measureStyle(feature, true);
+                            }
                         });
                         selectInteraction.on('select', function(evt) {
                             if(evt.selected.length === 0) {
                                 selectedFeature = undefined;
                                 removeButtonElement.addClass('disabled');
+                                ensureMeasureOverlayRemoved();
                             } else {
                                 selectedFeature = evt.selected[0];
                                 removeButtonElement.removeClass('disabled');
@@ -383,6 +436,7 @@ angular.module('anol.draw')
                     };
 
                     scope.map = MapService.getMap();
+                    scope.measureOverlay = MeasureService.createMeasureOverlay();
 
                     element.addClass('anol-draw');
 
