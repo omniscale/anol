@@ -51,7 +51,7 @@ angular.module('anol.draw')
                     pointTooltipPlacement: '@',
                     lineTooltipPlacement: '@',
                     polygonTooltipPlacement: '@',
-                    liveMeasure: '@'
+                    liveMeasure: '<'
                 },
                 template: function(tElement, tAttrs) {
                     if (tAttrs.templateUrl) {
@@ -134,7 +134,7 @@ angular.module('anol.draw')
                         var draw = new Draw({
                             source: source,
                             type: drawType,
-                            style: scope.liveMeasure !== 'true' ? undefined : function (feature) {
+                            style: !scope.liveMeasure ? undefined : function (feature) {
                                 const geometry = feature.getGeometry();
                                 if (geometry.getType() === 'Point' && draw.sketchFeature_) {
                                     const sketchGeometry = draw.sketchFeature_.getGeometry();
@@ -196,7 +196,7 @@ angular.module('anol.draw')
                         var selectInteraction = new Select({
                             toggleCondition: neverCondition,
                             layers: [layer],
-                            style: scope.liveMeasure !== 'true' ? undefined : function (feature) {
+                            style: !scope.liveMeasure ? undefined : function (feature) {
                                 const geometry = feature.getGeometry();
                                 if (geometry.getType() !== 'Point') {
                                     const projection = MapService.getMap().getView().getProjection();
@@ -355,6 +355,7 @@ angular.module('anol.draw')
                             scope.activeLayer.olLayer.getSource().removeFeature(selectedFeature);
                             modifyControl.interactions[0].getFeatures().clear();
                             selectedFeature = undefined;
+                            ensureMeasureOverlayRemoved();
                         }
                     };
 
