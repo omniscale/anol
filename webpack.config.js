@@ -8,14 +8,14 @@ module.exports = {
   entry: {
     app:  './src/anol/anol.js',
     vendor: ['angular', 'jquery', 'ol']
-  },    
+  },
   output: {
     filename: 'anol.[name].js',
     path: path.resolve(__dirname, './build'),
     chunkFilename: 'anol.[name].bundle.js',
     publicPath: '/',
     library: 'anol'
-  },  
+  },
   module: {
     rules: [
       {
@@ -23,11 +23,14 @@ module.exports = {
         use: [
           "style-loader", // creates style nodes from JS strings
           "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS, using Node Sass by default
+          {
+            loader: "sass-loader",
+            options: { implementation: require("sass") }
+          }
         ]
       },
-      { 
-        test: /\.html$/, 
+      {
+        test: /\.html$/,
         use: ['html-loader']
       }
     ]
@@ -44,7 +47,7 @@ module.exports = {
       }
     },
     runtimeChunk: true
-  },    
+  },
   plugins: [
     new webpack.ProvidePlugin({
       $: "jquery",
